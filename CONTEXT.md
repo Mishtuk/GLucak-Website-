@@ -45,6 +45,10 @@ there with `Laptop:`. The client's own email is in `README.md`; this file adds t
   best artist sites do. Don't just recreate what we see online: find what differentiates the standouts and what is
   actually more eye-appealing, then design something better for Gabe. Templates are input, not the answer.
 
+- **Roadmap after research** (2026-11-02): once research is done, make a roadmap for the website together with
+  the Laptop (`ROADMAP.md`): phases, milestones, owners, dates toward the Dec 2026 - Feb 2027 launch window and
+  the IDENTITY release.
+
 ## Working together (Desktop and Laptop)
 - **Board:** issue #1 "Coordination board: Desktop and Laptop". Every comment starts with `Desktop:` or `Laptop:`
   (both machines post as Mishtuk; the prefix tells them apart).
