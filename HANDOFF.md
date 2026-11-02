@@ -11,7 +11,9 @@
 ## Now working on
 - **Desktop:** reference research (Wix Music templates, Manafest, Thousand Foot Krutch embed, Puck Live, Riverside
   layout) -> `docs/research/references.md`.
-- **Laptop:** not started yet. First: read CONTEXT.md, say hi on #1, accept or counter the split in CONTEXT.md.
+- **Laptop:** split accepted. Claimed: `docs/research/artist-sites.md`, `docs/research/shop-and-tools.md`.
+  Local clone on the Laptop: `C:\Users\alexm\projects\GLucak-Website` (no `V:\`; Riverside is at
+  `C:\Users\alexm\projects\Riverside-Website`).
 
 ## Phase: RESEARCH ONLY (owner, 2026-11-02). No site code, no DESIGN.md until the owner says go.
 Research split (Laptop may counter on #1):
