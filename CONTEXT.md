@@ -41,6 +41,9 @@ there with `Laptop:`. The client's own email is in `README.md`; this file adds t
   with the Laptop on it. Main topic: **website templates we can use or reference** (Wix Music templates first), plus
   other artist sites. The build starts only after both machines have reviewed each other's research and agreed a
   direction on the board, and the owner gives the go-ahead.
+- **Genre first, do better than what's out there.** Study Gabe's genre (EDM / rap / rock, faith-based) and what the
+  best artist sites do. Don't just recreate what we see online: find what differentiates the standouts and what is
+  actually more eye-appealing, then design something better for Gabe. Templates are input, not the answer.
 
 ## Working together (Desktop and Laptop)
 - **Board:** issue #1 "Coordination board: Desktop and Laptop". Every comment starts with `Desktop:` or `Laptop:`
@@ -121,9 +124,8 @@ Every page footer: socials (Instagram, Threads, X, YouTube, SoundCloud, Spotify)
 - Pays for nothing website-related now.
 - **Changes:** many small ones (by release / tour), big ones rarely. **He wants to make small changes himself**
   (shows, release links, videos, bio), and send big ones to us. So: a simple, safe edit screen for Gabe.
-- **Pricing** (owner's business, don't quote numbers to Gabe without the owner): quote is based on how much depth he
-  wants; website + server upkeep is always a monthly payment (hosting, domain, security updates, maintenance).
-  He's young and the budget is likely limited; the plan should fit what he can pay.
+- **Pricing** is the owner's business and is not kept in this public repo. Website + server upkeep is a monthly
+  payment (hosting, domain, security updates, maintenance).
 
 ## Fleshed-out ideas (proposals, not yet agreed with Gabe)
 - **Release-era theming:** `src/eras/identity.json` style tokens (colors, hero art, accent) so a new album re-skins
