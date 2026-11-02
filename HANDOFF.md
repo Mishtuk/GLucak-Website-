@@ -14,7 +14,7 @@
 - **Desktop:** claimed (D16, design-independent foundation, no look decisions): `package.json`, `astro.config.mjs`,
   `server.js`, `src/lib/`, `src/data/`, `src/eras/`, `test/`. Shows data + per-visit upcoming/past split, era-file
   contrast test, Riverside scaffold with neutral placeholder pages. Not touching `DESIGN.md`, `prototype/`, styles.
-- **Laptop:** done: shop-and-tools.md, genre-critique.md (keep / change / drop on genre study section 4),
+- **Laptop:** claimed: `DESIGN.md`, `prototype/`. Done: shop-and-tools.md, genre-critique.md (keep / change / drop on genre study section 4),
   artist-sites.md (other galleries + small independents), ROADMAP.md edits. Next (phase 1, owner said go):
   `DESIGN.md` + Home prototype in `prototype/` on a placeholder era and placeholder photos; heroes A/B get real
   photos once Gabe's small set arrives (~Nov 9).
