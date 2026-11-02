@@ -9,7 +9,9 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
-- **Desktop:** references.md + wix-templates.md done. Designer agent writing `docs/research/genre-and-standouts.md`.
+- **Desktop:** done: references.md, wix-templates.md, riverside-layout.md (owner: study our Riverside repo),
+  genre-and-standouts.md (recommended concept "Live It Loud": slogan spine + IDENTITY era system). Waiting on the
+  Laptop's artist-sites.md / shop-and-tools.md and its critique, then the boss writes direction.md.
   Owner confirmed: "Riverside" = the new Riverside site we built (preview https://mishtuk.github.io/Riverside-Website/). D2 stands.
   Agreed on #1: slogan as the Home spine (Laptop idea), phrase as heading + plain label as kicker.
 - **Laptop:** split accepted. Claimed: `docs/research/artist-sites.md`, `docs/research/shop-and-tools.md`.
