@@ -13,14 +13,22 @@
   layout) -> `docs/research/references.md`.
 - **Laptop:** not started yet. First: read CONTEXT.md, say hi on #1, accept or counter the split in CONTEXT.md.
 
-## Next up (boss-owned list; owner / "done when")
-1. Desktop: `docs/research/references.md`: what to take from each reference, with screenshots. Done when the
-   designer can pick a direction from it.
-2. Laptop (or designer agent): `DESIGN.md`: IDENTITY-era tokens, type, Home / Music / Shows / About layouts, phone
-   and desktop, motion rules (no flashing). Done when the coder can build Home without guessing.
-3. Desktop: Astro scaffold from the Riverside site, Home with the Spotify embed placeholder, era tokens, CSP. Done
-   when Home renders at 390 and 1280 and `npm test` passes.
-4. Owner: send Gabe the "still needed" list (CONTEXT.md) for the playlist link, art and shows.
+## Phase: RESEARCH ONLY (owner, 2026-11-02). No site code, no DESIGN.md until the owner says go.
+Research split (Laptop may counter on #1):
+1. Desktop: `docs/research/references.md`: first pass on Wix Music templates, Manafest, TFK's Spotify embed,
+   Puck Live, Riverside layout, Spotify embed facts.
+2. Desktop: `docs/research/wix-templates.md`: deep pass on Wix Music / musician / band / DJ templates in Chrome
+   with screenshots (`docs/research/shots/`): home order, nav, player, shows, merch, what to borrow. Done when each
+   strong template has a verdict.
+3. Laptop: `docs/research/artist-sites.md`: 8-12 more artist sites close to Gabe (faith-based rap / rock / EDM,
+   independent artists; e.g. NF, Lecrae, Andy Mineo, KB, Skillet, Manafest deeper) plus other template galleries
+   (Squarespace, Bandzoogle, Framer music templates). Same breakdown.
+4. Laptop: `docs/research/shop-and-tools.md`: merch / physical-media checkout options for an indie artist, email
+   list providers, show listing (Bandsintown etc.), with costs, so the owner can choose.
+5. Both: read and comment on each other's files on #1, then the boss writes `docs/research/direction.md` (agreed
+   direction + open questions). Done when both machines agree on #1 and the owner approves.
+Later (not before the owner says go): DESIGN.md -> Astro scaffold from Riverside -> Home.
+- Owner: send Gabe the "still needed" list (CONTEXT.md) for the playlist link, art and shows.
 
 ## Status
 - 2026-11-02 Desktop: repo set up. CONTEXT.md, HANDOFF.md, DECISIONS.md, agents, board (#1, pinned) and

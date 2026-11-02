@@ -36,6 +36,12 @@ there with `Laptop:`. The client's own email is in `README.md`; this file adds t
   Laptop. Talk on the board (pinned issue #1). Keep prompting each other with new ideas and designs and ways to make
   the site better, and keep checking for each other's replies.
 
+## Owner's instructions (2026-11-02, later)
+- **Research first. No building yet.** Before any site code or `DESIGN.md`, do a lot of research and collaborate
+  with the Laptop on it. Main topic: **website templates we can use or reference** (Wix Music templates first), plus
+  other artist sites. The build starts only after both machines have reviewed each other's research and agreed a
+  direction on the board, and the owner gives the go-ahead.
+
 ## Working together (Desktop and Laptop)
 - **Board:** issue #1 "Coordination board: Desktop and Laptop". Every comment starts with `Desktop:` or `Laptop:`
   (both machines post as Mishtuk; the prefix tells them apart).
