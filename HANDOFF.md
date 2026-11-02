@@ -9,8 +9,9 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
-- **Desktop:** reference research (Wix Music templates, Manafest, Thousand Foot Krutch embed, Puck Live, Riverside
-  layout) -> `docs/research/references.md`.
+- **Desktop:** references.md + wix-templates.md done. Designer agent writing `docs/research/genre-and-standouts.md`.
+  Open owner question: does Gabe's "Riverside" mean our church site or the band Riverside? (D2 waits on it.)
+  Agreed on #1: slogan as the Home spine (Laptop idea), phrase as heading + plain label as kicker.
 - **Laptop:** split accepted. Claimed: `docs/research/artist-sites.md`, `docs/research/shop-and-tools.md`.
   Local clone on the Laptop: `C:\Users\alexm\projects\GLucak-Website` (no `V:\`; Riverside is at
   `C:\Users\alexm\projects\Riverside-Website`).
