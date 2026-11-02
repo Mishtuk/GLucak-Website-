@@ -10,8 +10,9 @@
 
 ## Now working on
 - **Desktop:** done: references.md, wix-templates.md, riverside-layout.md (owner: study our Riverside repo),
-  genre-and-standouts.md (recommended concept "Live It Loud": slogan spine + IDENTITY era system). Waiting on the
-  Laptop's artist-sites.md / shop-and-tools.md and its critique, then the boss writes direction.md.
+  genre-and-standouts.md (recommended concept "Live It Loud": slogan spine + IDENTITY era system). Accepted all 7
+  of the Laptop's genre-critique.md changes on #1. Now: Chrome pass on the 5 standout sites ->
+  `docs/research/standouts-visual.md` + `shots/standouts/`. direction.md waits for the Laptop's artist-sites.md.
   Owner confirmed: "Riverside" = the new Riverside site we built (preview https://mishtuk.github.io/Riverside-Website/). D2 stands.
   Agreed on #1: slogan as the Home spine (Laptop idea), phrase as heading + plain label as kicker.
 - **Laptop:** done: shop-and-tools.md, genre-critique.md (keep / change / drop on genre study section 4),
