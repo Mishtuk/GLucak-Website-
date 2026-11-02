@@ -15,6 +15,7 @@ export function validateShow(r) {
   if (r.type !== 'show' && r.type !== 'open-mic') throw new Error('bad type');
   for (const k of ['venue', 'city']) if (typeof r[k] !== 'string' || !r[k].trim()) throw new Error(`bad ${k}`);
   if (r.link != null && (typeof r.link !== 'string' || !httpUrl(r.link))) throw new Error('bad link');
+  if (r.with != null && (typeof r.with !== 'string' || !r.with.trim())) throw new Error('bad with');
   return r;
 }
 
@@ -35,7 +36,7 @@ const fmtTime = (t) => { const h = +t.slice(0, 2); return `${h % 12 || 12}:${t.s
 export function showHtml(r) {
   const btn = r.link ? `<a href="${esc(r.link)}" rel="noopener">${r.type === 'show' ? 'Tickets' : 'Details'}</a>` : '';
   const time = r.time ? ` <span>${esc(fmtTime(r.time))}</span>` : '';
-  return `<li><time datetime="${esc(r.date)}">${esc(fmtDate(r.date))}</time>${time} <strong>${esc(r.venue)}</strong> <span>${esc(r.city)}</span>${r.type === 'open-mic' ? ' <span>Open mic</span>' : ''} ${btn}</li>`;
+  return `<li><time datetime="${esc(r.date)}">${esc(fmtDate(r.date))}</time>${time} <strong>${esc(r.venue)}</strong> <span>${esc(r.city)}</span>${r.with ? ` <span>With ${esc(r.with)}</span>` : ''}${r.type === 'open-mic' ? ' <span>Open mic</span>' : ''} ${btn}</li>`;
 }
 
 /** The list for the page marker. limit caps the upcoming list (Home). Invalid rows are skipped, never rendered. */

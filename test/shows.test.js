@@ -58,6 +58,15 @@ test('injection stays inert', () => {
   assert.ok(!js.includes('javascript:') && !js.includes('Evil'));
 });
 
+test('optional with line, escaped', () => {
+  const now = noon('2026-01-01');
+  assert.ok(showsHtml([row({ with: 'Fran Carroll' })], now).includes('<span>With Fran Carroll</span>'));
+  assert.ok(!showsHtml([row()], now).includes('With '));
+  const bad = showsHtml([row({ with: '<script>x</script>' })], now);
+  assert.ok(!bad.includes('<script>') && bad.includes('With &lt;script&gt;'));
+  assert.throws(() => validateShow(row({ with: '  ' })));
+});
+
 test('past list and Home limit', () => {
   const rows = [row({ date: '2026-12-12', venue: 'A' }), row({ date: '2026-12-13', venue: 'B' }), row({ date: '2026-01-01', venue: 'Old' })];
   const home = showsHtml(rows, noon('2026-06-01'), { limit: 1 });
