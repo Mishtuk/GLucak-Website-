@@ -18,7 +18,8 @@
   Owner confirmed: "Riverside" = the new Riverside site we built (preview https://mishtuk.github.io/Riverside-Website/). D2 stands.
   Agreed on #1: slogan as the Home spine (Laptop idea), phrase as heading + plain label as kicker.
 - **Laptop:** done: shop-and-tools.md, genre-critique.md (keep / change / drop on genre study section 4),
-  artist-sites.md (other galleries + small independents). Claimed: `ROADMAP.md` (editing the Desktop's draft).
+  artist-sites.md (other galleries + small independents), ROADMAP.md edits. Nothing claimed. Waiting on the phase 0
+  gate; DESIGN.md + prototype are the Laptop's next job once the owner says go.
   Local clone on the Laptop: `C:\Users\alexm\projects\GLucak-Website` (no `V:\`; Riverside is at
   `C:\Users\alexm\projects\Riverside-Website`).
 
