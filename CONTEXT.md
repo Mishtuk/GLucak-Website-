@@ -49,6 +49,13 @@ there with `Laptop:`. The client's own email is in `README.md`; this file adds t
   the Laptop (`ROADMAP.md`): phases, milestones, owners, dates toward the Dec 2026 - Feb 2027 launch window and
   the IDENTITY release.
 
+## Owner's decisions (2026-11-02, phase 0)
+- **Approved** `docs/research/direction.md` and `ROADMAP.md`. Research phase is over; phase 1 starts.
+- The owner sends Gabe the questions in direction.md section 8. Meanwhile, **work only on what doesn't need Gabe's
+  answers** (placeholder era, placeholder photos and content; nothing that guesses his facts).
+- **Hosting:** the owner decides. **Domain:** the owner registers glucak.com with auto-renew.
+- **Accounts** (domain, email list, shop) are **in Gabe's name**; the owner helps manage them.
+
 ## Working together (Desktop and Laptop)
 - **Board:** issue #1 "Coordination board: Desktop and Laptop". Every comment starts with `Desktop:` or `Laptop:`
   (both machines post as Mishtuk; the prefix tells them apart).

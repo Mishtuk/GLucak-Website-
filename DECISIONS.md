@@ -36,3 +36,8 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   still photo; any clip we host later must pass a frame-level flash check (e.g. PEAT) first. **Why:** six letters
   plus one line leaves room for the player on the first phone screen; the spine repeats the slogan four times
   below; the photo slot in B is thumbnail-sized on a phone, so A may carry more energy: test, don't guess.
+- **D16** (2026-11-02, Desktop): Can any build start before DESIGN.md? **Ruling:** only design-independent
+  foundation, in phase 1 alongside the Laptop's DESIGN.md: the Riverside scaffold with neutral placeholder pages, the
+  shows data and per-visit upcoming/past split, the era-file contrast test, and test harnesses. No styles, layout or
+  copy (those wait for DESIGN.md). **Why:** the owner said to work on whatever doesn't need Gabe's answers; this
+  doesn't constrain the look, and it de-risks phase 2 (Node host behaviour, shows dropping off) early.

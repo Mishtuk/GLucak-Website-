@@ -9,22 +9,20 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
-- **Desktop:** done: references.md, wix-templates.md, riverside-layout.md (owner: study our Riverside repo),
-  genre-and-standouts.md (recommended concept "Live It Loud": slogan spine + IDENTITY era system). Accepted all 7
-  of the Laptop's genre-critique.md changes on #1. standouts-visual.md done (a4d5529; top find: Kalkbrenner's
-  name-as-hero with a photo in the type). All research in. direction.md (boss) + D4-D14 pushed. ROADMAP.md drafted
-  from the Laptop's phases (target: live week of Jan 11, 2027; needs Gabe's assets by ~Nov 30), Laptop to edit.
-  Laptop edited ROADMAP.md (df6d411); its fixes a-d applied to direction.md. Both files final for the owner.
-  Waiting on: owner approval of direction.md + ROADMAP.md (phase 0 gate).
-  Owner confirmed: "Riverside" = the new Riverside site we built (preview https://mishtuk.github.io/Riverside-Website/). D2 stands.
-  Agreed on #1: slogan as the Home spine (Laptop idea), phrase as heading + plain label as kicker.
+- **Owner, 2026-11-02:** approved direction.md + ROADMAP.md. Sends Gabe section 8. Decides hosting; registers
+  glucak.com (auto-renew). Accounts in Gabe's name, owner co-manages. Work only on what doesn't need Gabe's answers.
+- **Desktop:** claimed (D16, design-independent foundation, no look decisions): `package.json`, `astro.config.mjs`,
+  `server.js`, `src/lib/`, `src/data/`, `src/eras/`, `test/`. Shows data + per-visit upcoming/past split, era-file
+  contrast test, Riverside scaffold with neutral placeholder pages. Not touching `DESIGN.md`, `prototype/`, styles.
 - **Laptop:** done: shop-and-tools.md, genre-critique.md (keep / change / drop on genre study section 4),
-  artist-sites.md (other galleries + small independents), ROADMAP.md edits. Nothing claimed. Waiting on the phase 0
-  gate; DESIGN.md + prototype are the Laptop's next job once the owner says go.
+  artist-sites.md (other galleries + small independents), ROADMAP.md edits. Next (phase 1, owner said go):
+  `DESIGN.md` + Home prototype in `prototype/` on a placeholder era and placeholder photos; heroes A/B get real
+  photos once Gabe's small set arrives (~Nov 9).
   Local clone on the Laptop: `C:\Users\alexm\projects\GLucak-Website` (no `V:\`; Riverside is at
   `C:\Users\alexm\projects\Riverside-Website`).
 
-## Phase: RESEARCH ONLY (owner, 2026-11-02). No site code, no DESIGN.md until the owner says go.
+## Phase 1 (owner approved direction.md + ROADMAP.md, 2026-11-02). Work only on what doesn't need Gabe's answers.
+(Research phase, done:)
 Research split (Laptop may counter on #1):
 1. Desktop: `docs/research/references.md`: first pass on Wix Music templates, Manafest, TFK's Spotify embed,
    Puck Live, Riverside layout, Spotify embed facts.
