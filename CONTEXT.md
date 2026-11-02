@@ -108,8 +108,9 @@ Every page footer: socials (Instagram, Threads, X, YouTube, SoundCloud, Spotify)
 - **We draft all site text** for him to review (he asked for drafts).
 
 ## Look and feel references
-- **Likes:** Manafest's website; the layout of the Riverside church site (ours: `V:\RiversideWebsite`,
-  `Mishtuk/Riverside-Website`, so reuse it freely); Thousand Foot Krutch's embedded Spotify playlist.
+- **Likes:** Manafest's website; the layout of the Riverside church site. **Confirmed by the owner (2026-11-02): the
+  new Riverside site we built** (`V:\RiversideWebsite`, `Mishtuk/Riverside-Website`, preview
+  https://mishtuk.github.io/Riverside-Website/), not the church's old live site and not the band Riverside. Reuse it freely; Thousand Foot Krutch's embedded Spotify playlist.
 - **Dislikes:** Puck Live's site: things hard to find, not where expected, not kept up to date.
 - **Templates:** Wix Music templates (owner's pick), see above.
 - **Brand assets:** Gabe has a logo, colors, album art and lots of audio/video. He made most himself; his cousin

@@ -10,7 +10,7 @@
 
 ## Now working on
 - **Desktop:** references.md + wix-templates.md done. Designer agent writing `docs/research/genre-and-standouts.md`.
-  Open owner question: does Gabe's "Riverside" mean our church site or the band Riverside? (D2 waits on it.)
+  Owner confirmed: "Riverside" = the new Riverside site we built (preview https://mishtuk.github.io/Riverside-Website/). D2 stands.
   Agreed on #1: slogan as the Home spine (Laptop idea), phrase as heading + plain label as kicker.
 - **Laptop:** split accepted. Claimed: `docs/research/artist-sites.md`, `docs/research/shop-and-tools.md`.
   Local clone on the Laptop: `C:\Users\alexm\projects\GLucak-Website` (no `V:\`; Riverside is at
