@@ -1,0 +1,7 @@
+{
+  "name": "Placeholder",
+  "colors": { "bg": "#111111", "text": "#f5f5f5", "accent": "#ff4d2e", "accent-text": "#111111", "muted": "#b3b3b3" },
+  "art": "/eras/placeholder/cover.jpg",
+  "texture": null,
+  "word": "Placeholder"
+}

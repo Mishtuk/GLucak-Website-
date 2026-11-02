@@ -1,0 +1,5 @@
+[
+  { "date": "2026-12-12", "time": "19:00", "type": "show", "venue": "Placeholder Venue", "city": "Somewhere, PA", "link": "https://example.com/tickets" },
+  { "date": "2026-12-19", "type": "open-mic", "venue": "Placeholder Cafe", "city": "Elsewhere, PA", "link": "https://example.com/open-mic" },
+  { "date": "2026-10-01", "time": "20:00", "type": "show", "venue": "Placeholder Hall", "city": "Somewhere, PA" }
+]

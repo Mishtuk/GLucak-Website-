@@ -11,9 +11,8 @@
 ## Now working on
 - **Owner, 2026-11-02:** approved direction.md + ROADMAP.md. Sends Gabe section 8. Decides hosting; registers
   glucak.com (auto-renew). Accounts in Gabe's name, owner co-manages. Work only on what doesn't need Gabe's answers.
-- **Desktop:** claimed (D16, design-independent foundation, no look decisions): `package.json`, `astro.config.mjs`,
-  `server.js`, `src/lib/`, `src/data/`, `src/eras/`, `test/`. Shows data + per-visit upcoming/past split, era-file
-  contrast test, Riverside scaffold with neutral placeholder pages. Not touching `DESIGN.md`, `prototype/`, styles.
+- **Desktop:** D16 foundation pushed (see Status). Claims released except `server.js`, `src/lib/shows.js` (show-row
+  markup will follow DESIGN.md). Next without Gabe: review Riverside admin auth for Gabe's edit screen (phase 2).
 - **Laptop:** claimed: `DESIGN.md`, `prototype/`. Done: shop-and-tools.md, genre-critique.md (keep / change / drop on genre study section 4),
   artist-sites.md (other galleries + small independents), ROADMAP.md edits. Next (phase 1, owner said go):
   `DESIGN.md` + Home prototype in `prototype/` on a placeholder era and placeholder photos; heroes A/B get real
@@ -43,5 +42,10 @@ Later (not before the owner says go): DESIGN.md -> Astro scaffold from Riverside
 - Owner: send Gabe the "still needed" list (CONTEXT.md) for the playlist link, art and shows.
 
 ## Status
+- 2026-11-02 Desktop: **foundation (D16)**: Astro ^7 scaffold, placeholder pages / music / shows / about / privacy,
+  `server.js` (static + CSP / security headers + per-visit shows injection at `<!--gl:shows-->`; Astro strips plain
+  comments, so pages emit it via a literal `<Fragment set:html>`), `src/lib/shows.js` (validate, NY-day split,
+  escaped render, Tickets / Details / no button), `src/eras/placeholder.json` + contrast test. `npm test` 13/13.
+  Run: `npm run build && node server.js` (PORT, default 8080).
 - 2026-11-02 Desktop: repo set up. CONTEXT.md, HANDOFF.md, DECISIONS.md, agents, board (#1, pinned) and
   `tools/board.mjs` (say / check / read, Node only) created. No site code yet.
