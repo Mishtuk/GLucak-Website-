@@ -33,7 +33,7 @@ Target: the whole page in about 5 phone screens or less (wix-templates.md).
    channel (updates itself, loads on tap). *From:* genre-and-standouts.md 4.5, genre-critique.md, artist-sites.md.
 4. **PUSH PAST FEAR** (label "About"). A short version of his story in his words, saying the mission plainly; one
    live photo; **Patreon** button; link to About. *From:* CONTEXT.md, genre-critique.md (faith caution).
-5. **THE TIME IS NOW** (label "IDENTITY"). **Email sign-up first** (one field, a clear promise, e.g. "Get the
+5. **THE TIME IS NOW** (label "Join"). **Email sign-up first** (one field, a clear promise, e.g. "Get the
    next show and every new song first": proposal), then "IDENTITY, 2027". Countdown and pre-save appear only once
    there's a date and link; flips to "Out now" on release day. *From:* genre-critique.md, hiphop-artist template.
 6. **Footer** (every page): six labelled social links, Patreon, email sign-up (on Home, part 5 is it), slogan,
@@ -45,8 +45,9 @@ Target: the whole page in about 5 phone screens or less (wix-templates.md).
 **At launch (4, as Gabe asked for "3 or 4"):** Home; **Music** (releases as a cover strip with listen links, the
 IDENTITY 12-track block filling in toward Scenic Route, SoundCloud); **Shows** (Date / Venue / City / Tickets list,
 "Played" list of past shows, booking email); **About** (bio, photos, Patreon, socials, booking email).
-**Built in the background at launch:** Gabe's simple edit screen (shows, release links, bio) and the shop pages,
-hidden behind a switch.
+**Built in the background at launch:** Gabe's simple edit screen (shows, release links, bio) and a hidden shop slot
+(a nav slot + link to the Fourthwall store, off until the shop opens). A short **privacy page** (email sign-up,
+Spotify embed), linked from the footer only.
 **Later, one at a time:** Videos, Photos (his and Dave Bahm's art), Contact/Booking form, Shop (switched on), a
 full IDENTITY page (proposal), producer notes per track (proposal), a press kit page for venues (proposal).
 
@@ -120,9 +121,13 @@ plainly; Kalkbrenner/Inherited/Gaga/Dookie findings (standouts-visual.md). Tool 
 - **Still open for Gabe/owner:** hosting, domain, P.O. box (money); open mics listed or not; the sign-up's name.
 
 ## 8. Questions for Gabe (owner sends; replaces CONTEXT.md "Still needed")
+**If you only have 5 minutes (these protect the Jan 11 launch):** the Spotify playlist link (1), and your logo files
++ 3 live photos by about Nov 9 (2a).
+
 1. **Spotify:** the link to the playlist for the home player (which one should fans hear first?).
-2. **Art:** IDENTITY art and colors, logo files (and Dave Bahm's version), a few live and press photos (who took
-   them, OK to use?), and any live clip, especially Scenic Route.
+2. **Art, in two steps.** (a) By about **Nov 9**: logo files (and Dave Bahm's version) + 3 live photos (who took
+   them, OK to use?). (b) By about **Nov 30**: IDENTITY art and colors, more live and press photos, and any live
+   clip, especially Scenic Route.
 3. **Shows:** the upcoming list (date, venue, city, ticket link); roughly how many a month, open mics vs full shows;
    list open mics on the site at all?; a Bandsintown page already, and would he enter shows in two places?
 4. **Booking:** which email should booking requests go to for now?
@@ -138,7 +143,7 @@ plainly; Kalkbrenner/Inherited/Gaga/Dookie findings (standouts-visual.md). Tool 
 ## 9. Next steps after you approve
 1. **Owner:** send Gabe section 8; decide hosting and domain. *Done when* sent and a host is picked.
 2. **Laptop (designer): DESIGN.md.** *Done when* it covers every item in sections 2-4: home order, nav and phone
-   bar, era file fields, type pick, data for releases / shows / era, motion rules, and both machines OK it on #1.
+   bar, era file fields, provisional type pick (locks when the logo arrives, D14), data for releases / shows / era, motion rules, and both machines OK it on #1.
 3. **Laptop (designer): static Home prototype in `prototype/`**, placeholder era. *Done when* screenshots at 390px
    and 1280px show: player top on the first phone screen; slogan wraps at 320px; labels pass D6; Home about 5 phone
    screens or less; all motion stops under reduced motion; nothing flashes.

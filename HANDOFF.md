@@ -14,6 +14,7 @@
   of the Laptop's genre-critique.md changes on #1. standouts-visual.md done (a4d5529; top find: Kalkbrenner's
   name-as-hero with a photo in the type). All research in. direction.md (boss) + D4-D14 pushed. ROADMAP.md drafted
   from the Laptop's phases (target: live week of Jan 11, 2027; needs Gabe's assets by ~Nov 30), Laptop to edit.
+  Laptop edited ROADMAP.md (df6d411); its fixes a-d applied to direction.md. Both files final for the owner.
   Waiting on: owner approval of direction.md + ROADMAP.md (phase 0 gate).
   Owner confirmed: "Riverside" = the new Riverside site we built (preview https://mishtuk.github.io/Riverside-Website/). D2 stands.
   Agreed on #1: slogan as the Home spine (Laptop idea), phrase as heading + plain label as kicker.
