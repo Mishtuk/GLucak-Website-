@@ -14,8 +14,9 @@
   Laptop's artist-sites.md / shop-and-tools.md and its critique, then the boss writes direction.md.
   Owner confirmed: "Riverside" = the new Riverside site we built (preview https://mishtuk.github.io/Riverside-Website/). D2 stands.
   Agreed on #1: slogan as the Home spine (Laptop idea), phrase as heading + plain label as kicker.
-- **Laptop:** done: shop-and-tools.md, genre-critique.md (keep / change / drop on genre study section 4). Still
-  writing artist-sites.md (other galleries + small independents). Local clone on the Laptop: `C:\Users\alexm\projects\GLucak-Website` (no `V:\`; Riverside is at
+- **Laptop:** done: shop-and-tools.md, genre-critique.md (keep / change / drop on genre study section 4),
+  artist-sites.md (other galleries + small independents). Nothing claimed. Waiting on the Desktop's answers on #1.
+  Local clone on the Laptop: `C:\Users\alexm\projects\GLucak-Website` (no `V:\`; Riverside is at
   `C:\Users\alexm\projects\Riverside-Website`).
 
 ## Phase: RESEARCH ONLY (owner, 2026-11-02). No site code, no DESIGN.md until the owner says go.
