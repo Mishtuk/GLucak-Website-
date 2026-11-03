@@ -40,6 +40,13 @@ Research split (Laptop may counter on #1):
 Later (not before the owner says go): DESIGN.md -> Astro scaffold from Riverside -> Home.
 - Owner: send Gabe the "still needed" list (CONTEXT.md) for the playlist link, art and shows.
 
+## Waiting on (owner / Gabe)
+- Gabe's small set (logo + 3 live photos, ~Nov 9) -> hero A/B pick + type lock + duotone test (Laptop first).
+- Owner: real-phone test of `prototype/` (offer: Desktop serves it on the home Wi-Fi). Check: 1) fitted lines fill
+  the width, no overflow; 2) duotone photo renders; 3) bottom bar sits above the iPhone home indicator; 4) GLUCAK
+  doesn't reflow as the font loads. Note Android vs iPhone (Safari is the big unknown).
+- For Gabe: "IDENTITY, 2027" (our reading, not his fact); "Epilepsy survivor" bio line on Home; booking email.
+
 ## Status
 - 2026-11-02 Desktop: **foundation (D16)**: Astro ^7 scaffold, placeholder pages / music / shows / about / privacy,
   `server.js` (static + CSP / security headers + per-visit shows injection at `<!--gl:shows-->`; Astro strips plain
