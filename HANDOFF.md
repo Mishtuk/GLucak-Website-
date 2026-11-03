@@ -13,10 +13,9 @@
   glucak.com (auto-renew). Accounts in Gabe's name, owner co-manages. Work only on what doesn't need Gabe's answers.
 - **Desktop:** D16 foundation pushed (see Status). Claims released except `server.js`, `src/lib/shows.js` (show-row
   markup will follow DESIGN.md). Next without Gabe: review Riverside admin auth for Gabe's edit screen (phase 2).
-- **Laptop:** claimed: `DESIGN.md`, `prototype/` (first version pushed, in Desktop + boss review). Done: shop-and-tools.md, genre-critique.md (keep / change / drop on genre study section 4),
-  artist-sites.md (other galleries + small independents), ROADMAP.md edits. Next (phase 1, owner said go):
-  `DESIGN.md` + Home prototype in `prototype/` on a placeholder era and placeholder photos; heroes A/B get real
-  photos once Gabe's small set arrives (~Nov 9).
+- **Laptop:** done: research files, ROADMAP.md edits, `DESIGN.md` + Home prototype (boss approved, D18). Nothing
+  claimed. Next: put Gabe's real photos through heroes A/B when the ~Nov 9 set lands, then the owner picks; lock the
+  type when the logo arrives. Phase 3 text drafts are the Laptop's after that.
   Local clone on the Laptop: `C:\Users\alexm\projects\GLucak-Website` (no `V:\`; Riverside is at
   `C:\Users\alexm\projects\Riverside-Website`).
 

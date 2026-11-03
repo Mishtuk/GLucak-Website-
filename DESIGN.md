@@ -73,7 +73,7 @@ Era colors load as `--bg --text --accent --accent-text --muted`. Everything else
 
 ## 4. Field names (shared with the Desktop: keep this section in step with `src/`)
 > **Single source for these names.** They match `src/lib/shows.js`, `src/eras/placeholder.json` and `src/data/shows.json` at
-> 7a2e937. Items marked PROPOSED are not in `src/` yet.
+> 7a2e937. Release and IDENTITY fields below are agreed (D18) but not in `src/` yet.
 
 **Era file** (`src/eras/<slug>.json`), matches D12:
 | Field | Type | Use |
@@ -101,10 +101,10 @@ No extra color role is needed. The font is not in this file (D12).
 | `link` | http(s) URL | Optional. `show` -> **Tickets**, `open-mic` -> **Details**, no link -> no button |
 | `with` | string | Optional, renders "With Fran Carroll". Shown on the poster and the Shows page. |
 
-**Release** (PROPOSED: not in `src/` yet, Desktop to confirm): `title`, `date`, `cover` (path, as made), `link` (smart link,
+**Release** (agreed, D18): `title`, `date`, `cover` (path, as made), `link` (smart link,
 http(s)), `soundcloud` (optional), `type` (`single`, `ep`, `album`). Home's card uses the newest by `date`.
 
-**IDENTITY block** (PROPOSED, a site-facts value, not the era file): `releaseDate` and `presaveLink`, both optional. With neither
+**IDENTITY block** (agreed, D18; a site-facts value, not the era file): `releaseDate` and `presaveLink`, both optional. With neither
 set, the state in section 7 applies. `tracks` waits on Gabe's answers (D10).
 
 ## 5. Home, top to bottom
@@ -138,7 +138,7 @@ facade: no YouTube loads until tapped; the iframe uses `youtube-nocookie.com` (a
 
 **3. PUSH PAST FEAR, tab About.** Lockup on two fitted lines (FEAR is the biggest word on the phone) over a full-bleed duotone
 photo; one line from 900px. Under it, Gabe's bio words unchanged: the sentence stating the mission, then the mission-statement
-line. No invented testimony; epilepsy appears only because his bio says it. **Patreon**, **About GLucak**.
+line. No invented testimony; epilepsy appears only because his bio says it, and whether that sentence stays on Home is open for Gabe (D18). **Patreon**, **About GLucak**.
 
 **4. THE TIME IS NOW, tab Join.** Lockup on two fitted lines. **Sign-up comes first:** "Get the next show and every new song first."
 (proposal, Gabe reviews), one email field, **Join**. Then "IDENTITY, 2027". From 900px the lockup takes the left 7 columns and the
@@ -170,8 +170,8 @@ Same header, footer, bar, tokens and tabs. Each page opens with its one fitted p
 | **No ticket link** | No button, ever. No disabled button, no "TBA". |
 | **Open mic** | Row with kind "Open mic"; Details if linked. Never the poster. |
 | **Show today** | Stays upcoming through the whole New York day (`splitShows`). |
-| **Now line** | Next show if within 14 days (PROPOSED window): "Next show: Venue, City" linked to `#shows`. Otherwise the newest release. |
-| **No IDENTITY date** | "IDENTITY, 2027". No countdown, no pre-save, nothing broken-looking. |
+| **Now line** | Next show if within 14 days (D18): "Next show: Venue, City" linked to `#shows`. Otherwise the newest release. |
+| **No IDENTITY date** | "IDENTITY, 2027" (the year is our reading of his "8 months"; open for Gabe, D18). No countdown, no pre-save, nothing broken-looking. |
 | **Date set** | Countdown in days, static between loads (no ticking digits, so no motion), plus pre-save if linked. |
 | **Release day** | Flips to "Out now" by date, New York time, with a listen link. |
 | **No playlist link** | Launch blocker. Never ship the empty box. |
@@ -217,7 +217,7 @@ output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
 - **CSP:** the prototype ran clean under the exact `server.js` CSP. **No inline scripts:** Riverside's `is:inline` scripts in `Header` and
   `MobileBar` won't run under `script-src 'self'`; move them to external files. `boot.js` must load blocking in `<head>`.
 - **`filter: url(#duo)`** needs the SVG in the same document: print it in `Base` layout.
-- **Sign-up form** posts to our own server (`form-action 'self'`), for example `POST /api/signup`; **the server calls Kit**, the browser
+- **Sign-up form** posts to our own server (`form-action 'self'`), `POST /api/signup` (D18); **the server calls Kit**, the browser
   never does. Include the injection tests and rate limiting.
 - **`src/lib/shows.js` changes needed (Desktop's file):** poster plus rows markup with the classes in `prototype/styles.css`; empty state
   from section 7 instead of "No upcoming shows yet."; "Played" instead of "Past shows".
