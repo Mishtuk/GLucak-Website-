@@ -41,3 +41,12 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   shows data and per-visit upcoming/past split, the era-file contrast test, and test harnesses. No styles, layout or
   copy (those wait for DESIGN.md). **Why:** the owner said to work on whatever doesn't need Gabe's answers; this
   doesn't constrain the look, and it de-risks phase 2 (Node host behaviour, shows dropping off) early.
+- **D18** (2026-11-03, Desktop boss): Home prototype (452dece) review, direction.md section 9 step 4. **Ruling:**
+  approved, no blocking fixes. Re-ran `prototype/check.mjs` on the Desktop and got the Laptop's numbers (player top
+  on the first 390x660 screen clear of the bar, no sideways scroll at 320/390/1280, labels 17px 17.3:1, ~5 screens,
+  animations empty under reduced motion and the switch, flash delta 0.0001, 48px+ targets, no CSP errors, no
+  innerHTML). Confirmed the Laptop's proposals: Release fields, IDENTITY site facts (`releaseDate`, `presaveLink`),
+  Now line 14-day window, derived duotone ceiling. Sign-up endpoint is `POST /api/signup`. Open for Gabe via the
+  owner: "IDENTITY, 2027" and the "Epilepsy survivor" bio line on Home. Hero A vs B waits for real photos (D14).
+  **Why:** every "done when" in direction.md section 9 step 3 is met and reproducible; what's left needs Gabe's
+  photos or a real phone.

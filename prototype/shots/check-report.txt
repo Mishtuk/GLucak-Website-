@@ -15,21 +15,21 @@ CHECK 3: D6 labels at 390
   Join: 17px weight 700, 17.3:1, tab 34px tall, above "The Time Is Now" at 104px; nav word matches
 CHECK 3b: text over photos, measured from pixels with the text hidden (99.5th percentile background)
   ?hero=a
-    brand: text 15.48:1 against the brightest background (need 3:1)
+    brand: text 15.49:1 against the brightest background (need 3:1)
     menu: text 7.68:1 against the brightest background (need 4.5:1)
     name: text 5.12:1 against the brightest background (need 3:1)
     slogan: text 5.36:1 against the brightest background (need 3:1)
-    now: text 13.13:1 against the brightest background (need 4.5:1)
+    now: text 13.11:1 against the brightest background (need 4.5:1)
   ?hero=b
     brand: text 17.32:1 against the brightest background (need 3:1)
     menu: text 17.32:1 against the brightest background (need 4.5:1)
     name: text 16.55:1 against the brightest background (need 3:1)
     slogan: text 15.49:1 against the brightest background (need 3:1)
-    now: text 13.70:1 against the brightest background (need 4.5:1)
+    now: text 13.54:1 against the brightest background (need 4.5:1)
   ?hero=a&era=placeholder-b
-    brand: text 14.75:1 against the brightest background (need 3:1)
+    brand: text 14.77:1 against the brightest background (need 3:1)
     menu: text 7.43:1 against the brightest background (need 4.5:1)
-    name: text 5.12:1 against the brightest background (need 3:1)
+    name: text 5.07:1 against the brightest background (need 3:1)
     slogan: text 5.27:1 against the brightest background (need 3:1)
     now: text 11.06:1 against the brightest background (need 4.5:1)
   PUSH PAST FEAR heading: 5.43:1 (need 3:1)
@@ -50,8 +50,8 @@ CHECK 5: reduced motion and the Motion switch
   Emulation.setEmulatedMedia prefers-reduced-motion=reduce: animations [], switch "Motion: off (device setting)", fade headings opacity 1
   footer switch clicked: animations [], switch "Motion: off"
 CHECK 6: flash
-  hero a: 90 frames over 25.8s, mean relative luminance 0.1947 to 0.1964, largest frame-to-frame change 0.0001 (WCAG flash needs a change of 0.10)
-  hero b: 99 frames over 25.9s, mean relative luminance 0.1472 to 0.1488, largest frame-to-frame change 0.0000 (WCAG flash needs a change of 0.10)
+  hero a: 130 frames over 25.9s, mean relative luminance 0.1946 to 0.1964, largest frame-to-frame change 0.0001 (WCAG flash needs a change of 0.10)
+  hero b: 141 frames over 26.0s, mean relative luminance 0.1472 to 0.1488, largest frame-to-frame change 0.0001 (WCAG flash needs a change of 0.10)
   every CSS animation rule: ["html[data-motion=\"on\"] .glow 24s"]
   most animations running on the visible screen, brisk scroll, sampled every 150px: 1
 Page errors and CSP (served with the real CSP):
