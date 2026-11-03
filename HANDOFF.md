@@ -13,7 +13,7 @@
   glucak.com (auto-renew). Accounts in Gabe's name, owner co-manages. Work only on what doesn't need Gabe's answers.
 - **Desktop:** D16 foundation pushed (see Status). Claims released except `server.js`, `src/lib/shows.js` (show-row
   markup will follow DESIGN.md). Next without Gabe: review Riverside admin auth for Gabe's edit screen (phase 2).
-- **Laptop:** claimed: `DESIGN.md`, `prototype/`. Done: shop-and-tools.md, genre-critique.md (keep / change / drop on genre study section 4),
+- **Laptop:** claimed: `DESIGN.md`, `prototype/` (first version pushed, in Desktop + boss review). Done: shop-and-tools.md, genre-critique.md (keep / change / drop on genre study section 4),
   artist-sites.md (other galleries + small independents), ROADMAP.md edits. Next (phase 1, owner said go):
   `DESIGN.md` + Home prototype in `prototype/` on a placeholder era and placeholder photos; heroes A/B get real
   photos once Gabe's small set arrives (~Nov 9).

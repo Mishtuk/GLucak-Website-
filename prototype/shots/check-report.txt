@@ -1,0 +1,59 @@
+CHECK 1: player top on the first phone screen (390x660), clear of the bar
+  ?hero=a: player top 484px, bar top 598px, 114px of player visible, player height 352px, label fully visible
+  ?hero=b: player top 518px, bar top 598px, 80px of player visible, player height 352px, label fully visible
+CHECK 2: slogan wrap and no horizontal scroll
+  320px ?hero=a: scrollWidth 320/320, GLUCAK x 20 to 299.2, slogan 278.7px wide at 41.0px + 278.4px wide at 21.6px
+  320px ?hero=b: scrollWidth 320/320, GLUCAK x 20 to 299.4, slogan 278.7px wide at 41.0px + 278.4px wide at 21.6px
+  390px ?hero=a: scrollWidth 390/390, GLUCAK x 20.6 to 368.4, slogan 347.3px wide at 51.1px + 346.8px wide at 26.9px
+  390px ?hero=b: scrollWidth 390/390, GLUCAK x 20.6 to 368.7, slogan 347.3px wide at 51.1px + 346.8px wide at 26.9px
+  1280px ?hero=a: scrollWidth 1280/1280, GLUCAK x 38.4 to 1238, slogan 421.7px wide at 60.1px + 775.5px wide at 60.1px
+  1280px ?hero=b: scrollWidth 1280/1280, GLUCAK x 38.4 to 1239.5, slogan 421.7px wide at 60.1px + 775.5px wide at 60.1px
+CHECK 3: D6 labels at 390
+  Music: 17px weight 700, 17.3:1, tab 34px tall, above "Rise" at 56px; nav word matches
+  Shows: 17px weight 700, 17.3:1, tab 34px tall, above "Live It Loud" at 77px; nav word matches
+  About: 17px weight 700, 17.3:1, tab 34px tall, above "Push Past Fear" at 88px; nav word matches
+  Join: 17px weight 700, 17.3:1, tab 34px tall, above "The Time Is Now" at 104px; nav word matches
+CHECK 3b: text over photos, measured from pixels with the text hidden (99.5th percentile background)
+  ?hero=a
+    brand: text 15.48:1 against the brightest background (need 3:1)
+    menu: text 7.68:1 against the brightest background (need 4.5:1)
+    name: text 5.12:1 against the brightest background (need 3:1)
+    slogan: text 5.36:1 against the brightest background (need 3:1)
+    now: text 13.13:1 against the brightest background (need 4.5:1)
+  ?hero=b
+    brand: text 17.32:1 against the brightest background (need 3:1)
+    menu: text 17.32:1 against the brightest background (need 4.5:1)
+    name: text 16.55:1 against the brightest background (need 3:1)
+    slogan: text 15.49:1 against the brightest background (need 3:1)
+    now: text 13.70:1 against the brightest background (need 4.5:1)
+  ?hero=a&era=placeholder-b
+    brand: text 14.75:1 against the brightest background (need 3:1)
+    menu: text 7.43:1 against the brightest background (need 4.5:1)
+    name: text 5.12:1 against the brightest background (need 3:1)
+    slogan: text 5.27:1 against the brightest background (need 3:1)
+    now: text 11.06:1 against the brightest background (need 4.5:1)
+  PUSH PAST FEAR heading: 5.43:1 (need 3:1)
+CHECK 3c: tap targets at 390 (every link, button and field)
+  ?hero=a: 33 targets, under 48px: none
+  ?shows=none: 32 targets, under 48px: none
+CHECK 3d: smallest text at 390
+  [["16","now-tag"],["17","A"],["18","row-place"]]
+CHECK 3e: solid text pairs at 390, computed colors, both eras (text 4.5:1; large display and controls 3:1)
+  ?hero=a: lowest solid button 5.71:1, Tickets on poster 5.71:1, muted on footer 7.68:1
+  ?era=placeholder-b: lowest muted on footer 7.41:1, slogan on footer 7.41:1, row kind 8.77:1
+CHECK 4: Home height in phone screens at 390x660
+  ?hero=a: 3389px = 5.13 screens, 5.00 without the prototype-only note (top 1050, shows 734, about 655, join 480, footer 408)
+  ?hero=b: 3423px = 5.19 screens, 5.05 without the prototype-only note (top 1084, shows 734, about 655, join 480, footer 408)
+  ?shows=none: 3373px = 5.11 screens, 4.98 without the prototype-only note (top 1050, shows 718, about 655, join 480, footer 408)
+CHECK 5: reduced motion and the Motion switch
+  normal: [{"n":"drift","s":"running","d":24000}]
+  Emulation.setEmulatedMedia prefers-reduced-motion=reduce: animations [], switch "Motion: off (device setting)", fade headings opacity 1
+  footer switch clicked: animations [], switch "Motion: off"
+CHECK 6: flash
+  hero a: 90 frames over 25.8s, mean relative luminance 0.1947 to 0.1964, largest frame-to-frame change 0.0001 (WCAG flash needs a change of 0.10)
+  hero b: 99 frames over 25.9s, mean relative luminance 0.1472 to 0.1488, largest frame-to-frame change 0.0000 (WCAG flash needs a change of 0.10)
+  every CSS animation rule: ["html[data-motion=\"on\"] .glow 24s"]
+  most animations running on the visible screen, brisk scroll, sampled every 150px: 1
+Page errors and CSP (served with the real CSP):
+  none
+Opens from disk: Venue name, City rendered, font true
