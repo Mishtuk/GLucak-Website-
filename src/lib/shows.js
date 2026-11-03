@@ -30,21 +30,47 @@ export function splitShows(rows, now = new Date()) {
   };
 }
 
-const fmtDate = (d) => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+const fmtDate = (d) => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }).toUpperCase();
 const fmtTime = (t) => { const h = +t.slice(0, 2); return `${h % 12 || 12}:${t.slice(3)} ${h < 12 ? 'AM' : 'PM'}`; };
+const INSTAGRAM = 'https://www.instagram.com/glucakofficial/';
+// ponytail: booking email unknown until Gabe answers (direction.md Q4); the Request a show button stays off until set.
+export const BOOKING_EMAIL = null;
 
-export function showHtml(r) {
-  const btn = r.link ? `<a href="${esc(r.link)}" rel="noopener">${r.type === 'show' ? 'Tickets' : 'Details'}</a>` : '';
-  const time = r.time ? ` <span>${esc(fmtTime(r.time))}</span>` : '';
-  return `<li><time datetime="${esc(r.date)}">${esc(fmtDate(r.date))}</time>${time} <strong>${esc(r.venue)}</strong> <span>${esc(r.city)}</span>${r.with ? ` <span>With ${esc(r.with)}</span>` : ''}${r.type === 'open-mic' ? ' <span>Open mic</span>' : ''} ${btn}</li>`;
+const action = (r) => r.link ? `<a class="btn btn-show" href="${esc(r.link)}" rel="noopener">${r.type === 'show' ? 'Tickets' : 'Details'}</a>` : '';
+const place = (r) => `${esc(r.venue)}, ${esc(r.city)}`;
+const dateTag = (r) => `<time datetime="${esc(r.date)}${r.time ? `T${esc(r.time)}` : ''}">${esc(fmtDate(r.date))}</time>`;
+
+/** Markup per DESIGN.md (classes from prototype/styles.css). A poster is only ever a full show, never an open mic. */
+export function posterHtml(r) {
+  const meta = [r.time && fmtTime(r.time), r.with && `With ${r.with}`].filter(Boolean).map(esc).join(', ');
+  return `<li class="poster"><p class="poster-date fit"><span class="ln ln-date">${dateTag(r)}</span></p><p class="poster-place">${place(r)}</p>${meta ? `<p class="poster-meta">${meta}</p>` : ''}${action(r)}</li>`;
 }
+export function rowHtml(r) {
+  const extra = [r.type === 'open-mic' ? 'Open mic' : 'Show', r.time && fmtTime(r.time), r.with && `With ${r.with}`].filter(Boolean).map(esc).join(', ');
+  return `<li class="row"><span class="row-date">${dateTag(r)}</span><span class="row-text"><span class="row-place">${place(r)}</span><span class="row-kind">${extra}</span></span>${action(r)}</li>`;
+}
+// Kept for callers that want one plain row.
+export const showHtml = rowHtml;
 
-/** The list for the page marker. limit caps the upcoming list (Home). Invalid rows are skipped, never rendered. */
-export function showsHtml(rows, now = new Date(), { limit = Infinity, past = false } = {}) {
+const upcomingHtml = (list) => {
+  const [first, ...rest] = list;
+  const items = first.type === 'show' ? posterHtml(first) + rest.map(rowHtml).join('') : list.map(rowHtml).join('');
+  return `<ul class="shows">${items}</ul>`;
+};
+const playedHtml = (list) => list.length ? `<div class="played"><h3>Played</h3><ul class="rows">${list.map(rowHtml).join('')}</ul></div>` : '';
+const emptyHtml = (played) => `<div class="empty"><p class="empty-line">No shows booked right now</p><div class="empty-actions"><a class="btn btn-solid" href="${INSTAGRAM}" rel="noopener">Follow</a>${BOOKING_EMAIL ? `<a class="btn btn-line" href="mailto:${esc(BOOKING_EMAIL)}?subject=Show%20request">Request a show</a>` : ''}</div>${playedHtml(played)}</div>`;
+
+/**
+ * The list for the page marker. Invalid rows are skipped, never rendered.
+ * Home: { limit: 3, allLink: '/shows/' } -> poster + 2 rows + All shows. Shows page: { past: true } -> everything + Played.
+ * No upcoming shows: the empty state (DESIGN.md section 7), with Played rows if any.
+ */
+export function showsHtml(rows, now = new Date(), { limit = Infinity, past = false, allLink = null } = {}) {
   const ok = rows.filter((r) => { try { return validateShow(r); } catch { return false; } });
   const s = splitShows(ok, now);
-  const list = (a) => `<ul>${a.map(showHtml).join('')}</ul>`;
-  let out = s.upcoming.length ? list(s.upcoming.slice(0, limit)) : '<p>No upcoming shows yet.</p>';
-  if (past && s.past.length) out += `<h2>Past shows</h2>${list(s.past)}`;
+  if (!s.upcoming.length) return emptyHtml(past ? s.past : s.past.slice(0, 3));
+  let out = upcomingHtml(s.upcoming.slice(0, limit));
+  if (allLink) out += `<a class="text-link" href="${esc(allLink)}">All shows</a>`;
+  if (past) out += playedHtml(s.past);
   return out;
 }

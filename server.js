@@ -44,7 +44,7 @@ const statSafe = (f) => { try { return statSync(f); } catch { return null; } };
 function inject(html, path) {
   if (!html.includes('<!--gl:shows-->')) return html;
   const rows = JSON.parse(readFileSync(SHOWS, 'utf8'));
-  return html.replace('<!--gl:shows-->', () => showsHtml(rows, new Date(), path === '/' ? { limit: 3 } : { past: true }));
+  return html.replace('<!--gl:shows-->', () => showsHtml(rows, new Date(), path === '/' ? { limit: 3, allLink: '/shows/' } : { past: true }));
 }
 
 function send(req, res, url, status, type, body, extra = {}) {

@@ -45,7 +45,7 @@ Later (not before the owner says go): DESIGN.md -> Astro scaffold from Riverside
 - 2026-11-02 Desktop: **foundation (D16)**: Astro ^7 scaffold, placeholder pages / music / shows / about / privacy,
   `server.js` (static + CSP / security headers + per-visit shows injection at `<!--gl:shows-->`; Astro strips plain
   comments, so pages emit it via a literal `<Fragment set:html>`), `src/lib/shows.js` (validate, NY-day split,
-  escaped render, Tickets / Details / no button), `src/eras/placeholder.json` + contrast test. Optional `with` line on shows (Laptop ask). `npm test` 14/14.
+  escaped render, Tickets / Details / no button), `src/eras/placeholder.json` + contrast test. Optional `with` line on shows (Laptop ask). Shows markup ported to DESIGN.md (poster for the first full show, rows, empty state with Follow, "Played", All shows link on Home; Request a show waits for the booking email). Home prototype boss-approved (D18). `npm test` 16/16.
   Kit sign-up plan: server-side via API v4 (free plan has API access); double opt-in behaviour to test in phase 4.
   Run: `npm run build && node server.js` (PORT, default 8080).
 - 2026-11-02 Desktop: repo set up. CONTEXT.md, HANDOFF.md, DECISIONS.md, agents, board (#1, pinned) and

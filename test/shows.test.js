@@ -60,7 +60,7 @@ test('injection stays inert', () => {
 
 test('optional with line, escaped', () => {
   const now = noon('2026-01-01');
-  assert.ok(showsHtml([row({ with: 'Fran Carroll' })], now).includes('<span>With Fran Carroll</span>'));
+  assert.ok(showsHtml([row({ with: 'Fran Carroll' })], now).includes('With Fran Carroll'));
   assert.ok(!showsHtml([row()], now).includes('With '));
   const bad = showsHtml([row({ with: '<script>x</script>' })], now);
   assert.ok(!bad.includes('<script>') && bad.includes('With &lt;script&gt;'));
@@ -70,6 +70,24 @@ test('optional with line, escaped', () => {
 test('past list and Home limit', () => {
   const rows = [row({ date: '2026-12-12', venue: 'A' }), row({ date: '2026-12-13', venue: 'B' }), row({ date: '2026-01-01', venue: 'Old' })];
   const home = showsHtml(rows, noon('2026-06-01'), { limit: 1 });
-  assert.ok(home.includes('>A<') && !home.includes('>B<') && !home.includes('Old'));
-  assert.ok(showsHtml(rows, noon('2026-06-01'), { past: true }).includes('Old'));
+  assert.ok(home.includes('A, C') && !home.includes('B, C') && !home.includes('Old'));
+  const page = showsHtml(rows, noon('2026-06-01'), { past: true });
+  assert.ok(page.includes('<h3>Played</h3>') && page.includes('Old, C') && !page.includes('Past shows'));
+  assert.ok(showsHtml(rows, noon('2026-06-01'), { limit: 3, allLink: '/shows/' }).includes('href="/shows/">All shows<'));
+});
+
+test('poster is the first full show, never an open mic', () => {
+  const now = noon('2026-06-01');
+  const show = showsHtml([row({ venue: 'Big' }), row({ date: '2026-12-13', venue: 'Next' })], now);
+  assert.match(show, /<li class="poster">.*Big, C/);
+  assert.equal((show.match(/class="poster"/g) || []).length, 1);
+  assert.doesNotMatch(showsHtml([row({ type: 'open-mic' }), row({ date: '2026-12-13' })], now), /class="poster"/);
+});
+
+test('empty state: never blank, Played rows if any, no Request button without a booking email', () => {
+  const now = noon('2026-12-31');
+  const none = showsHtml([], now);
+  assert.ok(none.includes('No shows booked right now') && none.includes('>Follow<') && !none.includes('Played'));
+  assert.ok(!none.includes('Request a show'));
+  assert.ok(showsHtml([row({ venue: 'Old' })], now, { past: true }).includes('Played'));
 });
