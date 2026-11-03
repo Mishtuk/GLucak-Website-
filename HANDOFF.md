@@ -41,6 +41,8 @@ Later (not before the owner says go): DESIGN.md -> Astro scaffold from Riverside
 - Owner: send Gabe the "still needed" list (CONTEXT.md) for the playlist link, art and shows.
 
 ## Waiting on (owner / Gabe)
+- **Build paused (owner, 2026-11-03):** the owner wanted the proposal + payment terms first. Done by the Desktop, kept in
+  the owner's private repo (pricing never goes in this public repo). Don't start phase 2 build work until the owner says go.
 - Gabe's small set (logo + 3 live photos, ~Nov 9) -> hero A/B pick + type lock + duotone test (Laptop first).
 - Owner: real-phone test of `prototype/` (offer: Desktop serves it on the home Wi-Fi). Check: 1) fitted lines fill
   the width, no overflow; 2) duotone photo renders; 3) bottom bar sits above the iPhone home indicator; 4) GLUCAK
