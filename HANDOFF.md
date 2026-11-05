@@ -31,7 +31,9 @@
   TRUST_PROXY=1** (needed for HSTS and real client IPs). `npm test` builds first (pretest); 58/58.
   Next: daily rebuild for release-day flips + host plan (owner decides the host). Laptop's real-photo round (ddf5d60) ported: Logo D mark + favicon, EXIF-free webp photos (no JPG ships), credits,
   'Out now:' + per-visit 'Next show' Now line (`<!--gl:now-->`, 14 days), Spotify outline button, quotes off until Gabe OKs
-  (`QUOTES_APPROVED`). Player 152px visible at 390x660, Home 5.25 screens. `npm test` 61/61. Claims released except
+  (`QUOTES_APPROVED`). Player 152px visible at 390x660, Home 5.25 screens. Copy from docs/copy/*.md wired into all 4
+  pages; release titles exact as on Spotify (+ `artists` credit line); real covers for the 8 released titles
+  (`node tools/fetch-covers.mjs`, Spotify oEmbed, webp, no metadata); upcoming covers wait for Gabe. `npm test` 63/63. Claims released except
   `server.js`, `src/lib/`. Waiting on the owner: hero A / B / both, host, Gabe's answers.
 - **Laptop (2026-11-05):** boss agent runs each round (plans, briefs the designer / copywriter, reviews). Done, all
   boss-approved: real Spotify embed (D19), Home copy `docs/copy/home.md` (D21, D23), prototype on Gabe's real photos +

@@ -1,6 +1,6 @@
 ---
 import Quote from './Quote.astro';
-import { releases, SPOTIFY_EMBED, SPOTIFY_PLAYLIST } from './content.js';
+import { credit, releases, SPOTIFY_EMBED, SPOTIFY_PLAYLIST } from './content.js';
 const r = releases()[0];
 ---
 <section class="band band-rise" id="music" aria-labelledby="h-rise">
@@ -19,6 +19,7 @@ const r = releases()[0];
       <img class="cover" src={r.cover} alt={r.placeholder ? `Placeholder for the ${r.title} cover art` : `${r.title} cover art`} width="400" height="400" loading="lazy" />
       <div class="release-text">
         <h3>{r.title}</h3>
+        {credit(r) && <p class="credit">{credit(r)}</p>}
         <p class="muted">Latest release. Listen on:</p>
         <p class="listen-on">
           <a href={r.link} rel="noopener">every platform</a>

@@ -99,3 +99,30 @@ test('port notes: no quote text, mark in header, one hero image, credits, no EXI
   const media = readdirSync(join(DIST, 'media'));
   assert.ok(!media.some((f) => /\.jpe?g$/i.test(f)), 'no JPG originals in media');
 });
+
+test('approved copy is on each page verbatim; no ASK GABE; no quote ships', () => {
+  const bio = ['Despite facing various difficulties and struggles over the years, Epilepsy survivor and Producer-Rapper/DJ GLucak has shown no intent to give up on either his Faith in God or his mission in creating energetic music to bring others to Christ.',
+    'Two albums and numerous singles and EPs into the biz and with no plans to slow down, GLucak has been running at a ferocious pace crafting brand-new content and music for 2026 and 2027.',
+    'Nevertheless, no matter the musical style or genre, be it his debut single or his upcoming 3rd album (rumored to be his best work yet), the mission statement has always been the same: Rise, Live It Loud, Push Past Fear, The Time Is Now.'];
+  const want = {
+    '/': ['Live It Loud', bio[0], 'Get the next show and every new song first.'],
+    '/music/': ['All releases', 'Hear more on SoundCloud', 'Latest release. Listen on:', 'Pre-save IDENTITY'],
+    '/shows/': ['Live It Loud', 'Book GLucak:'],
+    '/about/': [...bio, 'Find GLucak', 'Booking and shows', 'Photo credits', 'Photo: Alexander Kealey', 'Video: Sylvain Paslier'],
+  };
+  for (const [p, texts] of Object.entries(want)) for (const t of texts) assert.ok(html(p).includes(t), `${p}: ${t}`);
+  for (const p of Object.keys(pages)) {
+    const h = html(p);
+    assert.ok(!h.includes('ASK GABE'), p);
+    for (const q of ['Trust me, I know', 'Hope to see you there', 'From Gabe']) assert.ok(!h.includes(q), `${p}: quote ${q}`);
+  }
+});
+
+test('Music: artists credit shown; upcoming releases never listed as released', () => {
+  const m = html('/music/');
+  assert.match(m, /class="credit"[^>]*>GLucak, J-BOY</);
+  const released = m.split('<ul class="releases">').pop(); // last list = released
+  for (const t of ['Who I Am', 'Scenic Route']) assert.ok(!released.split('<div class="identity-state">')[0].includes(`<h3>${t}</h3>`), t);
+  assert.ok(!released.split('<div class="identity-state">')[0].includes('<h3>IDENTITY</h3>'));
+  assert.match(m, /<h3>Duck, Dodge, Jump, Fight<\/h3>/);
+});

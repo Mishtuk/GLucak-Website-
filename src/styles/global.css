@@ -491,3 +491,7 @@ iframe.yt { width: 100%; border: 0; }
 .ph-chip.inline { position: static; display: inline-block; margin-top: var(--space-xs); }
 /* Sign-up honeypot: off-screen for people, still in the form for bots. */
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.release-meta { font-size: var(--step--1); color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.credit { font-size: var(--step--1); color: var(--muted); }
+.coming .release-row { border-top: 1px solid var(--muted); padding-top: var(--space-s); }
+.credit-list { font-size: var(--step--1); color: var(--muted); }

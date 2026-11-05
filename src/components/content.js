@@ -48,6 +48,12 @@ export function releases() {
   return [{ title: 'Go', type: 'single', cover: '/media/placeholder-cover.svg', link: GO, soundcloud: SOUNDCLOUD, placeholder: true }];
 }
 
+/** "Sep 4, 2026" (music.md date line); '' with no date. */
+export const dateLine = (d) => (d ? new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : '');
+/** Spotify's credit line ("GLucak, J-BOY") only when it names someone besides GLucak. */
+export const credit = (r) => (r.artists && r.artists.trim() !== 'GLucak' ? r.artists : null);
+export const TYPE_TAG = { single: 'Single', ep: 'EP', album: 'Album' };
+
 /** Newest video with a valid 11-character YouTube id, or null (the block then links to the channel). */
 export function latestVideo() {
   const rows = (load('videos') ?? []).map((v) => {

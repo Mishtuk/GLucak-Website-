@@ -2,6 +2,8 @@
 import Base from '../../layouts/Base.astro';
 import PushPhoto from '../../components/PushPhoto.astro';
 import { PATREON, PHOTO_CREDITS as C, SOCIALS } from '../../components/content.js';
+const links = Object.fromEntries(SOCIALS);
+const ORDER = ['Spotify', 'YouTube', 'Instagram', 'SoundCloud', 'Patreon', 'Threads', 'X'];
 ---
 <Base title="About | GLucak" current="about" credits={[C.kealey, C.paslier]} description="GLucak: Epilepsy survivor, Producer-Rapper/DJ, making energetic music with faith.">
   <section class="band band-push" aria-labelledby="h-push">
@@ -14,18 +16,24 @@ import { PATREON, PHOTO_CREDITS as C, SOCIALS } from '../../components/content.j
     <div class="wrap push-body">
       <div class="bio">
         <p class="bio-lead">Despite facing various difficulties and struggles over the years, Epilepsy survivor and Producer-Rapper/DJ GLucak has shown no intent to give up on either his Faith in God or his mission in creating energetic music to bring others to Christ.</p>
-        <p>Two albums and numerous singles and EPs into the biz and with no plans to slow down, GLucak has been running at a ferocious pace crafting brand-new content and music for 2026 and 2027. Nevertheless, no matter the musical style or genre, be it his debut single or his upcoming 3rd album (rumored to be his best work yet), the mission statement has always been the same: Rise, Live It Loud, Push Past Fear, The Time Is Now.</p>
+        <p>Two albums and numerous singles and EPs into the biz and with no plans to slow down, GLucak has been running at a ferocious pace crafting brand-new content and music for 2026 and 2027.</p>
+        <p>Nevertheless, no matter the musical style or genre, be it his debut single or his upcoming 3rd album (rumored to be his best work yet), the mission statement has always been the same: Rise, Live It Loud, Push Past Fear, The Time Is Now.</p>
       </div>
       <div class="push-actions">
         <a class="btn btn-solid" href={PATREON} rel="noopener">Patreon</a>
       </div>
     </div>
     <div class="wrap prose">
-      <h2>Follow GLucak</h2>
+      <h2>Find GLucak</h2>
       <ul class="socials">
-        {SOCIALS.map(([name, href]) => <li><a href={href} rel="noopener">{name}</a></li>)}
+        {ORDER.map((n) => <li><a href={links[n]} rel="noopener">{n}</a></li>)}
       </ul>
-      <p class="muted">Booking email: coming soon. <span class="ph-chip inline">Placeholder</span></p>
+      <h2>Booking and shows</h2>
+      <p class="muted">Book GLucak: <span class="ph-chip inline">Placeholder: booking email pending</span></p>
+      <h2>Photo credits</h2>
+      <ul class="credit-list">
+        {[C.kealey, C.paslier].map((c) => <li>{c.replace(/\.$/, '')}</li>)}
+      </ul>
     </div>
   </section>
 </Base>

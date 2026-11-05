@@ -7,7 +7,10 @@ import VideoBlock from '../../components/VideoBlock.astro';
     <div class="wrap">
       <h1 class="spine" id="h-live"><span class="tab">Shows</span> <span class="phrase fit"><span class="ln ln-live">Live It Loud</span></span></h1>
       <div class="shows-grid">
-        <div id="shows-mount"><Fragment set:html="<!--gl:shows-->" /></div>
+        <div>
+          <div id="shows-mount"><Fragment set:html="<!--gl:shows-->" /></div>
+          <p class="muted">Book GLucak: <span class="ph-chip inline">Placeholder: booking email pending</span></p>
+        </div>
         <VideoBlock />
       </div>
     </div>
