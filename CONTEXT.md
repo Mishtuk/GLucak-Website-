@@ -67,6 +67,11 @@ there with `Laptop:`. The client's own email is in `README.md`; this file adds t
   (site text in his voice from his own words) to boss / designer / coder / mediator.
 - Read HANDOFF.md to refresh before working; keep pinging the Laptop with everything.
 
+- **Photos must look art-directed, not basic and not AI-made** (owner, 2026-11-05): make the images Gabe gave more
+  visually appealing; research art direction and production; install plugins if useful; tell the owner about any
+  connections needed. Real treatments (crops, grading, grain, halftone, print-style two-color) built with our own
+  tools from his real photos; nothing generated, no AI upscaling that invents detail, no flashing (static only).
+
 ## Working together (Desktop and Laptop)
 - **Board:** issue #1 "Coordination board: Desktop and Laptop". Every comment starts with `Desktop:` or `Laptop:`
   (both machines post as Mishtuk; the prefix tells them apart).

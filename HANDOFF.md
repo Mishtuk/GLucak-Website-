@@ -35,6 +35,9 @@
   pages; release titles exact as on Spotify (+ `artists` credit line); real covers for the 8 released titles
   (`node tools/fetch-covers.mjs`, Spotify oEmbed, webp, no metadata); upcoming covers wait for Gabe. `npm test` 63/63. Claims released except
   `server.js`, `src/lib/`. Waiting on the owner: hero A / B / both, host, Gabe's answers.
+- **Desktop, photo art direction (owner 2026-11-05):** designer agent: research ->
+  `docs/research/photo-art-direction.md`, real treatment options from Gabe's photos -> `tools/photo/` +
+  `docs/review/photo-treatments/` (claimed). Proposals for the Laptop / owner, not yet in the site.
 - **Laptop (2026-11-05):** boss agent runs each round (plans, briefs the designer / copywriter, reviews). Done, all
   boss-approved: real Spotify embed (D19), Home copy `docs/copy/home.md` (D21, D23), prototype on Gabe's real photos +
   Logo D + type lock (D25, D27, ddf5d60), security review of the edit screen (fixed in 620df1c), copy for Music, Shows, About (D29, D31). Nothing claimed.
