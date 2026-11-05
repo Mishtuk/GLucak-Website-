@@ -82,3 +82,13 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   photo ever needs it. "Play full songs on Spotify" becomes an outline button (amends D19). The Now line uses real
   release data only. Home caps at 5.6 phone screens (hero A, both quotes in). **Why:** measured on Gabe's real files;
   every addition was asked for by Gabe or the owner, and the cap stops creep.
+- **D29** (2026-11-05, Laptop boss, review of `docs/copy/music.md`, `shows.md`, `about.md`): Is part of a sentence of
+  Gabe's a trim? **Ruling:** yes. A quote is one or more whole sentences exactly as he wrote them; part of a sentence
+  is a trim under D23. If the whole sentence is over 120 characters, pick another or none. Music's IDENTITY quote:
+  none for now; Shows and About: none. Shows has no intro line (DESIGN section 6 has none). The Dave Bahm artwork
+  credit stays, shown only with his art. No Fran Carroll caption. **Why:** D23; the research quoted only part of
+  the sentence, so its full form and length are unknown. Credits come only from CREDITS.md, CONTEXT.md or his own posts.
+- **D31** (2026-11-05, Laptop boss): How are release titles written? **Ruling:** as credited on Spotify, features
+  included, Spotify's wording exact ("w/", "feat."). `src/data/releases.json` must match. Our own notes, such as
+  "(self-titled)", never show as titles. The Desktop checks every title on Spotify. **Why:** one source, and a
+  collaborator's credit is shown the way Spotify shows it.

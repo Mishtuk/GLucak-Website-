@@ -136,7 +136,7 @@ by his own post.]
 | T2 | "putting your hope and your sense of purpose Identity in something that won't last is a bad idea" | 95 | GLucak, Instagram, Sep 2026 | https://www.instagram.com/p/DdpsSGLCa6n/ (2026-09-23) |
 
 **None for now.** It's not clear what "this project" in T1 refers to, because the research doesn't say what that post was about.
-T2 is for the IDENTITY block on the Music page later.
+T2 is part of a longer sentence, so it can't be used as is (D29).
 
 ---
 
@@ -149,9 +149,14 @@ words and ends on the action, so no copy change. The slogan sits below it as fix
 
 **Picks:** RISE: R1 "God will always be with you, and will never leave you in the valley. Trust me, I know." (GLucak, Instagram, Sep 2026). LIVE IT LOUD: L2 "Hope to see you there!" (GLucak, YouTube, Sep 2026). THE TIME IS NOW: none. PUSH PAST FEAR: none (D21).
 
-**ASK GABE (via the owner, launch blockers first):**
-1. What email should fans and venues use to book you? (For the "Request a show" button.)
+**ASK GABE (all pages, via the owner, launch blockers first):**
+1. What email should fans and venues use to book you? (For the "Request a show" button and the Shows and About pages.)
 2. Is IDENTITY still out August 13, 2027? What are the date and pre-save link for Welcome Home?
-3. The sign-up says "Get the next show and every new song first." Will people on your email list hear before everyone else? If not, we'll say "right away".
-4. The home page uses the first sentence of your Spotify bio, which says "Epilepsy survivor". Keep it on the home page, or only on the About page?
-5. Can we quote two of your posts on the home page, word for word, with credit and a link? "God will always be with you, and will never leave you in the valley. Trust me, I know." (Instagram, Sep 30) under the latest release, and "Hope to see you there!" (YouTube, Sep 8) under the shows.
+3. Your logos (the IDENTITY cross with wings, and the other versions): which did you make and which did Dave Bahm make? The credits list on the site needs it.
+4. The sign-up says "Get the next show and every new song first." Will people on your email list hear before everyone else? If not, we'll say "right away".
+5. The home page uses the first sentence of your Spotify bio, which says "Epilepsy survivor". Keep it on the home page, or only on the About page?
+6. Can we quote two of your posts on the home page, word for word, with credit and a link? "God will always be with you, and will never leave you in the valley. Trust me, I know." (Instagram, Sep 30) under the latest release, and "Hope to see you there!" (YouTube, Sep 8) under the shows.
+7. Your bio says "two albums", but YouTube lists five albums and EPs. Which ones are albums, and what year did each come out (GLucak, Fall Down 7 Stand Up 8, Anomaly, You're Not Alone EP)?
+Later, not needed for launch:
+8. Can we show the IDENTITY tracklist you posted on Oct 24? If so, please check the spelling of every title.
+9. Patreon: what is it for, and do you want a short line next to the link?
