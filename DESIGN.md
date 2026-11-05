@@ -304,7 +304,7 @@ Same header, footer, bar, tokens and tabs. Each page opens with its one fitted p
 | **No ticket link** | No button, ever. No disabled button, no "TBA". |
 | **Open mic** | Row with kind "Open mic"; Details if linked. Never the poster. |
 | **Show today** | Stays upcoming through the whole New York day (`splitShows`). |
-| **Now line** | Next show if within 14 days (D18): "Next show: Venue, City" linked to `#shows`. Otherwise the newest release. |
+| **Now line** | Next upcoming row of either type if within 14 days (D18), labelled by its type: "Next show: Venue, City" or "Next open mic: Venue, City", linked to `#shows`. Otherwise the newest release. (Most of his gigs are open mics; the label keeps it honest.) |
 | **No IDENTITY date** | Mark and "IDENTITY" only. No countdown, no pre-save, nothing broken-looking. (The date is now known, 2027-08-13 from Gabe's own post, so this is the fallback only.) Prototype: `?identity=none`. |
 | **Date set** | "August 13, 2027 · 281 days to go", static per page load (no ticking digits, so no motion), plus **Pre-save IDENTITY** if linked. Section 5. |
 | **Release day** | Flips to "Out now. Listen" by date, New York time; the pre-save goes. Prototype: `?identity=out`. |
