@@ -92,3 +92,9 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   included, Spotify's wording exact ("w/", "feat."). `src/data/releases.json` must match. Our own notes, such as
   "(self-titled)", never show as titles. The Desktop checks every title on Spotify. **Why:** one source, and a
   collaborator's credit is shown the way Spotify shows it.
+- **D33** (2026-11-05, Laptop, amends D31 after the Desktop checked Spotify in 70461b5): Spotify's titles carry no
+  "feat." or "w/"; collaborators are separate artist credits. **Ruling:** the title is exactly Spotify's ("Duck, Dodge,
+  Jump, Fight"). When a release has more than one artist, an **artists line** sits under the title in the RISE release
+  block and the Music release strip, exactly as Spotify lists them ("GLucak, J-BOY"), body face, `muted`; solo
+  releases have none. The Now line shows the title only ("Out now: Duck, Dodge, Jump, Fight"); the credit is right
+  below it. **Why:** Spotify is the one source, and the collaborator stays credited where the release is shown.

@@ -22,19 +22,19 @@ CHECK 3b: text over photos, measured from pixels with the text hidden (99.5th pe
     menu: text 10.84:1 against the brightest background (need 4.5:1)
     name: text 5.39:1 against the brightest background (need 3:1)
     slogan: text 6.19:1 against the brightest background (need 3:1)
-    now: text 13.63:1 against the brightest background (need 4.5:1)
+    now: text 13.70:1 against the brightest background (need 4.5:1)
   ?hero=b
     brand: text 17.32:1 against the brightest background (need 3:1)
     menu: text 17.32:1 against the brightest background (need 4.5:1)
     name: text 16.85:1 against the brightest background (need 3:1)
-    slogan: text 15.90:1 against the brightest background (need 3:1)
-    now: text 14.06:1 against the brightest background (need 4.5:1)
+    slogan: text 15.95:1 against the brightest background (need 3:1)
+    now: text 14.13:1 against the brightest background (need 4.5:1)
   ?hero=a&era=placeholder-b
     brand: text 6.20:1 against the brightest background (need 3:1)
     menu: text 10.35:1 against the brightest background (need 4.5:1)
     name: text 5.34:1 against the brightest background (need 3:1)
-    slogan: text 5.95:1 against the brightest background (need 3:1)
-    now: text 11.37:1 against the brightest background (need 4.5:1)
+    slogan: text 5.96:1 against the brightest background (need 3:1)
+    now: text 11.39:1 against the brightest background (need 4.5:1)
   PUSH PAST FEAR heading: 7.68:1 (need 3:1)
 CHECK 3c: tap targets at 390 (every link, button and field)
   ?hero=a: 36 targets, under 48px: none
@@ -45,16 +45,16 @@ CHECK 3e: solid text pairs at 390, computed colors, both eras (text 4.5:1; large
   ?hero=a: lowest solid button 5.71:1, Tickets on poster 5.71:1, muted on footer 7.68:1
   ?era=placeholder-b: lowest muted on footer 7.41:1, slogan on footer 7.41:1, row kind 8.77:1
 CHECK 4: Home height in phone screens at 390x660
-  ?hero=a: 3795px = 5.75 screens, 5.58 without the prototype-only note (top 1298, shows 818, about 575, join 578, footer 464)
-  ?hero=b: 3853px = 5.84 screens, 5.67 without the prototype-only note (top 1308, shows 818, about 575, join 578, footer 512)
-  ?shows=none: 3695px = 5.60 screens, 5.43 without the prototype-only note (top 1298, shows 718, about 575, join 578, footer 464)
+  ?hero=a: 3812px = 5.78 screens, 5.61 without the prototype-only note (top 1316, shows 818, about 575, join 578, footer 464)
+  ?hero=b: 3870px = 5.86 screens, 5.69 without the prototype-only note (top 1326, shows 818, about 575, join 578, footer 512)
+  ?shows=none: 3713px = 5.63 screens, 5.46 without the prototype-only note (top 1316, shows 718, about 575, join 578, footer 464)
 CHECK 5: reduced motion and the Motion switch
   normal: [{"n":"drift","s":"running","d":24000}]
   Emulation.setEmulatedMedia prefers-reduced-motion=reduce: animations [], switch "Motion: off (device setting)", fade headings opacity 1
   footer switch clicked: animations [], switch "Motion: off"
 CHECK 6: flash
-  hero a: 88 frames over 25.9s, mean relative luminance 0.2084 to 0.2102, largest frame-to-frame change 0.0001 (WCAG flash needs a change of 0.10)
-  hero b: 95 frames over 26.0s, mean relative luminance 0.1561 to 0.1578, largest frame-to-frame change 0.0001 (WCAG flash needs a change of 0.10)
+  hero a: 88 frames over 25.9s, mean relative luminance 0.2069 to 0.2086, largest frame-to-frame change 0.0001 (WCAG flash needs a change of 0.10)
+  hero b: 94 frames over 25.8s, mean relative luminance 0.1546 to 0.1563, largest frame-to-frame change 0.0001 (WCAG flash needs a change of 0.10)
   every CSS animation rule: ["html[data-motion=\"on\"] .glow 24s"]
   most animations running on the visible screen, brisk scroll, sampled every 150px: 1
 Page errors and CSP (served with the real CSP):

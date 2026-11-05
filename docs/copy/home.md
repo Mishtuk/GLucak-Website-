@@ -32,7 +32,7 @@ Sources: titles, dates and links come from the release data (social-content.md s
 | Line under the cover and title | **Latest release. Listen on:** (keep as is) | 26 |
 
 Before 11-13 the title above it reads "Duck, Dodge, Jump, Fight"; from 11-13 "Who I Am". The line itself does not change.
-Title as credited on Spotify, features included, e.g. "Duck, Dodge, Jump, Fight (feat. J-BOY)". Never drop a collaborator credit.
+Title exactly as on Spotify ("Duck, Dodge, Jump, Fight"), with the artists line under it as Spotify shows them ("GLucak, J-BOY") when there's more than one artist (D33). Never drop a collaborator credit.
 
 ### From Gabe (D21), RISE: under the latest release, after the links
 
@@ -156,7 +156,7 @@ words and ends on the action, so no copy change. The slogan sits below it as fix
 4. The sign-up says "Get the next show and every new song first." Will people on your email list hear before everyone else? If not, we'll say "right away".
 5. The home page uses the first sentence of your Spotify bio, which says "Epilepsy survivor". Keep it on the home page, or only on the About page?
 6. Can we quote two of your posts on the home page, word for word, with credit and a link? "God will always be with you, and will never leave you in the valley. Trust me, I know." (Instagram, Sep 30) under the latest release, and "Hope to see you there!" (YouTube, Sep 8) under the shows.
-7. Your bio says "two albums", but YouTube lists five albums and EPs. Which ones are albums, and what year did each come out (GLucak, Fall Down 7 Stand Up 8, Anomaly, You're Not Alone EP)?
+7. Your bio says "two albums", but Spotify has three: GLucak (Deluxe Edition), Fall Down 7, Stand Up 8 (A Remix Album) and Time is at the Essence. Which should the site call albums? And are "Anomaly" and the "You're Not Alone" EP releases we should list?
 Later, not needed for launch:
 8. Can we show the IDENTITY tracklist you posted on Oct 24? If so, please check the spelling of every title.
 9. Patreon: what is it for, and do you want a short line next to the link?

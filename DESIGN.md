@@ -215,7 +215,7 @@ with focus moved in, Escape and link tap close it. Shop slot: one nav entry, off
 - Slogan, exact text. Phones: two fitted lines, "Rise, Live It Loud," / "Push Past Fear, The Time Is Now." From 900px: one fitted line.
 - **Listen** (solid) and **Shows** (outline), 52px tall. Listen goes to the player, Shows to `#shows`.
 - **Now line:** "Now" tag + one link. See section 7. No ticker: it never moves. Release wording (copy, `docs/copy/home.md`):
-  **"Out now: {title}"**, the full title as credited, features included (today "Out now: Duck, Dodge, Jump, Fight (feat. J-BOY)"),
+  **"Out now: {title}"**, the title exactly as on Spotify (today "Out now: Duck, Dodge, Jump, Fight"; the artists line sits right below in RISE, D33),
   linked to that release's `link`. Long titles wrap to two lines inside the 48px line (measured: the player stays put).
 
 **1. RISE, tab Music.** Phrase at 3.5rem on phones; huge in a left column from 900px. The official embed at exactly **352px**,
@@ -224,8 +224,10 @@ full column width, with its height reserved. Under it: **Play full songs on Spot
 the playlist link: logged-out fans, most of them in Instagram's in-app browser, get 30-second previews in the embed, and this is
 the way to full songs, so it earns a button. Outline, not solid: the accent stays on Listen. Then **Listen everywhere**, a text
 link. It sits below the player, so the player's position doesn't move. Then the latest release: cover 96px
-(160px wide screens) as made, title, "Latest release. Listen on:", two links. The title is `--step-2` (not `--step-3`), `text-wrap:
-balance`: real titles carry features and the credit never drops, so "Duck, Dodge, Jump, Fight (feat. J-BOY)" takes two lines at 390.
+(160px wide screens) as made, title, then the **artists line** when the release has more than one artist (D33): the release's
+`artists` exactly as Spotify shows them ("GLucak, J-BOY"), body face, `muted`, no "feat."; a solo release has no line. Then
+"Latest release. Listen on:", two links. The title is `--step-2` (not `--step-3`), `text-wrap: balance`, so long titles take two
+lines at 390. The same artists line goes under each title in the Music page's release strip.
 **Every platform** and **Listen everywhere** both go to that release's `link`. Then the optional **From Gabe** quote (below).
 
 **From Gabe (D21), the one quote style, every band that has one.** After the band's main content, never above the player:
@@ -378,7 +380,7 @@ output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
 | Text over the **real** photos, from pixels (99.5th percentile background, text hidden) | A: name **5.39:1**, slogan **6.19:1** (need 3), Menu **10.84:1**, Now **13.63:1** (need 4.5; the real two-line Now line). B: name 16.85, slogan 15.90, Menu 17.32, Now 14.06. A on the second era: name 5.34, slogan 5.95, Menu 10.35, Now 11.37. PUSH PAST FEAR heading over the Paslier still: 7.68:1 |
 | Tap targets, text size | 36 targets, none under 48px (Spotify button 48px, both quote credits 48px). Smallest text 16px. No sideways scroll at 320, 390, 1280 with the long title and quotes |
 | Solid pairs, both eras | Lowest 5.71:1 |
-| Home height at 390x660 | **A 3795px = 5.75 screens, 5.58 without the prototype note** (cap 5.6, boss 2026-11-05). B 5.84 / 5.67. Empty shows 5.60 / 5.43. With both real quotes (R1, L2), the real release title and Now line. Committed baseline was 5.21 / 5.07 (2026-11-03 report; the 5.13 in the old table was an earlier run). What added height: the IDENTITY block (date, pre-save, mark beside the word), both quotes (132 and 76px, compact style), the Spotify button and the footer credits; what took it back: D23 (mission line gone), the mark beside IDENTITY instead of above (about 60px), the compact quote (tag in the first line, credit inline) |
+| Home height at 390x660 | **A 3812px = 5.61 without the prototype note after D33's artists line** (3px over the cap 5.6; accepted, since the collaborator credit is never dropped; the built site measures 5.25). Before D33: A 3795px = 5.75 screens, 5.58 without the note (cap 5.6, boss 2026-11-05). B 5.84 / 5.67. Empty shows 5.60 / 5.43. With both real quotes (R1, L2), the real release title and Now line. Committed baseline was 5.21 / 5.07 (2026-11-03 report; the 5.13 in the old table was an earlier run). What added height: the IDENTITY block (date, pre-save, mark beside the word), both quotes (132 and 76px, compact style), the Spotify button and the footer credits; what took it back: D23 (mission line gone), the mark beside IDENTITY instead of above (about 60px), the compact quote (tag in the first line, credit inline) |
 | Reduced motion | Emulated with `Emulation.setEmulatedMedia`: `document.getAnimations()` empty, headings visible. Footer switch: also empty. The IDENTITY count is text, not motion |
 | Flash | **By construction:** the only loop is one 24s opacity and transform drift (opacity .68 to .88), so it cannot reach 3 flashes a second. Supporting sample only, too slow to detect a 3 Hz flash on its own: 87 and 95 frames over 26s, largest change in mean luminance 0.0001 against WCAG's 0.10, on both heroes with the real photos. Most moving things on screen at once, brisk scroll: 1 |
 | CSP and errors | None under the real CSP (WebP served as `image/webp`). Also opens from disk |

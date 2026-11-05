@@ -310,7 +310,7 @@ html[data-hero='b'] .slot img { width: 100%; height: 100%; object-fit: cover; ob
 .cover { width: 96px; height: 96px; flex: none; }
 /* --step-2, not --step-3: real titles carry features ("Duck, Dodge, Jump, Fight (feat. J-BOY)") and the credit never drops. */
 .release h3 { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; text-wrap: balance; }
-.release .muted { font-size: var(--step--1); line-height: 1.3; }
+.release .muted { font-size: var(--step--1); line-height: 1.2; }
 .listen-on { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--space-m); font-size: var(--step--1); font-weight: 700; margin-top: -0.25rem; }
 .listen-on a { display: inline-flex; align-items: center; min-height: 48px; text-underline-offset: 3px; }
 

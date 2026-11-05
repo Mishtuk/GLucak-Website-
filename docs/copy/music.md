@@ -46,17 +46,17 @@ Rows today (title / date line / link label), from `releases.json`:
 | IDENTITY | Out Aug 13, 2027 | Pre-save (this one also has the IDENTITY block, section 3) |
 | Scenic Route | Out Jan 15, 2027 | Pre-save |
 | Who I Am | Out Nov 13, 2026 | Pre-save (becomes Listen on 11-13) |
-| Duck, Dodge, Jump, Fight (feat. J-BOY) | Sep 4, 2026 | Listen |
-| Rapping Like (Oh Yeah) (w/ Micah Haun) | Jul 24, 2026 | Listen |
+| Duck, Dodge, Jump, Fight / artists line "GLucak, J-BOY" | Sep 4, 2026 | Listen |
+| Rapping Like (Oh Yeah) / artists line as Spotify shows them (Micah Haun) | Jul 24, 2026 | Listen |
 | One and Done | May 22, 2026 | Listen |
 | Earned Your Stripes (Live at Riverside) | May 15, 2026 | Listen |
 | Go | Mar 20, 2026 | Listen |
-| GLucak {exact Spotify album title, Desktop checks} | none (date unknown) | Listen |
+| GLucak (Deluxe Edition) | Dec 19, 2025 | Listen |
 | Fall Down 7, Stand Up 8 (A Remix Album) | none | Listen |
 | Anomaly | none | Listen |
 | You're Not Alone (EP) | none | Listen |
 
-Spotify's credit wins (D31). Rapping Like reads "(w/ Micah Haun)" on Spotify, and the Desktop corrects releases.json. Go stays "Go" unless Spotify credits Emily Mae. Never drop a collaborator credit.
+Spotify wins (D31, D33). Spotify's titles carry no "feat." or "w/"; collaborators are separate artist credits, so the title is exact and the artists line under it shows them as Spotify does. `releases.json` was checked against Spotify (70461b5) and is the source for every title, artist and date. Never drop a collaborator credit.
 
 ---
 
