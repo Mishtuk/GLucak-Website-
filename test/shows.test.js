@@ -104,6 +104,7 @@ test('empty state: never blank, Played rows if any, no Request button without a 
 test('Now line: next show within 14 days, else empty so the release line stays; escaped', () => {
   const now = noon('2026-12-01');
   assert.equal(nowHtml([row({ date: '2026-12-04', venue: 'Pub', city: 'Philly' })], now), '<a href="#shows">Next show: Pub, Philly</a>');
+  assert.equal(nowHtml([row({ date: '2026-12-04', type: 'open-mic', venue: 'Cafe', city: 'Horsham' })], now), '<a href="#shows">Next open mic: Cafe, Horsham</a>');
   assert.equal(nowHtml([row({ date: '2026-12-21' })], now), ''); // 20 days
   assert.equal(nowHtml([row({ date: '2026-12-15' })], now).startsWith('<a'), true); // day 14 counts
   assert.equal(nowHtml([row({ date: '2026-11-20' })], now), ''); // past

@@ -76,7 +76,7 @@ export function showsHtml(rows, now = new Date(), { limit = Infinity, past = fal
 }
 
 /**
- * The Now line's show variant (DESIGN.md section 7, D18): "Next show: Venue, City" linked to #shows when the next upcoming
+ * The Now line's show variant (DESIGN.md section 7, D18): "Next show: Venue, City" ("Next open mic:" for open mics) linked to #shows when the next upcoming
  * row is within 14 days (New York days), else '' so the static release line stays. Escaped like the list.
  */
 export function nowHtml(rows, now = new Date()) {
@@ -84,5 +84,5 @@ export function nowHtml(rows, now = new Date()) {
   const next = splitShows(ok, now).upcoming[0];
   if (!next) return '';
   const days = (Date.parse(next.date) - Date.parse(etDay(now))) / 864e5;
-  return days <= 14 ? `<a href="#shows">Next show: ${place(next)}</a>` : '';
+  return days <= 14 ? `<a href="#shows">${next.type === 'open-mic' ? 'Next open mic' : 'Next show'}: ${place(next)}</a>` : '';
 }

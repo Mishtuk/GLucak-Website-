@@ -8,7 +8,10 @@ const r = releases()[0];
     <h2 class="spine" id="h-rise"><span class="tab">Music</span> <span class="phrase phrase-rise">Rise</span></h2>
 
     <div class="rise-player">
-      <iframe class="player-box" title="GLucak playlist on Spotify" src={SPOTIFY_EMBED} width="100%" height="352" loading="lazy" allow="encrypted-media; clipboard-write; fullscreen" ></iframe>
+      <div class="player-box">
+        <p class="player-note">Loading the Spotify player. If it doesn't appear, use <strong>Play full songs on Spotify</strong> below.</p>
+        <iframe class="player" title="GLucak playlist on Spotify" src={SPOTIFY_EMBED} width="100%" height="352" loading="lazy" allow="encrypted-media; clipboard-write; fullscreen"></iframe>
+      </div>
       <p class="under-player">
         <a class="btn btn-line btn-small" href={SPOTIFY_PLAYLIST} rel="noopener">Play full songs on Spotify</a>
         <a class="under-link" href={r.link} rel="noopener">Listen everywhere</a>

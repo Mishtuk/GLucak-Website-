@@ -126,3 +126,9 @@ test('Music: artists credit shown; upcoming releases never listed as released', 
   assert.ok(!released.split('<div class="identity-state">')[0].includes('<h3>IDENTITY</h3>'));
   assert.match(m, /<h3>Duck, Dodge, Jump, Fight<\/h3>/);
 });
+
+test('Spotify box keeps the loading / blocked note under the iframe; no era-word placeholder line on Music', () => {
+  const h = html('/');
+  assert.match(h, /<div class="player-box"><p class="player-note">Loading the Spotify player\./);
+  assert.ok(!html('/music/').includes('Era word:'));
+});

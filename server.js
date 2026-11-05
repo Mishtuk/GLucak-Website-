@@ -14,7 +14,7 @@ import { checkShows, readShows, saveShows, showsVersion } from './src/lib/store.
 
 const ROOT = import.meta.dirname;
 const env = process.env;
-const DIST = env.DIST_DIR || join(ROOT, 'dist');
+const DIST = normalize(env.DIST_DIR || join(ROOT, 'dist')); // normalized, so forward slashes on Windows still match
 const SHOWS = env.SHOWS_FILE || join(ROOT, 'src/data/shows.json'); // the shipped list
 const PORT = Number(env.PORT) || 8080;
 const PROD = env.NODE_ENV === 'production' || Boolean(env.WEBSITE_SITE_NAME); // App Service sets WEBSITE_SITE_NAME
