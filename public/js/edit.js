@@ -5,7 +5,7 @@
   const login = $('login'), editor = $('editor'), list = $('list'), msg = $('msg'), loginMsg = $('login-msg');
   const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
   const say = (el, text) => { el.textContent = text; };
-  let dirty = false, loaded = false, uid = 0;
+  let dirty = false, loaded = false, uid = 0, version = null; // version: the list we loaded, sent back on save
 
   const api = (path, body) => fetch(path, {
     method: body === undefined ? 'GET' : 'POST', credentials: 'same-origin',
@@ -95,7 +95,7 @@
     let r;
     try { r = await api('/edit/api/shows'); } catch { login.hidden = false; return say(loginMsg, "Can't reach the site. Check your connection and reload."); }
     const b = await reply(r);
-    if (r.ok) return signedIn(b.editor, b.shows);
+    if (r.ok) { version = b.version; return signedIn(b.editor, b.shows); }
     login.hidden = false;
     if (r.status === 503) say(loginMsg, b.message || 'The edit screen is not set up yet.');
   }
@@ -134,10 +134,11 @@
     for (const r of rows()) { say(r.err, ''); r.classList.remove('bad'); }
     say(msg, 'Saving…');
     let r;
-    try { r = await api('/edit/api/shows', { shows: rows().map((x) => x.read()) }); } catch { return say(msg, "That didn't save. Check your connection and try again."); }
+    try { r = await api('/edit/api/shows', { version, shows: rows().map((x) => x.read()) }); } catch { return say(msg, "That didn't save. Check your connection and try again."); }
     const b = await reply(r);
-    if (r.ok) { render(b.shows); return say(msg, b.message || "Saved. It's on the site now."); }
+    if (r.ok) { version = b.version; render(b.shows); return say(msg, b.message || "Saved. It's on the site now."); }
     if (r.status === 401) { login.hidden = false; $('username').focus(); return say(msg, 'You were signed out. Sign in above, then press Save again. Your changes are still here.'); }
+    if (r.status === 409) return say(msg, b.message || 'Someone else saved the shows a moment ago. Reload to see their changes; yours are still on this page.'); // rows untouched
     const errs = b.errors ?? [];
     for (const x of errs) {
       const row = rows()[x.row];

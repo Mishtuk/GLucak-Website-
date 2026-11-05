@@ -1,6 +1,7 @@
 // Editor sign-in for Gabe's edit screen. Copied and trimmed from Riverside's src/auth.js (proven there):
 // HMAC-signed session cookie, scrypt passwords, in-memory rate limit and lockout, strict Origin check. Node built-ins only.
-import { createHash, createHmac, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
+import { createHash, createHmac, randomBytes, scrypt, scryptSync, timingSafeEqual } from 'node:crypto';
+import { promisify } from 'node:util';
 
 export const COOKIE = 'gl_edit';
 export const SESSION_DAYS = 7;
@@ -41,10 +42,12 @@ export const readCookie = (header) => header?.split(/;\s*/).find((c) => c.starts
 const SCRYPT = { N: 16384, r: 8, p: 1 };
 export const USERNAME = /^[a-z0-9_-]{1,32}$/;
 export const hashPassword = (pw, salt = randomBytes(16)) => `${salt.toString('hex')}.${scryptSync(String(pw), salt, 64, SCRYPT).toString('hex')}`;
-export function verifyPassword(pw, stored) {
+const scryptAsync = promisify(scrypt);
+/** Async (libuv thread pool), so a burst of sign-ins never blocks the event loop serving the public site. */
+export async function verifyPassword(pw, stored) {
   const [salt, hash] = String(stored ?? '').split('.');
   if (!/^[0-9a-f]{32}$/.test(salt ?? '') || !/^[0-9a-f]{128}$/.test(hash ?? '')) return false;
-  const got = scryptSync(String(pw), Buffer.from(salt, 'hex'), 64, SCRYPT);
+  const got = await scryptAsync(String(pw), Buffer.from(salt, 'hex'), 64, SCRYPT);
   return timingSafeEqual(got, Buffer.from(hash, 'hex'));
 }
 const DUMMY = hashPassword('no-such-editor-placeholder');
@@ -62,10 +65,10 @@ export function parseEditors(value, warn = console.warn) {
 }
 
 /** The editor's name if the password matches, else null. Same scrypt work for unknown names, so timing reveals nothing. */
-export function checkLogin(users, username, pw) {
+export async function checkLogin(users, username, pw) {
   const name = String(username ?? '').trim().toLowerCase();
   const stored = users.get(name);
-  const ok = verifyPassword(String(pw ?? '').slice(0, 200), stored ?? DUMMY);
+  const ok = await verifyPassword(String(pw ?? '').slice(0, 200), stored ?? DUMMY);
   return stored && ok ? name : null;
 }
 
@@ -85,16 +88,18 @@ export function allow(key, max, windowMs, now = Date.now()) {
   return true;
 }
 
-// Lockout: 5 failed sign-ins for a username (known or not), then 15 minutes of refusals.
+// Lockout: 5 failed sign-ins for a key (server.js: name + IP), then 15 minutes of refusals.
+// USER_LOCK is the looser cap on the name alone, so one stranger can't keep Gabe locked out.
 export const LOCK = { max: 5, ms: 15 * 60e3 };
+export const USER_LOCK = { max: 50, ms: 60 * 60e3 };
 const fails = new Map();
 export const locked = (key, now = Date.now()) => (fails.get(key)?.until ?? 0) > now;
-export function recordFailure(key, now = Date.now()) {
+export function recordFailure(key, now = Date.now(), lock = LOCK) {
   const f = fails.get(key) ?? { n: 0, first: now, until: 0 };
-  if (now - f.first > LOCK.ms) Object.assign(f, { n: 0, first: now });
-  if (++f.n >= LOCK.max) f.until = now + LOCK.ms;
+  if (now - f.first > lock.ms) Object.assign(f, { n: 0, first: now });
+  if (++f.n >= lock.max) f.until = now + lock.ms;
   fails.set(key, f);
-  if (fails.size > 5000) for (const [k, v] of fails) if (v.until <= now && now - v.first > LOCK.ms) fails.delete(k);
+  if (fails.size > 5000) for (const [k, v] of fails) if (v.until <= now && now - v.first > USER_LOCK.ms) fails.delete(k);
 }
 export const clearFailures = (key) => fails.delete(key);
 export const _resetLimits = () => { hits.clear(); fails.clear(); }; // tests only

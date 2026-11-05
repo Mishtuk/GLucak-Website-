@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { allow, checkLogin, cookieHeader, hashPassword, locked, parseEditors, passwordProblem, readCookie, recordFailure, clearFailures,
-  sameOrigin, signSession, verifyPassword, verifySession, COOKIE, LOCK } from '../src/lib/auth.js';
+  sameOrigin, signSession, verifyPassword, verifySession, COOKIE, LOCK, USER_LOCK } from '../src/lib/auth.js';
 
 const SECRET = 'x'.repeat(40);
 const NOW = Date.parse('2026-11-05T15:00:00Z');
@@ -34,17 +34,18 @@ test('cookie header: HttpOnly, SameSite=Strict, Path=/edit, Secure on https', ()
   assert.equal(readCookie(undefined), null);
 });
 
-test('passwords: scrypt, salted, wrong password and unknown name fail', () => {
+test('passwords: scrypt (async), salted, wrong password and unknown name fail', async () => {
   const a = hashPassword('correct horse battery'), b = hashPassword('correct horse battery');
   assert.notEqual(a, b, 'same password, different salt');
   assert.match(a, /^[0-9a-f]{32}\.[0-9a-f]{128}$/);
-  assert.ok(verifyPassword('correct horse battery', a));
-  assert.ok(!verifyPassword('correct horse batterY', a));
-  assert.ok(!verifyPassword('x', 'garbage'));
-  assert.equal(checkLogin(USERS, ' Gabe ', 'a long test password'), 'gabe', 'name is trimmed and not case-sensitive');
-  assert.equal(checkLogin(USERS, 'gabe', 'wrong password'), null);
-  assert.equal(checkLogin(USERS, 'nobody', 'a long test password'), null);
-  assert.equal(checkLogin(USERS, 'gabe', undefined), null);
+  assert.ok(verifyPassword('x', a) instanceof Promise, 'never blocks the event loop');
+  assert.ok(await verifyPassword('correct horse battery', a));
+  assert.ok(!(await verifyPassword('correct horse batterY', a)));
+  assert.ok(!(await verifyPassword('x', 'garbage')));
+  assert.equal(await checkLogin(USERS, ' Gabe ', 'a long test password'), 'gabe', 'name is trimmed and not case-sensitive');
+  assert.equal(await checkLogin(USERS, 'gabe', 'wrong password'), null);
+  assert.equal(await checkLogin(USERS, 'nobody', 'a long test password'), null);
+  assert.equal(await checkLogin(USERS, 'gabe', undefined), null);
   assert.ok(passwordProblem('short') && !passwordProblem('twelve chars'));
 });
 
@@ -72,6 +73,16 @@ test('lockout: 5 failures lock a name for 15 minutes', () => {
   assert.ok(locked(key, NOW + 21));
   assert.ok(!locked(key, NOW + 21 + LOCK.ms), 'unlocked after 15 minutes');
   clearFailures(key);
+});
+
+test('lockout on the name alone is looser: 50 failures in an hour', () => {
+  const key = `user:test-${Math.random()}`;
+  for (let i = 0; i < USER_LOCK.max - 1; i++) recordFailure(key, NOW + i, USER_LOCK);
+  assert.ok(!locked(key, NOW + 100), '49 failures: still open');
+  recordFailure(key, NOW + 100, USER_LOCK);
+  assert.ok(locked(key, NOW + 101));
+  assert.ok(locked(key, NOW + 101 + LOCK.ms), 'still locked after 15 minutes');
+  assert.ok(!locked(key, NOW + 101 + USER_LOCK.ms), 'unlocked after an hour');
 });
 
 test('same-origin: Origin must be present and match the host', () => {

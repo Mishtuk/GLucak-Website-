@@ -4,14 +4,14 @@ export const etDay = (now = new Date()) => new Intl.DateTimeFormat('en-CA', { ti
 
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
-const validDate = (d) => /^\d{4}-\d{2}-\d{2}$/.test(d) && new Date(`${d}T00:00:00Z`).toISOString().slice(0, 10) === d;
+const validDate = (d) => { const t = new Date(`${d}T00:00:00Z`); return /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(t.getTime()) && t.toISOString().slice(0, 10) === d; };
 const httpUrl = (u) => { try { return ['http:', 'https:'].includes(new URL(u).protocol); } catch { return false; } };
 
 /** Returns the row if valid, else throws. */
 export function validateShow(r) {
   if (!r || typeof r !== 'object') throw new Error('show must be an object');
   if (typeof r.date !== 'string' || !validDate(r.date)) throw new Error('bad date');
-  if (r.time != null && !/^([01]\d|2[0-3]):[0-5]\d$/.test(r.time)) throw new Error('bad time');
+  if (r.time != null && (typeof r.time !== 'string' || !/^([01]\d|2[0-3]):[0-5]\d$/.test(r.time))) throw new Error('bad time');
   if (r.type !== 'show' && r.type !== 'open-mic') throw new Error('bad type');
   for (const k of ['venue', 'city']) if (typeof r[k] !== 'string' || !r[k].trim()) throw new Error(`bad ${k}`);
   if (r.link != null && (typeof r.link !== 'string' || !httpUrl(r.link))) throw new Error('bad link');

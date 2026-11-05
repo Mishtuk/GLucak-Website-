@@ -26,6 +26,9 @@
   `echo 'pw' | node tools/hash-password.mjs`, 12+ chars), `SESSION_SECRET` (32+ chars; without it /edit answers 503),
   `DATA_DIR` (default `.data/`), `DEV_EDITOR=1` (local only), `TRUST_PROXY=1`. `npm test` 49/49.
   v2: row preview, releases / bio / links, restore previous, sign-out-everywhere, persistent rate limits, real-phone check.
+  Laptop's security review fixed (10 items): bad Host -> 400, rightmost X-Forwarded-For, async scrypt, global sign-in cap
+  30/min, lockout per user+IP (user-only 50/h), 409 on stale saves, HSTS/Secure via isHttps(req). **On the host set
+  TRUST_PROXY=1** (needed for HSTS and real client IPs). `npm test` builds first (pretest); 58/58.
   Next: daily rebuild for release-day flips + host plan (owner decides the host). Claims released except `server.js`, `src/lib/`.
 - **Laptop (2026-11-05):** boss agent runs the round (plans, briefs the designer / copywriter, reviews). Claimed:
   `prototype/`, `DESIGN.md`, `docs/copy/`. Doing: real Spotify embed in the prototype (done, in review), heroes A/B +

@@ -31,10 +31,19 @@ test('sorting: upcoming ascending, past descending', () => {
 
 test('validation rejects bad rows', () => {
   for (const bad of [{ date: '2026-13-40' }, { date: '12/12/2026' }, { date: '2026-02-30' }, { type: 'party' }, { time: '25:00' }, { venue: '' },
-    { link: 'javascript:alert(1)' }, { link: 'ftp://x.com' }, { link: 'not a url' }]) {
+    { link: 'javascript:alert(1)' }, { link: 'ftp://x.com' }, { link: 'not a url' }, { time: ['19:30'] }, { time: 1930 }, { date: '0000-00-00' }]) {
     assert.throws(() => validateShow(row(bad)), undefined, JSON.stringify(bad));
   }
   validateShow(row({ time: '19:30', link: 'https://x.com' }));
+  assert.throws(() => validateShow(row({ date: '0000-00-00' })), /bad date/, 'not a RangeError');
+  assert.throws(() => validateShow(row({ time: ['19:30'] })), /bad time/, 'an array would render "12: PM"');
+});
+
+test('links: only http(s); disguised javascript:, data:, vbscript: and scheme-relative are refused', () => {
+  for (const link of [' javascript:alert(1)', 'JaVaScRiPt:alert(1)', 'java\tscript:alert(1)', '\x01javascript:alert(1)', '\u00a0javascript:alert(1)',
+    'data:text/html,<script>alert(1)</script>', 'vbscript:msgbox(1)', '//evil.com']) {
+    assert.throws(() => validateShow(row({ link })), /bad link/, JSON.stringify(link));
+  }
 });
 
 test('button label rule', () => {

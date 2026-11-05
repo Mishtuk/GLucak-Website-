@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { connect } from 'node:net';
 
 const dir = mkdtempSync(join(tmpdir(), 'gl-'));
 mkdirSync(join(dir, 'shows'));
@@ -17,7 +18,7 @@ writeFileSync(join(dir, 'shows.json'), JSON.stringify([
 process.env.DIST_DIR = dir;
 process.env.SHOWS_FILE = join(dir, 'shows.json');
 process.env.DATA_DIR = join(dir, 'data'); // no saved list: the shipped file is used
-const { server } = await import('../server.js');
+const { server, clientIp } = await import('../server.js');
 let base;
 before(() => new Promise((r) => server.listen(0, () => { base = `http://127.0.0.1:${server.address().port}`; r(); })));
 after(() => server.close());
@@ -46,4 +47,40 @@ test('404, redirect, no path escape, POST refused', async () => {
   assert.equal((await fetch(`${base}/shows`, { redirect: 'manual' })).status, 301);
   assert.equal((await fetch(`${base}/..%2f..%2fpackage.json`)).status, 404);
   assert.equal((await fetch(`${base}/`, { method: 'POST' })).status, 405);
+});
+
+// One raw request (fetch can't send a broken Host header); resolves with the status line.
+const raw = (host) => new Promise((resolve, reject) => {
+  const s = connect(server.address().port, '127.0.0.1', () => s.write(`GET / HTTP/1.1\r\nHost: ${host}\r\nConnection: close\r\n\r\n`));
+  let out = '';
+  s.on('data', (c) => { out += c; }).on('end', () => resolve(out.split('\r\n')[0])).on('error', reject);
+});
+
+test('a junk Host header is a 400, never a crash', async () => {
+  for (const host of ['a b', '[', 'a<b']) assert.match(await raw(host), /^HTTP\/1\.1 400/, host);
+  assert.equal((await fetch(`${base}/shows/`)).status, 200, 'still serving');
+});
+
+test('HSTS only over https: X-Forwarded-Proto counts only with TRUST_PROXY=1', async () => {
+  const hsts = async (h) => (await fetch(`${base}/shows/`, { headers: h })).headers.get('strict-transport-security');
+  assert.equal(await hsts({}), null, 'plain http');
+  assert.equal(await hsts({ 'x-forwarded-proto': 'https' }), null, 'spoofable without TRUST_PROXY');
+  process.env.TRUST_PROXY = '1';
+  try {
+    assert.equal(await hsts({ 'x-forwarded-proto': 'https' }), 'max-age=31536000');
+    assert.equal(await hsts({ 'x-forwarded-proto': 'http' }), null);
+  } finally { delete process.env.TRUST_PROXY; }
+});
+
+test('client IP: rightmost X-Forwarded-For (the proxy-added one), port stripped, only with TRUST_PROXY=1', () => {
+  const req = (xff) => ({ headers: { 'x-forwarded-for': xff }, socket: { remoteAddress: '10.0.0.9' } });
+  assert.equal(clientIp(req('6.6.6.6')), '10.0.0.9', 'ignored without TRUST_PROXY');
+  process.env.TRUST_PROXY = '1';
+  try {
+    assert.equal(clientIp(req('6.6.6.6, 1.2.3.4:5678')), '1.2.3.4', 'a fake left entry is ignored');
+    assert.equal(clientIp(req('1.2.3.4')), '1.2.3.4');
+    assert.equal(clientIp(req('[2001:db8::1]:443')), '2001:db8::1');
+    assert.equal(clientIp(req('2001:db8::1')), '2001:db8::1');
+    assert.equal(clientIp(req(undefined)), '10.0.0.9');
+  } finally { delete process.env.TRUST_PROXY; }
 });

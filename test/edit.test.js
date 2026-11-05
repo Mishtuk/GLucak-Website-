@@ -33,7 +33,10 @@ const signIn = async (username = 'alex', password = 'alexs long password') => {
   if (r.ok) cookie = r.headers.get('set-cookie').split(';')[0];
   return r;
 };
-const save = (shows, headers = {}) => post('/edit/api/shows', { shows }, { cookie, ...headers });
+const version = async () => (await (await fetch(`${base}/edit/api/shows`, { headers: { cookie } })).json()).version;
+const save = async (shows, headers = {}, v) => post('/edit/api/shows', { version: v === undefined ? await version() : v, shows }, { cookie, ...headers });
+// Pretend to be behind the host's proxy, coming from `ip` (the rightmost X-Forwarded-For entry is the one that counts).
+const proxied = async (ip, fn) => { process.env.TRUST_PROXY = '1'; try { return await fn({ 'x-forwarded-for': `6.6.6.6, ${ip}:4321` }); } finally { delete process.env.TRUST_PROXY; } };
 const row = (o = {}) => ({ date: d(5), time: '', type: 'show', venue: 'The Venue', city: 'Doylestown, PA', with: '', link: '', ...o });
 
 test('not signed in: API is 401, public page shows the shipped list', async () => {
@@ -50,7 +53,8 @@ test('sign in: cookie is HttpOnly, SameSite=Strict, Path=/edit; wrong password i
   const r = await signIn();
   assert.equal(r.status, 200);
   const sc = r.headers.get('set-cookie');
-  assert.match(sc, /^gl_edit=[\w-]+\.[\w-]+; Path=\/edit; HttpOnly; SameSite=Strict; Max-Age=\d+$/);
+  assert.match(sc, /^gl_edit=[\w-]+\.[\w-]+; Path=\/edit; HttpOnly; SameSite=Strict; Max-Age=\d+$/, 'no Secure over plain http');
+  assert.equal(r.headers.get('strict-transport-security'), null, 'no HSTS over plain http');
   const me = await (await fetch(`${base}/edit/api/shows`, { headers: { cookie } })).json();
   assert.equal(me.editor, 'alex');
   assert.equal(me.shows[0].venue, 'Shipped Venue', 'falls back to the shipped list');
@@ -121,12 +125,30 @@ test('lockout: 5 wrong passwords lock that name for 15 minutes, even with the ri
   const r = await signIn('gabe', 'gabes long password');
   assert.equal(r.status, 429);
   assert.match((await r.json()).message, /Wait 15 minutes/);
+  // the lock is per name + IP: a stranger's bad guesses don't lock Gabe out from his own IP
+  const other = await proxied('203.0.113.7', (h) => post('/edit/login', { username: 'gabe', password: 'gabes long password' }, h));
+  assert.equal(other.status, 200, 'same name, other IP');
 });
 
 test('rate limit: the 11th sign-in try from one IP in 15 minutes is 429', async () => {
   // earlier tests made 9 tries from 127.0.0.1 (3 in sign in, 6 in lockout); refused posts (Origin, 413) don't count
   assert.equal((await signIn()).status, 200, '10th try');
   assert.equal((await signIn()).status, 429, '11th try, right password');
+});
+
+test('save conflict: a save based on an older list is 409, nothing written, the newer save kept', async () => {
+  const v1 = await version();
+  assert.match(v1, /^[0-9a-f]{16}$/);
+  const first = await save([row({ venue: 'Tab One' })], {}, v1);
+  assert.equal(first.status, 200);
+  const v2 = (await first.json()).version;
+  assert.notEqual(v2, v1);
+  const stale = await save([row({ venue: 'Tab Two' })], {}, v1);
+  assert.equal(stale.status, 409);
+  assert.equal((await stale.json()).message, 'Someone else saved the shows a moment ago. Reload to see their changes; yours are still on this page.');
+  assert.equal((await save([row({ venue: 'Tab Two' })], {}, null)).status, 409, 'no version sent');
+  assert.equal(JSON.parse(readFileSync(join(data, 'shows.json'), 'utf8'))[0].venue, 'Tab One');
+  assert.equal((await save([row({ venue: 'Tab Two' })], {}, v2)).status, 200, 'with the new version it saves');
 });
 
 test('sign out clears the cookie; the edit page path is never cached', async () => {
@@ -137,4 +159,36 @@ test('sign out clears the cookie; the edit page path is never cached', async () 
   const shell = await fetch(`${base}/edit/`);
   assert.equal(shell.headers.get('cache-control'), 'no-store');
   assert.equal(shell.headers.get('x-robots-tag'), 'noindex');
+});
+
+test('Secure cookie behind an https proxy (X-Forwarded-Proto with TRUST_PROXY=1), plus HSTS', async () => {
+  const r = await proxied('203.0.113.8', (h) => post('/edit/login', { username: 'alex', password: 'alexs long password' }, { ...h, 'x-forwarded-proto': 'https' }));
+  assert.equal(r.status, 200);
+  assert.match(r.headers.get('set-cookie'), /; Secure$/);
+  assert.equal(r.headers.get('strict-transport-security'), 'max-age=31536000');
+});
+
+test('injection on the login form (JSON and form-encoded): a plain 401 that echoes nothing back', async () => {
+  let n = 0;
+  for (const evil of ['<script>alert(1)</script>', "' OR 1=1 --"]) {
+    for (const [username, password] of [[evil, 'whatever password'], ['gabe', evil]]) {
+      for (const form of [false, true]) {
+        const body = form ? new URLSearchParams({ username, password }).toString() : { username, password };
+        const r = await proxied(`198.51.100.${++n}`, (h) => post('/edit/login', body, form ? { ...h, 'content-type': 'application/x-www-form-urlencoded' } : h));
+        const text = await r.text();
+        assert.equal(r.status, 401, `${evil} form=${form}`);
+        assert.equal(r.headers.get('set-cookie'), null);
+        assert.ok(!text.includes(evil) && !text.includes('<script') && !text.includes('OR 1=1'), text);
+        assert.equal(JSON.parse(text).error, 'wrong');
+      }
+    }
+  }
+});
+
+// Last: it uses up the global sign-in budget for the rest of this minute.
+test('global cap: rotating IPs still hit 30 sign-in tries a minute', async () => {
+  const statuses = [];
+  for (let i = 1; i <= 31; i++) statuses.push((await proxied(`192.0.2.${i}`, (h) => post('/edit/login', { username: 'alex', password: 'wrong guess' }, h))).status);
+  assert.ok(statuses.includes(429), 'capped even though every try came from a new IP');
+  assert.ok(statuses.slice(statuses.indexOf(429)).every((s) => s === 429), 'stays capped');
 });

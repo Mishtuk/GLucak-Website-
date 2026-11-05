@@ -9,8 +9,8 @@ import { extname, join, normalize, sep } from 'node:path';
 import { brotliCompressSync, constants as zc, gzipSync } from 'node:zlib';
 import { showsHtml } from './src/lib/shows.js';
 import { signup } from './src/lib/signup.js';
-import { allow, checkLogin, clearFailures, cookieHeader, locked, parseEditors, readCookie, recordFailure, sameOrigin, signSession, verifySession, SESSION_DAYS } from './src/lib/auth.js';
-import { checkShows, readShows, saveShows } from './src/lib/store.js';
+import { allow, checkLogin, clearFailures, cookieHeader, locked, parseEditors, readCookie, recordFailure, sameOrigin, signSession, verifySession, SESSION_DAYS, USER_LOCK } from './src/lib/auth.js';
+import { checkShows, readShows, saveShows, showsVersion } from './src/lib/store.js';
 
 const ROOT = import.meta.dirname;
 const env = process.env;
@@ -35,10 +35,10 @@ const TEXT = /^(text\/|application\/(json|xml|manifest)|image\/svg)/;
 const CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; " +
   "connect-src 'self'; frame-src https://open.spotify.com https://www.youtube-nocookie.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'";
 
-function baseHeaders(url) {
+function baseHeaders(req) {
   const h = { 'Content-Security-Policy': CSP, 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'strict-origin-when-cross-origin',
     'X-Frame-Options': 'SAMEORIGIN', 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()' };
-  if (url.protocol === 'https:') h['Strict-Transport-Security'] = 'max-age=31536000';
+  if (isHttps(req)) h['Strict-Transport-Security'] = 'max-age=31536000';
   return h;
 }
 
@@ -60,27 +60,27 @@ function inject(html, path) {
   return html.replace('<!--gl:shows-->', () => showsHtml(rows, new Date(), path === '/' ? { limit: 3, allLink: '/shows/' } : { past: true }));
 }
 
-function send(req, res, url, status, type, body, extra = {}) {
-  const headers = { ...baseHeaders(url), 'Content-Type': type, ...extra };
+function send(req, res, status, type, body, extra = {}) {
+  const headers = { ...baseHeaders(req), 'Content-Type': type, ...extra };
   const out = compress(req, body, type, headers);
   res.writeHead(status, headers);
   res.end(req.method === 'HEAD' ? undefined : out);
 }
 
-function notFound(req, res, url) {
+function notFound(req, res) {
   const f = join(DIST, '404.html');
-  send(req, res, url, 404, TYPES['.html'], existsSync(f) ? readFileSync(f) : Buffer.from('Not found'), { 'Cache-Control': 'no-cache' });
+  send(req, res, 404, TYPES['.html'], existsSync(f) ? readFileSync(f) : Buffer.from('Not found'), { 'Cache-Control': 'no-cache' });
 }
 
 /** POST /api/signup. Form or JSON body, max 2 KB. JSON reply for the page's script; 303 back to the form without JS. */
-function handleSignup(req, res, url) {
+function handleSignup(req, res) {
   let raw = '', big = false;
   req.setEncoding('utf8');
   req.on('data', (c) => { if (!big) raw += c; if (raw.length > 2048) { big = true; raw = ''; } }); // keep reading, drop the excess, then answer 413
   req.on('end', async () => {
     const reply = (status, body) => {
-      if (/json/.test(req.headers.accept ?? '')) return send(req, res, url, status, 'application/json', Buffer.from(JSON.stringify(body)), { 'Cache-Control': 'no-store' });
-      res.writeHead(303, { ...baseHeaders(url), Location: `/?signup=${body.ok ? 'ok' : 'error'}#join`, 'Cache-Control': 'no-store' });
+      if (/json/.test(req.headers.accept ?? '')) return send(req, res, status, 'application/json', Buffer.from(JSON.stringify(body)), { 'Cache-Control': 'no-store' });
+      res.writeHead(303, { ...baseHeaders(req), Location: `/?signup=${body.ok ? 'ok' : 'error'}#join`, 'Cache-Control': 'no-store' });
       res.end();
     };
     if (big) return reply(413, { ok: false });
@@ -91,9 +91,14 @@ function handleSignup(req, res, url) {
   });
 }
 
-// ponytail: X-Forwarded-For only when TRUST_PROXY=1 (behind the host's proxy); otherwise it could be spoofed.
-const clientIp = (req) => (env.TRUST_PROXY === '1' && String(req.headers['x-forwarded-for'] ?? '').split(',')[0].trim()) || req.socket.remoteAddress;
-const isHttps = (req) => PROD || Boolean(req.socket.encrypted) || (env.TRUST_PROXY === '1' && req.headers['x-forwarded-proto'] === 'https');
+// X-Forwarded-* only when TRUST_PROXY=1 (behind the host's proxy); otherwise anyone could spoof them.
+// The client IP is the RIGHTMOST X-Forwarded-For entry (the one our proxy added); entries to its left are whatever the
+// client sent. App Service writes "1.2.3.4:port" or "[v6]:port", so the port is stripped.
+export function clientIp(req) {
+  const last = env.TRUST_PROXY === '1' && String(req.headers['x-forwarded-for'] ?? '').split(',').at(-1).trim();
+  return (last && last.replace(/^\[(.*)\](:\d+)?$/, '$1').replace(/^([\d.]+):\d+$/, '$1')) || req.socket.remoteAddress;
+}
+export const isHttps = (req) => Boolean(req.socket.encrypted) || (env.TRUST_PROXY === '1' && req.headers['x-forwarded-proto'] === 'https');
 
 // ---------- Edit screen: /edit/ ----------
 const LOOPBACK = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
@@ -117,51 +122,55 @@ function readBody(req) {
   });
 }
 
-function redirect(res, url, location, extra = {}) {
-  res.writeHead(303, { ...baseHeaders(url), Location: location, 'Cache-Control': 'no-store', ...extra });
+function redirect(req, res, location, extra = {}) {
+  res.writeHead(303, { ...baseHeaders(req), Location: location, 'Cache-Control': 'no-store', ...extra });
   res.end();
 }
 
 const WRONG = "That name and password don't match. Check them and try again.";
 const LOCKED = 'Too many tries. Wait 15 minutes, then try again.';
+const STALE = 'Someone else saved the shows a moment ago. Reload to see their changes; yours are still on this page.';
 
 async function handleEdit(req, res, url) {
   const p = url.pathname;
   const json = (status, body, extra = {}) => {
     req.resume(); // drain any unread body
-    send(req, res, url, status, 'application/json', Buffer.from(JSON.stringify(body)), { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex', ...extra });
+    send(req, res, status, 'application/json', Buffer.from(JSON.stringify(body)), { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex', ...extra });
   };
   if (!SECRET) return json(503, { error: 'off', message: 'The edit screen is not set up yet.' });
   if (req.method === 'GET' && p === '/edit/api/shows') {
     const who = editor(req, url);
     if (!who) return json(401, { error: 'signed_out' });
-    return json(200, { editor: who, shows: readShows(DATA, SHOWS) });
+    return json(200, { editor: who, shows: readShows(DATA, SHOWS), version: showsVersion(DATA, SHOWS) });
   }
   if (req.method !== 'POST') return json(405, { error: 'method' }, { Allow: 'POST' });
   if (!sameOrigin(req.headers)) return json(403, { error: 'origin', message: 'Refused: this has to come from the edit page itself.' });
 
   if (p === '/edit/login') {
     const isJson = /json/.test(req.headers['content-type'] ?? '');
+    const asJson = isJson || /json/.test(req.headers.accept ?? ''); // JSON reply for scripts; a plain browser form gets a redirect
     const raw = await readBody(req);
     if (raw == null) return json(413, { error: 'too_big' });
     let b;
     try { b = isJson ? JSON.parse(raw || '{}') : Object.fromEntries(new URLSearchParams(raw)); } catch { return json(400, { error: 'bad_body' }); }
     const username = String(b?.username ?? '').trim().toLowerCase().slice(0, 64);
-    // JSON from edit.js; a plain form post (no JS) gets a redirect back to the page.
-    const fail = (status, error, message) => (isJson ? json(status, { error, message }) : redirect(res, url, `/edit/?login=${error}`));
-    // 10 tries per IP per 15 minutes; 5 wrong passwords lock that name for 15 minutes (known or not, so it reveals nothing).
-    if (!allow(`ip:${clientIp(req)}`, 10, 15 * 60e3) || locked(`user:${username}`)) return fail(429, 'locked', LOCKED);
-    const name = checkLogin(EDITORS, username, b?.password);
-    if (!name) { recordFailure(`user:${username}`); return fail(401, 'wrong', WRONG); }
-    clearFailures(`user:${name}`);
+    const fail = (status, error, message) => (asJson ? json(status, { error, message }) : redirect(req, res, `/edit/?login=${error}`));
+    // 10 tries per IP per 15 minutes, 30 per minute across all IPs (each try costs a scrypt). 5 wrong passwords lock that
+    // name from that IP for 15 minutes; 50 in an hour lock the name everywhere (known or not, so it reveals nothing).
+    const ip = clientIp(req), userIp = `user:${username}|ip:${ip}`, user = `user:${username}`;
+    if (!allow(`ip:${ip}`, 10, 15 * 60e3) || !allow('login:all', 30, 60e3) || locked(userIp) || locked(user)) return fail(429, 'locked', LOCKED);
+    const name = await checkLogin(EDITORS, username, b?.password);
+    if (!name) { recordFailure(userIp); recordFailure(user, Date.now(), USER_LOCK); return fail(401, 'wrong', WRONG); }
+    clearFailures(userIp);
+    clearFailures(user);
     console.log(new Date().toISOString(), 'editor signed in:', name);
-    const cookie = cookieHeader(signSession(name, Date.now() + SESSION_DAYS * 864e5, SECRET, EDITORS.get(name)), { secure: isHttps(req) });
-    return isJson ? json(200, { ok: true, editor: name }, { 'Set-Cookie': cookie }) : redirect(res, url, '/edit/', { 'Set-Cookie': cookie });
+    const cookie = cookieHeader(signSession(name, Date.now() + SESSION_DAYS * 864e5, SECRET, EDITORS.get(name)), { secure: PROD || isHttps(req) });
+    return asJson ? json(200, { ok: true, editor: name }, { 'Set-Cookie': cookie }) : redirect(req, res, '/edit/', { 'Set-Cookie': cookie });
   }
 
   const who = editor(req, url);
   if (!who) return json(401, { error: 'signed_out' });
-  if (p === '/edit/logout') return json(200, { ok: true }, { 'Set-Cookie': cookieHeader('', { secure: isHttps(req), maxAge: 0 }) });
+  if (p === '/edit/logout') return json(200, { ok: true }, { 'Set-Cookie': cookieHeader('', { secure: PROD || isHttps(req), maxAge: 0 }) });
   if (p === '/edit/api/shows') {
     // JSON only: a cross-site HTML form can't send this content type (one more wall on top of SameSite and Origin).
     if (!/^application\/json\b/.test(req.headers['content-type'] ?? '')) return json(415, { error: 'json_only' });
@@ -171,42 +180,48 @@ async function handleEdit(req, res, url) {
     try { b = JSON.parse(raw); } catch { return json(400, { error: 'bad_body', errors: [{ row: null, message: 'That save got garbled. Try again.' }] }); }
     const r = checkShows(Array.isArray(b) ? b : b?.shows);
     if (r.errors) return json(400, { error: 'invalid', errors: r.errors });
+    // Two tabs or two editors: refuse a save based on an older list instead of silently dropping the other's changes.
+    if (b?.version !== showsVersion(DATA, SHOWS)) return json(409, { error: 'stale', message: STALE, errors: [{ row: null, message: STALE }] });
     saveShows(DATA, r.rows, SHOWS);
     console.log(new Date().toISOString(), `shows saved by ${who}: ${r.rows.length} rows`);
-    return json(200, { ok: true, shows: r.rows, message: "Saved. It's on the site now." });
+    return json(200, { ok: true, shows: r.rows, version: showsVersion(DATA, SHOWS), message: "Saved. It's on the site now." });
   }
   return json(404, { error: 'not_found' });
 }
 
 function handle(req, res) {
-  const url = new URL(req.url, `http://${req.headers.host ?? 'localhost'}`);
-  if (req.method === 'POST' && url.pathname === '/api/signup') return handleSignup(req, res, url);
+  let url;
+  try { url = new URL(req.url, `http://${req.headers.host ?? 'localhost'}`); } catch { // a junk Host header ('a b', '[')
+    res.writeHead(400, { Connection: 'close' });
+    return res.end();
+  }
+  if (req.method === 'POST' && url.pathname === '/api/signup') return handleSignup(req, res);
   if (['/edit/login', '/edit/logout'].includes(url.pathname) || url.pathname.startsWith('/edit/api/')) {
     return handleEdit(req, res, url).catch((e) => {
       console.error('edit failed:', e.message);
-      if (!res.headersSent) { res.writeHead(500, { ...baseHeaders(url), 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end('{"error":"server"}'); }
+      if (!res.headersSent) { res.writeHead(500, { ...baseHeaders(req), 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end('{"error":"server"}'); }
     });
   }
-  if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405, { ...baseHeaders(url), Allow: 'GET, HEAD' }); return res.end(); }
+  if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405, { ...baseHeaders(req), Allow: 'GET, HEAD' }); return res.end(); }
   let p;
-  try { p = decodeURIComponent(url.pathname); } catch { return notFound(req, res, url); }
+  try { p = decodeURIComponent(url.pathname); } catch { return notFound(req, res); }
   let file = normalize(join(DIST, p));
-  if (file !== DIST && !file.startsWith(DIST + sep)) return notFound(req, res, url);
+  if (file !== DIST && !file.startsWith(DIST + sep)) return notFound(req, res);
   let st = statSafe(file);
   if (st?.isDirectory()) {
-    if (!p.endsWith('/')) { res.writeHead(301, { ...baseHeaders(url), Location: `${url.pathname}/${url.search}` }); return res.end(); }
+    if (!p.endsWith('/')) { res.writeHead(301, { ...baseHeaders(req), Location: `${url.pathname}/${url.search}` }); return res.end(); }
     file = join(file, 'index.html');
     st = statSafe(file);
   }
-  if (!st?.isFile()) return notFound(req, res, url);
+  if (!st?.isFile()) return notFound(req, res);
   const type = TYPES[extname(file)] ?? 'application/octet-stream';
   if (type.startsWith('text/html')) {
     let html = readFileSync(file, 'utf8');
     try { html = inject(html, p); } catch (e) { console.error('inject failed, serving the static page', e.message); }
     const edit = p.startsWith('/edit/') ? { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } : {};
-    return send(req, res, url, 200, type, Buffer.from(html), { 'Cache-Control': 'no-cache', ...edit });
+    return send(req, res, 200, type, Buffer.from(html), { 'Cache-Control': 'no-cache', ...edit });
   }
-  send(req, res, url, 200, type, readFileSync(file), { 'Cache-Control': p.startsWith('/_astro/') ? 'public, max-age=31536000, immutable' : 'public, max-age=86400' });
+  send(req, res, 200, type, readFileSync(file), { 'Cache-Control': p.startsWith('/_astro/') ? 'public, max-age=31536000, immutable' : 'public, max-age=86400' });
 }
 
 export const server = createServer(handle);

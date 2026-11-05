@@ -1,7 +1,7 @@
 // Live shows storage for the edit screen. Gabe's saved list lives in DATA_DIR (outside the build), so the public pages
 // pick it up on the next request. Server-only (node:fs): never import this from an Astro page.
 import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
-import { randomBytes } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import { join } from 'node:path';
 import { validateShow } from './shows.js';
 
@@ -19,6 +19,8 @@ const PLAIN = {
 /** The live file if Gabe has saved, else the shipped list. */
 export const liveFile = (dataDir, fallback) => (existsSync(join(dataDir, 'shows.json')) ? join(dataDir, 'shows.json') : fallback);
 export const readShows = (dataDir, fallback) => JSON.parse(readFileSync(liveFile(dataDir, fallback), 'utf8'));
+/** Content hash of the live list: the edit screen sends it back on save, so a save over someone else's newer save is refused. */
+export const showsVersion = (dataDir, fallback) => createHash('sha256').update(readFileSync(liveFile(dataDir, fallback))).digest('hex').slice(0, 16);
 
 /** Keep only the known fields; empty optional fields are dropped. Returns { rows } or { errors: [{ row, message }] }. */
 export function checkShows(list) {
