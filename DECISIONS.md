@@ -62,3 +62,10 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   2026"), static (never rotating), approved by Gabe via the owner. No approved quote means nothing shown. Data: an
   optional `quote {text, url, date, platform}` per band. **Why:** the owner asked for a dialogue in his own voice; D6
   keeps real content right under each heading, and a quote under RISE would push the player off the first screen.
+- **D23** (2026-11-05, Laptop boss, review of `docs/copy/home.md`): Can the site trim or re-case Gabe's own words?
+  **Ruling:** no. His words go on the site exact or not at all, not even a capital letter changed. Home's PUSH PAST
+  FEAR shows bio line 1 only (exact); the full bio, word for word, goes on About; DESIGN.md section 5 drops "then the
+  mission-statement line". From Gabe picks: RISE "God will always be with you, and will never leave you in the
+  valley. Trust me, I know." (Instagram, Sep 2026); LIVE IT LOUD "Hope to see you there!" (YouTube, Sep 2026); none
+  elsewhere for now. Both need Gabe's OK. **Why:** the owner's rule that nothing goes in his mouth he didn't say; an
+  edited quote is no longer his; the trimmed line also named the "upcoming 3rd album", which goes stale.
