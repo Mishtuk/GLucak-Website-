@@ -108,7 +108,7 @@ test('approved copy is on each page verbatim; no ASK GABE; no quote ships', () =
     '/': ['Live It Loud', bio[0], 'Get the next show and every new song first.'],
     '/music/': ['All releases', 'Hear more on SoundCloud', 'Latest release. Listen on:', 'Pre-save IDENTITY'],
     '/shows/': ['Live It Loud', 'Book GLucak:'],
-    '/about/': [...bio, 'Find GLucak', 'Booking and shows', 'Photo credits', 'Photo: Alexander Kealey', 'Video: Sylvain Paslier'],
+    '/about/': [...bio, 'Find GLucak', 'Booking and shows', 'Photo credits', 'Photo: Alexander Kealey'],
   };
   for (const [p, texts] of Object.entries(want)) for (const t of texts) assert.ok(html(p).includes(t), `${p}: ${t}`);
   for (const p of Object.keys(pages)) {
@@ -131,4 +131,12 @@ test('Spotify box keeps the loading / blocked note under the iframe; no era-word
   const h = html('/');
   assert.match(h, /<div class="player-box"><p class="player-note">Loading the Spotify player\./);
   assert.ok(!html('/music/').includes('Era word:'));
+});
+
+test('privacy (D34): the whole-frame crowd photo (with the child) is not used anywhere; credits list only photos shown', () => {
+  for (const p of Object.keys(pages)) {
+    assert.ok(!/live-kealey-(800|1600|phone)/.test(html(p)), `${p}: whole-frame Kealey photo`);
+    assert.ok(!html(p).includes('live-paslier') || html(p).includes('Sylvain Paslier'), `${p}: Paslier shown without credit`);
+  }
+  assert.ok(!html('/').includes('Sylvain Paslier') && !html('/about/').includes('Sylvain Paslier'), 'credit for a photo not shown');
 });

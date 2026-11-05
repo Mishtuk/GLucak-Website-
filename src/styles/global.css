@@ -217,8 +217,7 @@ html[data-home][data-motion] .site-header:not(.is-solid):not(:has(details[open])
 .hero-photo picture { display: contents; }
 /* Phones: the portrait crop, pinned to its top so his face stays in the strip above the name. From 700px: the whole
    frame, his face falls in the gap between G and L (the gap and the photo both scale with the width, so it holds). */
-.hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%; }
-@media (min-width: 700px) { .hero-photo img { object-position: 20% 40%; } }
+.hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; } /* (a) is pre-cropped on Gabe (D34) */
 /* Hero A on phones: 24px more open strip above the name for his face (player stays at 80px+ above the bar). */
 @media (max-width: 699px) { html[data-hero='a'] .hero-inner { padding-top: calc(var(--header-h) + 1.75rem); } }
 /* Scrim: only where small text sits. Top right for Menu / the nav (4.5:1), the bottom ramp for the Now line. The rest of
@@ -376,8 +375,7 @@ html[data-shows='none'] .quote-live { display: none; }
 /* No overflow clipping here: the About tab stands above this box on the band's edge (it was clipped before 2026-11-05).
    The photo is inset: 0 with object-fit, so nothing else can spill. */
 .push-head { position: relative; }
-.push-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 46% 30%; }
-@media (min-width: 753px) { .push-photo { object-position: 40% 82%; } }
+.push-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; } /* (d) crowd panorama, child out of frame */
 .push-head::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 30%, transparent), color-mix(in srgb, var(--bg) 12%, transparent) 40%, color-mix(in srgb, var(--bg) 62%, transparent)); }
 .push-title { position: static; padding-block: 1.75rem 1.25rem; }
 .push-title .phrase { position: relative; z-index: 2; }

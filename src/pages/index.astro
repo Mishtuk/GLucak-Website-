@@ -11,7 +11,7 @@ const idn = identity();
 
 const HERO = 'a'; // D14: 'a' = GLUCAK over a full-bleed photo (default), 'b' = photo set into the name
 ---
-<Base title="GLucak" home hero={HERO} credits={[C.kealey, ...(HERO === 'b' ? [C.mccc] : []), C.paslier]}>
+<Base title="GLucak" home hero={HERO} credits={[C.kealey, ...(HERO === 'b' ? [C.mccc] : [])]}>
   <div class="top">
     <div class="glow" aria-hidden="true"></div>
     <Hero variant={HERO} />
