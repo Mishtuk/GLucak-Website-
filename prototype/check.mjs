@@ -54,6 +54,7 @@ function brightest({ w, bpp, px }, r, dpr = 1) { // worst background under text:
 /* ---------- static server with the real CSP ---------- */
 const server = createServer((req, res) => {
   const path = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname)).replace(/^[\\/]+/, '') || 'index.html';
+  if (path.startsWith('..')) { res.writeHead(404); return res.end(); } // an encoded ../ must not leave prototype/
   try {
     const body = readFileSync(join(ROOT, path));
     res.writeHead(200, { 'Content-Type': TYPES[extname(path)] || 'application/octet-stream', 'Content-Security-Policy': CSP, 'Cache-Control': 'no-store' });
@@ -179,7 +180,7 @@ try {
       for (const l of labels) { const f = parse(l.fg), b = parse(l.bg); line(`  ${l.t}: ${l.size} weight ${l.weight}, ${ratio(lum(...f), lum(...b)).toFixed(1)}:1, tab ${l.h}px tall, above "${l.phrase}" at ${parseFloat(l.phraseSize).toFixed(0)}px; nav word ${await evaluate(`[...document.querySelectorAll('.sheet a')].some(a=>a.textContent===${JSON.stringify(l.t)})||[...document.querySelectorAll('.phone-bar span')].some(a=>a.textContent===${JSON.stringify(l.t)})`) ? 'matches' : 'NOT in nav'}`); }
 
       line('CHECK 3b: text over photos, measured from pixels with the text hidden (99.5th percentile background)');
-      for (const q of ['?hero=a', '?hero=b', '?hero=a&era=placeholder-b']) {
+      for (const q of ['?hero=a', '?hero=b', '?hero=a&era=placeholder-b', '?hero=a&era=identity-guess']) {
         line('  ' + q);
         await load(BASE + q, 390, 660);
         const rects = await evaluate(`(()=>{const out={};for(const [k,s] of [['brand','.brand'],['menu','.nav-mobile summary'],['name','.name-row'],['slogan','.slogan'],['now','.now a']]){const b=document.querySelector(s).getBoundingClientRect();out[k]={x:b.x,y:b.y,w:b.width,h:b.height}}return out})()`);
@@ -204,8 +205,8 @@ try {
       await load(BASE, 390, 660);
       line('  ' + JSON.stringify(await evaluate(`(()=>{const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);const m={};let n;while(n=w.nextNode()){if(!n.textContent.trim())continue;const p=n.parentElement;if(p.closest('script,style,svg,.sheet,.skip'))continue;const c=getComputedStyle(p);if(c.display==='none')continue;const s=parseFloat(c.fontSize);m[s]=m[s]||p.className||p.tagName}return Object.entries(m).sort((a,b)=>a[0]-b[0]).slice(0,3)})()`)));
 
-      line('CHECK 3e: solid text pairs at 390, computed colors, both eras (text 4.5:1; large display and controls 3:1)');
-      for (const q of ['?hero=a', '?era=placeholder-b']) {
+      line('CHECK 3e: solid text pairs at 390, computed colors, every era (text 4.5:1; large display and controls 3:1)');
+      for (const q of ['?hero=a', '?era=placeholder-b', '?era=identity-guess']) {
         await load(BASE + q, 390, 660);
         const pairs = await evaluate(`(()=>{const x=document.createElement('canvas').getContext('2d',{willReadFrequently:true});const rgb=c=>{x.clearRect(0,0,1,1);x.fillStyle=c;x.fillRect(0,0,1,1);return [...x.getImageData(0,0,1,1).data].slice(0,3)};
           const cs=(s,p)=>getComputedStyle(document.querySelector(s))[p];

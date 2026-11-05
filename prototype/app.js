@@ -33,7 +33,15 @@
     ['duoR', 'duoG', 'duoB'].forEach((id, i) => $(`#${id}`).setAttribute('tableValues', `${lo[i].toFixed(3)} ${hi[i].toFixed(3)}`));
     $('#era-name').textContent = era.name;
   }
-  applyEra(GL.eras[q.get('era')] || GL.eras.placeholder);
+  const eraSlug = Object.hasOwn(GL.eras, q.get('era') ?? '') ? q.get('era') : 'placeholder';
+  applyEra(GL.eras[eraSlug]);
+  // Prototype-only: a guessed era says so on the hero chip and in the footer note.
+  const label = GL.eraLabels[eraSlug];
+  if (label) {
+    $('.hero-chip').textContent = label.chip;
+    $('.hero-chip').classList.add('is-long');
+    $('#era-line').textContent = label.note;
+  }
 
   /* ---------- Shows ---------- */
   const action = (s) => {

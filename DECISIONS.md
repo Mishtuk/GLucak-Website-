@@ -98,3 +98,11 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   block and the Music release strip, exactly as Spotify lists them ("GLucak, J-BOY"), body face, `muted`; solo
   releases have none. The Now line shows the title only ("Out now: Duck, Dodge, Jump, Fight"); the credit is right
   below it. **Why:** Spotify is the one source, and the collaborator stays credited where the release is shown.
+- **D35** (2026-11-05, Laptop boss): IDENTITY guess era and the Spotify theme. **Ruling:** `?era=identity-guess`
+  (DESIGN.md section 3c) is approved as a prototype-only preview, labelled "our guess" on the chip, footer and sheet;
+  it never enters `src/eras/` and is deleted when Gabe's real colours arrive. The Spotify embed uses `theme=0` (dark)
+  in every era (amends D19). Hero recommendation to the owner moves from A to C (A on phones, B from 900px), or B if
+  one layout only. **Why:** the owner can judge both heroes in IDENTITY's likely light before Nov 30 without anything
+  passing a guess off as Gabe's colours. The cover-derived player colour follows his playlist cover, not the era, and
+  clashed (maroon on violet); dark grey fits every era's dark `bg`. B works in any palette because no text sits over
+  the photo; A flattens in cool colours under the brightness cap.

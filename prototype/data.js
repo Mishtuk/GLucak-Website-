@@ -18,6 +18,23 @@ window.GL = {
       texture: 'assets/grain.png',
       word: 'Placeholder B',
     },
+    // A GUESS, not Gabe's colors (2026-11-05): sampled from the IDENTITY smart-link art (wingsmusic.lnk.to/IDENTITY,
+    // its og:image): Gabe in deep blue light, a violet glow, white type. bg is the art's indigo field, text its white
+    // type, accent its violet light lifted to pass 3:1 on bg. Same roles as every era. Replaced when Gabe's art arrives.
+    'identity-guess': {
+      name: 'IDENTITY guess',
+      colors: { bg: '#08044a', text: '#f6f5ff', accent: '#a866ff', 'accent-text': '#08044a', muted: '#bab6e6' },
+      art: 'assets/cover.svg',
+      texture: 'assets/grain.png',
+      word: 'IDENTITY',
+    },
+  },
+  // Prototype-only labels, keyed by era slug (never part of an era file). Shown so nobody mistakes a guess for Gabe's.
+  eraLabels: {
+    'identity-guess': {
+      chip: 'IDENTITY colors: our guess from the smart-link art',
+      note: 'Colors are our guess at IDENTITY, sampled from the smart-link art, not Gabe’s.',
+    },
   },
   shows: [
     { date: 'MMM 00', time: '0:00 PM', type: 'show', venue: 'Venue name', city: 'City', link: 'https://example.com/placeholder', with: 'Guest name' },

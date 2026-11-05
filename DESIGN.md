@@ -145,6 +145,49 @@ MSP program group." where their stills appear). The About page repeats the full 
 - **Grain:** `era.texture` tiled on bands, footer and poster; still, never animated. If `texture` is null, use the site default
   `grain.png` (128px tile, 15 KB).
 
+### 3c. IDENTITY guess era (2026-11-05): **a guess, not Gabe's colors**
+Prototype only: `?era=identity-guess` (in `prototype/data.js`, **not** in `src/eras/`). It lets the owner see the site in
+IDENTITY's light before Gabe's real art and colors arrive (about Nov 30); then this era is deleted, not promoted. In this era the
+hero chip reads "IDENTITY colors: our guess from the smart-link art" and the footer note says the same.
+
+**Source:** the og:image of `https://wingsmusic.lnk.to/IDENTITY` (Linkfire `artwork-600x315.jpg` and `-440x440.jpg`, read only,
+kept out of the repo). Gabe's face and shoulders in deep blue light, a violet-magenta glow top right, white IDENTITY type, Logo D
+under it. Dominant colors (k-means, 8 clusters, 440px square): black `#000001` 27%, indigo `#040243` 21%, `#090359` 17%,
+ultramarine `#18078d` 10%, violet `#3b07ba` 10%, near-black blue `#02041c` 8%, the glow `#8312c8` 5%, the type `#dfdbed` /
+`#f6f6f6` 2%. Hues 240-255 hold about 55% of the picture.
+
+| Role | Value | From the art |
+|---|---|---|
+| `bg` | `#08044a` | The indigo field (between `#040243` and `#090359`). Luminance 0.0063: dark enough for Logo D (D25) |
+| `text` | `#f6f5ff` | The white IDENTITY type, a touch cool |
+| `accent` | `#a866ff` | The violet glow (`#8312c8`, hue 277, and `#3b07ba`, hue 258), lifted to hue 266 and lightened until it passes 3:1 on `bg` (the art's own violets reach only 1.7 to 2.6:1) |
+| `accent-text` | `#08044a` | `bg`, as in every era |
+| `muted` | `#bab6e6` | Lavender grey, between the type and the field |
+| `bg-2` (derived) | `#191557` | `text` 7% into `bg` |
+| `line` (derived) | `#464379` | `text` 26% into `bg` |
+| Duotone dark / light (derived) | `#08044a` / `#9359e7` | `bg`; the ceiling stops at 87% toward `accent` (peak 4.01:1 against `text`) |
+
+No new roles, ceiling rule unchanged, covers and Dave Bahm's art never tinted. **Contrast** (same maths as `app.js`, mark
+composited from `mark-identity-300.webp`): text/bg 17.24, text/bg-2 15.14, muted/bg 9.69, muted/bg-2 8.51, muted on the player
+box 5.40; **Listen** (accent-text on accent) 5.33, Listen's fill against the page (accent/bg) 5.33, on bg-2 4.68; **Now tag, tabs, poster
+ink on paper** (bg on text, no accent involved) 17.24; **poster Tickets**: label 5.33, fill against the paper 3.23 (and its 3px
+`bg` border 17.24); duotone peak 4.01 against text. **Logo D wings** (65% grey): on bg median 5.48:1 (darkest tenth 4.42), on
+bg-2 5.19 (4.24), against 5.68 / 5.24 on the placeholder era; bg against black 1.13 (the D25 test allows 1.5). All pass the
+era-file test (`test/eras.test.js` rules) and `prototype/check.mjs` (section 12).
+
+**How it looks (my read of `prototype/shots/hero-pick-identity-guess.png`):** energetic, not muddy, and close to the art. The
+indigo ground, white type and violet buttons read as IDENTITY at a glance, and it feels cooler and more "night" than the
+red-orange placeholder. **Hero B is the stronger hero in this light:** indigo page, violet photo in the slot, white name: it is
+nearly the cover. **Hero A goes flat:** the Kealey photo is high-key, so most of it lands near the capped peak, and violet at
+that luminance (0.19) looks lighter and more pastel than red-orange did. Add the violet glow over it and the hero becomes a
+lavender-violet field with his face as a ghost at the top. The text still passes (5.33:1), and it isn't muddy, but A has
+less depth here than in the placeholder era, where the photo still read as a photo. A darker accent wouldn't help: the ceiling,
+not the hue, sets the peak's lightness. If Gabe's real colors are also blue-violet, that's a point for B. A print-style two-colour
+treatment (the Desktop's `docs/review/photo-treatments/`) with harder blacks would fix A's flatness better than the smooth
+duotone. **Spotify's embed is always dark-themed** (`theme=0`, Spotify's dark grey) in every era (D35, amends D19). The
+cover-derived colour follows Gabe's playlist cover, not the era, so it can clash with any palette; the dark theme sits on every
+era's dark `bg`.
+
 ## 4. Field names (shared with the Desktop: keep this section in step with `src/`)
 > **Single source for these names.** They match `src/lib/shows.js`, `src/eras/placeholder.json` and `src/data/shows.json` at
 > 7a2e937. Release and IDENTITY fields below are agreed (D18) but not in `src/` yet.
@@ -219,7 +262,7 @@ with focus moved in, Escape and link tap close it. Shop slot: one nav entry, off
   linked to that release's `link`. Long titles wrap to two lines inside the 48px line (measured: the player stays put).
 
 **1. RISE, tab Music.** Phrase at 3.5rem on phones; huge in a left column from 900px. The official embed at exactly **352px**,
-full column width, with its height reserved. Under it: **Play full songs on Spotify** as a real button (2026-11-05):
+full column width, with its height reserved, always dark-themed (`theme=0`, D35). Under it: **Play full songs on Spotify** as a real button (2026-11-05):
 `btn btn-line btn-small`, 48px tall, display face 1.25rem, full width under 700px, natural width beside the link from 700px. It's
 the playlist link: logged-out fans, most of them in Instagram's in-app browser, get 30-second previews in the embed, and this is
 the way to full songs, so it earns a button. Outline, not solid: the accent stays on Listen. Then **Listen everywhere**, a text
@@ -380,6 +423,7 @@ output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
 | Text over the **real** photos, from pixels (99.5th percentile background, text hidden) | A: name **5.39:1**, slogan **6.19:1** (need 3), Menu **10.84:1**, Now **13.63:1** (need 4.5; the real two-line Now line). B: name 16.85, slogan 15.90, Menu 17.32, Now 14.06. A on the second era: name 5.34, slogan 5.95, Menu 10.35, Now 11.37. PUSH PAST FEAR heading over the Paslier still: 7.68:1 |
 | Tap targets, text size | 36 targets, none under 48px (Spotify button 48px, both quote credits 48px). Smallest text 16px. No sideways scroll at 320, 390, 1280 with the long title and quotes |
 | Solid pairs, both eras | Lowest 5.71:1 |
+| **IDENTITY guess era** (`?era=identity-guess`, section 3c; **a guess, not Gabe's colors**) | Text over the real photo, hero A at 390x660: name **5.33:1**, slogan **6.10**, brand 6.23 (need 3); Menu **10.53**, Now **13.43** (need 4.5). Solid pairs (CHECK 3e): lowest solid button (Listen) 5.33, Tickets on poster 5.33, muted on footer 8.49. Tabs and Now tag 17.24. Logo D wings on bg 5.48:1, on bg-2 5.19:1. Duotone peak `#9359e7`, 4.01:1 against text. All other checks unchanged (same layout). Sheet: `prototype/shots/hero-pick-identity-guess.png` (`node prototype/tools/hero-pick.mjs --era identity-guess`) |
 | Home height at 390x660 | **A 3812px = 5.61 without the prototype note after D33's artists line** (3px over the cap 5.6; accepted, since the collaborator credit is never dropped; the built site measures 5.25). Before D33: A 3795px = 5.75 screens, 5.58 without the note (cap 5.6, boss 2026-11-05). B 5.84 / 5.67. Empty shows 5.60 / 5.43. With both real quotes (R1, L2), the real release title and Now line. Committed baseline was 5.21 / 5.07 (2026-11-03 report; the 5.13 in the old table was an earlier run). What added height: the IDENTITY block (date, pre-save, mark beside the word), both quotes (132 and 76px, compact style), the Spotify button and the footer credits; what took it back: D23 (mission line gone), the mark beside IDENTITY instead of above (about 60px), the compact quote (tag in the first line, credit inline) |
 | Reduced motion | Emulated with `Emulation.setEmulatedMedia`: `document.getAnimations()` empty, headings visible. Footer switch: also empty. The IDENTITY count is text, not motion |
 | Flash | **By construction:** the only loop is one 24s opacity and transform drift (opacity .68 to .88), so it cannot reach 3 flashes a second. Supporting sample only, too slow to detect a 3 Hz flash on its own: 87 and 95 frames over 26s, largest change in mean luminance 0.0001 against WCAG's 0.10, on both heroes with the real photos. Most moving things on screen at once, brisk scroll: 1 |
@@ -390,7 +434,11 @@ output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
 ## 13. Not verified
 - **The hero pick.** Both heroes run on the real photo; the owner picks from `prototype/shots/hero-pick.png` (D14).
 - **The duotone on IDENTITY's real colors.** All photo tests ran on the placeholder era (and the second one). The ceiling holds by
-  construction in any era, but how dark the photos look depends on the real accent.
+  construction in any era, but how dark the photos look depends on the real accent. **Partly tried on the IDENTITY guess era**
+  (section 3c, blue-violet from the smart-link art): it passes, but it flattens hero A. Re-run on Gabe's real colors.
+- **The IDENTITY guess era is a guess.** Its colors come from a 600x315 / 440x440 JPEG of the smart link's art, not from Gabe's
+  files or his palette, and the accent was lifted to pass contrast, so it is brighter than any violet in the art. Never ship it
+  or copy it to `src/eras/`.
 - **Logo D at 16px** (browser tab) was seen only as a 32px PNG. A cross-only file from Gabe or Dave would be crisper.
 - **The "From Gabe" quotes are real words but not yet approved** (R1 and L2, marked "Pending Gabe's OK" in the prototype; the chip
   never ships). Real wrap measured (section 5): R1, 86 characters, 3 lines plus credit at 390 (132px), 4 at 320 (163px); L2, 22

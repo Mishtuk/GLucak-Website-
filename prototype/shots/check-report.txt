@@ -2,8 +2,8 @@ CHECK 1: player top on the first phone screen (390x660), clear of the bar
   ?hero=a: player top 508px, bar top 598px, 90px of player visible, player height 352px
   ?hero=b: player top 518px, bar top 598px, 80px of player visible, player height 352px
 CHECK 1b: the real Spotify embed, under the real CSP, logged out (fresh profile)
-  390px: frame https://open.spotify.com/embed/playlist/0D45boIc9xWAdDjz1uTDRo, box 349x352px, 137 distinct colors painted (the bare box is 1), CSP/load errors: none
-  1280px: frame https://open.spotify.com/embed/playlist/0D45boIc9xWAdDjz1uTDRo, box 681x352px, 107 distinct colors painted (the bare box is 1), CSP/load errors: none
+  390px: frame https://open.spotify.com/embed/playlist/0D45boIc9xWAdDjz1uTDRo, box 349x352px, 62 distinct colors painted (the bare box is 1), CSP/load errors: none
+  1280px: frame https://open.spotify.com/embed/playlist/0D45boIc9xWAdDjz1uTDRo, box 681x352px, 74 distinct colors painted (the bare box is 1), CSP/load errors: none
 CHECK 2: slogan wrap and no horizontal scroll
   320px ?hero=a: scrollWidth 320/320, GLUCAK x 20 to 299.2, slogan 278.7px wide at 41.0px + 278.4px wide at 21.6px
   320px ?hero=b: scrollWidth 320/320, GLUCAK x 20 to 299.4, slogan 278.7px wide at 41.0px + 278.4px wide at 21.6px
@@ -35,15 +35,22 @@ CHECK 3b: text over photos, measured from pixels with the text hidden (99.5th pe
     name: text 5.34:1 against the brightest background (need 3:1)
     slogan: text 5.96:1 against the brightest background (need 3:1)
     now: text 11.39:1 against the brightest background (need 4.5:1)
+  ?hero=a&era=identity-guess
+    brand: text 6.23:1 against the brightest background (need 3:1)
+    menu: text 10.53:1 against the brightest background (need 4.5:1)
+    name: text 5.33:1 against the brightest background (need 3:1)
+    slogan: text 6.10:1 against the brightest background (need 3:1)
+    now: text 13.43:1 against the brightest background (need 4.5:1)
   PUSH PAST FEAR heading: 7.68:1 (need 3:1)
 CHECK 3c: tap targets at 390 (every link, button and field)
   ?hero=a: 36 targets, under 48px: none
   ?shows=none: 34 targets, under 48px: none
 CHECK 3d: smallest text at 390
   [["16","now-tag"],["17","A"],["18","row-place"]]
-CHECK 3e: solid text pairs at 390, computed colors, both eras (text 4.5:1; large display and controls 3:1)
+CHECK 3e: solid text pairs at 390, computed colors, every era (text 4.5:1; large display and controls 3:1)
   ?hero=a: lowest solid button 5.71:1, Tickets on poster 5.71:1, muted on footer 7.68:1
   ?era=placeholder-b: lowest muted on footer 7.41:1, slogan on footer 7.41:1, row kind 8.77:1
+  ?era=identity-guess: lowest solid button 5.33:1, Tickets on poster 5.33:1, muted on footer 8.49:1
 CHECK 4: Home height in phone screens at 390x660
   ?hero=a: 3812px = 5.78 screens, 5.61 without the prototype-only note (top 1316, shows 818, about 575, join 578, footer 464)
   ?hero=b: 3870px = 5.86 screens, 5.69 without the prototype-only note (top 1326, shows 818, about 575, join 578, footer 512)
@@ -53,8 +60,8 @@ CHECK 5: reduced motion and the Motion switch
   Emulation.setEmulatedMedia prefers-reduced-motion=reduce: animations [], switch "Motion: off (device setting)", fade headings opacity 1
   footer switch clicked: animations [], switch "Motion: off"
 CHECK 6: flash
-  hero a: 88 frames over 25.9s, mean relative luminance 0.2069 to 0.2086, largest frame-to-frame change 0.0001 (WCAG flash needs a change of 0.10)
-  hero b: 94 frames over 25.8s, mean relative luminance 0.1546 to 0.1563, largest frame-to-frame change 0.0001 (WCAG flash needs a change of 0.10)
+  hero a: 88 frames over 25.8s, mean relative luminance 0.2024 to 0.2041, largest frame-to-frame change 0.0001 (WCAG flash needs a change of 0.10)
+  hero b: 95 frames over 26.0s, mean relative luminance 0.1507 to 0.1523, largest frame-to-frame change 0.0001 (WCAG flash needs a change of 0.10)
   every CSS animation rule: ["html[data-motion=\"on\"] .glow 24s"]
   most animations running on the visible screen, brisk scroll, sampled every 150px: 1
 Page errors and CSP (served with the real CSP):
