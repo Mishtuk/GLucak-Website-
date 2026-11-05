@@ -32,7 +32,8 @@
   Next: daily rebuild for release-day flips + host plan (owner decides the host). Claims: `src/`, `public/`, `server.js`, `test/` (port of the Laptop's ddf5d60 round: notes 1-9 on #1).
 - **Laptop (2026-11-05):** boss agent runs each round (plans, briefs the designer / copywriter, reviews). Done, all
   boss-approved: real Spotify embed (D19), Home copy `docs/copy/home.md` (D21, D23), prototype on Gabe's real photos +
-  Logo D + type lock (D25, D27, ddf5d60), security review of the edit screen (fixed in 620df1c). Nothing claimed.
+  Logo D + type lock (D25, D27, ddf5d60), security review of the edit screen (fixed in 620df1c). **Claimed:** `docs/copy/` (music.md, shows.md,
+  about.md in progress).
   **Owner:** pick hero A or B from `prototype/shots/hero-pick.png` (boss leans A on phones); send Gabe the 5 questions
   at the bottom of `docs/copy/home.md`. Laptop next: copy for Music, Shows, About (copywriter, boss-reviewed).
   Local clone on the Laptop: `C:\Users\alexm\projects\GLucak-Website` (no `V:\`; Riverside is at
