@@ -9,6 +9,15 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
+- **Round 2026-11-05 (owner: store + admin console, then visuals, split evenly). Split posted on #1:**
+  - **Laptop:** L1 photo treatments into the prototype per D34 (hero A phones / B 900px+, (d) Push Past Fear, (c) Live It
+    Loud poster, (e) About with the HANDS frame swapped); L2 DESIGN.md + prototype for the Shop (grid, product card,
+    detail, sample / coming-soon states) and the admin console look (tabs Shows / Products); L3 shop + admin copy;
+    L4 boss reviews of the Desktop's builds; later visual polish of Music / About.
+  - **Desktop:** D1 privacy swap in src now (hero A -> (a), Push Past Fear -> (d)); D2 store backend (`/shop/`,
+    products per visit, `SHOP_ENABLED`, sample products); D3 admin console v2 (tabs, Products editor, image upload
+    re-encoded through sharp); D4 port L1 / L2 into src; later OG share images per page, performance, Lighthouse.
+    Claims: `src/`, `server.js`, `public/`, `test/`, `tools/` (not `tools/photo/` unless asked).
 - **Owner, 2026-11-02:** approved direction.md + ROADMAP.md. Sends Gabe section 8. Decides hosting; registers
   glucak.com (auto-renew). Accounts in Gabe's name, owner co-manages. Work only on what doesn't need Gabe's answers.
 - **Desktop (2026-11-05):** done: researcher -> `docs/research/social-content.md` (his own words by theme with sources,
