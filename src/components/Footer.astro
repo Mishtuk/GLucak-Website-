@@ -7,7 +7,7 @@ const { home = false, credits = [] } = Astro.props;
 <footer class="site-footer" id="footer">
   <div class="wrap">
     {!home && <div class="footer-join" id="join"><Signup /></div>}
-    <p class="closing fit"><span class="ln ln-close"><a href={home ? '#music' : '/music/'}>Listen.</a> <a href={home ? '#shows' : '/shows/'}>Shows.</a> <a href="#join">Join.</a></span></p>
+    <p class="closing fit"><span class="ln ln-close"><a href={home ? '#music' : '/music/'}>Listen.</a> <a href={home ? '#shows' : '/shows/'}>Shows.</a><Fragment set:html="<!--gl:footer-shop-->" /> <a href="#join">Join.</a></span></p>
     <ul class="socials">
       {SOCIALS.map(([name, href]) => <li><a href={href} rel="noopener">{name}</a></li>)}
     </ul>

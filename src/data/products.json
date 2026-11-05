@@ -1,0 +1,54 @@
+[
+  {
+    "id": "sample-glucak-tee",
+    "name": "Sample: GLucak tee",
+    "type": "shirt",
+    "price": 2500,
+    "image": "/media/shop/sample-tee.webp",
+    "description": "SAMPLE product. Not for sale. The real shirt, photo and price come when Gabe's merch is ready.",
+    "status": "sample",
+    "sizes": ["S", "M", "L", "XL", "2XL"],
+    "order": 0
+  },
+  {
+    "id": "sample-glucak-hoodie",
+    "name": "Sample: GLucak hoodie",
+    "type": "hoodie",
+    "price": 4500,
+    "image": "/media/shop/sample-hoodie.webp",
+    "description": "SAMPLE product. Not for sale. The real hoodie, photo and price come when Gabe's merch is ready.",
+    "status": "sample",
+    "sizes": ["S", "M", "L", "XL", "2XL"],
+    "order": 1
+  },
+  {
+    "id": "sample-identity-cd",
+    "name": "Sample: IDENTITY CD",
+    "type": "cd",
+    "price": 1200,
+    "image": "/media/shop/sample-identity-cd.webp",
+    "description": "SAMPLE product. Not for sale. A placeholder for a possible IDENTITY CD; nothing here is confirmed.",
+    "status": "sample",
+    "order": 2
+  },
+  {
+    "id": "sample-identity-vinyl",
+    "name": "Sample: IDENTITY vinyl",
+    "type": "vinyl",
+    "price": 3000,
+    "image": "/media/shop/sample-identity-vinyl.webp",
+    "description": "SAMPLE product. Not for sale. A placeholder for a possible IDENTITY vinyl; nothing here is confirmed.",
+    "status": "sample",
+    "order": 3
+  },
+  {
+    "id": "sample-glucak-sticker",
+    "name": "Sample: GLucak sticker",
+    "type": "sticker",
+    "price": 300,
+    "image": "/media/shop/sample-sticker.webp",
+    "description": "SAMPLE product. Not for sale. A placeholder sticker.",
+    "status": "sample",
+    "order": 4
+  }
+]

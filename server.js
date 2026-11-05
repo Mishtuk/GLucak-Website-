@@ -1,25 +1,32 @@
 // The GLucak website server: serves the static Astro build in dist/ with strict security headers and fills the
-// shows list into the HTML at the <!--gl:shows--> marker on every request (so past shows drop off by themselves).
-// Gabe's edit screen (shows only for now) lives under /edit/: sign-in, then GET/POST /edit/api/shows.
-// Node 22+ built-ins only.
+// shows list into the HTML at the <!--gl:shows--> marker on every request (so past shows drop off by themselves), and
+// the shop at <!--gl:shop--> the same way. SHOP_ENABLED=1 adds Shop to the nav, phone bar and footer (D8, D36).
+// Gabe's edit screen lives under /edit/: sign-in, then GET/POST /edit/api/shows and /edit/api/products, and
+// POST /edit/api/upload for product images (served back from /media/uploads/). Node 22+ built-ins, plus sharp for uploads.
 import { createServer } from 'node:http';
 import { randomBytes } from 'node:crypto';
-import { existsSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { extname, join, normalize, sep } from 'node:path';
 import { brotliCompressSync, constants as zc, gzipSync } from 'node:zlib';
 import { nowHtml, showsHtml } from './src/lib/shows.js';
 import { signup } from './src/lib/signup.js';
 import { allow, checkLogin, clearFailures, cookieHeader, locked, parseEditors, readCookie, recordFailure, sameOrigin, signSession, verifySession, SESSION_DAYS, USER_LOCK } from './src/lib/auth.js';
-import { checkShows, readShows, saveShows, showsVersion } from './src/lib/store.js';
+import { checkShows, listVersion, readList, readShows, saveList } from './src/lib/store.js';
+import { checkProducts, productsHtml, shopLinks } from './src/lib/products.js';
+import { MAX_BYTES, TYPES as IMAGE_TYPES, UPLOAD_NAME, toWebp } from './src/lib/upload.js';
 
 const ROOT = import.meta.dirname;
 const env = process.env;
 const DIST = normalize(env.DIST_DIR || join(ROOT, 'dist')); // normalized, so forward slashes on Windows still match
 const SHOWS = env.SHOWS_FILE || join(ROOT, 'src/data/shows.json'); // the shipped list
+const PRODUCTS = env.PRODUCTS_FILE || join(ROOT, 'src/data/products.json'); // the shipped SAMPLE products
 const PORT = Number(env.PORT) || 8080;
 const PROD = env.NODE_ENV === 'production' || Boolean(env.WEBSITE_SITE_NAME); // App Service sets WEBSITE_SITE_NAME
-// Gabe's saved shows live here, outside the build; DATA/shows.json wins over the shipped SHOWS file.
+// Gabe's saved shows live here, outside the build; DATA/shows.json wins over the shipped SHOWS file. Same for
+// products.json; uploaded product images live in DATA/uploads.
 const DATA = env.DATA_DIR || join(ROOT, '.data');
+const UPLOADS = join(DATA, 'uploads');
+const shopOn = () => env.SHOP_ENABLED === '1'; // read per request; the owner flips it with a restart, no rebuild
 const EDITORS = parseEditors(env.EDITOR_USERS);
 // Production needs a real SESSION_SECRET (32+ characters) or the edit routes stay off (503). Dev: a new secret each start.
 const SECRET = env.SESSION_SECRET?.length >= 32 ? env.SESSION_SECRET : PROD ? null : randomBytes(32).toString('hex');
@@ -53,8 +60,13 @@ function compress(req, buf, type, headers) {
 
 const statSafe = (f) => { try { return statSync(f); } catch { return null; } };
 
-/** Fill the shows marker and the Now-line marker. Fails open (caller catches): an unreadable shows.json leaves the static page. */
+/** Fill the shop links, the shop, the shows and the Now line. Fails open (caller catches): an unreadable file leaves the static page. */
 function inject(html, path) {
+  html = shopLinks(html, { enabled: shopOn(), path });
+  if (html.includes('<!--gl:shop-->')) {
+    const shop = productsHtml(readList(DATA, PRODUCTS, 'products.json'), { preview: !shopOn() });
+    html = html.replace('<!--gl:shop-->', () => shop);
+  }
   const shows = html.includes('<!--gl:shows-->'), now = html.includes('<!--gl:now-->');
   if (!shows && !now) return html;
   const rows = readShows(DATA, SHOWS);
@@ -108,6 +120,11 @@ export const isHttps = (req) => Boolean(req.socket.encrypted) || (env.TRUST_PROX
 // ---------- Edit screen: /edit/ ----------
 const LOOPBACK = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
 const BODY_MAX = 32 * 1024;
+// Each list the edit screen saves, same model for both: validate all, version check -> 409, atomic write + .prev.
+const LISTS = {
+  shows: { file: 'shows.json', fallback: SHOWS, check: checkShows, max: BODY_MAX, big: 'That list is too big to save. Delete some old shows.' },
+  products: { file: 'products.json', fallback: PRODUCTS, check: checkProducts, max: 256 * 1024, big: 'That list is too big to save. Delete some products or shorten descriptions.' },
+};
 
 /** The signed-in editor, or null. DEV_EDITOR=1 works only off production, on a localhost URL, from this machine. */
 function editor(req, url) {
@@ -115,13 +132,13 @@ function editor(req, url) {
   return verifySession(readCookie(req.headers.cookie), SECRET, EDITORS);
 }
 
-/** The body text up to BODY_MAX, or null when bigger (the excess is read and dropped; past 1 MB the socket is cut). */
-function readBody(req) {
+/** The body bytes up to `max`, or null when bigger (the excess is read and dropped; 1 MB past `max` the socket is cut). */
+function readBody(req, max = BODY_MAX) {
   return new Promise((resolve) => {
-    let raw = '', size = 0;
-    req.setEncoding('utf8');
-    req.on('data', (c) => { size += c.length; if (size <= BODY_MAX) raw += c; else if (size > 1024 * 1024) req.destroy(); });
-    req.on('end', () => resolve(size > BODY_MAX ? null : raw));
+    const parts = [];
+    let size = 0;
+    req.on('data', (c) => { size += c.length; if (size <= max) parts.push(c); else if (size > max + 1024 * 1024) req.destroy(); });
+    req.on('end', () => resolve(size > max ? null : Buffer.concat(parts)));
     req.on('error', () => resolve(null));
     req.on('close', () => resolve(null)); // cut off or aborted; a no-op after 'end'
   });
@@ -134,7 +151,8 @@ function redirect(req, res, location, extra = {}) {
 
 const WRONG = "That name and password don't match. Check them and try again.";
 const LOCKED = 'Too many tries. Wait 15 minutes, then try again.';
-const STALE = 'Someone else saved the shows a moment ago. Reload to see their changes; yours are still on this page.';
+const STALE = (kind) => `Someone else saved the ${kind} a moment ago. Reload to see their changes; yours are still on this page.`;
+const NOT_IMAGE = "That file isn't a photo we can use. Try a JPG, PNG or WebP.";
 
 async function handleEdit(req, res, url) {
   const p = url.pathname;
@@ -143,10 +161,11 @@ async function handleEdit(req, res, url) {
     send(req, res, status, 'application/json', Buffer.from(JSON.stringify(body)), { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex', ...extra });
   };
   if (!SECRET) return json(503, { error: 'off', message: 'The edit screen is not set up yet.' });
-  if (req.method === 'GET' && p === '/edit/api/shows') {
+  const kind = p.match(/^\/edit\/api\/(shows|products)$/)?.[1], list = LISTS[kind];
+  if (req.method === 'GET' && list) {
     const who = editor(req, url);
     if (!who) return json(401, { error: 'signed_out' });
-    return json(200, { editor: who, shows: readShows(DATA, SHOWS), version: showsVersion(DATA, SHOWS) });
+    return json(200, { editor: who, [kind]: readList(DATA, list.fallback, list.file), version: listVersion(DATA, list.fallback, list.file) });
   }
   if (req.method !== 'POST') return json(405, { error: 'method' }, { Allow: 'POST' });
   if (!sameOrigin(req.headers)) return json(403, { error: 'origin', message: 'Refused: this has to come from the edit page itself.' });
@@ -154,7 +173,7 @@ async function handleEdit(req, res, url) {
   if (p === '/edit/login') {
     const isJson = /json/.test(req.headers['content-type'] ?? '');
     const asJson = isJson || /json/.test(req.headers.accept ?? ''); // JSON reply for scripts; a plain browser form gets a redirect
-    const raw = await readBody(req);
+    const raw = (await readBody(req))?.toString('utf8');
     if (raw == null) return json(413, { error: 'too_big' });
     let b;
     try { b = isJson ? JSON.parse(raw || '{}') : Object.fromEntries(new URLSearchParams(raw)); } catch { return json(400, { error: 'bad_body' }); }
@@ -176,20 +195,41 @@ async function handleEdit(req, res, url) {
   const who = editor(req, url);
   if (!who) return json(401, { error: 'signed_out' });
   if (p === '/edit/logout') return json(200, { ok: true }, { 'Set-Cookie': cookieHeader('', { secure: PROD || isHttps(req), maxAge: 0 }) });
-  if (p === '/edit/api/shows') {
+  if (list) {
     // JSON only: a cross-site HTML form can't send this content type (one more wall on top of SameSite and Origin).
     if (!/^application\/json\b/.test(req.headers['content-type'] ?? '')) return json(415, { error: 'json_only' });
-    const raw = await readBody(req);
-    if (raw == null) return json(413, { error: 'too_big', errors: [{ row: null, message: 'That list is too big to save. Delete some old shows.' }] });
+    const raw = (await readBody(req, list.max))?.toString('utf8');
+    if (raw == null) return json(413, { error: 'too_big', errors: [{ row: null, message: list.big }] });
     let b;
     try { b = JSON.parse(raw); } catch { return json(400, { error: 'bad_body', errors: [{ row: null, message: 'That save got garbled. Try again.' }] }); }
-    const r = checkShows(Array.isArray(b) ? b : b?.shows);
+    const r = list.check(Array.isArray(b) ? b : b?.[kind]);
     if (r.errors) return json(400, { error: 'invalid', errors: r.errors });
     // Two tabs or two editors: refuse a save based on an older list instead of silently dropping the other's changes.
-    if (b?.version !== showsVersion(DATA, SHOWS)) return json(409, { error: 'stale', message: STALE, errors: [{ row: null, message: STALE }] });
-    saveShows(DATA, r.rows, SHOWS);
-    console.log(new Date().toISOString(), `shows saved by ${who}: ${r.rows.length} rows`);
-    return json(200, { ok: true, shows: r.rows, version: showsVersion(DATA, SHOWS), message: "Saved. It's on the site now." });
+    const version = () => listVersion(DATA, list.fallback, list.file);
+    if (b?.version !== version()) return json(409, { error: 'stale', message: STALE(kind), errors: [{ row: null, message: STALE(kind) }] });
+    saveList(DATA, r.rows, list.fallback, list.file);
+    console.log(new Date().toISOString(), `${kind} saved by ${who}: ${r.rows.length} rows`);
+    return json(200, { ok: true, [kind]: r.rows, version: version(), message: "Saved. It's on the site now." });
+  }
+  if (p === '/edit/api/upload') {
+    // The raw image is the body. The declared type only gates the door; sharp decides what the bytes really are.
+    const type = String(req.headers['content-type'] ?? '').split(';')[0].trim().toLowerCase();
+    if (!IMAGE_TYPES.includes(type)) return json(415, { error: 'type', message: NOT_IMAGE });
+    if (!allow(`upload:${who}`, 30, 10 * 60e3) || !allow(`upload-ip:${clientIp(req)}`, 30, 10 * 60e3)) {
+      return json(429, { error: 'slow_down', message: 'Too many uploads. Wait a few minutes, then try again.' });
+    }
+    const buf = await readBody(req, MAX_BYTES);
+    if (!buf) return json(413, { error: 'too_big', message: 'That photo is over 5 MB. Pick a smaller one.' });
+    let out;
+    try { out = await toWebp(buf); } catch (e) {
+      return json(400, e.message === 'too_many_pixels'
+        ? { error: 'too_many_pixels', message: 'That photo is too big (over 40 megapixels). Pick a smaller one.' } : { error: 'not_image', message: NOT_IMAGE });
+    }
+    const name = `${randomBytes(16).toString('hex')}.webp`; // our name, never the client's
+    mkdirSync(UPLOADS, { recursive: true });
+    writeFileSync(join(UPLOADS, name), out, { flag: 'wx' });
+    console.log(new Date().toISOString(), `image uploaded by ${who}: ${name} (${out.length} bytes)`);
+    return json(200, { ok: true, path: `/media/uploads/${name}` });
   }
   return json(404, { error: 'not_found' });
 }
@@ -208,6 +248,12 @@ function handle(req, res) {
     });
   }
   if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405, { ...baseHeaders(req), Allow: 'GET, HEAD' }); return res.end(); }
+  if (url.pathname.startsWith('/media/uploads/')) { // only server-made names (32 hex + .webp), so nothing can climb out
+    const name = url.pathname.slice('/media/uploads/'.length);
+    const st = UPLOAD_NAME.test(name) ? statSafe(join(UPLOADS, name)) : null;
+    if (!st?.isFile()) return notFound(req, res);
+    return send(req, res, 200, 'image/webp', readFileSync(join(UPLOADS, name)), { 'Cache-Control': 'public, max-age=31536000, immutable' });
+  }
   let p;
   try { p = decodeURIComponent(url.pathname); } catch { return notFound(req, res); }
   let file = normalize(join(DIST, p));
@@ -223,7 +269,8 @@ function handle(req, res) {
   if (type.startsWith('text/html')) {
     let html = readFileSync(file, 'utf8');
     try { html = inject(html, p); } catch (e) { console.error('inject failed, serving the static page', e.message); }
-    const edit = p.startsWith('/edit/') ? { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } : {};
+    const edit = p.startsWith('/edit/') ? { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' }
+      : p.startsWith('/shop/') && !shopOn() ? { 'X-Robots-Tag': 'noindex' } : {}; // the shop preview stays out of search
     return send(req, res, 200, type, Buffer.from(html), { 'Cache-Control': 'no-cache', ...edit });
   }
   send(req, res, 200, type, readFileSync(file), { 'Cache-Control': p.startsWith('/_astro/') ? 'public, max-age=31536000, immutable' : 'public, max-age=86400' });

@@ -496,3 +496,22 @@ iframe.yt { width: 100%; border: 0; }
 .credit { font-size: var(--step--1); color: var(--muted); }
 .coming .release-row { border-top: 1px solid var(--muted); padding-top: var(--space-s); }
 .credit-list { font-size: var(--step--1); color: var(--muted); }
+
+/* ---------- Shop (D36): plain function-first layout; DESIGN.md's look gets ported onto these class names. ---------- */
+.shop-title .phrase { font-size: var(--step-3); line-height: 1; }
+.shop-banner { margin-top: var(--space-m); padding: var(--space-s) var(--space-m); border: 2px dashed var(--muted); font-weight: 700; }
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: var(--space-l); margin-top: var(--space-l); padding: 0; list-style: none; }
+.product-link { display: grid; gap: 0.25rem; text-decoration: none; }
+.product-media { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; background: var(--bg-2); }
+.product-name { font-weight: 700; }
+.product-detail .product-name { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; }
+.product-price { font-weight: 700; }
+.product-status { color: var(--muted); font-weight: 700; }
+.shop-details { display: grid; gap: var(--space-xl); margin-top: var(--section); }
+.product-detail { display: grid; gap: var(--space-m); padding-top: var(--space-l); border-top: 2px solid var(--line); }
+.product-body { display: grid; gap: var(--space-s); align-content: start; }
+.product-desc { white-space: pre-line; max-width: 40rem; }
+.product-buy { justify-self: start; }
+@media (min-width: 700px) { .product-detail { grid-template-columns: minmax(0, 24rem) 1fr; } }
+/* With the shop on, the closing line gains "Shop." and is wider; re-fit it (measured: Listen. Shows. Shop. Join.). */
+.ln-close:has(a[href$="/shop/"]) { --w-close: 10.46; } /* measured 10.443em */

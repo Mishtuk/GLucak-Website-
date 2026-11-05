@@ -2,6 +2,7 @@
 import { era } from './content.js';
 interface Props { home?: boolean; current?: string }
 const { home = false, current } = Astro.props;
+// Shop joins the nav only with SHOP_ENABLED=1: server.js fills the gl:nav-shop marker (src/lib/products.js shopLinks).
 const nav = [['music', 'Music', '/music/'], ['shows', 'Shows', '/shows/'], ['about', 'About', '/about/']];
 ---
 {home && <div class="sentinel" aria-hidden="true"></div>}
@@ -9,13 +10,13 @@ const nav = [['music', 'Music', '/music/'], ['shows', 'Shows', '/shows/'], ['abo
   <div class="wrap header-bar">
     <a class="brand" href="/" aria-label="GLucak home">{era.mark && <img class="mark mark-head" src={era.mark} alt="" width="300" height="96" />}<span class="brand-word">GLUCAK</span></a>
     <nav class="nav-desktop" aria-label="Main">
-      {nav.map(([k, label, href]) => <a href={href} aria-current={current === k ? 'page' : undefined}>{label}</a>)}
+      {nav.map(([k, label, href]) => <a href={href} aria-current={current === k ? 'page' : undefined}>{label}</a>)}<Fragment set:html="<!--gl:nav-shop-->" />
     </nav>
     <a class="btn btn-solid btn-small header-listen" href={home ? '#music' : '/music/'}>Listen</a>
     <details class="nav-mobile">
       <summary>Menu</summary>
       <nav class="sheet" aria-label="Main menu">
-        {nav.map(([k, label, href]) => <a href={href} aria-current={current === k ? 'page' : undefined}>{label}</a>)}
+        {nav.map(([k, label, href]) => <a href={href} aria-current={current === k ? 'page' : undefined}>{label}</a>)}<Fragment set:html="<!--gl:nav-shop-->" />
       </nav>
     </details>
   </div>

@@ -140,3 +140,14 @@ test('privacy (D34): the whole-frame crowd photo (with the child) is not used an
   }
   assert.ok(!html('/').includes('Sylvain Paslier') && !html('/about/').includes('Sylvain Paslier'), 'credit for a photo not shown');
 });
+
+test('shop: /shop/ has the marker; every page carries the empty Shop markers and no Shop link in the static build', () => {
+  assert.ok(readFileSync(join(DIST, 'shop/index.html'), 'utf8').includes('<!--gl:shop-->'));
+  for (const p of Object.keys(pages)) {
+    const h = html(p);
+    assert.equal(h.split('<!--gl:nav-shop-->').length, 3, `${p}: nav + menu markers`);
+    assert.match(h, /<nav class="phone-bar"[\s\S]*<!--gl:watch--><a [^>]*>[\s\S]*?<span>Watch<\/span><\/a><!--\/gl:watch-->/, `${p}: Watch wrapped`);
+    assert.ok(h.includes('<!--gl:footer-shop-->'), `${p}: footer marker`);
+    assert.ok(!h.includes('href="/shop/"'), `${p}: no static Shop link`);
+  }
+});

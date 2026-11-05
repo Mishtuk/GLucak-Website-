@@ -1,0 +1,105 @@
+// Shop products: validation per field, escaping, button rules per status, sample banner, SHOP_ENABLED links.
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { actionHtml, checkProducts, productsHtml, shopLinks, validateProduct } from '../src/lib/products.js';
+
+const good = (o = {}) => ({ id: 'glucak-tee', name: 'GLucak tee', type: 'shirt', price: 2500, image: '/media/shop/sample-tee.webp', status: 'available', order: 0, ...o });
+const bad = (o, field) => assert.throws(() => validateProduct(good(o)), new RegExp(`^Error: ${field}$`), JSON.stringify(o));
+
+test('a valid product passes, optional fields included', () => {
+  assert.ok(validateProduct(good()));
+  assert.ok(validateProduct(good({ description: 'Soft.', link: 'https://shop.fourthwall.com/p/tee', sizes: ['S', 'M'], image: `/media/uploads/${'a'.repeat(32)}.webp` })));
+});
+
+test('each field is checked', () => {
+  for (const id of ['', 'Glucak', 'a b', '-tee', 'tee-', 'a--b', 'x'.repeat(61), 7, '<b>']) bad({ id }, 'id');
+  for (const name of ['', '   ', 'x'.repeat(121), 5, null]) bad({ name }, 'name');
+  for (const type of ['hat', '', 'SHIRT', undefined]) bad({ type }, 'type');
+  for (const price of [-1, 100001, 25.5, '2500', NaN, null, Infinity]) bad({ price }, 'price');
+  for (const description of ['x'.repeat(601), 9]) bad({ description }, 'description');
+  for (const status of ['open', '', 'Available']) bad({ status }, 'status');
+  for (const sizes of ['S,M', [''], ['x'.repeat(13)], Array(13).fill('S'), [1]]) bad({ sizes }, 'sizes');
+  for (const order of [-1, 1.5, '1', null]) bad({ order }, 'order');
+  assert.equal(validateProduct(good({ price: 0 })).price, 0);
+  assert.equal(validateProduct(good({ price: 100000 })).price, 100000);
+});
+
+test('links: http(s) only; javascript:, data: and friends refused', () => {
+  for (const link of ['javascript:alert(1)', 'JAVASCRIPT:alert(1)', ' javascript:alert(1)', 'data:text/html,<script>alert(1)</script>', 'vbscript:x', 'file:///etc/passwd', '//evil.example', 'shop.fourthwall.com', '', `https://${'x'.repeat(500)}.com`]) bad({ link }, 'link');
+  assert.ok(validateProduct(good({ link: 'http://example.com/a' })));
+});
+
+test('images: only /media/shop/ or a server-named /media/uploads/ file, no climbing out', () => {
+  for (const image of ['/media/shop/../../server.js', '/media/uploads/../products.json', '/media/shop/..%2fx.webp', '/media/other/a.webp', 'https://evil.example/a.webp',
+    'javascript:alert(1)', '/media/uploads/abc.webp', `/media/uploads/${'a'.repeat(32)}.png`, `/media/uploads/${'A'.repeat(32)}.webp`, '/media/shop/a.svg', '/media/shop/a.webp?x', '//evil/a.webp', '', null]) bad({ image }, 'image');
+});
+
+test('checkProducts: trims, drops empty optionals, duplicate IDs rejected, 200 cap, plain messages', () => {
+  const ok = checkProducts([{ ...good(), name: '  Tee  ', description: '', link: '', sizes: [' S ', ''], extra: 'dropped' }]);
+  assert.deepEqual(ok.rows[0], { ...good(), name: 'Tee', sizes: ['S'] });
+  const dup = checkProducts([good(), good({ name: 'Other' })]);
+  assert.deepEqual(dup.errors.map((e) => e.row), [1]);
+  assert.match(dup.errors[0].message, /^Product 2: Another product already has the ID glucak-tee/);
+  const many = checkProducts([good({ link: 'javascript:x' }), 'junk', good({ id: 'b', price: -5 })]);
+  assert.deepEqual(many.errors.map((e) => e.row), [0, 1, 2]);
+  assert.match(many.errors[0].message, /^Product 1: The link has to start with https:\/\//);
+  assert.equal(checkProducts(Array.from({ length: 201 }, (_, i) => good({ id: `p${i}` }))).errors[0].row, null);
+  assert.ok(checkProducts(null).errors);
+});
+
+test('the shipped sample file is valid: 5 marked samples with images that exist', () => {
+  const rows = JSON.parse(readFileSync(new URL('../src/data/products.json', import.meta.url), 'utf8'));
+  assert.ok(checkProducts(rows).rows, JSON.stringify(checkProducts(rows).errors));
+  assert.equal(rows.length, 5);
+  assert.deepEqual(rows.map((r) => r.type).sort(), ['cd', 'hoodie', 'shirt', 'sticker', 'vinyl']);
+  for (const r of rows) {
+    assert.equal(r.status, 'sample');
+    assert.match(r.name, /^Sample: /);
+    assert.ok(readFileSync(new URL(`../public${r.image}`, import.meta.url)).length > 0, r.image);
+  }
+});
+
+test('escaping: <script> and SQL text in name and description render inert', () => {
+  const html = productsHtml([good({ name: '<script>alert(1)</script>', description: "' OR 1=1 -- \"><img src=x onerror=alert(1)>", sizes: ['<b>'], link: 'https://x.com/?a="><script>' })]);
+  assert.ok(!html.includes('<script') && !html.includes('<img src=x') && !html.includes('<b>'));
+  assert.ok(html.includes('&lt;script&gt;alert(1)&lt;/script&gt;') && html.includes('&#39; OR 1=1 --') && html.includes('&quot;&gt;&lt;img'));
+  assert.ok(html.includes('href="https://x.com/?a=&quot;&gt;&lt;script&gt;"'));
+});
+
+test('button rules: Buy only when available with a link; otherwise a plain label', () => {
+  const buy = actionHtml(good({ link: 'https://shop.example/tee' }));
+  assert.match(buy, /^<a class="btn btn-solid product-buy" href="https:\/\/shop\.example\/tee" rel="noopener">Buy<\/a>$/);
+  for (const status of ['sample', 'coming-soon']) {
+    const h = actionHtml(good({ status, link: 'https://shop.example/tee' }));
+    assert.equal(h, '<p class="product-status">Coming soon</p>', status);
+  }
+  assert.equal(actionHtml(good({ status: 'available' })), '<p class="product-status">Coming soon</p>', 'available but no link yet');
+  assert.equal(actionHtml(good({ status: 'sold-out', link: 'https://shop.example/tee' })), '<p class="product-status is-sold-out">Sold out</p>');
+  for (const s of ['sample', 'coming-soon', 'sold-out']) assert.ok(!/<button|<a /.test(actionHtml(good({ status: s, link: 'https://x.com' }))), s);
+});
+
+test('banner only while any product is a sample; Preview chip only when asked; order, price, empty state', () => {
+  const banner = 'This store is a preview. Products are samples.';
+  assert.ok(productsHtml([good(), good({ id: 'b', status: 'sample' })]).includes(banner));
+  assert.ok(!productsHtml([good(), good({ id: 'b', status: 'sold-out' })]).includes(banner));
+  assert.ok(productsHtml([good()], { preview: true }).includes('Preview'));
+  assert.ok(!productsHtml([good()]).includes('ph-chip'));
+  const html = productsHtml([good({ id: 'second', name: 'Second', order: 2 }), good({ id: 'first', name: 'First', order: 1, price: 0 }), good({ id: 'broken', price: -1 })]);
+  assert.ok(html.indexOf('First') < html.indexOf('Second') && !html.includes('broken'), 'sorted by order, invalid rows skipped');
+  assert.ok(html.includes('href="#product-first"') && html.includes('id="product-first"') && html.includes('>Free<') && html.includes('>$25.00<'));
+  assert.match(productsHtml([]), /Nothing in the shop yet/);
+});
+
+test('shopLinks: Shop in nav, bar (replacing Watch) and footer only when enabled', () => {
+  const page = '<nav class="nav-desktop"><a href="/music/">Music</a><!--gl:nav-shop--></nav><nav class="sheet"><!--gl:nav-shop--></nav>'
+    + '<nav class="phone-bar"><a href="/shows/">Shows</a><!--gl:watch--><a href="/#shows-video"><span>Watch</span></a><!--/gl:watch--></nav>'
+    + '<p class="closing"><a href="/shows/">Shows.</a><!--gl:footer-shop--> <a href="#join">Join.</a></p>';
+  const off = shopLinks(page, { enabled: false, path: '/' });
+  assert.ok(!off.includes('/shop/') && off.includes('<span>Watch</span>') && !off.includes('gl:nav-shop'));
+  const on = shopLinks(page, { enabled: true, path: '/shop/' });
+  assert.equal(on.match(/<a href="\/shop\/" aria-current="page">Shop<\/a>/g).length, 2, 'desktop nav + menu sheet');
+  assert.ok(on.includes('<span>Shop</span>') && !on.includes('Watch'), 'Shop replaces Watch in the bar');
+  assert.ok(on.includes('<a href="/shop/">Shop.</a>'));
+  assert.ok(!shopLinks(page, { enabled: true, path: '/music/' }).includes('aria-current'));
+});

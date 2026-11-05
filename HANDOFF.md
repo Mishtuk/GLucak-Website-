@@ -17,7 +17,12 @@
   - **Desktop:** D1 privacy swap in src now (hero A -> (a), Push Past Fear -> (d)); D2 store backend (`/shop/`,
     products per visit, `SHOP_ENABLED`, sample products); D3 admin console v2 (tabs, Products editor, image upload
     re-encoded through sharp); D4 port L1 / L2 into src; later OG share images per page, performance, Lighthouse.
-    Claims: `src/`, `server.js`, `public/`, `test/`, `tools/` (not `tools/photo/` unless asked).
+    **Done 2026-11-05:** D1 privacy swap; D2 store (`/shop/`, 5 SAMPLE products, per visit from DATA_DIR/products.json,
+    `SHOP_ENABLED=1` adds Shop to nav / footer and swaps Watch for Shop in the phone bar, noindex until then);
+    D3 admin v2 (`/edit/` tabs Shows | Products, add / edit / delete / reorder, photo upload -> sharp webp, metadata
+    stripped, 5 MB / 40 MP caps, `/media/uploads/` served from DATA_DIR). `npm test` 86/86. Preview: `node
+    tools/preview.mjs --publish` -> https://mishtuk.github.io/GLucak-Website-/ (static snapshot, edit + sign-up off).
+    Claims released except `server.js`, `src/lib/`.
 - **Owner, 2026-11-02:** approved direction.md + ROADMAP.md. Sends Gabe section 8. Decides hosting; registers
   glucak.com (auto-renew). Accounts in Gabe's name, owner co-manages. Work only on what doesn't need Gabe's answers.
 - **Desktop (2026-11-05):** done: researcher -> `docs/research/social-content.md` (his own words by theme with sources,

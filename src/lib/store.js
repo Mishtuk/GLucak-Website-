@@ -16,11 +16,13 @@ const PLAIN = {
   'bad with': 'Leave "With" empty or add a name.', 'show must be an object': 'This row is broken. Delete it and add it again.',
 };
 
-/** The live file if Gabe has saved, else the shipped list. */
-export const liveFile = (dataDir, fallback) => (existsSync(join(dataDir, 'shows.json')) ? join(dataDir, 'shows.json') : fallback);
-export const readShows = (dataDir, fallback) => JSON.parse(readFileSync(liveFile(dataDir, fallback), 'utf8'));
+/** The live file if Gabe has saved, else the shipped list. `name`: shows.json or products.json. */
+export const liveFile = (dataDir, fallback, name = 'shows.json') => (existsSync(join(dataDir, name)) ? join(dataDir, name) : fallback);
+export const readList = (dataDir, fallback, name) => JSON.parse(readFileSync(liveFile(dataDir, fallback, name), 'utf8'));
 /** Content hash of the live list: the edit screen sends it back on save, so a save over someone else's newer save is refused. */
-export const showsVersion = (dataDir, fallback) => createHash('sha256').update(readFileSync(liveFile(dataDir, fallback))).digest('hex').slice(0, 16);
+export const listVersion = (dataDir, fallback, name) => createHash('sha256').update(readFileSync(liveFile(dataDir, fallback, name))).digest('hex').slice(0, 16);
+export const readShows = (dataDir, fallback) => readList(dataDir, fallback, 'shows.json');
+export const showsVersion = (dataDir, fallback) => listVersion(dataDir, fallback, 'shows.json');
 
 /** Keep only the known fields; empty optional fields are dropped. Returns { rows } or { errors: [{ row, message }] }. */
 export function checkShows(list) {
@@ -47,13 +49,14 @@ export function checkShows(list) {
   return errors.length ? { errors } : { rows };
 }
 
-/** Atomic save: write a temp file, keep the current list as shows.prev.json, then rename over shows.json. */
-export function saveShows(dataDir, rows, fallback) {
+/** Atomic save: write a temp file, keep the current list as <name>.prev.json, then rename over <name>.json. */
+export function saveList(dataDir, rows, fallback, name = 'shows.json') {
   mkdirSync(dataDir, { recursive: true });
-  const file = join(dataDir, 'shows.json');
-  const tmp = join(dataDir, `shows.json.${process.pid}.${randomBytes(4).toString('hex')}.tmp`);
+  const file = join(dataDir, name);
+  const tmp = join(dataDir, `${name}.${process.pid}.${randomBytes(4).toString('hex')}.tmp`);
   writeFileSync(tmp, `${JSON.stringify(rows, null, 2)}\n`);
-  const current = liveFile(dataDir, fallback);
-  if (current && existsSync(current)) copyFileSync(current, join(dataDir, 'shows.prev.json'));
+  const current = liveFile(dataDir, fallback, name);
+  if (current && existsSync(current)) copyFileSync(current, join(dataDir, name.replace(/\.json$/, '.prev.json')));
   renameSync(tmp, file);
 }
+export const saveShows = (dataDir, rows, fallback) => saveList(dataDir, rows, fallback, 'shows.json');

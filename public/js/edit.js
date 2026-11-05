@@ -1,11 +1,18 @@
-// Gabe's edit screen (shows). Builds every row with createElement and sets data only through textContent / value.
-// Talks to /edit/login, /edit/logout and /edit/api/shows (same origin, JSON, session cookie on Path=/edit).
+// Gabe's edit screen: Shows | Products tabs. Builds every row with createElement and sets data only through
+// textContent / value. Talks to /edit/login, /edit/logout, /edit/api/shows, /edit/api/products and /edit/api/upload
+// (same origin, session cookie on Path=/edit).
 (() => {
   const $ = (id) => document.getElementById(id);
-  const login = $('login'), editor = $('editor'), list = $('list'), msg = $('msg'), loginMsg = $('login-msg');
+  const login = $('login'), editor = $('editor'), loginMsg = $('login-msg');
   const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
   const say = (el, text) => { el.textContent = text; };
-  let dirty = false, loaded = false, uid = 0, version = null; // version: the list we loaded, sent back on save
+  let loaded = false, uid = 0;
+  // Per tab: its list, message line, unsaved flag and the version it loaded (sent back on save -> 409 if stale).
+  const T = {
+    shows: { list: $('list'), msg: $('msg'), dirty: false, version: null, noun: ['show', 'shows'] },
+    products: { list: $('p-list'), msg: $('p-msg'), dirty: false, version: null, noun: ['product', 'products'] },
+  };
+  const anyDirty = () => T.shows.dirty || T.products.dirty;
 
   const api = (path, body) => fetch(path, {
     method: body === undefined ? 'GET' : 'POST', credentials: 'same-origin',
@@ -33,11 +40,21 @@
     return wrap;
   }
 
+  const select = (options, value) => {
+    const s = el('select', {}, ...options.map(([v, text]) => el('option', { value: v, textContent: text })));
+    s.value = options.some(([v]) => v === value) ? value : options[0][0];
+    return s;
+  };
+
+  function changed(kind) { T[kind].dirty = true; say(T[kind].msg, 'Not saved yet.'); }
+  const rows = (kind) => [...T[kind].list.children];
+  const number = (kind) => rows(kind).forEach((r, i) => say(r.heading, `${kind === 'shows' ? 'Show' : 'Product'} ${i + 1}`));
+
+  // ---------- Shows ----------
   function showRow(s = {}) {
     const date = el('input', { type: 'date', required: true, value: s.date ?? '' });
     const time = el('input', { type: 'time', value: s.time ?? '' });
-    const type = el('select', {}, el('option', { value: 'show', textContent: 'Show' }), el('option', { value: 'open-mic', textContent: 'Open mic' }));
-    type.value = s.type === 'open-mic' ? 'open-mic' : 'show';
+    const type = select([['show', 'Show'], ['open-mic', 'Open mic']], s.type);
     const venue = el('input', { required: true, maxLength: 300, value: s.venue ?? '' });
     const city = el('input', { required: true, maxLength: 300, value: s.city ?? '', placeholder: 'Doylestown, PA' });
     const withIn = el('input', { maxLength: 300, value: s.with ?? '' });
@@ -63,39 +80,156 @@
       const name = venue.value.trim() || 'this show';
       if (!confirm(`Delete ${name}? It goes away when you press Save.`)) return;
       box.remove();
-      changed();
-      number();
+      changed('shows');
+      number('shows');
     });
     box.mark();
     return box;
   }
 
-  const rows = () => [...list.children];
-  const number = () => rows().forEach((r, i) => say(r.heading, `Show ${i + 1}`));
-  function changed() { dirty = true; say(msg, 'Not saved yet.'); }
-
-  function render(shows) {
+  T.shows.render = (shows) => {
     const t = today();
     const up = shows.filter((s) => s.date >= t).sort((a, b) => `${a.date} ${a.time ?? ''}`.localeCompare(`${b.date} ${b.time ?? ''}`));
     const past = shows.filter((s) => s.date < t).sort((a, b) => b.date.localeCompare(a.date));
-    list.replaceChildren(...[...up, ...past].map(showRow));
-    number();
-    dirty = false;
-    loaded = true;
+    T.shows.list.replaceChildren(...[...up, ...past].map(showRow));
+    number('shows');
+    T.shows.dirty = false;
+  };
+
+  // ---------- Products ----------
+  const TYPES = [['shirt', 'Shirt'], ['hoodie', 'Hoodie'], ['cd', 'CD'], ['vinyl', 'Vinyl'], ['sticker', 'Sticker'], ['other', 'Other']];
+  const STATUSES = [['coming-soon', 'Coming soon'], ['available', 'Available (shows Buy when it has a Link)'], ['sold-out', 'Sold out'], ['sample', 'Sample (shows Coming soon)']];
+  const IMAGE = /^\/media\/(?:shop\/[a-z0-9]+(?:-[a-z0-9]+)*\.(?:webp|png|jpg)|uploads\/[a-f0-9]{32}\.webp)$/; // same rule as the server
+  const UPLOADABLE = ['image/jpeg', 'image/png', 'image/webp'];
+  const slug = (s) => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60).replace(/-+$/, '');
+  const cents = (v) => { const t = v.trim(); if (!t) return null; const n = Math.round(Number(t) * 100); return Number.isFinite(n) ? n : null; };
+
+  async function upload(file) {
+    if (!UPLOADABLE.includes(file.type)) return { message: 'Pick a JPG, PNG or WebP photo.' };
+    if (file.size > 5 * 1024 * 1024) return { message: 'That photo is over 5 MB. Pick a smaller one.' };
+    let r;
+    try { r = await fetch('/edit/api/upload', { method: 'POST', credentials: 'same-origin', headers: { Accept: 'application/json', 'Content-Type': file.type }, body: file }); } catch { return { message: "That didn't upload. Check your connection and try again." }; }
+    const b = await reply(r);
+    if (r.status === 401) { login.hidden = false; return { message: 'You were signed out. Sign in above, then upload again.' }; }
+    return r.ok ? { path: b.path } : { message: b.message || "That didn't upload. Try again." };
   }
 
-  function signedIn(name, shows) {
+  function productRow(p = {}) {
+    const name = el('input', { required: true, maxLength: 120, value: p.name ?? '' });
+    const id = el('input', { required: true, maxLength: 60, value: p.id ?? '', autocapitalize: 'none', spellcheck: false });
+    let autoId = !p.id; // a new product's ID follows its name until edited by hand
+    name.addEventListener('input', () => { if (autoId) id.value = slug(name.value); });
+    id.addEventListener('input', () => { autoId = false; });
+    const type = select(TYPES, p.type);
+    const status = select(STATUSES, p.status);
+    const price = el('input', { type: 'number', min: 0, max: 1000, step: '0.01', inputMode: 'decimal', required: true, value: Number.isInteger(p.price) ? (p.price / 100).toFixed(2) : '' });
+    const image = el('input', { maxLength: 200, value: p.image ?? '', spellcheck: false, placeholder: '/media/uploads/...' });
+    const pic = el('img', { class: 'ed-pic', alt: '', width: 96, height: 96 });
+    const showPic = () => { if (IMAGE.test(image.value.trim())) pic.src = image.value.trim(); else pic.removeAttribute('src'); };
+    image.addEventListener('input', showPic);
+    const file = el('input', { type: 'file', accept: UPLOADABLE.join(',') });
+    const upMsg = el('span', { class: 'ed-hint', role: 'status' });
+    file.addEventListener('change', async () => {
+      const f = file.files[0];
+      if (!f) return;
+      say(upMsg, 'Uploading…');
+      const r = await upload(f);
+      file.value = '';
+      if (!r.path) return say(upMsg, r.message);
+      image.value = r.path;
+      showPic();
+      changed('products');
+      say(upMsg, 'Uploaded. Press Save to keep it.');
+    });
+    const desc = el('textarea', { maxLength: 600, value: p.description ?? '', rows: 4 });
+    const link = el('input', { type: 'url', inputMode: 'url', maxLength: 500, value: p.link ?? '', placeholder: 'https://' });
+    const sizes = el('input', { maxLength: 200, value: (p.sizes ?? []).join(', '), placeholder: 'S, M, L, XL' });
+    const title = el('span');
+    const err = el('p', { class: 'ed-err', role: 'alert' });
+    const up = el('button', { type: 'button', class: 'ed-btn', textContent: 'Up' });
+    const down = el('button', { type: 'button', class: 'ed-btn', textContent: 'Down' });
+    const del = el('button', { type: 'button', class: 'ed-btn', textContent: 'Delete' });
+    const box = el('fieldset', { class: 'ed-show' }, el('legend', {}, title),
+      field('Name', name), field('ID', id, 'Lowercase letters, numbers and dashes; the end of the Shop link (/shop/#product-ID)'),
+      el('div', { class: 'ed-two' }, field('Type', type), field('Price (US dollars)', price)),
+      field('Status', status), field('Image', image, 'Upload a photo below, or keep the path'), pic,
+      field('Upload a photo', file, 'JPG, PNG or WebP, up to 5 MB'), upMsg,
+      field('Description (optional)', desc, 'Up to 600 characters'),
+      field('Link (optional)', link, 'The product page on Fourthwall or Bandcamp; needed for the Buy button'),
+      field('Sizes (optional)', sizes, 'Separate with commas'),
+      err, el('div', { class: 'ed-moves' }, up, down, del));
+    box.read = (i) => ({
+      id: id.value, name: name.value, type: type.value, price: cents(price.value), image: image.value, description: desc.value,
+      link: link.value, status: status.value, sizes: sizes.value.split(',').map((s) => s.trim()).filter(Boolean), order: i,
+    });
+    box.err = err;
+    box.heading = title;
+    const move = (dir) => {
+      const other = dir < 0 ? box.previousElementSibling : box.nextElementSibling;
+      if (!other) return;
+      if (dir < 0) other.before(box); else other.after(box);
+      (dir < 0 ? up : down).focus();
+      number('products');
+      changed('products');
+    };
+    up.addEventListener('click', () => move(-1));
+    down.addEventListener('click', () => move(1));
+    del.addEventListener('click', () => {
+      if (!confirm(`Delete ${name.value.trim() || 'this product'}? It goes away when you press Save.`)) return;
+      box.remove();
+      changed('products');
+      number('products');
+    });
+    showPic();
+    return box;
+  }
+
+  T.products.render = (products) => {
+    T.products.list.replaceChildren(...[...products].sort((a, b) => a.order - b.order).map(productRow));
+    number('products');
+    T.products.dirty = false;
+  };
+
+  // ---------- Tabs ----------
+  const tabs = ['shows', 'products'];
+  function pick(kind, focus = false) {
+    for (const k of tabs) {
+      const tab = $(`tab-${k}`), on = k === kind;
+      tab.setAttribute('aria-selected', String(on));
+      tab.tabIndex = on ? 0 : -1;
+      $(`panel-${k}`).hidden = !on;
+      if (on && focus) tab.focus();
+    }
+  }
+  for (const k of tabs) {
+    $(`tab-${k}`).addEventListener('click', () => pick(k));
+    $(`tab-${k}`).addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      pick(tabs[(tabs.indexOf(k) + 1) % tabs.length], true); // two tabs: either arrow goes to the other
+    });
+  }
+
+  // ---------- Sign-in, load, save ----------
+  function signedIn(name, data) {
     login.hidden = true;
     editor.hidden = false;
     say($('who'), `Signed in as ${name}`);
-    if (shows) render(shows);
+    if (data) {
+      for (const k of tabs) if (data[k]) T[k].render(data[k]);
+      loaded = true;
+    }
   }
 
   async function load() {
-    let r;
-    try { r = await api('/edit/api/shows'); } catch { login.hidden = false; return say(loginMsg, "Can't reach the site. Check your connection and reload."); }
+    let r, p;
+    try { [r, p] = await Promise.all([api('/edit/api/shows'), api('/edit/api/products')]); } catch { login.hidden = false; return say(loginMsg, "Can't reach the site. Check your connection and reload."); }
     const b = await reply(r);
-    if (r.ok) { version = b.version; return signedIn(b.editor, b.shows); }
+    if (r.ok) {
+      const pb = await reply(p);
+      T.shows.version = b.version;
+      if (p.ok) T.products.version = pb.version; else say(T.products.msg, "Couldn't load the products. Reload the page.");
+      return signedIn(b.editor, { shows: b.shows, products: p.ok ? pb.products : null });
+    }
     login.hidden = false;
     if (r.status === 503) say(loginMsg, b.message || 'The edit screen is not set up yet.');
   }
@@ -109,47 +243,57 @@
     if (!r.ok) return say(loginMsg, b.message || "That didn't go through. Try again.");
     $('password').value = '';
     say(loginMsg, '');
-    if (loaded) { signedIn(b.editor); return say(msg, 'Signed in again. Press Save.'); } // keep unsaved edits
+    if (loaded) { signedIn(b.editor); for (const k of tabs) if (T[k].dirty) say(T[k].msg, 'Signed in again. Press Save.'); return; } // keep unsaved edits
     load();
   });
 
   $('logout').addEventListener('click', async () => {
-    if (dirty && !confirm('You have changes that are not saved. Sign out anyway?')) return;
+    if (anyDirty() && !confirm('You have changes that are not saved. Sign out anyway?')) return;
     try { await api('/edit/logout', {}); } catch { /* the cookie ends anyway after 7 days */ }
-    dirty = false;
+    T.shows.dirty = T.products.dirty = false;
     location.reload();
   });
 
   $('add').addEventListener('click', () => {
     const row = showRow({ type: 'show' });
-    list.prepend(row);
-    number();
-    changed();
+    T.shows.list.prepend(row);
+    number('shows');
+    changed('shows');
+    row.querySelector('input').focus();
+  });
+  $('p-add').addEventListener('click', () => {
+    const row = productRow({ type: 'shirt', status: 'coming-soon' });
+    T.products.list.append(row);
+    number('products');
+    changed('products');
     row.querySelector('input').focus();
   });
 
-  list.addEventListener('input', changed);
+  for (const k of tabs) T[k].list.addEventListener('input', (e) => { if (e.target.type !== 'file') changed(k); }); // uploads mark it on success
 
-  $('save').addEventListener('click', async () => {
-    for (const r of rows()) { say(r.err, ''); r.classList.remove('bad'); }
-    say(msg, 'Saving…');
+  async function save(kind) {
+    const t = T[kind], list = rows(kind);
+    for (const r of list) { say(r.err, ''); r.classList.remove('bad'); }
+    say(t.msg, 'Saving…');
     let r;
-    try { r = await api('/edit/api/shows', { version, shows: rows().map((x) => x.read()) }); } catch { return say(msg, "That didn't save. Check your connection and try again."); }
+    try { r = await api(`/edit/api/${kind}`, { version: t.version, [kind]: list.map((x, i) => x.read(i)) }); } catch { return say(t.msg, "That didn't save. Check your connection and try again."); }
     const b = await reply(r);
-    if (r.ok) { version = b.version; render(b.shows); return say(msg, b.message || "Saved. It's on the site now."); }
-    if (r.status === 401) { login.hidden = false; $('username').focus(); return say(msg, 'You were signed out. Sign in above, then press Save again. Your changes are still here.'); }
-    if (r.status === 409) return say(msg, b.message || 'Someone else saved the shows a moment ago. Reload to see their changes; yours are still on this page.'); // rows untouched
+    if (r.ok) { t.version = b.version; t.render(b[kind]); return say(t.msg, b.message || "Saved. It's on the site now."); }
+    if (r.status === 401) { login.hidden = false; $('username').focus(); return say(t.msg, 'You were signed out. Sign in above, then press Save again. Your changes are still here.'); }
+    if (r.status === 409) return say(t.msg, b.message || `Someone else saved the ${kind} a moment ago. Reload to see their changes; yours are still on this page.`); // rows untouched
     const errs = b.errors ?? [];
     for (const x of errs) {
-      const row = rows()[x.row];
+      const row = list[x.row];
       if (row) { say(row.err, x.message); row.classList.add('bad'); }
     }
-    const general = errs.filter((x) => !rows()[x.row]).map((x) => x.message).join(' ');
-    say(msg, general || (errs.length ? `Not saved. Fix the ${errs.length === 1 ? 'show' : `${errs.length} shows`} marked with !, then press Save.` : "That didn't save. Try again."));
-    rows()[errs[0]?.row]?.querySelector('input')?.focus();
-  });
+    const general = errs.filter((x) => !list[x.row]).map((x) => x.message).join(' ');
+    say(t.msg, general || (errs.length ? `Not saved. Fix the ${errs.length === 1 ? t.noun[0] : `${errs.length} ${t.noun[1]}`} marked with !, then press Save.` : "That didn't save. Try again."));
+    list[errs[0]?.row]?.querySelector('input')?.focus();
+  }
+  $('save').addEventListener('click', () => save('shows'));
+  $('p-save').addEventListener('click', () => save('products'));
 
-  addEventListener('beforeunload', (e) => { if (dirty) e.preventDefault(); });
+  addEventListener('beforeunload', (e) => { if (anyDirty()) e.preventDefault(); });
 
   login.hidden = true; // until we know whether this browser is signed in
   const err = new URLSearchParams(location.search).get('login'); // set by the no-JS form fallback

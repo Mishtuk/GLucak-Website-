@@ -1,5 +1,6 @@
 ---
-// Always visible under 700px, never hides on scroll (D8). Shop replaces Watch when the shop opens.
+// Always visible under 700px, never hides on scroll (D8). Shop replaces Watch when the shop opens: server.js swaps the
+// part between the gl:watch markers when SHOP_ENABLED=1 (src/lib/products.js shopLinks).
 interface Props { home?: boolean; current?: string }
 const { home = false, current } = Astro.props;
 const items = [
@@ -11,8 +12,12 @@ const items = [
 ---
 <nav class="phone-bar" aria-label="Quick actions">
   {items.map(([k, label, href, icon]) => (
-    <a href={href} aria-current={current === k ? 'page' : undefined}>
-      <svg viewBox="0 0 24 24" aria-hidden="true" set:html={icon} /><span>{label}</span>
-    </a>
+    <>
+      {k === 'watch' && <Fragment set:html="<!--gl:watch-->" />}
+      <a href={href} aria-current={current === k ? 'page' : undefined}>
+        <svg viewBox="0 0 24 24" aria-hidden="true" set:html={icon} /><span>{label}</span>
+      </a>
+      {k === 'watch' && <Fragment set:html="<!--/gl:watch-->" />}
+    </>
   ))}
 </nav>
