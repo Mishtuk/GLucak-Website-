@@ -29,7 +29,7 @@
   Laptop's security review fixed (10 items): bad Host -> 400, rightmost X-Forwarded-For, async scrypt, global sign-in cap
   30/min, lockout per user+IP (user-only 50/h), 409 on stale saves, HSTS/Secure via isHttps(req). **On the host set
   TRUST_PROXY=1** (needed for HSTS and real client IPs). `npm test` builds first (pretest); 58/58.
-  Next: daily rebuild for release-day flips + host plan (owner decides the host). Claims released except `server.js`, `src/lib/`.
+  Next: daily rebuild for release-day flips + host plan (owner decides the host). Claims: `src/`, `public/`, `server.js`, `test/` (port of the Laptop's ddf5d60 round: notes 1-9 on #1).
 - **Laptop (2026-11-05):** boss agent runs each round (plans, briefs the designer / copywriter, reviews). Done, all
   boss-approved: real Spotify embed (D19), Home copy `docs/copy/home.md` (D21, D23), prototype on Gabe's real photos +
   Logo D + type lock (D25, D27, ddf5d60), security review of the edit screen (fixed in 620df1c). Nothing claimed.
