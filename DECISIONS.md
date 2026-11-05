@@ -106,3 +106,14 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   passing a guess off as Gabe's colours. The cover-derived player colour follows his playlist cover, not the era, and
   clashed (maroon on violet); dark grey fits every era's dark `bg`. B works in any palette because no text sits over
   the photo; A flattens in cool colours under the brightness cap.
+- **D34** (2026-11-05, Desktop, owner delegated the call): Which hero? **Ruling:** both, by width: **A** (GLUCAK over
+  the full photo) on phones and small screens, **B** (G[photo]LUCAK) from 900px up. A uses photo treatment (a) era grade,
+  B uses (b) riso (or (f) MCCC still where B's slot is small). **Why:** both boss reviews found A stronger on phones and B
+  better from 900px up; the owner said "do whatever you think is best". Treatment (a) also takes the child in the crowd
+  out of frame. Push Past Fear uses (d); Live It Loud poster (c); About (e) with its HANDS frame swapped.
+- **D36** (2026-11-05, Desktop): The shop comes forward. **Ruling:** build a temporary store now (owner): `/shop/` with
+  clearly marked sample products (tee, hoodie, CD, vinyl, sticker), each "Coming soon" until Gabe has real products and
+  the checkout provider is set up (Fourthwall per the research; we never handle card data). Products are edited in the
+  admin console and render per visit, like shows. The store stays hidden from the nav behind `SHOP_ENABLED` until the
+  owner switches it on. **Why:** owner, 2026-11-05: "continue working on the website with the store aspect. Make a
+  temporary store with some templates and work on the admin console."

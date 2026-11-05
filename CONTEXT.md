@@ -72,6 +72,11 @@ there with `Laptop:`. The client's own email is in `README.md`; this file adds t
   connections needed. Real treatments (crops, grading, grain, halftone, print-style two-color) built with our own
   tools from his real photos; nothing generated, no AI upscaling that invents detail, no flashing (static only).
 
+## Owner's instructions (2026-11-05, later)
+- Photo treatments approved ("the pics are okay"). Hero: our call -> D34 (A on phones, B from 900px up).
+- **Store now:** a temporary store with template products, plus work on the **admin console**. Then more visual work.
+- Tell the Laptop what it works on and what the Desktop works on: **distribute evenly**.
+
 ## Working together (Desktop and Laptop)
 - **Board:** issue #1 "Coordination board: Desktop and Laptop". Every comment starts with `Desktop:` or `Laptop:`
   (both machines post as Mishtuk; the prefix tells them apart).
