@@ -127,7 +127,7 @@ with focus moved in, Escape and link tap close it. Shop slot: one nav entry, off
 - **Now line:** "Now" tag + one link. See section 7. No ticker: it never moves.
 
 **1. RISE, tab Music.** Phrase at 3.5rem on phones; huge in a left column from 900px. The official embed at exactly **352px**,
-full column width, with its height reserved. Under it: **Open in Spotify**, **Listen everywhere**. Then the latest release: cover 96px
+full column width, with its height reserved. Under it: **Play full songs on Spotify** (the playlist link: logged-out fans, most of them in Instagram's in-app browser, get 30-second previews in the embed), **Listen everywhere**. Then the latest release: cover 96px
 (160px wide screens) as made, title, "Latest release. Listen on:", two links.
 
 **2. LIVE IT LOUD, tab Shows.** One fitted line. Then next shows: **first show as the poster** + up to two rows. Poster: fitted date,
@@ -175,7 +175,7 @@ Same header, footer, bar, tokens and tabs. Each page opens with its one fitted p
 | **Date set** | Countdown in days, static between loads (no ticking digits, so no motion), plus pre-save if linked. |
 | **Release day** | Flips to "Out now" by date, New York time, with a listen link. |
 | **No playlist link** | Launch blocker. Never ship the empty box. |
-| **Embed blocked or slow** | Box keeps 352px; text "Open in Spotify" with the link. No layout jump. |
+| **Embed blocked or slow** | Box keeps 352px. A note under the iframe, seen only while it loads or if it's blocked: "Loading the Spotify player. If it doesn't appear, use Play full songs on Spotify below." No layout jump. |
 | **No JS** | Page reads fully: no motion, headings visible, facade is a link, server-rendered shows. |
 | **Sign-up** | Success: "You're on the list." Bad email: "Enter an email like name@example.com." Server down: "That didn't go through. Try again." All in `role="status"`. |
 | **Link not known yet** | Build fails rather than ships `#`. In the prototype these are dashed links. |
@@ -190,6 +190,10 @@ Exactly two motions exist on Home.
 
 Banned: flashing, strobe, glitch, distortion, video in the hero, tickers, carousels, parallax, pinned scroll, smooth-scroll hijacking,
 hover animation on cards, any animation on `background`, `filter` or layout. A clip added later must pass a frame-level flash check first (D14).
+
+**Spotify's embed** scrolls a long playlist title inside its cross-origin iframe. It stops under the device's reduce-motion setting
+(checked 2026-11-05 with `--force-prefers-reduced-motion`); our footer Motion switch can't reach it. Accepted: small, no luminance
+change, and the device setting stops it (D19).
 
 **Off switches, both required.** CSS motion is only declared inside `@media (prefers-reduced-motion: no-preference)` **and** under
 `html[data-motion='on']`, so with no JS or either switch off, nothing runs. `boot.js` sets `data-motion` before paint. Footer button:
@@ -227,7 +231,7 @@ output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
 ## 12. Measured (2026-11-02, Chrome headless over DevTools, `Emulation.setDeviceMetricsOverride`, so 320 and 390 are true widths)
 | Check | Result |
 |---|---|
-| Player top at 390x660, clear of the bar | A: top 484, bar 598, **114px visible**. B: top 518, **80px visible**. Label fully visible on both. Box 352px |
+| Player top at 390x660, clear of the bar | A: top 484, bar 598, **114px visible**. B: top 518, **80px visible**. Box 352px (the real embed, 2026-11-05) |
 | Slogan and GLUCAK, no horizontal scroll | scrollWidth equals viewport at 320, 390, 1280 on both heroes. Slogan is two forced lines at 320: 41px and 21.6px |
 | D6 labels at 390 | 17px, weight 700, 17.3:1, exact nav word |
 | Text over photo, from pixels | Name 5.12:1 (A), slogan 5.36:1, Now line 13.13:1. Second era 5.12:1 |
@@ -237,11 +241,13 @@ output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
 | Reduced motion | Emulated with `Emulation.setEmulatedMedia`: `document.getAnimations()` empty, headings visible. Footer switch: also empty |
 | Flash | **By construction:** the only loop is one 24s opacity and transform drift (opacity .68 to .88), so it cannot reach 3 flashes a second. Supporting sample only, too slow to detect a 3 Hz flash on its own: 87 frames over 26s, largest change in mean luminance 0.0001 against WCAG's 0.10. Most moving things on screen at once, brisk scroll: 1 |
 | CSP and errors | None under the real CSP. Also opens from disk |
+| Real Spotify embed (2026-11-05) | Loads logged out under the real CSP at 390 and 1280, no errors. Spotify's "Preview" badge shows (30-second previews). Background colour comes from the cover art. Title marquee stops under the device reduce-motion setting |
 
 ## 13. Not verified
 - **No real photo has been through the duotone.** The placeholders are drawn. Low-light muddiness (ROADMAP risk 9) is still open, and so is the hero pick.
 - **Safari and the Instagram in-app browser were not tested.** Only Chrome ran. Check `filter: url()`, `cqi`, `text-box`, `color-mix` and the safe areas on a real iPhone.
-- **The real Spotify embed was not loaded**, logged in or out; only a 352px box.
+- The Spotify embed ran only in headless Chrome, logged out. Logged-in playback, Safari, and Instagram's in-app browser (previews? does
+  the playlist link open the app?) are part of the real-phone test.
 - No PEAT run. The flash result rests on the code having one 24s loop, not on the 3.4 fps sample.
 - Screen readers and a keyboard-only pass were not run. Hero B's slot is thumbnail-sized on phones, as D14 predicted.
 - The Music, Shows and About pages, and the footer sign-up on them, are specified here, not prototyped.

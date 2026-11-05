@@ -74,17 +74,13 @@
           <h2 class="spine" id="h-rise"><span class="tab">Music</span> <span class="phrase phrase-rise">Rise</span></h2>
 
           <div class="rise-player">
-            <!-- Exactly 352px. The real embed replaces this box; the height never changes. -->
-            <div class="player-box" role="group" aria-label="Spotify player placeholder">
-              <p class="player-note"><strong>Spotify player goes here.</strong> 352px tall, waiting for Gabe's playlist link.</p>
-              <div class="player-fake" aria-hidden="true">
-                <span class="pf-art"></span>
-                <span class="pf-lines"><i></i><i></i></span>
-              </div>
-              <ol class="player-rows" aria-hidden="true"><li></li><li></li><li></li><li></li></ol>
+            <!-- Exactly 352px, reserved before the embed loads. The note sits under the iframe: seen only while it loads or if it's blocked. -->
+            <div class="player-box">
+              <p class="player-note">Loading the Spotify player. If it doesn't appear, use <strong>Play full songs on Spotify</strong> below.</p>
+              <iframe class="player" title="GLucak playlist on Spotify" src="https://open.spotify.com/embed/playlist/0D45boIc9xWAdDjz1uTDRo?utm_source=generator" width="100%" height="352" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
             </div>
             <p class="under-player">
-              <a class="pending" href="#music" title="Needs Gabe's playlist link">Open in Spotify</a>
+              <a href="https://open.spotify.com/playlist/0D45boIc9xWAdDjz1uTDRo" rel="noopener">Play full songs on Spotify</a>
               <a href="https://wingsmusic.lnk.to/370407-Go" rel="noopener">Listen everywhere</a>
             </p>
           </div>

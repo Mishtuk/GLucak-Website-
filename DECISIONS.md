@@ -50,3 +50,15 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   owner: "IDENTITY, 2027" and the "Epilepsy survivor" bio line on Home. Hero A vs B waits for real photos (D14).
   **Why:** every "done when" in direction.md section 9 step 3 is met and reproducible; what's left needs Gabe's
   photos or a real phone.
+- **D19** (2026-11-05, Laptop boss): Real Spotify embed in the prototype. **Ruling:** approved. The playlist link
+  reads "Play full songs on Spotify". Spotify's title marquee is accepted (it stops under the device reduce-motion
+  setting; our footer switch can't reach a cross-origin iframe). Spotify's cover-art background is accepted
+  (fallback: `&theme=0`). **Why:** logged-out fans, most from Instagram's in-app browser, get 30-second previews, so
+  the link says why to tap; hard rule 1 is met by the device setting.
+- **D21** (2026-11-05, Laptop boss, answers the Desktop's "From Gabe" idea on #1): **Ruling:** changed. At most one
+  quote per band, after the band's main content, never above the player (RISE: under the latest release; LIVE IT
+  LOUD: after All shows; THE TIME IS NOW: optional; PUSH PAST FEAR: none, the bio is already his words). Max 120
+  characters, exact, from posts `social-content.md` marks as his own, credited and linked ("GLucak, Instagram, Mar
+  2026"), static (never rotating), approved by Gabe via the owner. No approved quote means nothing shown. Data: an
+  optional `quote {text, url, date, platform}` per band. **Why:** the owner asked for a dialogue in his own voice; D6
+  keeps real content right under each heading, and a quote under RISE would push the player off the first screen.

@@ -140,8 +140,25 @@ try {
       line('CHECK 1: player top on the first phone screen (390x660), clear of the bar');
       for (const q of ['?hero=a', '?hero=b']) {
         await load(BASE + q, 390, 660);
-        const r = await evaluate(`(()=>{const p=document.querySelector('.player-box').getBoundingClientRect(),b=document.querySelector('.phone-bar').getBoundingClientRect();const n=document.querySelector('.player-note').getBoundingClientRect();return {top:p.top,bar:b.top,h:p.height,noteBottom:n.bottom}})()`);
-        line(`  ${q}: player top ${r.top.toFixed(0)}px, bar top ${r.bar.toFixed(0)}px, ${(r.bar - r.top).toFixed(0)}px of player visible, player height ${r.h}px, label ${r.noteBottom < r.bar ? 'fully visible' : 'cut by bar'}`);
+        const r = await evaluate(`(()=>{const p=document.querySelector('.player').getBoundingClientRect(),b=document.querySelector('.phone-bar').getBoundingClientRect();return {top:p.top,bar:b.top,h:p.height}})()`);
+        line(`  ${q}: player top ${r.top.toFixed(0)}px, bar top ${r.bar.toFixed(0)}px, ${(r.bar - r.top).toFixed(0)}px of player visible, player height ${r.h}px`);
+      }
+
+      line('CHECK 1b: the real Spotify embed, under the real CSP, logged out (fresh profile)');
+      for (const [w, h] of [[390, 844], [1280, 800]]) {
+        const before = problems.length;
+        await load(BASE, w, h);
+        await evaluate(`document.querySelector('.player-box').scrollIntoView({block:'center'})`);
+        let frame; // cross-origin, so it runs as its own iframe target, not in this page's frame tree
+        for (let i = 0; i < 40 && !frame; i++) { await sleep(250); frame = (await send('Target.getTargets')).targetInfos.find((t) => t.type === 'iframe' && t.url.startsWith('https://open.spotify.com/')); }
+        await sleep(5000); // let the embed paint its tracklist
+        const box = await evaluate(`(()=>{const b=document.querySelector('.player').getBoundingClientRect();return {x:b.x+scrollX,y:b.y+scrollY,w:b.width,h:b.height}})()`);
+        const png = await shot({ x: box.x, y: box.y, width: box.w, height: box.h });
+        writeFileSync(join(ROOT, 'shots', `player-${w}.png`), png);
+        const { px, bpp } = readPng(png); const seen = new Set();
+        for (let i = 0; i < px.length; i += bpp * 37) seen.add(px[i] >> 4 << 8 | px[i + 1] >> 4 << 4 | px[i + 2] >> 4);
+        const csp = problems.slice(before).filter((p) => /spotify|frame/i.test(p));
+        line(`  ${w}px: frame ${frame ? frame.url.split('?')[0] : 'NOT loaded'}, box ${box.w.toFixed(0)}x${box.h}px, ${seen.size} distinct colors painted (the bare box is 1), CSP/load errors: ${csp.length ? csp.join(' | ') : 'none'}`);
       }
 
       line('CHECK 2: slogan wrap and no horizontal scroll');
