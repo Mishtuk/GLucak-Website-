@@ -13,7 +13,8 @@
   glucak.com (auto-renew). Accounts in Gabe's name, owner co-manages. Work only on what doesn't need Gabe's answers.
 - **Desktop (2026-11-05):** researcher agent reading all of Gabe's socials + Spotify + YouTube ->
   `docs/research/social-content.md` (his own words only, with sources) + `src/data/videos.json` / `releases.json`.
-  Claimed: `docs/research/social-content.md`, `src/data/`, `server.js`, `src/lib/`. Then phase 2 build with the Laptop.
+  Claimed: `docs/research/social-content.md`, `src/data/`, `server.js`, `src/lib/`, and for the phase 2 port (coder
+  agent): `src/layouts/`, `src/components/`, `src/pages/`, `src/styles/`, `public/`, `astro.config.mjs`, `test/`.
 - **Laptop:** done: research files, ROADMAP.md edits, `DESIGN.md` + Home prototype (boss approved, D18). Nothing
   claimed. Next: put Gabe's real photos through heroes A/B when the ~Nov 9 set lands, then the owner picks; lock the
   type when the logo arrives. Phase 3 text drafts are the Laptop's after that.
