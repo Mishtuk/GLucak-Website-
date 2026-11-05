@@ -6,6 +6,7 @@ import { existsSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, normalize, sep } from 'node:path';
 import { brotliCompressSync, constants as zc, gzipSync } from 'node:zlib';
 import { showsHtml } from './src/lib/shows.js';
+import { signup } from './src/lib/signup.js';
 
 const ROOT = import.meta.dirname;
 const DIST = process.env.DIST_DIR || join(ROOT, 'dist');
@@ -59,8 +60,30 @@ function notFound(req, res, url) {
   send(req, res, url, 404, TYPES['.html'], existsSync(f) ? readFileSync(f) : Buffer.from('Not found'), { 'Cache-Control': 'no-cache' });
 }
 
+/** POST /api/signup. Form or JSON body, max 2 KB. JSON reply for the page's script; 303 back to the form without JS. */
+function handleSignup(req, res, url) {
+  let raw = '', big = false;
+  req.setEncoding('utf8');
+  req.on('data', (c) => { if (!big) raw += c; if (raw.length > 2048) { big = true; raw = ''; } }); // keep reading, drop the excess, then answer 413
+  req.on('end', async () => {
+    const reply = (status, body) => {
+      if (/json/.test(req.headers.accept ?? '')) return send(req, res, url, status, 'application/json', Buffer.from(JSON.stringify(body)), { 'Cache-Control': 'no-store' });
+      res.writeHead(303, { ...baseHeaders(url), Location: `/?signup=${body.ok ? 'ok' : 'error'}#join`, 'Cache-Control': 'no-store' });
+      res.end();
+    };
+    if (big) return reply(413, { ok: false });
+    let fields = {};
+    try { fields = /json/.test(req.headers['content-type'] ?? '') ? JSON.parse(raw || '{}') : Object.fromEntries(new URLSearchParams(raw)); } catch { return reply(400, { ok: false }); }
+    // ponytail: X-Forwarded-For only when TRUST_PROXY=1 (behind the host's proxy); otherwise it could be spoofed.
+    const ip = (process.env.TRUST_PROXY === '1' && String(req.headers['x-forwarded-for'] ?? '').split(',')[0].trim()) || req.socket.remoteAddress;
+    const r = await signup(fields, { ip, headers: req.headers, host: req.headers.host });
+    reply(r.status, r.body);
+  });
+}
+
 function handle(req, res) {
   const url = new URL(req.url, `http://${req.headers.host ?? 'localhost'}`);
+  if (req.method === 'POST' && url.pathname === '/api/signup') return handleSignup(req, res, url);
   if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405, { ...baseHeaders(url), Allow: 'GET, HEAD' }); return res.end(); }
   let p;
   try { p = decodeURIComponent(url.pathname); } catch { return notFound(req, res, url); }

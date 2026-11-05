@@ -59,7 +59,7 @@
       const email = form.elements.email.value.trim();
       if (!form.checkValidity()) { status.textContent = 'Enter an email like name@example.com.'; return; }
       try {
-        const res = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' }, body: new URLSearchParams({ email }) });
+        const res = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' }, body: new URLSearchParams({ email, website: form.elements.website?.value ?? '' }) });
         if (res.ok) { status.textContent = "You're on the list."; form.reset(); }
         else status.textContent = res.status === 400 || res.status === 422 ? 'Enter an email like name@example.com.' : "That didn't go through. Try again.";
       } catch { status.textContent = "That didn't go through. Try again."; }

@@ -17,7 +17,9 @@
   `HERO` in `src/pages/index.astro`, real Spotify embed, era tokens + duotone, YouTube facade, 5 pages), Desktop fixes
   (data loads via import.meta.glob, latest release = newest RELEASED, undated videos last, placeholder cover,
   IDENTITY Aug 13 2027 countdown + pre-save from his own post). `npm test` 25/25. Shots: `docs/review/build-shots/`.
-  Next: `/api/signup` (Kit), Gabe's edit screen, daily rebuild for release-day flips. Claims: `server.js`, `src/lib/`.
+  `POST /api/signup` done (`src/lib/signup.js`: Kit v4, env `KIT_API_KEY` + `KIT_FORM_ID`, same-origin, honeypot,
+  5 tries / 10 min per IP, 2 KB cap; 503 until Kit is set up; `TRUST_PROXY=1` behind a host proxy). `npm test` 31/31.
+  Next: Gabe's edit screen (reuse Riverside admin auth), daily rebuild for release-day flips. Claims: `server.js`, `src/lib/`.
 - **Laptop (2026-11-05):** boss agent runs the round (plans, briefs the designer / copywriter, reviews). Claimed:
   `prototype/`, `DESIGN.md`, `docs/copy/`. Doing: real Spotify embed in the prototype (done, in review), heroes A/B +
   duotone on Gabe's real photos -> shots for the owner's pick, type lock with Logo D. Then the copywriter drafts
