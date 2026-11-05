@@ -30,10 +30,11 @@
   30/min, lockout per user+IP (user-only 50/h), 409 on stale saves, HSTS/Secure via isHttps(req). **On the host set
   TRUST_PROXY=1** (needed for HSTS and real client IPs). `npm test` builds first (pretest); 58/58.
   Next: daily rebuild for release-day flips + host plan (owner decides the host). Claims released except `server.js`, `src/lib/`.
-- **Laptop (2026-11-05):** boss agent runs the round (plans, briefs the designer / copywriter, reviews). Claimed:
-  `prototype/`, `DESIGN.md`, `docs/copy/`. Doing: real Spotify embed in the prototype (done, in review), heroes A/B +
-  duotone on Gabe's real photos -> shots for the owner's pick, type lock with Logo D. Then the copywriter drafts
-  `docs/copy/home.md` once `docs/research/social-content.md` lands.
+- **Laptop (2026-11-05):** boss agent runs each round (plans, briefs the designer / copywriter, reviews). Done, all
+  boss-approved: real Spotify embed (D19), Home copy `docs/copy/home.md` (D21, D23), prototype on Gabe's real photos +
+  Logo D + type lock (D25, D27, ddf5d60), security review of the edit screen (fixed in 620df1c). Nothing claimed.
+  **Owner:** pick hero A or B from `prototype/shots/hero-pick.png` (boss leans A on phones); send Gabe the 5 questions
+  at the bottom of `docs/copy/home.md`. Laptop next: copy for Music, Shows, About (copywriter, boss-reviewed).
   Local clone on the Laptop: `C:\Users\alexm\projects\GLucak-Website` (no `V:\`; Riverside is at
   `C:\Users\alexm\projects\Riverside-Website`).
 
