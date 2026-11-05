@@ -106,6 +106,27 @@
   }
   renderShows();
 
+  /* ---------- IDENTITY: state by date, New York time, worked out once per load (never ticks) ---------- */
+  function identityState() {
+    const RELEASE = '2027-08-13'; // Gabe's own post (HANDOFF). The build reads it from releases.json.
+    const when = $('#identity-when'), presave = $('#identity-presave');
+    const mode = q.get('identity');
+    if (mode === 'none') { when.remove(); presave.remove(); return; } // no date: the name only
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+    const utc = (d) => Date.UTC(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10));
+    const days = mode === 'out' ? 0 : Math.round((utc(RELEASE) - utc(today)) / 864e5);
+    if (days <= 0) {
+      const listen = el('a', 'text-link', 'Listen');
+      listen.href = 'https://wingsmusic.lnk.to/IDENTITY';
+      listen.rel = 'noopener';
+      when.replaceChildren('Out now. ', listen);
+      presave.remove();
+      return;
+    }
+    $('#identity-days').textContent = `${days} ${days === 1 ? 'day' : 'days'}`;
+  }
+  identityState();
+
   /* ---------- Header goes solid once the page moves. Phone menu closes on Escape or a link. ---------- */
   const header = $('.site-header');
   new IntersectionObserver(([e]) => header.classList.toggle('is-solid', !e.isIntersecting)).observe($('.sentinel'));

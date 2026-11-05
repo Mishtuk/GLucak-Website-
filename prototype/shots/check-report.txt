@@ -1,5 +1,5 @@
 CHECK 1: player top on the first phone screen (390x660), clear of the bar
-  ?hero=a: player top 484px, bar top 598px, 114px of player visible, player height 352px
+  ?hero=a: player top 508px, bar top 598px, 90px of player visible, player height 352px
   ?hero=b: player top 518px, bar top 598px, 80px of player visible, player height 352px
 CHECK 1b: the real Spotify embed, under the real CSP, logged out (fresh profile)
   390px: frame https://open.spotify.com/embed/playlist/0D45boIc9xWAdDjz1uTDRo, box 349x352px, 137 distinct colors painted (the bare box is 1), CSP/load errors: none
@@ -18,43 +18,43 @@ CHECK 3: D6 labels at 390
   Join: 17px weight 700, 17.3:1, tab 34px tall, above "The Time Is Now" at 104px; nav word matches
 CHECK 3b: text over photos, measured from pixels with the text hidden (99.5th percentile background)
   ?hero=a
-    brand: text 15.48:1 against the brightest background (need 3:1)
-    menu: text 7.68:1 against the brightest background (need 4.5:1)
-    name: text 5.12:1 against the brightest background (need 3:1)
-    slogan: text 5.36:1 against the brightest background (need 3:1)
-    now: text 13.20:1 against the brightest background (need 4.5:1)
+    brand: text 6.28:1 against the brightest background (need 3:1)
+    menu: text 10.84:1 against the brightest background (need 4.5:1)
+    name: text 5.39:1 against the brightest background (need 3:1)
+    slogan: text 6.19:1 against the brightest background (need 3:1)
+    now: text 13.63:1 against the brightest background (need 4.5:1)
   ?hero=b
     brand: text 17.32:1 against the brightest background (need 3:1)
     menu: text 17.32:1 against the brightest background (need 4.5:1)
-    name: text 16.59:1 against the brightest background (need 3:1)
-    slogan: text 15.65:1 against the brightest background (need 3:1)
-    now: text 13.76:1 against the brightest background (need 4.5:1)
+    name: text 16.85:1 against the brightest background (need 3:1)
+    slogan: text 15.90:1 against the brightest background (need 3:1)
+    now: text 14.06:1 against the brightest background (need 4.5:1)
   ?hero=a&era=placeholder-b
-    brand: text 14.75:1 against the brightest background (need 3:1)
-    menu: text 7.43:1 against the brightest background (need 4.5:1)
-    name: text 5.13:1 against the brightest background (need 3:1)
-    slogan: text 5.28:1 against the brightest background (need 3:1)
-    now: text 11.06:1 against the brightest background (need 4.5:1)
-  PUSH PAST FEAR heading: 5.43:1 (need 3:1)
+    brand: text 6.20:1 against the brightest background (need 3:1)
+    menu: text 10.35:1 against the brightest background (need 4.5:1)
+    name: text 5.34:1 against the brightest background (need 3:1)
+    slogan: text 5.95:1 against the brightest background (need 3:1)
+    now: text 11.37:1 against the brightest background (need 4.5:1)
+  PUSH PAST FEAR heading: 7.68:1 (need 3:1)
 CHECK 3c: tap targets at 390 (every link, button and field)
-  ?hero=a: 33 targets, under 48px: none
-  ?shows=none: 32 targets, under 48px: none
+  ?hero=a: 36 targets, under 48px: none
+  ?shows=none: 34 targets, under 48px: none
 CHECK 3d: smallest text at 390
   [["16","now-tag"],["17","A"],["18","row-place"]]
 CHECK 3e: solid text pairs at 390, computed colors, both eras (text 4.5:1; large display and controls 3:1)
   ?hero=a: lowest solid button 5.71:1, Tickets on poster 5.71:1, muted on footer 7.68:1
   ?era=placeholder-b: lowest muted on footer 7.41:1, slogan on footer 7.41:1, row kind 8.77:1
 CHECK 4: Home height in phone screens at 390x660
-  ?hero=a: 3437px = 5.21 screens, 5.07 without the prototype-only note (top 1098, shows 734, about 655, join 480, footer 408)
-  ?hero=b: 3471px = 5.26 screens, 5.13 without the prototype-only note (top 1132, shows 734, about 655, join 480, footer 408)
-  ?shows=none: 3421px = 5.18 screens, 5.05 without the prototype-only note (top 1098, shows 718, about 655, join 480, footer 408)
+  ?hero=a: 3795px = 5.75 screens, 5.58 without the prototype-only note (top 1298, shows 818, about 575, join 578, footer 464)
+  ?hero=b: 3853px = 5.84 screens, 5.67 without the prototype-only note (top 1308, shows 818, about 575, join 578, footer 512)
+  ?shows=none: 3695px = 5.60 screens, 5.43 without the prototype-only note (top 1298, shows 718, about 575, join 578, footer 464)
 CHECK 5: reduced motion and the Motion switch
   normal: [{"n":"drift","s":"running","d":24000}]
   Emulation.setEmulatedMedia prefers-reduced-motion=reduce: animations [], switch "Motion: off (device setting)", fade headings opacity 1
   footer switch clicked: animations [], switch "Motion: off"
 CHECK 6: flash
-  hero a: 85 frames over 25.7s, mean relative luminance 0.2024 to 0.2042, largest frame-to-frame change 0.0001 (WCAG flash needs a change of 0.10)
-  hero b: 94 frames over 25.8s, mean relative luminance 0.1541 to 0.1559, largest frame-to-frame change 0.0001 (WCAG flash needs a change of 0.10)
+  hero a: 88 frames over 25.9s, mean relative luminance 0.2084 to 0.2102, largest frame-to-frame change 0.0001 (WCAG flash needs a change of 0.10)
+  hero b: 95 frames over 26.0s, mean relative luminance 0.1561 to 0.1578, largest frame-to-frame change 0.0001 (WCAG flash needs a change of 0.10)
   every CSS animation rule: ["html[data-motion=\"on\"] .glow 24s"]
   most animations running on the visible screen, brisk scroll, sampled every 150px: 1
 Page errors and CSP (served with the real CSP):

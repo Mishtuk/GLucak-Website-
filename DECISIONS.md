@@ -69,3 +69,16 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   valley. Trust me, I know." (Instagram, Sep 2026); LIVE IT LOUD "Hope to see you there!" (YouTube, Sep 2026); none
   elsewhere for now. Both need Gabe's OK. **Why:** the owner's rule that nothing goes in his mouth he didn't say; an
   edited quote is no longer his; the trimmed line also named the "upcoming 3rd album", which goes stale.
+- **D25** (2026-11-05, Laptop boss): Type lock and Logo D. **Ruling:** display type locked: Big Shoulders Display 900
+  + Atkinson Hyperlegible Next. Logo D is IDENTITY's mark, never a wordmark: header at 30px left of GLUCAK in one
+  link, the IDENTITY block, and the favicon (square crop of the original). Minimum 24px tall, clear space a quarter of
+  its height on every side, only on solid dark `bg` / `bg-2` (never on a photo, the accent or a light ground), never
+  recolored or altered. **Amends D12:** the era file gains `mark` (path or null; null means the word stands alone).
+  **Why:** Logo D has no lettering, so there's no second wordmark to clash with (the reason D14 held the type); marks
+  change with eras like the art; its 65% grey wings vanish on light grounds.
+- **D27** (2026-11-05, Laptop boss): Real-photo round. **Ruling:** photos ship as WebP from
+  `prototype/tools/resize.mjs`, EXIF-free, at most 120 KB at 800px and 300 KB at 1600px; Gabe's originals are never
+  shipped. Duotone: no muddiness on his photos, keep the derived ceiling; a per-photo gamma lift only if a low-light
+  photo ever needs it. "Play full songs on Spotify" becomes an outline button (amends D19). The Now line uses real
+  release data only. Home caps at 5.6 phone screens (hero A, both quotes in). **Why:** measured on Gabe's real files;
+  every addition was asked for by Gabe or the owner, and the cap stops creep.

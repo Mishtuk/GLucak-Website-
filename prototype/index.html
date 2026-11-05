@@ -6,7 +6,9 @@
   <meta name="theme-color" content="#111111">
   <title>GLucak: prototype (placeholder era)</title>
   <meta name="robots" content="noindex">
-  <link rel="icon" href="data:,">
+  <!-- Favicon: a square crop of Logo D's cross, as made (prototype/tools/resize.mjs). -->
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon-180.png">
   <link rel="preload" href="fonts/big-shoulders-display-900.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css">
   <script src="boot.js"></script>
@@ -31,7 +33,7 @@
   <div class="sentinel" aria-hidden="true"></div>
   <header class="site-header">
     <div class="wrap header-bar">
-      <a class="brand" href="#main" aria-label="GLucak home">GLUCAK</a>
+      <a class="brand" href="#main" aria-label="GLucak home"><img class="mark mark-head" src="assets/mark-identity-300.webp" alt="" width="300" height="96"><span class="brand-word">GLUCAK</span></a>
       <nav class="nav-desktop" aria-label="Main">
         <a href="#music">Music</a>
         <a href="#shows">Shows</a>
@@ -54,19 +56,27 @@
       <div class="glow" aria-hidden="true"></div>
 
       <section class="hero" aria-label="GLucak">
-        <div class="hero-photo"><img class="duo" src="assets/live-stage.svg" alt="" width="1600" height="1040" fetchpriority="high"></div>
+        <!-- Hero A photo. Under 700px a portrait crop (his face in the open strip above GLUCAK); wider, the whole frame.
+             The build prints only the chosen hero's image. -->
+        <div class="hero-photo"><picture>
+          <source media="(max-width: 699px)" srcset="assets/live-kealey-phone-800.webp 800w, assets/live-kealey-phone-1200.webp 1200w" sizes="100vw" width="1200" height="1329">
+          <img class="duo" src="assets/live-kealey-1600.webp" srcset="assets/live-kealey-800.webp 800w, assets/live-kealey-1600.webp 1600w" sizes="100vw" alt="" width="1600" height="1067" fetchpriority="high">
+        </picture></div>
         <div class="wrap hero-inner">
           <h1 class="name" aria-label="GLucak">
-            <span class="name-row" aria-hidden="true"><span class="n-g">G</span><span class="slot"><img class="duo" src="assets/live-stage.svg" alt="" width="1600" height="1040"></span><span class="n-rest">LUCAK</span></span>
+            <!-- Hero B slot: on phones the MCCC video still at or below its native 478px (Gabe fills it); from 900px a crop
+                 around Gabe from the Kealey photo (the full frame leaves him too small for the slot). -->
+            <span class="name-row" aria-hidden="true"><span class="n-g">G</span><span class="slot"><picture><source media="(min-width: 900px)" srcset="assets/live-kealey-gabe-1200.webp 1200w" sizes="37vw"><img class="duo" src="assets/live-mccc-478.webp" alt="" width="478" height="477" fetchpriority="high"></picture></span><span class="n-rest">LUCAK</span></span>
           </h1>
           <p class="slogan fit"><span class="sl sl-1">Rise, Live It Loud,</span> <span class="sl sl-2">Push Past Fear, The Time Is Now.</span></p>
           <div class="hero-actions">
             <a class="btn btn-solid" href="#music">Listen</a>
             <a class="btn btn-line" href="#shows">Shows</a>
           </div>
-          <p class="now"><span class="now-tag">Now</span> <a href="https://wingsmusic.lnk.to/370407-Go" rel="noopener">Go is out. Listen everywhere</a></p>
+          <!-- Newest release out today (src/data/releases.json), copy from docs/copy/home.md. Next show instead if within 14 days. -->
+          <p class="now"><span class="now-tag">Now</span> <a href="https://wingsmusic.lnk.to/DuckDodgeJumpFight" rel="noopener">Out now: Duck, Dodge, Jump, Fight (feat. J-BOY)</a></p>
         </div>
-        <p class="ph-chip hero-chip">Placeholder photo and colors</p>
+        <p class="ph-chip hero-chip">Placeholder colors</p>
       </section>
 
       <section class="band band-rise" id="music" aria-labelledby="h-rise">
@@ -80,22 +90,31 @@
               <iframe class="player" title="GLucak playlist on Spotify" src="https://open.spotify.com/embed/playlist/0D45boIc9xWAdDjz1uTDRo?utm_source=generator" width="100%" height="352" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
             </div>
             <p class="under-player">
-              <a href="https://open.spotify.com/playlist/0D45boIc9xWAdDjz1uTDRo" rel="noopener">Play full songs on Spotify</a>
-              <a href="https://wingsmusic.lnk.to/370407-Go" rel="noopener">Listen everywhere</a>
+              <a class="btn btn-line btn-small" href="https://open.spotify.com/playlist/0D45boIc9xWAdDjz1uTDRo" rel="noopener">Play full songs on Spotify</a>
+              <a class="under-link" href="https://wingsmusic.lnk.to/DuckDodgeJumpFight" rel="noopener">Listen everywhere</a>
             </p>
           </div>
 
           <article class="release">
-            <img class="cover" src="assets/cover.svg" alt="Placeholder for the Go cover art" width="400" height="400" loading="lazy">
+            <img class="cover" src="assets/cover.svg" alt="Placeholder for the Duck, Dodge, Jump, Fight cover art" width="400" height="400" loading="lazy">
             <div class="release-text">
-              <h3>Go</h3>
+              <h3>Duck, Dodge, Jump, Fight (feat. J-BOY)</h3>
               <p class="muted">Latest release. Listen on:</p>
               <p class="listen-on">
-                <a href="https://wingsmusic.lnk.to/370407-Go" rel="noopener">every platform</a>
+                <a href="https://wingsmusic.lnk.to/DuckDodgeJumpFight" rel="noopener">every platform</a>
                 <a href="https://soundcloud.com/glucak" rel="noopener">SoundCloud</a>
               </p>
             </div>
           </article>
+
+          <!-- "From Gabe" (D21): one per band at most, after the band's main content, never above the player. Static.
+               R1 from docs/copy/home.md, exact. The chip is prototype-only: the quote ships only after Gabe's OK. -->
+          <figure class="quote">
+            <p class="quote-tag">From Gabe</p>
+            <blockquote class="quote-text"><p>God will always be with you, and will never leave you in the valley. Trust me, I know.</p></blockquote>
+            <figcaption class="quote-credit"><a href="https://www.instagram.com/p/Dd6keDDDefE/" rel="noopener">GLucak, Instagram, Sep 2026</a></figcaption>
+            <span class="ph-chip quote-chip">Pending Gabe's OK</span>
+          </figure>
         </div>
       </section>
     </div>
@@ -105,7 +124,16 @@
         <h2 class="spine fade" id="h-live"><span class="tab">Shows</span> <span class="phrase fit"><span class="ln ln-live">Live It Loud</span></span></h2>
 
         <div class="shows-grid">
-          <div id="shows-mount"></div>
+          <div class="shows-main">
+            <div id="shows-mount"></div>
+            <!-- L2 from docs/copy/home.md, exact. After All shows; not shown when no show is booked. -->
+            <figure class="quote quote-live">
+              <p class="quote-tag">From Gabe</p>
+              <blockquote class="quote-text"><p>Hope to see you there!</p></blockquote>
+              <figcaption class="quote-credit"><a href="https://www.youtube.com/watch?v=zmhbfHppXNM" rel="noopener">GLucak, YouTube, Sep 2026</a></figcaption>
+              <span class="ph-chip quote-chip">Pending Gabe's OK</span>
+            </figure>
+          </div>
           <div class="video-block" id="shows-video">
             <h3>Latest video</h3>
             <!-- Facade: no YouTube loads until tapped. Without JS it is a plain link to the channel. -->
@@ -120,16 +148,20 @@
 
     <section class="band band-push" id="about" aria-labelledby="h-push">
       <div class="push-head">
-        <img class="duo push-photo" src="assets/live-crowd.svg" alt="" width="1700" height="800" loading="lazy">
+        <!-- Phones: the Paslier video still, never wider than its native 753px. Wider: the Kealey frame, cropped to the
+             crowd's raised hands (hero A already shows Gabe). -->
+        <picture>
+          <source media="(min-width: 753px)" srcset="assets/live-kealey-800.webp 800w, assets/live-kealey-1600.webp 1600w" sizes="100vw">
+          <img class="duo push-photo" src="assets/live-paslier-753.webp" alt="" width="753" height="420" loading="lazy">
+        </picture>
         <div class="wrap push-title">
           <h2 class="spine fade" id="h-push"><span class="tab">About</span> <span class="phrase fit lock-push"><span class="ln ln-push1">Push Past</span> <span class="ln ln-push2">Fear</span></span></h2>
         </div>
-        <p class="ph-chip">Placeholder photo</p>
       </div>
       <div class="wrap push-body">
         <div class="bio">
+          <!-- D23: his words exact or not at all. Home shows bio sentence 1 only; the full bio, word for word, is on About. -->
           <p class="bio-lead">Despite facing various difficulties and struggles over the years, Epilepsy survivor and Producer-Rapper/DJ GLucak has shown no intent to give up on either his Faith in God or his mission in creating energetic music to bring others to Christ.</p>
-          <p class="muted mission">The mission statement has always been the same: Rise, Live It Loud, Push Past Fear, The Time Is Now.</p>
         </div>
         <div class="push-actions">
           <a class="btn btn-solid" href="https://patreon.com/GLucakMusic" rel="noopener">Patreon</a>
@@ -151,7 +183,14 @@
             </div>
             <p class="signup-status" id="signup-status" role="status"></p>
           </form>
-          <p class="identity">IDENTITY, 2027</p>
+          <!-- Same classes as the build (src/pages/index.astro). State by date, New York time, set once per page load:
+               the day count never ticks. Prototype switch: ?identity=out or ?identity=none. -->
+          <div class="identity-state" id="identity-state">
+            <img class="mark mark-identity" src="assets/mark-identity-300.webp" alt="" width="300" height="96" loading="lazy">
+            <p class="identity">IDENTITY</p>
+            <p class="identity-when" id="identity-when"><time datetime="2027-08-13">August 13, 2027</time> &middot; <span id="identity-days">281 days</span> to go</p>
+            <a class="btn btn-line identity-presave" id="identity-presave" href="https://wingsmusic.lnk.to/IDENTITY" rel="noopener">Pre-save IDENTITY</a>
+          </div>
         </div>
       </div>
     </section>
@@ -166,15 +205,17 @@
         <li><a href="https://x.com/GLucakOfficial" rel="noopener">X</a></li>
         <li><a href="https://www.youtube.com/channel/UCha7GtkOI9A0dzbTG3igbLg" rel="noopener">YouTube</a></li>
         <li><a href="https://soundcloud.com/glucak" rel="noopener">SoundCloud</a></li>
-        <li><a class="pending" href="#footer" title="Needs Gabe's Spotify artist link">Spotify</a></li>
+        <li><a href="https://open.spotify.com/artist/1SxMTO4oSXDbNSNzxx7cVX" rel="noopener">Spotify</a></li>
         <li><a href="https://patreon.com/GLucakMusic" rel="noopener">Patreon</a></li>
       </ul>
       <p class="footer-slogan">Rise, Live It Loud, Push Past Fear, The Time Is Now.</p>
+      <!-- Credits for the photos on this page, in CREDITS.md wording. Each page lists only what it shows. -->
+      <p class="credits" id="credits">Photo: Alexander Kealey. <span class="credit-b">Video: Montgomery County Community College, MSP program group. </span>Video: Sylvain Paslier.</p>
       <div class="footer-row">
         <button class="motion-btn" id="motion" type="button" aria-pressed="true">Motion: on</button>
         <p class="legal">&copy; <span id="year">2026</span> GLucak. <a class="pending" href="#footer" title="Privacy page comes with the build">Privacy</a></p>
       </div>
-      <p class="ph-note">Prototype. Colors are the <span id="era-name">Placeholder</span> era, not IDENTITY. Shows, photos and cover art are placeholders.</p>
+      <p class="ph-note">Prototype. Colors are the <span id="era-name">Placeholder</span> era, not IDENTITY. Photos, releases and quotes are Gabe's (quotes pending his OK); shows and cover art are placeholders.</p>
     </div>
   </footer>
 
