@@ -27,13 +27,13 @@ const all = releases();
       </ul>
       {idn.date ? (
           <div class="identity-state">
-            <p class="identity identity-lg">IDENTITY</p>
+            {era.mark && <img class="mark mark-identity" src={era.mark} alt="" width="300" height="96" loading="lazy" />}<p class="identity identity-lg">IDENTITY</p>
             {idn.out
               ? <p class="identity-when">Out now. <a class="text-link" href={idn.link} rel="noopener">Listen</a></p>
               : <><p class="identity-when"><time datetime={idn.date}>{idn.pretty}</time> &middot; {idn.days} {idn.days === 1 ? 'day' : 'days'} to go</p>
                  <a class="btn btn-line" href={idn.link} rel="noopener">Pre-save IDENTITY</a></>}
           </div>
-        ) : <p class="identity identity-lg">IDENTITY</p>}
+        ) : <div class="identity-state">{era.mark && <img class="mark mark-identity" src={era.mark} alt="" width="300" height="96" loading="lazy" />}<p class="identity identity-lg">IDENTITY</p></div>}
       <p class="muted">Era word: {era.word} <span class="ph-chip inline">Placeholder</span></p>
       <p class="under-player"><a href={SOUNDCLOUD} rel="noopener">More on SoundCloud</a></p>
     </div>

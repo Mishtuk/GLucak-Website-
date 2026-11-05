@@ -3,6 +3,15 @@ import { etDay } from '../lib/shows.js';
 import era from '../eras/placeholder.json';
 
 export { era };
+// D21/D23: a "From Gabe" quote ships only after Gabe OKs it. Flip this when he does; until then no quote is in the page.
+export const QUOTES_APPROVED = false;
+const QUOTES = {
+  rise: { text: 'God will always be with you, and will never leave you in the valley. Trust me, I know.', url: 'https://www.instagram.com/p/Dd6keDDDefE/', credit: 'GLucak, Instagram, Sep 2026' },
+  live: { text: 'Hope to see you there!', url: 'https://www.youtube.com/watch?v=zmhbfHppXNM', credit: 'GLucak, YouTube, Sep 2026' },
+};
+/** The band's quote, or null (nothing renders). */
+export const quote = (band) => (QUOTES_APPROVED ? QUOTES[band] ?? null : null);
+export const PHOTO_CREDITS = { kealey: 'Photo: Alexander Kealey.', paslier: 'Video: Sylvain Paslier.', mccc: 'Video: Montgomery County Community College, MSP program group.' };
 export const SPOTIFY_EMBED = 'https://open.spotify.com/embed/playlist/0D45boIc9xWAdDjz1uTDRo';
 export const SPOTIFY_PLAYLIST = 'https://open.spotify.com/playlist/0D45boIc9xWAdDjz1uTDRo';
 export const GO = 'https://wingsmusic.lnk.to/370407-Go';

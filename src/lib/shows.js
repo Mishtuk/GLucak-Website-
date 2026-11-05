@@ -74,3 +74,15 @@ export function showsHtml(rows, now = new Date(), { limit = Infinity, past = fal
   if (past) out += playedHtml(s.past);
   return out;
 }
+
+/**
+ * The Now line's show variant (DESIGN.md section 7, D18): "Next show: Venue, City" linked to #shows when the next upcoming
+ * row is within 14 days (New York days), else '' so the static release line stays. Escaped like the list.
+ */
+export function nowHtml(rows, now = new Date()) {
+  const ok = rows.filter((r) => { try { return validateShow(r); } catch { return false; } });
+  const next = splitShows(ok, now).upcoming[0];
+  if (!next) return '';
+  const days = (Date.parse(next.date) - Date.parse(etDay(now))) / 864e5;
+  return days <= 14 ? `<a href="#shows">Next show: ${place(next)}</a>` : '';
+}

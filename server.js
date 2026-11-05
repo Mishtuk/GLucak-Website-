@@ -7,7 +7,7 @@ import { randomBytes } from 'node:crypto';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, normalize, sep } from 'node:path';
 import { brotliCompressSync, constants as zc, gzipSync } from 'node:zlib';
-import { showsHtml } from './src/lib/shows.js';
+import { nowHtml, showsHtml } from './src/lib/shows.js';
 import { signup } from './src/lib/signup.js';
 import { allow, checkLogin, clearFailures, cookieHeader, locked, parseEditors, readCookie, recordFailure, sameOrigin, signSession, verifySession, SESSION_DAYS, USER_LOCK } from './src/lib/auth.js';
 import { checkShows, readShows, saveShows, showsVersion } from './src/lib/store.js';
@@ -53,11 +53,16 @@ function compress(req, buf, type, headers) {
 
 const statSafe = (f) => { try { return statSync(f); } catch { return null; } };
 
-/** Fill the shows marker. Fails open (caller catches): an unreadable shows.json leaves the invisible marker comment. */
+/** Fill the shows marker and the Now-line marker. Fails open (caller catches): an unreadable shows.json leaves the static page. */
 function inject(html, path) {
-  if (!html.includes('<!--gl:shows-->')) return html;
+  const shows = html.includes('<!--gl:shows-->'), now = html.includes('<!--gl:now-->');
+  if (!shows && !now) return html;
   const rows = readShows(DATA, SHOWS);
-  return html.replace('<!--gl:shows-->', () => showsHtml(rows, new Date(), path === '/' ? { limit: 3, allLink: '/shows/' } : { past: true }));
+  if (now) { // a show within 14 days replaces the static release line between the markers; otherwise the release line stays
+    const line = nowHtml(rows, new Date());
+    if (line) html = html.replace(/<!--gl:now-->[\s\S]*?<!--\/gl:now-->/, () => line);
+  }
+  return shows ? html.replace('<!--gl:shows-->', () => showsHtml(rows, new Date(), path === '/' ? { limit: 3, allLink: '/shows/' } : { past: true })) : html;
 }
 
 function send(req, res, status, type, body, extra = {}) {

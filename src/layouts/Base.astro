@@ -5,8 +5,8 @@ import MobileBar from '../components/MobileBar.astro';
 import Footer from '../components/Footer.astro';
 import { era } from '../components/content.js';
 
-interface Props { title: string; description?: string; home?: boolean; hero?: 'a' | 'b'; current?: 'music' | 'shows' | 'about' }
-const { title, description = 'GLucak: Rise, Live It Loud, Push Past Fear, The Time Is Now.', home = false, hero = 'a', current } = Astro.props;
+interface Props { title: string; description?: string; home?: boolean; hero?: 'a' | 'b'; current?: 'music' | 'shows' | 'about'; credits?: string[] }
+const { title, description = 'GLucak: Rise, Live It Loud, Push Past Fear, The Time Is Now.', home = false, hero = 'a', current, credits } = Astro.props;
 
 // Era colors become custom properties (D12). Only #rrggbb values pass.
 const HEX = /^#[0-9a-f]{6}$/i;
@@ -42,7 +42,8 @@ const table = (i) => `${lo[i].toFixed(3)} ${hi[i].toFixed(3)}`;
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
-    <link rel="icon" href="data:," />
+    <link rel="icon" href="/media/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/media/apple-touch-icon-180.png" />
     <link rel="preload" href="/fonts/big-shoulders-display-900.woff2" as="font" type="font/woff2" crossorigin />
     <style set:html={`:root{${eraCss}}`}></style>
     <script is:inline src="/js/boot.js"></script>
@@ -67,7 +68,7 @@ const table = (i) => `${lo[i].toFixed(3)} ${hi[i].toFixed(3)}`;
     <main id="main" class={home ? undefined : 'sub'}>
       <slot />
     </main>
-    <Footer home={home} />
+    <Footer home={home} credits={credits} />
     <MobileBar home={home} current={current} />
   </body>
 </html>

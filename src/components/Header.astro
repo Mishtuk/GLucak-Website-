@@ -1,4 +1,5 @@
 ---
+import { era } from './content.js';
 interface Props { home?: boolean; current?: string }
 const { home = false, current } = Astro.props;
 const nav = [['music', 'Music', '/music/'], ['shows', 'Shows', '/shows/'], ['about', 'About', '/about/']];
@@ -6,7 +7,7 @@ const nav = [['music', 'Music', '/music/'], ['shows', 'Shows', '/shows/'], ['abo
 {home && <div class="sentinel" aria-hidden="true"></div>}
 <header class:list={['site-header', { 'is-solid': !home }]} data-overlay={home ? '' : undefined}>
   <div class="wrap header-bar">
-    <a class="brand" href="/" aria-label="GLucak home">GLUCAK</a>
+    <a class="brand" href="/" aria-label="GLucak home">{era.mark && <img class="mark mark-head" src={era.mark} alt="" width="300" height="96" />}<span class="brand-word">GLUCAK</span></a>
     <nav class="nav-desktop" aria-label="Main">
       {nav.map(([k, label, href]) => <a href={href} aria-current={current === k ? 'page' : undefined}>{label}</a>)}
     </nav>

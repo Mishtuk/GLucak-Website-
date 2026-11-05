@@ -1,8 +1,8 @@
 ---
 import Signup from './Signup.astro';
 import { SOCIALS } from './content.js';
-interface Props { home?: boolean }
-const { home = false } = Astro.props;
+interface Props { home?: boolean; credits?: string[] }
+const { home = false, credits = [] } = Astro.props;
 ---
 <footer class="site-footer" id="footer">
   <div class="wrap">
@@ -12,6 +12,7 @@ const { home = false } = Astro.props;
       {SOCIALS.map(([name, href]) => <li><a href={href} rel="noopener">{name}</a></li>)}
     </ul>
     <p class="footer-slogan">Rise, Live It Loud, Push Past Fear, The Time Is Now.</p>
+    {credits.length > 0 && <p class="credits">{credits.join(' ')}</p>}
     <div class="footer-row">
       <button class="motion-btn" id="motion" type="button" aria-pressed="true">Motion: on</button>
       <p class="legal">&copy; <span id="year">{new Date().getFullYear()}</span> GLucak. <a href="/privacy/">Privacy</a></p>

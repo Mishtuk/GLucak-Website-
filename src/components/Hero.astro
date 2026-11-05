@@ -4,21 +4,20 @@ import { releases } from './content.js';
 interface Props { variant?: 'a' | 'b' }
 const { variant = 'a' } = Astro.props;
 const now = releases()[0];
-const W = 2400, H = 1600;
 ---
 <section class="hero" aria-label="GLucak">
   {variant === 'a' && (
     <div class="hero-photo">
       <picture>
-        <source type="image/webp" srcset="/media/live-1200.webp 1200w, /media/live-2400.webp 2400w" sizes="100vw" />
-        <img class="duo" src="/media/live-1200.jpg" srcset="/media/live-1200.jpg 1200w, /media/live-2400.jpg 2400w" sizes="100vw" alt="" width={W} height={H} fetchpriority="high" />
+        <source media="(max-width: 699px)" srcset="/media/live-kealey-phone-800.webp 800w, /media/live-kealey-phone-1200.webp 1200w" sizes="100vw" width="1200" height="1329" />
+        <img class="duo" src="/media/live-kealey-1600.webp" srcset="/media/live-kealey-800.webp 800w, /media/live-kealey-1600.webp 1600w" sizes="100vw" alt="" width="1600" height="1067" fetchpriority="high" />
       </picture>
     </div>
   )}
   <div class="wrap hero-inner">
     <h1 class="name" aria-label="GLucak">
       <span class="name-row" aria-hidden="true"><span class="n-g">G</span>{variant === 'b' && (
-        <span class="slot"><picture><source type="image/webp" srcset="/media/live-1200.webp" /><img class="duo" src="/media/live-1200.jpg" alt="" width={W} height={H} fetchpriority="high" /></picture></span>
+        <span class="slot"><picture><source media="(min-width: 900px)" srcset="/media/live-kealey-gabe-1200.webp 1200w" sizes="37vw" /><img class="duo" src="/media/live-mccc-478.webp" alt="" width="478" height="477" fetchpriority="high" /></picture></span>
       )}<span class="n-rest">LUCAK</span></span>
     </h1>
     <p class="slogan fit"><span class="sl sl-1">Rise, Live It Loud,</span> <span class="sl sl-2">Push Past Fear, The Time Is Now.</span></p>
@@ -26,7 +25,7 @@ const W = 2400, H = 1600;
       <a class="btn btn-solid" href="#music">Listen</a>
       <a class="btn btn-line" href="#shows">Shows</a>
     </div>
-    <p class="now"><span class="now-tag">Now</span> <a href={now.link} rel="noopener">{now.title} is out. Listen everywhere</a></p>
+    <p class="now"><span class="now-tag">Now</span> <Fragment set:html="<!--gl:now-->" /><a href={now.link} rel="noopener">Out now: {now.title}</a><Fragment set:html="<!--/gl:now-->" /></p>
   </div>
   <p class="ph-chip hero-chip">Placeholder colors</p>
 </section>

@@ -1,0 +1,8 @@
+---
+interface Props { eager?: boolean }
+const { eager = false } = Astro.props;
+---
+<picture>
+  <source media="(min-width: 753px)" srcset="/media/live-kealey-800.webp 800w, /media/live-kealey-1600.webp 1600w" sizes="100vw" />
+  <img class="duo push-photo" src="/media/live-paslier-753.webp" alt="" width="753" height="420" loading={eager ? undefined : 'lazy'} fetchpriority={eager ? 'high' : undefined} />
+</picture>

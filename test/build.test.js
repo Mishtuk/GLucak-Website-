@@ -85,3 +85,17 @@ test('edit page: noindex, external script only, not linked from the site', () =>
   assert.match(h, /<form id="login"[^>]*method="post" action="\/edit\/login"/);
   for (const p of Object.keys(pages)) assert.ok(!html(p).includes('/edit/'), `${p} links to /edit/`);
 });
+
+test('port notes: no quote text, mark in header, one hero image, credits, no EXIF-bearing originals', () => {
+  const h = html('/');
+  assert.ok(!h.includes('From Gabe') && !h.includes('Trust me, I know'), 'quotes are off until Gabe OKs');
+  assert.match(h, /<a class="brand"[^>]*><img class="mark mark-head"[^>]*><span class="brand-word">GLUCAK<\/span><\/a>/);
+  assert.match(h, /Play full songs on Spotify/);
+  assert.ok(!h.includes('Open in Spotify') && !h.includes('mission statement has always'));
+  assert.equal((h.match(/fetchpriority="high"/g) ?? []).length, 1, 'only the chosen hero image is high priority');
+  assert.ok(h.includes('Out now: ') && h.includes('<!--gl:now-->'));
+  assert.match(h, /class="credits">Photo: Alexander Kealey\./);
+  assert.ok(html('/about/').includes('class="credits"'));
+  const media = readdirSync(join(DIST, 'media'));
+  assert.ok(!media.some((f) => /\.jpe?g$/i.test(f)), 'no JPG originals in media');
+});

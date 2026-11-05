@@ -153,9 +153,13 @@ p { text-wrap: pretty; }
 .site-header.is-solid, .site-header:has(details[open]) { background: var(--bg); border-color: var(--line); }
 .header-bar { display: flex; align-items: center; gap: var(--space-m); min-height: var(--header-h); }
 .brand {
-  margin-right: auto; display: inline-flex; align-items: center; min-height: 48px;
+  margin-right: auto; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 48px;
   font-family: var(--font-display); font-weight: 900; font-size: 1.75rem; letter-spacing: 0.01em; text-decoration: none;
 }
+/* Logo D, IDENTITY's mark (era file `mark`). A symbol beside the word, never instead of it. Solid dark ground only:
+   its wings are 65% grey, so they need bg or bg-2 under them. Never on a photo, the accent or the poster paper. */
+.mark { display: block; width: auto; flex: none; }
+.mark-head { height: 30px; }
 /* The hero already says the name: no second wordmark above it. Needs JS, because only JS sets is-solid. */
 html[data-home][data-motion] .site-header:not(.is-solid):not(:has(details[open])) .brand { visibility: hidden; }
 .nav-desktop { display: none; gap: 0.25rem; }
@@ -210,10 +214,21 @@ html[data-home][data-motion] .site-header:not(.is-solid):not(:has(details[open])
 .hero { position: relative; z-index: 0; }
 .hero-inner { position: relative; z-index: 2; padding-top: calc(var(--header-h) + 0.25rem); padding-bottom: calc(var(--tab-h) + 1rem); }
 .hero-photo { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: var(--bg); }
-.hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 70% 38%; }
+.hero-photo picture { display: contents; }
+/* Phones: the portrait crop, pinned to its top so his face stays in the strip above the name. From 700px: the whole
+   frame, his face falls in the gap between G and L (the gap and the photo both scale with the width, so it holds). */
+.hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%; }
+@media (min-width: 700px) { .hero-photo img { object-position: 20% 40%; } }
+/* Hero A on phones: 24px more open strip above the name for his face (player stays at 80px+ above the bar). */
+@media (max-width: 699px) { html[data-hero='a'] .hero-inner { padding-top: calc(var(--header-h) + 1.75rem); } }
+/* Scrim: only where small text sits. Top right for Menu / the nav (4.5:1), the bottom ramp for the Now line. The rest of
+   the photo stays at full duotone strength, so his face above the name isn't dimmed (the ceiling already keeps the name
+   and slogan at 3:1 or better). */
 .hero-photo::after {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 40%, transparent), transparent 42%, color-mix(in srgb, var(--bg) 80%, transparent) 70%, var(--bg));
+  background:
+    radial-gradient(ellipse 62% 130px at 100% 0, color-mix(in srgb, var(--bg) 55%, transparent), transparent),
+    linear-gradient(to bottom, transparent 42%, color-mix(in srgb, var(--bg) 80%, transparent) 70%, var(--bg));
 }
 img.duo { filter: url('#duo'); }
 
@@ -246,7 +261,8 @@ html[data-hero='b'] .slot {
   width: calc(var(--fs) * var(--k)); height: calc(var(--fs) * 1.56);
   margin-inline: 0.05em; background: var(--bg-2);
 }
-html[data-hero='b'] .slot img { width: 100%; height: 100%; object-fit: cover; object-position: 70% 30%; }
+html[data-hero='b'] .slot picture { display: contents; }
+html[data-hero='b'] .slot img { width: 100%; height: 100%; object-fit: cover; object-position: 44% 20%; }
 
 /* ---------- Bands and the spine ---------- */
 .band { position: relative; z-index: 2; border-top: 4px solid var(--text); padding-block: var(--space-m) var(--section); background-image: var(--texture); }
@@ -277,15 +293,37 @@ html[data-hero='b'] .slot img { width: 100%; height: 100%; object-fit: cover; ob
 /* ---------- Rise ---------- */
 .rise-player { margin-top: var(--space-s); }
 .player-box { display: block; width: 100%; height: 352px; border: 0; border-radius: 12px; background: color-mix(in srgb, var(--bg) 78%, var(--text)); }
-.under-player { display: flex; flex-wrap: wrap; gap: 0 var(--space-l); margin-top: var(--space-xs); font-weight: 700; font-size: var(--step--1); }
+/* Play full songs on Spotify is a real button (D19 + 2026-11-05): logged-out fans get 30s previews, this is the way to
+   full songs. Outline, not solid: the accent stays with Listen. Full width on phones, so the thumb can't miss it. */
+.under-player { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs) var(--space-l); margin-top: var(--space-s); font-weight: 700; font-size: var(--step--1); }
 .under-player a { display: inline-flex; align-items: center; min-height: 48px; text-underline-offset: 3px; }
+.under-player .btn { flex: 1 1 100%; font-size: 1.25rem; }
+@media (min-width: 700px) { .under-player .btn { flex: none; } }
 
 .release { display: flex; gap: var(--space-m); align-items: center; margin-top: var(--space-s); }
 .cover { width: 96px; height: 96px; flex: none; }
-.release h3 { font-family: var(--font-display); font-weight: 900; font-size: var(--step-3); line-height: 1; text-transform: uppercase; }
+/* --step-2, not --step-3: real titles carry features ("Duck, Dodge, Jump, Fight (feat. J-BOY)") and the credit never drops. */
+.release h3 { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; text-wrap: balance; }
 .release .muted { font-size: var(--step--1); line-height: 1.3; }
 .listen-on { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--space-m); font-size: var(--step--1); font-weight: 700; margin-top: -0.25rem; }
 .listen-on a { display: inline-flex; align-items: center; min-height: 48px; text-underline-offset: 3px; }
+
+/* "From Gabe" (D21): his words, exact, credited. One per band at most, after the main content, static. Hard left rule
+   in text, same weight as the band edges; the tag repeats the Now tag; no accent (the era color stays on actions). */
+/* Compact: the tag floats into the quote's first line (no line of its own); the credit is one 48px link line. */
+.quote { position: relative; margin-top: var(--space-m); padding-left: var(--space-m); border-left: 4px solid var(--text); max-width: 36rem; }
+.quote-tag { float: left; margin: 0.1rem 0.6rem 0 0; padding: 0 0.45rem; background: var(--text); color: var(--bg); font-size: var(--step--1); font-weight: 700; line-height: 1.5; }
+/* Quote and credit run inline: the credit follows the last word when it fits (short quotes take one line). */
+.quote-text, .quote-text p { display: inline; font-size: var(--step-1); font-weight: 700; line-height: 1.3; }
+.quote-text p::before { content: '\201C'; }
+.quote-text p::after { content: '\201D'; }
+.quote-credit { display: inline; margin-left: 0.4rem; color: var(--muted); font-size: var(--step--1); line-height: 1.3; }
+.quote-credit a { display: inline-flex; align-items: center; min-height: 48px; vertical-align: middle; color: var(--muted); text-underline-offset: 3px; }
+/* Prototype-only chip, sits in the gap above the quote, so it adds no height. */
+.quote-chip { top: -1.65rem; bottom: auto; right: 0; }
+.shows-main { min-width: 0; }
+.quote-live { margin-top: var(--space-xs); }
+html[data-shows='none'] .quote-live { display: none; }
 
 /* ---------- Live It Loud ---------- */
 .band-live { padding-top: var(--space-l); }
@@ -332,14 +370,17 @@ html[data-hero='b'] .slot img { width: 100%; height: 100%; object-fit: cover; ob
 
 /* ---------- Push Past Fear ---------- */
 .band-push { padding-top: 0; background-image: none; }
-.push-head { position: relative; overflow: hidden; }
-.push-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 75% 30%; }
+/* No overflow clipping here: the About tab stands above this box on the band's edge (it was clipped before 2026-11-05).
+   The photo is inset: 0 with object-fit, so nothing else can spill. */
+.push-head { position: relative; }
+.push-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 46% 30%; }
+@media (min-width: 753px) { .push-photo { object-position: 40% 82%; } }
 .push-head::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 30%, transparent), color-mix(in srgb, var(--bg) 12%, transparent) 40%, color-mix(in srgb, var(--bg) 62%, transparent)); }
-.push-title { position: relative; z-index: 2; padding-block: 1.75rem 1.25rem; }
+.push-title { position: static; padding-block: 1.75rem 1.25rem; }
+.push-title .phrase { position: relative; z-index: 2; }
 .band-push .tab { z-index: 3; }
 .push-body { display: grid; gap: var(--space-m); margin-top: var(--space-m); }
 .bio { display: grid; gap: var(--space-xs); }
-.mission { font-size: var(--step--1); }
 .bio-lead { font-size: var(--step-0); line-height: 1.4; font-weight: 500; }
 .push-actions { display: flex; flex-wrap: wrap; gap: var(--space-s); }
 
@@ -357,6 +398,17 @@ html[data-hero='b'] .slot img { width: 100%; height: 100%; object-fit: cover; ob
 .signup-status { min-height: 1.5em; margin-top: 0.25rem; font-size: var(--step--1); color: var(--muted); }
 .identity { font-family: var(--font-display); font-weight: 900; font-size: var(--step-3); line-height: 1; text-transform: uppercase; }
 .now-grid { row-gap: var(--space-s); }
+/* IDENTITY: mark beside the name, then the date line and pre-save. Static: the day count is set once per load and never ticks. */
+.identity-state { display: grid; grid-template-columns: auto 1fr; align-items: center; justify-items: start; gap: var(--space-xs) 0.75rem; }
+.identity-state > :not(.mark):not(.identity) { grid-column: 1 / -1; }
+.mark-identity { height: 40px; }
+.identity-when { font-weight: 700; font-size: var(--step-0); line-height: 1.3; font-variant-numeric: tabular-nums; }
+.identity-when .text-link { min-height: 48px; }
+.identity-state .btn { margin-top: 0.25rem; }
+
+/* Photo credits for this page (CREDITS.md wording). The MCCC still appears only in hero B. */
+.credits { margin-top: var(--space-xs); color: var(--muted); font-size: var(--step--1); }
+html:not([data-hero='b']) .credit-b { display: none; }
 
 /* ---------- Footer ---------- */
 .site-footer { position: relative; z-index: 2; border-top: 4px solid var(--text); padding-block: var(--space-l); background: var(--bg-2); background-image: var(--texture); }
@@ -405,7 +457,7 @@ html[data-hero='b'] .slot img { width: 100%; height: 100%; object-fit: cover; ob
   .rise-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-m) var(--space-xl); align-items: start; }
   .spine:has(.phrase-rise) { grid-column: 1; }
   .rise-player { grid-column: 2; grid-row: 1 / span 2; margin-top: 0; }
-  .release { grid-column: 1; }
+  .release, .quote { grid-column: 1; }
   .phrase-rise { font-size: clamp(8rem, 17vw, 20rem); }
   .cover { width: 160px; height: 160px; }
 
@@ -430,7 +482,6 @@ iframe.yt { width: 100%; border: 0; }
 .sub > .band:first-child { border-top-color: transparent; }
 .releases { display: grid; gap: var(--space-m); margin-top: var(--space-l); }
 .releases .release { margin-top: 0; }
-.photo-credit { color: var(--muted); font-size: var(--step--1); }
 .prose { display: grid; gap: var(--space-s); margin-top: var(--space-l); }
 .prose > p { max-width: 44rem; }
 .band-push .prose { margin-top: var(--space-xl); }

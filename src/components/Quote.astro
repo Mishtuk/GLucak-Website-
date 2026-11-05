@@ -1,0 +1,13 @@
+---
+import { quote } from './content.js';
+interface Props { band: string; class?: string }
+const { band, class: cls } = Astro.props;
+const q = quote(band);
+---
+{q && (
+  <figure class:list={['quote', cls]}>
+    <p class="quote-tag">From Gabe</p>
+    <blockquote class="quote-text"><p>{q.text}</p></blockquote>
+    <figcaption class="quote-credit"><a href={q.url} rel="noopener">{q.credit}</a></figcaption>
+  </figure>
+)}

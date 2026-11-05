@@ -29,7 +29,10 @@
   Laptop's security review fixed (10 items): bad Host -> 400, rightmost X-Forwarded-For, async scrypt, global sign-in cap
   30/min, lockout per user+IP (user-only 50/h), 409 on stale saves, HSTS/Secure via isHttps(req). **On the host set
   TRUST_PROXY=1** (needed for HSTS and real client IPs). `npm test` builds first (pretest); 58/58.
-  Next: daily rebuild for release-day flips + host plan (owner decides the host). Claims: `src/`, `public/`, `server.js`, `test/` (port of the Laptop's ddf5d60 round: notes 1-9 on #1).
+  Next: daily rebuild for release-day flips + host plan (owner decides the host). Laptop's real-photo round (ddf5d60) ported: Logo D mark + favicon, EXIF-free webp photos (no JPG ships), credits,
+  'Out now:' + per-visit 'Next show' Now line (`<!--gl:now-->`, 14 days), Spotify outline button, quotes off until Gabe OKs
+  (`QUOTES_APPROVED`). Player 152px visible at 390x660, Home 5.25 screens. `npm test` 61/61. Claims released except
+  `server.js`, `src/lib/`. Waiting on the owner: hero A / B / both, host, Gabe's answers.
 - **Laptop (2026-11-05):** boss agent runs each round (plans, briefs the designer / copywriter, reviews). Done, all
   boss-approved: real Spotify embed (D19), Home copy `docs/copy/home.md` (D21, D23), prototype on Gabe's real photos +
   Logo D + type lock (D25, D27, ddf5d60), security review of the edit screen (fixed in 620df1c). **Claimed:** `docs/copy/` (music.md, shows.md,

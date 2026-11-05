@@ -84,3 +84,13 @@ test('client IP: rightmost X-Forwarded-For (the proxy-added one), port stripped,
     assert.equal(clientIp(req(undefined)), '10.0.0.9');
   } finally { delete process.env.TRUST_PROXY; }
 });
+
+test('Now marker: a show within 14 days replaces the release line; none leaves it', async () => {
+  const fs = await import('node:fs');
+  fs.writeFileSync(join(dir, 'index.html'), '<p><!--gl:now--><a>Out now: X</a><!--/gl:now--></p>');
+  const near = await (await fetch(`${base}/`)).text(); // shows.json has a show in 5 days
+  assert.ok(near.includes('Next show:') && !near.includes('Out now: X'));
+  fs.writeFileSync(join(dir, 'shows.json'), JSON.stringify([{ date: d(20), type: 'show', venue: 'V', city: 'C' }]));
+  const far = await (await fetch(`${base}/`)).text();
+  assert.ok(far.includes('Out now: X') && !far.includes('Next show:'));
+});

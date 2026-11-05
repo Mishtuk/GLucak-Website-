@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { splitShows, showsHtml, validateShow } from '../src/lib/shows.js';
+import { nowHtml, splitShows, showsHtml, validateShow } from '../src/lib/shows.js';
 
 const row = (o = {}) => ({ date: '2026-12-12', type: 'show', venue: 'V', city: 'C', ...o });
 const noon = (d) => new Date(`${d}T17:00:00Z`); // midday in New York
@@ -99,4 +99,14 @@ test('empty state: never blank, Played rows if any, no Request button without a 
   assert.ok(none.includes('No shows booked right now') && none.includes('>Follow<') && !none.includes('Played'));
   assert.ok(!none.includes('Request a show'));
   assert.ok(showsHtml([row({ venue: 'Old' })], now, { past: true }).includes('Played'));
+});
+
+test('Now line: next show within 14 days, else empty so the release line stays; escaped', () => {
+  const now = noon('2026-12-01');
+  assert.equal(nowHtml([row({ date: '2026-12-04', venue: 'Pub', city: 'Philly' })], now), '<a href="#shows">Next show: Pub, Philly</a>');
+  assert.equal(nowHtml([row({ date: '2026-12-21' })], now), ''); // 20 days
+  assert.equal(nowHtml([row({ date: '2026-12-15' })], now).startsWith('<a'), true); // day 14 counts
+  assert.equal(nowHtml([row({ date: '2026-11-20' })], now), ''); // past
+  const bad = nowHtml([row({ date: '2026-12-04', venue: '<script>x</script>', city: "' OR 1=1 --" })], now);
+  assert.ok(!bad.includes('<script>') && bad.includes('&lt;script&gt;'));
 });
