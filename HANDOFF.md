@@ -40,7 +40,7 @@
   `docs/review/photo-treatments/` (claimed). Proposals for the Laptop / owner, not yet in the site.
 - **Laptop (2026-11-05):** boss agent runs each round (plans, briefs the designer / copywriter, reviews). Done, all
   boss-approved: real Spotify embed (D19), Home copy `docs/copy/home.md` (D21, D23), prototype on Gabe's real photos +
-  Logo D + type lock (D25, D27, ddf5d60), security review of the edit screen (fixed in 620df1c), copy for Music, Shows, About (D29, D31). Nothing claimed.
+  Logo D + type lock (D25, D27, ddf5d60), security review of the edit screen (fixed in 620df1c), copy for Music, Shows, About (D29, D31), D33. **Claimed:** `prototype/` + DESIGN.md section 3 (IDENTITY guess era).
   **Owner:** pick hero A or B from `prototype/shots/hero-pick.png` (boss leans A on phones); send Gabe the 9 questions (7 for launch)
   at the bottom of `docs/copy/home.md`. Laptop next: boss review of the Desktop's port at 390 + 1280; then the hero pick and Gabe's answers go in.
   Local clone on the Laptop: `C:\Users\alexm\projects\GLucak-Website` (no `V:\`; Riverside is at
