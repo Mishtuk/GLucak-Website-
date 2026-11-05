@@ -3,4 +3,4 @@ dist
 .astro
 .data
 .env
-media/
+/media/
