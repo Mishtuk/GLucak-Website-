@@ -19,7 +19,14 @@
   IDENTITY Aug 13 2027 countdown + pre-save from his own post). `npm test` 25/25. Shots: `docs/review/build-shots/`.
   `POST /api/signup` done (`src/lib/signup.js`: Kit v4, env `KIT_API_KEY` + `KIT_FORM_ID`, same-origin, honeypot,
   5 tries / 10 min per IP, 2 KB cap; 503 until Kit is set up; `TRUST_PROXY=1` behind a host proxy). `npm test` 31/31.
-  Next: Gabe's edit screen (reuse Riverside admin auth), daily rebuild for release-day flips. Claims: `server.js`, `src/lib/`, `src/pages/edit/` + `public/js/edit.js` + `test/edit*.test.js` (edit screen, coder agent).
+  **Gabe's edit screen v1 (shows) done:** `/edit/` (sign-in, then add / change / delete shows; saved shows are on the
+  public site on the next page load, no rebuild). `src/lib/auth.js` (Riverside's sign-in trimmed: scrypt, HMAC cookie
+  Path=/edit HttpOnly SameSite=Strict, strict Origin, login rate limit + lockout), `src/lib/store.js` (validate every
+  row, 200 cap, atomic write, keeps `shows.prev.json`). Env: `EDITOR_USERS=gabe:<hash>,...` (make a hash with
+  `echo 'pw' | node tools/hash-password.mjs`, 12+ chars), `SESSION_SECRET` (32+ chars; without it /edit answers 503),
+  `DATA_DIR` (default `.data/`), `DEV_EDITOR=1` (local only), `TRUST_PROXY=1`. `npm test` 49/49.
+  v2: row preview, releases / bio / links, restore previous, sign-out-everywhere, persistent rate limits, real-phone check.
+  Next: daily rebuild for release-day flips + host plan (owner decides the host). Claims released except `server.js`, `src/lib/`.
 - **Laptop (2026-11-05):** boss agent runs the round (plans, briefs the designer / copywriter, reviews). Claimed:
   `prototype/`, `DESIGN.md`, `docs/copy/`. Doing: real Spotify embed in the prototype (done, in review), heroes A/B +
   duotone on Gabe's real photos -> shots for the owner's pick, type lock with Logo D. Then the copywriter drafts

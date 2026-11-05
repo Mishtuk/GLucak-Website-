@@ -16,6 +16,7 @@ writeFileSync(join(dir, 'shows.json'), JSON.stringify([
 ]));
 process.env.DIST_DIR = dir;
 process.env.SHOWS_FILE = join(dir, 'shows.json');
+process.env.DATA_DIR = join(dir, 'data'); // no saved list: the shipped file is used
 const { server } = await import('../server.js');
 let base;
 before(() => new Promise((r) => server.listen(0, () => { base = `http://127.0.0.1:${server.address().port}`; r(); })));

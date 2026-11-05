@@ -76,3 +76,12 @@ test('IDENTITY block: real date from releases.json, pre-save before the day, Out
     assert.ok(!h.includes('IDENTITY, 2027'), `${p}: old placeholder line`);
   }
 });
+
+test('edit page: noindex, external script only, not linked from the site', () => {
+  const h = readFileSync(join(DIST, 'edit/index.html'), 'utf8');
+  assert.match(h, /<meta name="robots" content="noindex/);
+  assert.match(h, /<script src="\/js\/edit\.js" defer><\/script>/);
+  for (const m of h.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) assert.equal(m[2].trim(), '', 'inline script body');
+  assert.match(h, /<form id="login"[^>]*method="post" action="\/edit\/login"/);
+  for (const p of Object.keys(pages)) assert.ok(!html(p).includes('/edit/'), `${p} links to /edit/`);
+});
