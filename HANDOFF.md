@@ -19,7 +19,7 @@
   IDENTITY Aug 13 2027 countdown + pre-save from his own post). `npm test` 25/25. Shots: `docs/review/build-shots/`.
   `POST /api/signup` done (`src/lib/signup.js`: Kit v4, env `KIT_API_KEY` + `KIT_FORM_ID`, same-origin, honeypot,
   5 tries / 10 min per IP, 2 KB cap; 503 until Kit is set up; `TRUST_PROXY=1` behind a host proxy). `npm test` 31/31.
-  Next: Gabe's edit screen (reuse Riverside admin auth), daily rebuild for release-day flips. Claims: `server.js`, `src/lib/`.
+  Next: Gabe's edit screen (reuse Riverside admin auth), daily rebuild for release-day flips. Claims: `server.js`, `src/lib/`, `src/pages/edit/` + `public/js/edit.js` + `test/edit*.test.js` (edit screen, coder agent).
 - **Laptop (2026-11-05):** boss agent runs the round (plans, briefs the designer / copywriter, reviews). Claimed:
   `prototype/`, `DESIGN.md`, `docs/copy/`. Doing: real Spotify embed in the prototype (done, in review), heroes A/B +
   duotone on Gabe's real photos -> shots for the owner's pick, type lock with Logo D. Then the copywriter drafts
