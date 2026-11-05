@@ -15,9 +15,10 @@
   `docs/research/social-content.md` (his own words only, with sources) + `src/data/videos.json` / `releases.json`.
   Claimed: `docs/research/social-content.md`, `src/data/`, `server.js`, `src/lib/`, and for the phase 2 port (coder
   agent): `src/layouts/`, `src/components/`, `src/pages/`, `src/styles/`, `public/`, `astro.config.mjs`, `test/`.
-- **Laptop:** done: research files, ROADMAP.md edits, `DESIGN.md` + Home prototype (boss approved, D18). Nothing
-  claimed. Next: put Gabe's real photos through heroes A/B when the ~Nov 9 set lands, then the owner picks; lock the
-  type when the logo arrives. Phase 3 text drafts are the Laptop's after that.
+- **Laptop (2026-11-05):** boss agent runs the round (plans, briefs the designer / copywriter, reviews). Claimed:
+  `prototype/`, `DESIGN.md`, `docs/copy/`. Doing: real Spotify embed in the prototype (done, in review), heroes A/B +
+  duotone on Gabe's real photos -> shots for the owner's pick, type lock with Logo D. Then the copywriter drafts
+  `docs/copy/home.md` once `docs/research/social-content.md` lands.
   Local clone on the Laptop: `C:\Users\alexm\projects\GLucak-Website` (no `V:\`; Riverside is at
   `C:\Users\alexm\projects\Riverside-Website`).
 
