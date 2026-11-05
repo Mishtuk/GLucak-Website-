@@ -33,7 +33,8 @@
   'Out now:' + per-visit 'Next show' Now line (`<!--gl:now-->`, 14 days), Spotify outline button, quotes off until Gabe OKs
   (`QUOTES_APPROVED`). Player 152px visible at 390x660, Home 5.25 screens. Copy from docs/copy/*.md wired into all 4
   pages; release titles exact as on Spotify (+ `artists` credit line); real covers for the 8 released titles
-  (`node tools/fetch-covers.mjs`, Spotify oEmbed, webp, no metadata); upcoming covers wait for Gabe. `npm test` 63/63. Claims released except
+  (`node tools/fetch-covers.mjs`, Spotify oEmbed, webp, no metadata); upcoming covers wait for Gabe. Fixed (Laptop review): public/media was git-ignored (now '/media/' only;
+  fresh clone passes), 'Next open mic:' label, Spotify loading note, Music IDENTITY mark aligned. `npm test` 64/64. Claims released except
   `server.js`, `src/lib/`. Waiting on the owner: hero A / B / both, host, Gabe's answers.
 - **Desktop, photo art direction (owner 2026-11-05):** designer agent: research ->
   `docs/research/photo-art-direction.md`, real treatment options from Gabe's photos -> `tools/photo/` +
