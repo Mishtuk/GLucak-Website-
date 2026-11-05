@@ -1,0 +1,5 @@
+{
+  "name": "Test blue",
+  "note": "NOT an era. A stand-in blue/violet so the photo treatments can be previewed in a blue era before the Laptop's identity-guess era or Gabe's real IDENTITY colours exist. Delete when a real era file replaces it.",
+  "colors": { "bg": "#0c0d18", "text": "#f2f3fa", "accent": "#4a63ff", "accent-text": "#0c0d18", "muted": "#a9acc2" }
+}
