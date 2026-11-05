@@ -38,7 +38,9 @@
   `server.js`, `src/lib/`. Waiting on the owner: hero A / B / both, host, Gabe's answers.
 - **Desktop, photo art direction (owner 2026-11-05):** designer agent: research ->
   `docs/research/photo-art-direction.md`, real treatment options from Gabe's photos -> `tools/photo/` +
-  `docs/review/photo-treatments/` (claimed). Proposals for the Laptop / owner, not yet in the site.
+  `docs/review/photo-treatments/` DONE (018f486, sheet.png). Picks: hero A (a) era grade, hero B (b) riso / (f) MCCC,
+  Live It Loud (c) poster, Push Past Fear (d) crowd, About (e) contact strip (swap its HANDS frame). **Privacy:** the
+  child in the crowd is in frame on the current hero A + likely Push Past Fear; (a) and (d) leave him out: swap soon.
 - **Laptop (2026-11-05):** boss agent runs each round (plans, briefs the designer / copywriter, reviews). Done, all
   boss-approved: real Spotify embed (D19), Home copy `docs/copy/home.md` (D21, D23), prototype on Gabe's real photos +
   Logo D + type lock (D25, D27, ddf5d60), security review of the edit screen (fixed in 620df1c), copy for Music, Shows, About (D29, D31), D33, IDENTITY guess era + dark Spotify embed (D35). Nothing claimed.
