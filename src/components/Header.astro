@@ -1,0 +1,21 @@
+---
+interface Props { home?: boolean; current?: string }
+const { home = false, current } = Astro.props;
+const nav = [['music', 'Music', '/music/'], ['shows', 'Shows', '/shows/'], ['about', 'About', '/about/']];
+---
+{home && <div class="sentinel" aria-hidden="true"></div>}
+<header class:list={['site-header', { 'is-solid': !home }]} data-overlay={home ? '' : undefined}>
+  <div class="wrap header-bar">
+    <a class="brand" href="/" aria-label="GLucak home">GLUCAK</a>
+    <nav class="nav-desktop" aria-label="Main">
+      {nav.map(([k, label, href]) => <a href={href} aria-current={current === k ? 'page' : undefined}>{label}</a>)}
+    </nav>
+    <a class="btn btn-solid btn-small header-listen" href={home ? '#music' : '/music/'}>Listen</a>
+    <details class="nav-mobile">
+      <summary>Menu</summary>
+      <nav class="sheet" aria-label="Main menu">
+        {nav.map(([k, label, href]) => <a href={href} aria-current={current === k ? 'page' : undefined}>{label}</a>)}
+      </nav>
+    </details>
+  </div>
+</header>

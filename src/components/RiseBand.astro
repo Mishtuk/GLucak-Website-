@@ -1,0 +1,30 @@
+---
+import { releases, SPOTIFY_EMBED, SPOTIFY_PLAYLIST } from './content.js';
+const r = releases()[0];
+---
+<section class="band band-rise" id="music" aria-labelledby="h-rise">
+  <div class="wrap rise-grid">
+    <h2 class="spine" id="h-rise"><span class="tab">Music</span> <span class="phrase phrase-rise">Rise</span></h2>
+
+    <div class="rise-player">
+      <iframe class="player-box" title="GLucak playlist on Spotify" src={SPOTIFY_EMBED} width="100%" height="352" loading="lazy" allow="encrypted-media; clipboard-write; fullscreen" ></iframe>
+      <p class="under-player">
+        <a href={SPOTIFY_PLAYLIST} rel="noopener">Open in Spotify</a>
+        <a href={r.link} rel="noopener">Listen everywhere</a>
+      </p>
+    </div>
+
+    <article class="release">
+      <img class="cover" src={r.cover} alt={r.placeholder ? `Placeholder for the ${r.title} cover art` : `${r.title} cover art`} width="400" height="400" loading="lazy" />
+      <div class="release-text">
+        <h3>{r.title}</h3>
+        <p class="muted">Latest release. Listen on:</p>
+        <p class="listen-on">
+          <a href={r.link} rel="noopener">every platform</a>
+          {r.soundcloud && <a href={r.soundcloud} rel="noopener">SoundCloud</a>}
+        </p>
+        {r.placeholder && <p class="ph-chip inline">Placeholder cover</p>}
+      </div>
+    </article>
+  </div>
+</section>

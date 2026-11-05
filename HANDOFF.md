@@ -11,10 +11,13 @@
 ## Now working on
 - **Owner, 2026-11-02:** approved direction.md + ROADMAP.md. Sends Gabe section 8. Decides hosting; registers
   glucak.com (auto-renew). Accounts in Gabe's name, owner co-manages. Work only on what doesn't need Gabe's answers.
-- **Desktop (2026-11-05):** researcher agent reading all of Gabe's socials + Spotify + YouTube ->
-  `docs/research/social-content.md` (his own words only, with sources) + `src/data/videos.json` / `releases.json`.
-  Claimed: `docs/research/social-content.md`, `src/data/`, `server.js`, `src/lib/`, and for the phase 2 port (coder
-  agent): `src/layouts/`, `src/components/`, `src/pages/`, `src/styles/`, `public/`, `astro.config.mjs`, `test/`.
+- **Desktop (2026-11-05):** done: researcher -> `docs/research/social-content.md` (his own words by theme with sources,
+  releases, 18 videos, announced shows, 10 open questions) + `src/data/videos.json` / `releases.json`; coder -> phase 2
+  port of the Home prototype into Astro (Base, Header, MobileBar, Footer + Motion switch, Hero A default / B by
+  `HERO` in `src/pages/index.astro`, real Spotify embed, era tokens + duotone, YouTube facade, 5 pages), Desktop fixes
+  (data loads via import.meta.glob, latest release = newest RELEASED, undated videos last, placeholder cover,
+  IDENTITY Aug 13 2027 countdown + pre-save from his own post). `npm test` 25/25. Shots: `docs/review/build-shots/`.
+  Next: `/api/signup` (Kit), Gabe's edit screen, daily rebuild for release-day flips. Claims: `server.js`, `src/lib/`.
 - **Laptop (2026-11-05):** boss agent runs the round (plans, briefs the designer / copywriter, reviews). Claimed:
   `prototype/`, `DESIGN.md`, `docs/copy/`. Doing: real Spotify embed in the prototype (done, in review), heroes A/B +
   duotone on Gabe's real photos -> shots for the owner's pick, type lock with Logo D. Then the copywriter drafts
@@ -52,7 +55,9 @@ Later (not before the owner says go): DESIGN.md -> Astro scaffold from Riverside
 - Owner: real-phone test of `prototype/` (offer: Desktop serves it on the home Wi-Fi). Check: 1) fitted lines fill
   the width, no overflow; 2) duotone photo renders; 3) bottom bar sits above the iPhone home indicator; 4) GLUCAK
   doesn't reflow as the font loads. Note Android vs iPhone (Safari is the big unknown).
-- For Gabe: "IDENTITY, 2027" (our reading, not his fact); "Epilepsy survivor" bio line on Home; booking email.
+- For Gabe: "Epilepsy survivor" wording (Instagram adds "Healed by Christ since 2009"); booking email; the current show
+  list with cities (he re-posts schedules often; his 11-05 update wasn't readable); the 10 questions in social-content.md.
+  IDENTITY date is settled: his own post says Aug 13, 2027.
 
 ## Status
 - 2026-11-02 Desktop: **foundation (D16)**: Astro ^7 scaffold, placeholder pages / music / shows / about / privacy,

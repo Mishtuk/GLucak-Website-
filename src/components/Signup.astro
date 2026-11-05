@@ -1,0 +1,11 @@
+---
+// Posts to our own server (CSP form-action 'self'); the server talks to Kit. The endpoint comes later.
+---
+<form class="signup" id="signup" action="/api/signup" method="post">
+  <label for="email">Get the next show and every new song first.</label>
+  <div class="signup-row">
+    <input id="email" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
+    <button class="btn btn-solid" type="submit">Join</button>
+  </div>
+  <p class="signup-status" id="signup-status" role="status"></p>
+</form>

@@ -1,8 +1,15 @@
 ---
 import Base from '../../layouts/Base.astro';
+import VideoBlock from '../../components/VideoBlock.astro';
 ---
-<Base title="Shows | GLucak">
-  <h1>Shows</h1>
-  <p>Placeholder - design pending (DESIGN.md)</p>
-  <Fragment set:html="<!--gl:shows-->" />
+<Base title="Shows | GLucak" current="shows" description="Upcoming GLucak shows and open mics, and where he has played.">
+  <section class="band band-live" aria-labelledby="h-live">
+    <div class="wrap">
+      <h1 class="spine" id="h-live"><span class="tab">Shows</span> <span class="phrase fit"><span class="ln ln-live">Live It Loud</span></span></h1>
+      <div class="shows-grid">
+        <div id="shows-mount"><Fragment set:html="<!--gl:shows-->" /></div>
+        <VideoBlock />
+      </div>
+    </div>
+  </section>
 </Base>

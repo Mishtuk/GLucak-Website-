@@ -1,27 +1,73 @@
 ---
-interface Props { title: string }
-const { title } = Astro.props;
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import MobileBar from '../components/MobileBar.astro';
+import Footer from '../components/Footer.astro';
+import { era } from '../components/content.js';
+
+interface Props { title: string; description?: string; home?: boolean; hero?: 'a' | 'b'; current?: 'music' | 'shows' | 'about' }
+const { title, description = 'GLucak: Rise, Live It Loud, Push Past Fear, The Time Is Now.', home = false, hero = 'a', current } = Astro.props;
+
+// Era colors become custom properties (D12). Only #rrggbb values pass.
+const HEX = /^#[0-9a-f]{6}$/i;
+const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k, v]) => `--${k}:${v}`).join(';') +
+  (era.texture ? `;--texture:url('${encodeURI(era.texture)}')` : '');
+
+// Duotone: bg in the shadows, capped accent at the peak (DESIGN.md section 3). The peak is the first mix of bg toward
+// accent that still has 4:1 against text, so text over any tinted photo passes 3:1 in any era.
+const rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+const lin = (c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+const lum = ([r, g, b]) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+const ratio = (a, b) => (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05);
+function peak(bg, accent, text) {
+  for (let t = 1; t > 0; t -= 0.01) {
+    const c = bg.map((b, i) => b + (accent[i] - b) * t);
+    if (ratio(text, c) >= 4) return c;
+  }
+  return bg;
+}
+const lo = rgb(era.colors.bg);
+const hi = peak(lo, rgb(era.colors.accent), rgb(era.colors.text));
+const table = (i) => `${lo[i].toFixed(3)} ${hi[i].toFixed(3)}`;
 ---
 <!doctype html>
-<html lang="en">
+<html lang="en" data-hero={hero} data-home={home ? '' : undefined}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content={era.colors.bg} />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="icon" href="data:," />
+    <link rel="preload" href="/fonts/big-shoulders-display-900.woff2" as="font" type="font/woff2" crossorigin />
+    <style set:html={`:root{${eraCss}}`}></style>
+    <script is:inline src="/js/boot.js"></script>
+    <script is:inline src="/js/app.js" defer></script>
   </head>
   <body>
-    <header>
-      <nav aria-label="Main">
-        <a href="/">Home</a> <a href="/music/">Music</a> <a href="/shows/">Shows</a> <a href="/about/">About</a>
-      </nav>
-    </header>
-    <main>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <!-- Duotone for live photos only. The tables come from the era colors at build. Covers never use this. -->
+    <svg class="defs" aria-hidden="true" width="0" height="0">
+      <filter id="duo" color-interpolation-filters="sRGB">
+        <feColorMatrix type="matrix" values="0.30 0.59 0.11 0 0  0.30 0.59 0.11 0 0  0.30 0.59 0.11 0 0  0 0 0 1 0" />
+        <feComponentTransfer>
+          <feFuncR type="table" tableValues={table(0)} />
+          <feFuncG type="table" tableValues={table(1)} />
+          <feFuncB type="table" tableValues={table(2)} />
+        </feComponentTransfer>
+      </filter>
+    </svg>
+
+    <Header home={home} current={current} />
+    <main id="main" class={home ? undefined : 'sub'}>
       <slot />
     </main>
-    <footer><a href="/privacy/">Privacy</a></footer>
+    <Footer home={home} />
+    <MobileBar home={home} current={current} />
   </body>
 </html>
-<style is:global>
-  *, *::before, *::after { box-sizing: border-box; }
-  body { margin: 0; }
-</style>
