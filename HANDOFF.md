@@ -43,7 +43,7 @@
   child in the crowd is in frame on the current hero A + likely Push Past Fear; (a) and (d) leave him out: swap soon.
 - **Laptop (2026-11-05):** boss agent runs each round (plans, briefs the designer / copywriter, reviews). Done, all
   boss-approved: real Spotify embed (D19), Home copy `docs/copy/home.md` (D21, D23), prototype on Gabe's real photos +
-  Logo D + type lock (D25, D27, ddf5d60), security review of the edit screen (fixed in 620df1c), copy for Music, Shows, About (D29, D31), D33, IDENTITY guess era + dark Spotify embed (D35). Nothing claimed.
+  Logo D + type lock (D25, D27, ddf5d60), security review of the edit screen (fixed in 620df1c), copy for Music, Shows, About (D29, D31), D33, IDENTITY guess era + dark Spotify embed (D35). **Claimed:** `prototype/` (privacy swap: no audience faces).
   **Owner:** pick the hero from `prototype/shots/hero-pick.png` and `hero-pick-identity-guess.png` (boss now recommends C: A on phones, B from 900px; B if one layout only); send Gabe the 9 questions (7 for launch)
   at the bottom of `docs/copy/home.md`. Laptop next: boss review of the Desktop's port at 390 + 1280; then the hero pick and Gabe's answers go in.
   Local clone on the Laptop: `C:\Users\alexm\projects\GLucak-Website` (no `V:\`; Riverside is at
