@@ -56,6 +56,17 @@ there with `Laptop:`. The client's own email is in `README.md`; this file adds t
 - **Hosting:** the owner decides. **Domain:** the owner registers glucak.com with auto-renew.
 - **Accounts** (domain, email list, shop) are **in Gabe's name**; the owner helps manage them.
 
+## Owner's instructions (2026-11-05)
+- **Gabe answered the 3 urgent questions** (playlist, logos, 3 photos): files in `assets/from-gabe/` (`CREDITS.md`).
+  The owner OK'd sharing them with the Laptop through the repo.
+- **Continue making the website with the Laptop** (build resumes). Use his pictures, videos, Instagram and all other
+  social media and Spotify on the site (videos especially).
+- **Read everything on his social media; check whether it's from him directly.** If it is, use it in context so the
+  site has more of a dialogue in his own voice. Others' posts never get put in his mouth.
+- Make the subagents the project needs: added **researcher** (his content, authorship checks) and **copywriter**
+  (site text in his voice from his own words) to boss / designer / coder / mediator.
+- Read HANDOFF.md to refresh before working; keep pinging the Laptop with everything.
+
 ## Working together (Desktop and Laptop)
 - **Board:** issue #1 "Coordination board: Desktop and Laptop". Every comment starts with `Desktop:` or `Laptop:`
   (both machines post as Mishtuk; the prefix tells them apart).
