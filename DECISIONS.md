@@ -228,3 +228,10 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   (kept); hint **One file with your shows, products and photos. Keep it somewhere safe. If anything is ever lost, the
   person who runs the site can put it back from this file.** **Why:** a backup is only worth something if it restores, and
   a silent failed download on a phone looks like a success; one fetch covers every failure with no new route.
+- **D64** (2026-11-06, Desktop, owner's notes): Owner overrides parts of D47 / D25 / the hero header rule. **Ruling:** (1)
+  page-to-page transitions become seamless: a short cross-document View Transition (opacity / position only, no flash,
+  under ~300 ms), fully off under `prefers-reduced-motion` and the Motion switch; (2) the header mark + GLUCAK is always
+  visible, including over the Home hero; (3) the latest-video block shows the video's real thumbnail (saved locally,
+  no third-party image request); (4) links to other sites open in a new tab (`target="_blank" rel="noopener"`, with a
+  screen-reader "opens in a new tab" hint). The Laptop designs the details (DESIGN.md) and the Desktop builds them.
+  **Why:** the owner looked at the preview and asked for these by name.

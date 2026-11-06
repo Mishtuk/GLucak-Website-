@@ -85,6 +85,17 @@ there with `Laptop:`. The client's own email is in `README.md`; this file adds t
 - **2026-11-06, later:** "Continue doing research. And talking with the laptop." (Desktop research round 3: launch
   readiness + discoverability / accessibility.)
 
+## Owner's notes on the site (2026-11-06, after seeing the preview)
+1. Transitions between pages ("tabs") should be more seamless.
+2. The logo top-left should ALWAYS be there, even on the home screen (no hiding it over the hero).
+3. The latest-video preview needs a real picture, not a gray box.
+4. Links that go to other sites open in a new tab, not out of the website.
+5. A login for the admin page.
+6. Go through his YouTube videos and Instagram images, take screenshots, and use them so the site isn't the same image
+   repeated (his own content only; credit and fans' faces checked; Gabe's OK on anything not already cleared).
+7. More in-depth research on website design and modern templates as references; flesh the site out overall.
+8. A from-scratch website ONLY if it would be absolutely beneficial; if made, cross-compare the two. Don't overinvest.
+
 ## Working together (Desktop and Laptop)
 - **Board:** issue #1 "Coordination board: Desktop and Laptop". Every comment starts with `Desktop:` or `Laptop:`
   (both machines post as Mishtuk; the prefix tells them apart).
