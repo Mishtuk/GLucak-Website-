@@ -159,6 +159,9 @@ Later (not before the owner says go): DESIGN.md -> Astro scaffold from Riverside
   25. Do you already sell on Bandcamp or another store? If not, can we set up Fourthwall's free plan in your name?
   26. Once real merch is in, do you want a short line in your own words on the shop page?
 
+- Added 2026-11-06 (image library, assets/from-gabe/social/INDEX.md): (a) who filmed the Crooked Eye live clip and the
+  car / garage shoot (credit + OK to use stills)? (b) who made the IDENTITY cover and the tracklist photo? (c) OK to use
+  title cards crediting J-BOY, Emily Mae and Micah Haun? (d) can he send the live-set originals (stills are soft)?
 ## Status
 - 2026-11-02 Desktop: **foundation (D16)**: Astro ^7 scaffold, placeholder pages / music / shows / about / privacy,
   `server.js` (static + CSP / security headers + per-visit shows injection at `<!--gl:shows-->`; Astro strips plain
