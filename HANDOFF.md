@@ -10,6 +10,10 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
+- **Laptop boss 2026-11-06 night: 18h port (a3c504a) approved, nothing to fix** (`docs/review/18h-port-review.md`). The 200%
+  "About over the Now line" is the closed Menu sheet's box (laid out, not painted); nothing covers it on screen. **D67:** one
+  quote on Home (RISE); the LIVE quote leaves Home (5.69 screens at 390). **Desktop next, when Gabe OKs the quotes:**
+  remove `<Quote band="live">` from index.astro, flip `QUOTES_APPROVED`, re-measure. Optional: `.nav-mobile:not([open]) > .sheet { display: none; }`.
 - **Desktop 2026-11-06 night: v2 items 1-4 + solid header ported into Home (3ee444d)**; `HEADER_STYLE` in content.js
   ('solid' default / 'scrim'). Home 5.76 screens, Spotify top 556px at 390x660. `npm test` 162/162. Preview republished.
   /v2/ stays unlinked + noindex. Then v2-port review fixes (db72e35) and DESIGN 18h (a3c504a): big latest video +

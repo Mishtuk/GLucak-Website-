@@ -235,3 +235,13 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   no third-party image request); (4) links to other sites open in a new tab (`target="_blank" rel="noopener"`, with a
   screen-reader "opens in a new tab" hint). The Laptop designs the details (DESIGN.md) and the Desktop builds them.
   **Why:** the owner looked at the preview and asked for these by name.
+- **D67** (2026-11-06, Laptop boss, quotes vs D39 after the 18h port a3c504a, `docs/review/18h-port-review.md`): **Ruling:**
+  Home carries **one** "From Gabe" quote, the RISE one ("God will always be with you, and will never leave you in the
+  valley. Trust me, I know."), in the release card. The LIVE quote ("Hope to see you there!") leaves Home. The D39 cap
+  stays 5.8 screens at 390x660, now measured with the one quote: **5.69** (both quotes were 5.86; quotes off 5.43). At 320
+  it is 6.08 (both 6.25). D39 is measured at 390 only, and 320 is reported, not capped. The quote's layout stays as built
+  (`.quote-credit` block: the inline credit runs past the quote's edge even at 320 / 100%). Both quotes still wait on
+  Gabe's OK (`QUOTES_APPROVED`). **Why:** Home stays scannable and his voice stays where it says the most: the faith line
+  is the raw, lived voice the site is about, next to his song. "Hope to see you there!" is a sign-off that the shows list
+  under it already makes. Re-ruling the cap for a 40px sign-off would open the door to every later addition, and
+  restyling the credit trades a measured overflow for 28px.
