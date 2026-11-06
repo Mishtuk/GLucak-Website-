@@ -1,0 +1,76 @@
+{
+  "current-390": {
+    "height": 3600,
+    "screens": 5.45,
+    "photoSlots": 4,
+    "distinctPhotos": [
+      "Kealey live photo",
+      "YouTube thumb WZkvg5YMQ9w"
+    ],
+    "playerTop": 508,
+    "playerVisibleFirstScreen": 152,
+    "contrastLows": [],
+    "minFont": 16,
+    "smallTargets": [],
+    "overflowX": 0,
+    "errors": []
+  },
+  "current-1280": {
+    "height": 3496,
+    "screens": 4.37,
+    "photoSlots": 4,
+    "distinctPhotos": [
+      "Kealey live photo",
+      "YouTube thumb WZkvg5YMQ9w"
+    ],
+    "playerTop": 621,
+    "playerVisibleFirstScreen": 179,
+    "contrastLows": [],
+    "minFont": 16,
+    "smallTargets": [],
+    "overflowX": 0,
+    "errors": []
+  },
+  "v2-390": {
+    "height": 3821,
+    "screens": 5.79,
+    "photoSlots": 6,
+    "distinctPhotos": [
+      "Kealey live photo",
+      "YouTube thumb WZkvg5YMQ9w",
+      "YouTube thumb ZGlnFchIVVY",
+      "YouTube thumb K-OZiNvQB14",
+      "library: belt",
+      "library: identity-art"
+    ],
+    "playerTop": 780,
+    "playerVisibleFirstScreen": 0,
+    "contrastLows": [],
+    "minFont": 16,
+    "smallTargets": [],
+    "overflowX": 0,
+    "errors": []
+  },
+  "v2-1280": {
+    "height": 4214,
+    "screens": 5.27,
+    "photoSlots": 8,
+    "distinctPhotos": [
+      "Kealey live photo",
+      "library: garage",
+      "library: stage",
+      "YouTube thumb WZkvg5YMQ9w",
+      "YouTube thumb ZGlnFchIVVY",
+      "YouTube thumb K-OZiNvQB14",
+      "library: belt",
+      "library: identity-art"
+    ],
+    "playerTop": 902,
+    "playerVisibleFirstScreen": 0,
+    "contrastLows": [],
+    "minFont": 16,
+    "smallTargets": [],
+    "overflowX": 0,
+    "errors": []
+  }
+}
