@@ -10,6 +10,8 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
+- **Desktop 2026-11-06 night: porting v2 items 1-4 + solid header (switch) into Home** (claimed `src/`, `public/media/`,
+  `test/`); /v2/ stays unlinked + noindex for comparisons.
 - **Desktop status 2026-11-06 evening (v2 compare done):** 200% text fix (c8a4aa1), backup review fixes (d8254fa) +
   download messages (254773c), /v2/ comparison Home (bfce2c6, docs/review/v2-compare/), preview republished with /v2/.
   `npm test` 154/154. **Waiting on the owner:** which of v2's 5 items to port into Home.
