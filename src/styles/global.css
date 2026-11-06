@@ -827,3 +827,7 @@ a, button, summary, label { -webkit-tap-highlight-color: transparent; }
 @media (max-width: 379px) { .links-lg a { gap: 0.4rem; } }
 /* D63 F4: the header brand's pressed state (16e removed the tap highlight). */
 .brand:active .brand-word { background: var(--text); color: var(--bg); }
+/* In-page skip link (before the Spotify player): hidden until it has keyboard focus. The header .skip hides by sitting
+   above the page; inside a band that trick lands it in the band above, so this one uses the visually-hidden pattern. */
+.skip-inline:not(:focus) { top: auto; left: auto; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.skip-inline:focus { position: static; display: inline-block; margin-bottom: var(--space-s); }

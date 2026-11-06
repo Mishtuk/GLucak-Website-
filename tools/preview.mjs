@@ -50,7 +50,16 @@ writeFileSync(join(OUT, '.nojekyll'), '');
 console.log('preview written to .preview/');
 
 if (process.argv.includes('--publish')) {
+  // A normal (fast-forward) push: the new snapshot is committed on top of the existing gh-pages history, never forced.
   const msg = `Preview ${new Date().toISOString().slice(0, 16)}`;
-  sh(`git -C .preview init -q -b gh-pages && git -C .preview add -A && git -C .preview -c user.name=Mish -c user.email=113945444+Mishtuk@users.noreply.github.com commit -q -m "${msg}" && git -C .preview push -q -f https://github.com/Mishtuk/GLucak-Website-.git gh-pages`);
+  const REPO = 'https://github.com/Mishtuk/GLucak-Website-.git';
+  const WT = join(ROOT, '.preview-git');
+  rmSync(WT, { recursive: true, force: true });
+  const exists = execSync(`git ls-remote --heads ${REPO} gh-pages`, { cwd: ROOT }).toString().trim() !== '';
+  if (exists) sh(`git clone -q --depth 1 --branch gh-pages ${REPO} .preview-git`);
+  else sh('git init -q -b gh-pages .preview-git');
+  for (const n of readdirSync(WT)) if (n !== '.git') rmSync(join(WT, n), { recursive: true, force: true });
+  cpSync(OUT, WT, { recursive: true });
+  sh(`git -C .preview-git add -A && git -C .preview-git -c user.name="Alex Mishtuk" -c user.email=113945444+Mishtuk@users.noreply.github.com commit -q --allow-empty -m "${msg}" && git -C .preview-git push -q ${REPO} gh-pages`);
   console.log(`published: https://mishtuk.github.io${BASE}`);
 }
