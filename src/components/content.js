@@ -6,7 +6,7 @@ export { era };
 // Header look, one place: 'solid' = a solid dark band from the first paint (v2, follows D25); 'scrim' = the gradient scrim over the Home hero until you scroll.
 export const HEADER_STYLE = 'solid';
 // D21/D23: a "From Gabe" quote ships only after Gabe OKs it. Flip this when he does; until then no quote is in the page.
-export const QUOTES_APPROVED = false; // D39: Home is ~220px over the 5.8-screen cap with both quotes in: trim ~220px or re-rule the cap before flipping this.
+export const QUOTES_APPROVED = false; // D39: with both quotes in, Home is 5.86 phone screens at 390 (~40px over the 5.8 cap, measured after 18h): drop one quote, trim ~40px or re-rule the cap before flipping this; and only with Gabe's OK.
 const QUOTES = {
   rise: { text: 'God will always be with you, and will never leave you in the valley. Trust me, I know.', url: 'https://www.instagram.com/p/Dd6keDDDefE/', credit: 'GLucak, Instagram, Sep 2026' },
   live: { text: 'Hope to see you there!', url: 'https://www.youtube.com/watch?v=zmhbfHppXNM', credit: 'GLucak, YouTube, Sep 2026' },
