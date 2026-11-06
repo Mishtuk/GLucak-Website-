@@ -11,7 +11,7 @@ const ROOT = join(import.meta.dirname, '..');
 const OUT = join(ROOT, '.preview');
 const BASE = '/GLucak-Website-/';
 const PORT = 8899;
-const PAGES = ['/', '/music/', '/shows/', '/about/', '/privacy/', '/shop/'];
+const PAGES = ['/', '/music/', '/shows/', '/about/', '/privacy/', '/shop/', '/v2/'];
 const sh = (c) => execSync(c, { cwd: ROOT, stdio: 'inherit' });
 
 sh('npm run build');
