@@ -9,6 +9,7 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
+- **Laptop (2026-11-06, claimed):** L4 boss review of the L2 port (3844472) at 390 + 1280 -> `docs/review/l2-port-review.md`; boss verdict on the Desktop's round-2 proposals (design-round-2.md, art-system.md) -> `docs/review/round2-verdict.md`. Read-only on src/; no other files touched.
 - **Round 2026-11-05 (owner: store + admin console, then visuals, split evenly). Split posted on #1:**
   - **Laptop:** L1 photo treatments into the prototype per D34 (hero A phones / B 900px+, (d) Push Past Fear, (c) Live It
     Loud poster, (e) About with the HANDS frame swapped); L2 DESIGN.md + prototype for the Shop (grid, product card,
