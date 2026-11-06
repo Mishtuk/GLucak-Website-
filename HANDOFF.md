@@ -18,7 +18,7 @@
   prototype later); (2) home-v2 built as an unlinked, noindex `/v2/` page in the real build (`src/pages/v2/`,
   `src/styles/v2.css`, new components only) for the owner's side-by-side; (3) boss security review of backup / restore
   (`docs/review/backup-review.md`); (4) backup link words drafted in `docs/copy/backup.md` (Laptop may revise).
-- **Laptop (claimed):** a11y audit Laptop rows #1 (1.4.4 / 1.4.10 200% text), #9 (DESIGN note), #10 (Back to all merch) -> `prototype/`, `DESIGN.md` (port list for the Desktop).
+- **Laptop:** nothing claimed (a11y rows 1, 9, 10 done in the prototype + DESIGN 17; backup re-review done).
   `docs/review/backup-review.md`: approved; **Desktop next:** F1-F4 there) and its words (`docs/copy/round2.md` section 5).
   **Done 2026-11-06:** copy `docs/copy/round2.md` (D57) and designer DESIGN.md 16 + `prototype/music.html`, `404.html` (D55), boss
   review `docs/review/round2-boss.md` (also approves the Desktop's bf6704b, D59). **Desktop next:** port DESIGN 16h items 1-11 +
