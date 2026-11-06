@@ -37,7 +37,7 @@ test('/shop/ is filled per visit from the shipped samples: banner, Coming soon, 
   assert.equal(r.headers.get('x-robots-tag'), 'noindex');
   const html = await r.text();
   assert.ok(!html.includes('<!--gl:shop-->'));
-  assert.ok(html.includes('This store is a preview. Products are samples.') && html.includes('Sample: GLucak tee') && html.includes('Preview'));
+  assert.ok(html.includes("This shop is a preview. Everything here is a sample and can't be bought.") && html.includes('Sample: GLucak tee') && !html.includes('class="product-price"') && html.includes('Preview'));
   assert.equal((html.match(/<article class="product-detail"/g) ?? []).length, 5);
   assert.ok(!html.includes('>Buy<'), 'samples are never buyable');
 });
@@ -78,12 +78,21 @@ test('products save: on /shop/ at the next visit, Buy for available + link, prev
   const html = await shop();
   assert.ok(html.includes('Real tee') && !html.includes('Sample: GLucak tee'));
   assert.match(html, /<a class="btn btn-solid product-buy" href="https:\/\/shop\.example\/tee" rel="noopener">Buy<\/a>/);
-  assert.ok(html.includes('Sold out') && !html.includes('This store is a preview. Products are samples.'), 'no samples, no banner');
+  assert.ok(html.includes('Sold out') && !html.includes('This shop is a preview.'), 'no samples, no banner');
   assert.equal(JSON.parse(readFileSync(join(data, 'products.prev.json'), 'utf8'))[0].status, 'sample', 'prev = the shipped samples');
   const bad = await save([product(), product({ link: 'javascript:alert(1)' }), product({ id: 'x', image: '/media/uploads/../products.json' })]);
   assert.equal(bad.status, 400);
   assert.deepEqual((await bad.json()).errors.map((e) => e.row), [1, 2]);
   assert.equal((await save(Array.from({ length: 201 }, (_, i) => product({ id: `p${i}` })))).status, 400, '200 cap');
+});
+
+test('products save: says the shop is not open to fans while SHOP_ENABLED is off, plain message when on', async () => {
+  const off = await (await save([product()])).json();
+  assert.equal(off.message, "Saved. The shop isn't open to fans yet, so they won't see it until it's switched on.");
+  await withShop(async () => {
+    const on = await (await save([product()])).json();
+    assert.equal(on.message, "Saved. It's on the site now.");
+  });
 });
 
 test('products: <script> and SQL text stored as text, rendered inert', async () => {
@@ -99,7 +108,7 @@ test('products: stale version is 409 and nothing written; over 256 KB is 413', a
   assert.equal((await save([product({ name: 'Tab one' })], v1)).status, 200);
   const stale = await save([product({ name: 'Tab two' })], v1);
   assert.equal(stale.status, 409);
-  assert.match((await stale.json()).message, /^Someone else saved the products a moment ago/);
+  assert.match((await stale.json()).message, /^Someone else saved the products just now, so yours didn't save. Reloading shows their changes but clears yours/);
   assert.equal(JSON.parse(readFileSync(join(data, 'products.json'), 'utf8'))[0].name, 'Tab one');
   assert.equal((await save([product({ description: 'x'.repeat(300 * 1024) })])).status, 413);
 });

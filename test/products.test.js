@@ -40,7 +40,7 @@ test('checkProducts: trims, drops empty optionals, duplicate IDs rejected, 200 c
   assert.deepEqual(ok.rows[0], { ...good(), name: 'Tee', sizes: ['S'] });
   const dup = checkProducts([good(), good({ name: 'Other' })]);
   assert.deepEqual(dup.errors.map((e) => e.row), [1]);
-  assert.match(dup.errors[0].message, /^Product 2: Another product already has the ID glucak-tee/);
+  assert.match(dup.errors[0].message, /^Product 2: Another product already uses the short name glucak-tee. Each one needs its own./);
   const many = checkProducts([good({ link: 'javascript:x' }), 'junk', good({ id: 'b', price: -5 })]);
   assert.deepEqual(many.errors.map((e) => e.row), [0, 1, 2]);
   assert.match(many.errors[0].message, /^Product 1: The link has to start with https:\/\//);
@@ -69,7 +69,7 @@ test('escaping: <script> and SQL text in name and description render inert', () 
 
 test('button rules: Buy only when available with a link; otherwise a plain label', () => {
   const buy = actionHtml(good({ link: 'https://shop.example/tee' }));
-  assert.match(buy, /^<a class="btn btn-solid product-buy" href="https:\/\/shop\.example\/tee" rel="noopener">Buy<\/a>$/);
+  assert.match(buy, /^<a class="btn btn-solid product-buy" href="https:\/\/shop\.example\/tee" rel="noopener">Buy<\/a><p class="product-note">You pay on the store's own page\. We never see your card details\.<\/p>$/);
   for (const status of ['sample', 'coming-soon']) {
     const h = actionHtml(good({ status, link: 'https://shop.example/tee' }));
     assert.equal(h, '<p class="product-status">Coming soon</p>', status);
@@ -80,8 +80,9 @@ test('button rules: Buy only when available with a link; otherwise a plain label
 });
 
 test('banner only while any product is a sample; Preview chip only when asked; order, price, empty state', () => {
-  const banner = 'This store is a preview. Products are samples.';
-  assert.ok(productsHtml([good(), good({ id: 'b', status: 'sample' })]).includes(banner));
+  const banner = "This shop is a preview. Everything here is a sample and can't be bought.";
+  assert.ok(!productsHtml([good(), good({ id: 'b', status: 'sample' })]).includes(banner), 'one real product -> no banner');
+  assert.ok(productsHtml([good({ status: 'sample' }), good({ id: 'b', status: 'sample' })]).includes(banner));
   assert.ok(!productsHtml([good(), good({ id: 'b', status: 'sold-out' })]).includes(banner));
   assert.ok(productsHtml([good()], { preview: true }).includes('Preview'));
   assert.ok(!productsHtml([good()]).includes('ph-chip'));
@@ -89,6 +90,19 @@ test('banner only while any product is a sample; Preview chip only when asked; o
   assert.ok(html.indexOf('First') < html.indexOf('Second') && !html.includes('broken'), 'sorted by order, invalid rows skipped');
   assert.ok(html.includes('href="#product-first"') && html.includes('id="product-first"') && html.includes('>Free<') && html.includes('>$25.00<'));
   assert.match(productsHtml([]), /Nothing in the shop yet/);
+});
+
+test('samples show no price; real products do', () => {
+  const html = productsHtml([good({ status: 'sample', price: 4500 }), good({ id: 'b', status: 'coming-soon', price: 1200 })]);
+  assert.ok(!html.includes('$45.00') && html.includes('$12.00'));
+  assert.equal((html.match(/product-price/g) ?? []).length, 2, 'card + detail for the real one only');
+});
+
+test('buying note only under a Buy button', () => {
+  const note = "You pay on the store's own page. We never see your card details.";
+  assert.ok(actionHtml(good({ link: 'https://shop.example/t' })).includes(note));
+  for (const s of ['sample', 'coming-soon', 'sold-out']) assert.ok(!actionHtml(good({ status: s, link: 'https://x.com' })).includes(note), s);
+  assert.ok(!actionHtml(good()).includes(note), 'available without a link');
 });
 
 test('shopLinks: Shop in nav, bar (replacing Watch) and footer only when enabled', () => {

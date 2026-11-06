@@ -35,6 +35,8 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
 
       <section id="editor" hidden>
         <p class="ed-who"><span id="who"></span> <button id="logout" class="ed-btn ed-plain" type="button">Sign out</button></p>
+        <p id="out-ask" class="ed-help" role="alert" hidden>You have changes that aren't saved. Sign out anyway?
+          <button id="out-yes" class="ed-btn" type="button">Sign out</button> <button id="out-no" class="ed-btn" type="button">Stay</button></p>
         <div class="ed-tabs" role="tablist" aria-label="What to edit">
           <button id="tab-shows" class="ed-tab" type="button" role="tab" aria-selected="true" aria-controls="panel-shows">Shows</button>
           <button id="tab-products" class="ed-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-products" tabindex="-1">Products</button>
@@ -49,8 +51,8 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
           </div>
         </div>
         <div id="panel-products" role="tabpanel" aria-labelledby="tab-products" hidden>
-          <p class="ed-help">Products show on the Shop page in this order (Up and Down move them). Change anything, then press Save.
-            Fans buy on the store's own page (the Link); this site never takes card details.</p>
+          <p class="ed-help">Products show on the Shop page in this order. Use Move up and Move down. Change anything, then press Save.
+            Fans buy on the store's own page (the Link). This site never takes card details.</p>
           <button id="p-add" class="ed-btn" type="button">Add product</button>
           <ol id="p-list" class="ed-list"></ol>
           <div class="ed-bar">

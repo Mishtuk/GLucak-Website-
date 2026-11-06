@@ -145,7 +145,7 @@ test('save conflict: a save based on an older list is 409, nothing written, the 
   assert.notEqual(v2, v1);
   const stale = await save([row({ venue: 'Tab Two' })], {}, v1);
   assert.equal(stale.status, 409);
-  assert.equal((await stale.json()).message, 'Someone else saved the shows a moment ago. Reload to see their changes; yours are still on this page.');
+  assert.equal((await stale.json()).message, "Someone else saved the shows just now, so yours didn't save. Reloading shows their changes but clears yours, so write down what you changed first.");
   assert.equal((await save([row({ venue: 'Tab Two' })], {}, null)).status, 409, 'no version sent');
   assert.equal(JSON.parse(readFileSync(join(data, 'shows.json'), 'utf8'))[0].venue, 'Tab One');
   assert.equal((await save([row({ venue: 'Tab Two' })], {}, v2)).status, 200, 'with the new version it saves');

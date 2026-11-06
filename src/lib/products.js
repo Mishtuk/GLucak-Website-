@@ -11,11 +11,11 @@ export const IMAGE = /^\/media\/(?:shop\/[a-z0-9]+(?:-[a-z0-9]+)*\.(?:webp|png|j
 const httpUrl = (u) => { try { return ['http:', 'https:'].includes(new URL(u).protocol); } catch { return false; } };
 
 const PLAIN = {
-  id: 'The ID is lowercase letters, numbers and dashes, like glucak-tee (up to 60).',
+  id: 'The short name is lowercase letters, numbers and dashes, like glucak-tee (up to 60).',
   name: 'Add a name (up to 120 characters).',
   type: 'Pick a type.',
   price: 'The price is a number of dollars from 0 to 1000, like 25 or 25.00.',
-  image: 'Upload an image.',
+  image: 'Add a photo: upload one below.',
   description: 'Keep the description to 600 characters.',
   link: 'The link has to start with https:// (or http://), or leave it empty.',
   status: 'Pick a status.',
@@ -65,7 +65,7 @@ export function checkProducts(list) {
       seen.add(clean.id);
       rows.push(clean);
     } catch (e) {
-      const why = e.message === 'duplicate' ? `Another product already has the ID ${clean.id}. Each needs its own.` : PLAIN[e.message] ?? PLAIN.object;
+      const why = e.message === 'duplicate' ? `Another product already uses the short name ${clean.id}. Each one needs its own.` : PLAIN[e.message] ?? PLAIN.object;
       errors.push({ row: i, message: `Product ${i + 1}: ${why}` });
     }
   });
@@ -82,20 +82,21 @@ const anchor = (p) => `product-${p.id}`;
 
 /** Buy opens the provider's product page; anything else is a plain label, never a button that does nothing. */
 export function actionHtml(p) {
-  if (buyable(p)) return `<a class="btn btn-solid product-buy" href="${esc(p.link)}" rel="noopener">Buy</a>`;
+  if (buyable(p)) return `<a class="btn btn-solid product-buy" href="${esc(p.link)}" rel="noopener">Buy</a><p class="product-note">You pay on the store's own page. We never see your card details.</p>`;
   return `<p class="product-status${p.status === 'sold-out' ? ' is-sold-out' : ''}">${statusText(p)}</p>`;
 }
 
 const img = (p, cls) => `<img class="${cls}" src="${esc(p.image)}" alt="${esc(p.name)}" width="600" height="600" loading="lazy" decoding="async" />`;
-const card = (p) => `<li class="product-card"><a class="product-link" href="#${anchor(p)}">${img(p, 'product-media')}<p class="product-name">${esc(p.name)}</p><p class="product-price">${price(p.price)}</p><p class="product-status">${statusText(p)}</p></a></li>`;
-const detail = (p) => `<article class="product-detail" id="${anchor(p)}">${img(p, 'product-media')}<div class="product-body"><h2 class="product-name">${esc(p.name)}</h2><p class="product-price">${price(p.price)}</p>${p.description ? `<p class="product-desc">${esc(p.description)}</p>` : ''}${p.sizes?.length ? `<p class="product-sizes">Sizes: ${p.sizes.map(esc).join(', ')}</p>` : ''}${actionHtml(p)}</div></article>`;
+const priceHtml = (p) => (p.status === 'sample' ? '' : `<p class="product-price">${price(p.price)}</p>`); // a sample's price would read as real (D37)
+const card = (p) => `<li class="product-card"><a class="product-link" href="#${anchor(p)}">${img(p, 'product-media')}<p class="product-name">${esc(p.name)}</p>${priceHtml(p)}<p class="product-status">${statusText(p)}</p></a></li>`;
+const detail = (p) => `<article class="product-detail" id="${anchor(p)}">${img(p, 'product-media')}<div class="product-body"><h2 class="product-name">${esc(p.name)}</h2>${priceHtml(p)}${p.description ? `<p class="product-desc">${esc(p.description)}</p>` : ''}${p.sizes?.length ? `<p class="product-sizes">Sizes: ${p.sizes.map(esc).join(', ')}</p>` : ''}${actionHtml(p)}</div></article>`;
 
 /** The /shop/ marker: optional Preview chip (shop not switched on), sample banner, grid, then one detail per product. */
 export function productsHtml(rows, { preview = false } = {}) {
   const list = sorted(rows);
   const chip = preview ? '<p class="shop-preview"><span class="ph-chip inline">Preview: the shop is not open yet</span></p>' : '';
   if (!list.length) return `${chip}<p class="shop-empty">Nothing in the shop yet.</p>`;
-  const banner = list.some((p) => p.status === 'sample') ? '<p class="shop-banner" role="note">This store is a preview. Products are samples.</p>' : '';
+  const banner = list.every((p) => p.status === 'sample') ? '<p class="shop-banner" role="note">This shop is a preview. Everything here is a sample and can\'t be bought.</p>' : '';
   return `${chip}${banner}<ul class="shop-grid">${list.map(card).join('')}</ul><div class="shop-details">${list.map(detail).join('')}</div>`;
 }
 

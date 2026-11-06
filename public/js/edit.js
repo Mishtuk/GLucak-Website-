@@ -48,7 +48,14 @@
 
   function changed(kind) { T[kind].dirty = true; say(T[kind].msg, 'Not saved yet.'); }
   const rows = (kind) => [...T[kind].list.children];
-  const number = (kind) => rows(kind).forEach((r, i) => say(r.heading, `${kind === 'shows' ? 'Show' : 'Product'} ${i + 1}`));
+  const number = (kind) => { rows(kind).forEach((r, i) => say(r.heading, `${kind === 'shows' ? 'Show' : 'Product'} ${i + 1}`)); empty(kind); };
+  // The empty-list line sits just before the list and shows only while the list has no rows.
+  const EMPTY = { shows: 'No shows yet. Press Add show.', products: 'No products yet. Press Add product.' };
+  function empty(kind) {
+    const t = T[kind];
+    t.empty ??= t.list.insertAdjacentElement('beforebegin', el('p', { class: 'ed-help', textContent: EMPTY[kind] }));
+    t.empty.hidden = t.list.children.length > 0;
+  }
 
   // ---------- Shows ----------
   function showRow(s = {}) {
@@ -98,7 +105,7 @@
 
   // ---------- Products ----------
   const TYPES = [['shirt', 'Shirt'], ['hoodie', 'Hoodie'], ['cd', 'CD'], ['vinyl', 'Vinyl'], ['sticker', 'Sticker'], ['other', 'Other']];
-  const STATUSES = [['coming-soon', 'Coming soon'], ['available', 'Available (shows Buy when it has a Link)'], ['sold-out', 'Sold out'], ['sample', 'Sample (shows Coming soon)']];
+  const STATUSES = [['coming-soon', 'Coming soon'], ['available', 'Available (shows Buy once it has a Link)'], ['sold-out', 'Sold out'], ['sample', 'Sample (shows Coming soon, no price)']];
   const IMAGE = /^\/media\/(?:shop\/[a-z0-9]+(?:-[a-z0-9]+)*\.(?:webp|png|jpg)|uploads\/[a-f0-9]{32}\.webp)$/; // same rule as the server
   const UPLOADABLE = ['image/jpeg', 'image/png', 'image/webp'];
   const slug = (s) => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60).replace(/-+$/, '');
@@ -146,17 +153,17 @@
     const sizes = el('input', { maxLength: 200, value: (p.sizes ?? []).join(', '), placeholder: 'S, M, L, XL' });
     const title = el('span');
     const err = el('p', { class: 'ed-err', role: 'alert' });
-    const up = el('button', { type: 'button', class: 'ed-btn', textContent: 'Up' });
-    const down = el('button', { type: 'button', class: 'ed-btn', textContent: 'Down' });
+    const up = el('button', { type: 'button', class: 'ed-btn', textContent: 'Move up' });
+    const down = el('button', { type: 'button', class: 'ed-btn', textContent: 'Move down' });
     const del = el('button', { type: 'button', class: 'ed-btn', textContent: 'Delete' });
     const box = el('fieldset', { class: 'ed-show' }, el('legend', {}, title),
-      field('Name', name), field('ID', id, 'Lowercase letters, numbers and dashes; the end of the Shop link (/shop/#product-ID)'),
-      el('div', { class: 'ed-two' }, field('Type', type), field('Price (US dollars)', price)),
-      field('Status', status), field('Image', image, 'Upload a photo below, or keep the path'), pic,
-      field('Upload a photo', file, 'JPG, PNG or WebP, up to 5 MB'), upMsg,
+      field('Name', name), field('Short name', id, 'Lowercase letters, numbers and dashes. It fills in from the name; leave it unless you need to change it.'),
+      el('div', { class: 'ed-two' }, field('Type', type), field('Price (US dollars)', price, 'Like 25 or 25.00')),
+      field('Status', status), field('Photo', image, 'Filled in when you upload a photo below. Leave it as it is.'), pic,
+      field('Upload a photo', file, 'JPG, PNG or WebP, up to 5 MB.'), upMsg,
       field('Description (optional)', desc, 'Up to 600 characters'),
-      field('Link (optional)', link, 'The product page on Fourthwall or Bandcamp; needed for the Buy button'),
-      field('Sizes (optional)', sizes, 'Separate with commas'),
+      field('Link (optional)', link, 'Where fans buy it: the product page on your store. Needed for the Buy button.'),
+      field('Sizes (optional)', sizes, 'Separate with commas, like S, M, L, XL.'),
       err, el('div', { class: 'ed-moves' }, up, down, del));
     box.read = (i) => ({
       id: id.value, name: name.value, type: type.value, price: cents(price.value), image: image.value, description: desc.value,
@@ -231,7 +238,7 @@
       return signedIn(b.editor, { shows: b.shows, products: p.ok ? pb.products : null });
     }
     login.hidden = false;
-    if (r.status === 503) say(loginMsg, b.message || 'The edit screen is not set up yet.');
+    if (r.status === 503) say(loginMsg, b.message || "The edit screen isn't switched on yet. Tell the person who runs the site.");
   }
 
   login.addEventListener('submit', async (e) => {
@@ -248,11 +255,16 @@
   });
 
   $('logout').addEventListener('click', async () => {
-    if (anyDirty() && !confirm('You have changes that are not saved. Sign out anyway?')) return;
+    if (anyDirty()) { $('out-ask').hidden = false; $('out-no').focus(); return; } // small inline confirm, no window.confirm
+    signOut();
+  });
+  $('out-no').addEventListener('click', () => { $('out-ask').hidden = true; $('logout').focus(); });
+  $('out-yes').addEventListener('click', () => signOut());
+  async function signOut() {
     try { await api('/edit/logout', {}); } catch { /* the cookie ends anyway after 7 days */ }
     T.shows.dirty = T.products.dirty = false;
     location.reload();
-  });
+  }
 
   $('add').addEventListener('click', () => {
     const row = showRow({ type: 'show' });
@@ -280,7 +292,7 @@
     const b = await reply(r);
     if (r.ok) { t.version = b.version; t.render(b[kind]); return say(t.msg, b.message || "Saved. It's on the site now."); }
     if (r.status === 401) { login.hidden = false; $('username').focus(); return say(t.msg, 'You were signed out. Sign in above, then press Save again. Your changes are still here.'); }
-    if (r.status === 409) return say(t.msg, b.message || `Someone else saved the ${kind} a moment ago. Reload to see their changes; yours are still on this page.`); // rows untouched
+    if (r.status === 409) return say(t.msg, b.message || `Someone else saved the ${kind} just now, so yours didn't save. Reloading shows their changes but clears yours, so write down what you changed first.`); // rows untouched
     const errs = b.errors ?? [];
     for (const x of errs) {
       const row = list[x.row];

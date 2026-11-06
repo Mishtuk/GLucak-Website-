@@ -151,7 +151,7 @@ function redirect(req, res, location, extra = {}) {
 
 const WRONG = "That name and password don't match. Check them and try again.";
 const LOCKED = 'Too many tries. Wait 15 minutes, then try again.';
-const STALE = (kind) => `Someone else saved the ${kind} a moment ago. Reload to see their changes; yours are still on this page.`;
+const STALE = (kind) => `Someone else saved the ${kind} just now, so yours didn't save. Reloading shows their changes but clears yours, so write down what you changed first.`;
 const NOT_IMAGE = "That file isn't a photo we can use. Try a JPG, PNG or WebP.";
 
 async function handleEdit(req, res, url) {
@@ -160,7 +160,7 @@ async function handleEdit(req, res, url) {
     req.resume(); // drain any unread body
     send(req, res, status, 'application/json', Buffer.from(JSON.stringify(body)), { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex', ...extra });
   };
-  if (!SECRET) return json(503, { error: 'off', message: 'The edit screen is not set up yet.' });
+  if (!SECRET) return json(503, { error: 'off', message: "The edit screen isn't switched on yet. Tell the person who runs the site." });
   const kind = p.match(/^\/edit\/api\/(shows|products)$/)?.[1], list = LISTS[kind];
   if (req.method === 'GET' && list) {
     const who = editor(req, url);
@@ -168,7 +168,7 @@ async function handleEdit(req, res, url) {
     return json(200, { editor: who, [kind]: readList(DATA, list.fallback, list.file), version: listVersion(DATA, list.fallback, list.file) });
   }
   if (req.method !== 'POST') return json(405, { error: 'method' }, { Allow: 'POST' });
-  if (!sameOrigin(req.headers)) return json(403, { error: 'origin', message: 'Refused: this has to come from the edit page itself.' });
+  if (!sameOrigin(req.headers)) return json(403, { error: 'origin', message: "That didn't go through. Try again." });
 
   if (p === '/edit/login') {
     const isJson = /json/.test(req.headers['content-type'] ?? '');
@@ -201,7 +201,7 @@ async function handleEdit(req, res, url) {
     const raw = (await readBody(req, list.max))?.toString('utf8');
     if (raw == null) return json(413, { error: 'too_big', errors: [{ row: null, message: list.big }] });
     let b;
-    try { b = JSON.parse(raw); } catch { return json(400, { error: 'bad_body', errors: [{ row: null, message: 'That save got garbled. Try again.' }] }); }
+    try { b = JSON.parse(raw); } catch { return json(400, { error: 'bad_body', errors: [{ row: null, message: "That didn't save. Try again." }] }); }
     const r = list.check(Array.isArray(b) ? b : b?.[kind]);
     if (r.errors) return json(400, { error: 'invalid', errors: r.errors });
     // Two tabs or two editors: refuse a save based on an older list instead of silently dropping the other's changes.
@@ -209,7 +209,7 @@ async function handleEdit(req, res, url) {
     if (b?.version !== version()) return json(409, { error: 'stale', message: STALE(kind), errors: [{ row: null, message: STALE(kind) }] });
     saveList(DATA, r.rows, list.fallback, list.file);
     console.log(new Date().toISOString(), `${kind} saved by ${who}: ${r.rows.length} rows`);
-    return json(200, { ok: true, [kind]: r.rows, version: version(), message: "Saved. It's on the site now." });
+    return json(200, { ok: true, [kind]: r.rows, version: version(), message: kind === 'products' && !shopOn() ? "Saved. The shop isn't open to fans yet, so they won't see it until it's switched on." : "Saved. It's on the site now." });
   }
   if (p === '/edit/api/upload') {
     // The raw image is the body. The declared type only gates the door; sharp decides what the bytes really are.
@@ -223,7 +223,7 @@ async function handleEdit(req, res, url) {
     let out;
     try { out = await toWebp(buf); } catch (e) {
       return json(400, e.message === 'too_many_pixels'
-        ? { error: 'too_many_pixels', message: 'That photo is too big (over 40 megapixels). Pick a smaller one.' } : { error: 'not_image', message: NOT_IMAGE });
+        ? { error: 'too_many_pixels', message: 'That photo is too big (over 40 megapixels). Shrink it or pick another one.' } : { error: 'not_image', message: NOT_IMAGE });
     }
     const name = `${randomBytes(16).toString('hex')}.webp`; // our name, never the client's
     mkdirSync(UPLOADS, { recursive: true });
