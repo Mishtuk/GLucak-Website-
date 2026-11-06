@@ -61,8 +61,9 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
           </div>
         </div>
         <div class="ed-backup">
-          <!-- COPY: docs/copy/backup.md --><a class="ed-btn ed-plain" href="/edit/api/backup" download aria-describedby="backup-hint">Save a copy of the site</a>
-          <!-- COPY: docs/copy/backup.md --><p id="backup-hint" class="ed-hint">One file with your shows and products. Keep it somewhere safe.</p>
+          <!-- COPY: docs/copy/backup.md --><a id="backup-link" class="ed-btn ed-plain" href="/edit/api/backup" download aria-describedby="backup-hint">Download a backup</a>
+          <!-- COPY: docs/copy/backup.md --><p id="backup-hint" class="ed-hint">One file with your shows, products and photos. Keep it somewhere safe.</p>
+          <p id="backup-msg" class="ed-msg" role="status"></p>
         </div>
       </section>
     </main>

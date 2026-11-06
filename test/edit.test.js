@@ -193,3 +193,15 @@ test('global cap: rotating IPs still hit 30 sign-in tries a minute', async () =>
   assert.ok(statuses.includes(429), 'capped even though every try came from a new IP');
   assert.ok(statuses.slice(statuses.indexOf(429)).every((s) => s === 429), 'stays capped');
 });
+
+test('backup link: plain download fallback kept, JS fetch handles 401 / 413 / 429 with the copy-file words, no innerHTML', () => {
+  const js = readFileSync(join(import.meta.dirname, '../public/js/edit.js'), 'utf8');
+  const page = readFileSync(join(import.meta.dirname, '../dist/edit/index.html'), 'utf8');
+  assert.match(page, /<a [^>]*href="\/edit\/api\/backup"[^>]* download[^>]*>Download a backup<\/a>/);
+  assert.match(page, /<p id="backup-msg"[^>]*role="status"/);
+  assert.match(js, /fetch\('\/edit\/api\/backup', \{ credentials: 'same-origin' \}\)/);
+  for (const s of ['You were signed out. Sign in above, then download again.', 'This backup is too big for one file. Tell the person who runs the site.',
+    'Too many backups. Wait an hour, then try again.', "That didn't download. Try again.", 'Making your backup…', 'Done. Look for it in your downloads.']) assert.ok(js.includes(s), s);
+  assert.match(js, /r\.status === 401/); assert.match(js, /r\.status === 413/); assert.match(js, /r\.status === 429/);
+  assert.doesNotMatch(js, /innerHTML/);
+});

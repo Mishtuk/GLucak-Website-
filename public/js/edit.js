@@ -368,6 +368,32 @@
   $('save').addEventListener('click', () => save('shows'));
   $('p-save').addEventListener('click', () => save('products'));
 
+  // Backup: the plain <a download> still works without JS; with JS we fetch it so a 401 / 413 / 429 gets a message, not a saved error file.
+  const bk = $('backup-link'), bkMsg = $('backup-msg');
+  bk.addEventListener('click', async (e) => {
+    e.preventDefault();
+    if (bk.getAttribute('aria-disabled') === 'true') return;
+    bk.setAttribute('aria-disabled', 'true');
+    say(bkMsg, 'Making your backup…', 'busy');
+    try {
+      let r;
+      try { r = await fetch('/edit/api/backup', { credentials: 'same-origin' }); } catch { return say(bkMsg, "That didn't download. Check your connection and try again.", 'error'); }
+      if (r.status === 401) { login.hidden = false; $('username').focus(); return say(bkMsg, 'You were signed out. Sign in above, then download again.', 'error'); }
+      if (!r.ok) {
+        const b = await r.json().catch(() => ({}));
+        if (r.status === 413) return say(bkMsg, b.message || 'This backup is too big for one file. Tell the person who runs the site.', 'error');
+        if (r.status === 429) return say(bkMsg, b.message || 'Too many backups. Wait an hour, then try again.', 'error');
+        return say(bkMsg, b.message || "That didn't download. Try again.", 'error');
+      }
+      const url = URL.createObjectURL(await r.blob());
+      const name = /filename="([^"]+)"/.exec(r.headers.get('Content-Disposition') || '')?.[1] || 'glucak-backup.json';
+      const a = el('a', { href: url, download: name });
+      document.body.append(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000); // revoking at once breaks some browsers' downloads
+      say(bkMsg, 'Done. Look for it in your downloads.', 'ok');
+    } catch { say(bkMsg, "That didn't download. Try again.", 'error'); } finally { bk.removeAttribute('aria-disabled'); }
+  });
+
   addEventListener('beforeunload', (e) => { if (anyDirty()) e.preventDefault(); });
 
   login.hidden = true; // until we know whether this browser is signed in
