@@ -93,13 +93,14 @@
     const type = select([['show', 'Show'], ['open-mic', 'Open mic']], s.type);
     const venue = el('input', { required: true, maxLength: 300, value: s.venue ?? '' });
     const city = el('input', { required: true, maxLength: 300, value: s.city ?? '', placeholder: 'Doylestown, PA' });
+    const address = el('input', { maxLength: 300, value: s.address ?? '', placeholder: '12 Main St' });
     const withIn = el('input', { maxLength: 300, value: s.with ?? '' });
     const link = el('input', { type: 'url', inputMode: 'url', maxLength: 300, value: s.link ?? '', placeholder: 'https://' });
     box.form.append(el('div', { class: 'ed-two' }, field('Date', date), field('Time (optional)', time)),
-      field('Type', type), field('Venue', venue), field('City', city),
+      field('Type', type), field('Venue', venue), field('City', city), field('Street address (optional)', address, 'Helps maps and Google find the place. Not shown on the site; it goes in the calendar file.'),
       field('With (optional)', withIn, 'Another act on the bill'), field('Link (optional)', link, 'Tickets or details page'));
     box.actions.append(box.edit, box.del);
-    box.read = () => ({ date: date.value, time: time.value, type: type.value, venue: venue.value, city: city.value, with: withIn.value, link: link.value });
+    box.read = () => ({ date: date.value, time: time.value, type: type.value, venue: venue.value, city: city.value, address: address.value, with: withIn.value, link: link.value });
     const mark = () => {
       say(box.lead, shortDate(date.value));
       box.setTitle(venue.value.trim()); // empty until typed: the row number names it

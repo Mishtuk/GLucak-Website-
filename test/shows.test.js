@@ -145,3 +145,39 @@ test('poster art: only the poster li has it, rows never', async () => {
   assert.match(out, /<li class="poster"><picture><img class="poster-art graded"/);
   assert.ok(!/<li class="row">[^]*?poster-art[^]*?<\/li>/.test(out.replace(/<li class="poster">[^]*?<\/li>/, '')));
 });
+
+// ---------- D61: optional street address ----------
+import { showsLdHtml, icsFor } from '../src/lib/shows.js';
+import { checkShows } from '../src/lib/store.js';
+const NOW = noon('2026-12-01');
+const HOST = "<script>x</script>' OR 1=1 --; a,b";
+test('address validation: trim, 120, one line, empty unset, type', () => {
+  validateShow(row({ address: '  12 Main St  ' })); validateShow(row({ address: 'a'.repeat(120) })); validateShow(row({ address: '' }));
+  assert.throws(() => validateShow(row({ address: 'a'.repeat(121) })), /^Error: That address is too long\. 120 letters at most\.$/);
+  for (const a of ['1 Main\n2', '1 Main\r\n2', 'x\u2028y']) assert.throws(() => validateShow(row({ address: a })), /^Error: Put the address on one line\.$/);
+  for (const a of [5, {}, []]) assert.throws(() => validateShow(row({ address: a })));
+  assert.equal(checkShows([row({ address: '   ' })]).rows[0].address, undefined, 'empty is not stored');
+  assert.equal(checkShows([row({ address: ' 12 Main St ' })]).rows[0].address, '12 Main St');
+  assert.equal(checkShows([row({ address: 'a\nb' })]).errors[0].message, 'Show 1: Put the address on one line.');
+});
+test('address never in public HTML; JSON-LD streetAddress only when set', () => {
+  const r = row({ address: HOST });
+  assert.ok(!showsHtml([r], NOW, { past: true }).includes('script>x') && !showsHtml([r], NOW).includes('Main'));
+  assert.ok(!showsHtml([row({ address: '12 Main St' })], NOW).includes('12 Main'));
+  const ld = showsLdHtml([row({ address: '12 Main St' })], NOW);
+  assert.equal(JSON.parse(ld.replace(/^<script[^>]*>|<\/script>$/g, ''))[0].location.address.streetAddress, '12 Main St');
+  assert.ok(!showsLdHtml([row()], NOW).includes('streetAddress'));
+  const h = showsLdHtml([r], NOW);
+  assert.ok(!h.slice(1, -9).includes('<script'), 'hostile address cannot close the tag');
+});
+test('.ics LOCATION uses the address, escaped', () => {
+  const loc = (r) => icsFor(r, NOW).replace(/\r\n /g, '').split('\r\n').filter((l) => l.startsWith('LOCATION:'));
+  assert.deepEqual(loc(row({ address: '12 Main St' })), ['LOCATION:V\\, 12 Main St\\, C']);
+  assert.deepEqual(loc(row()), ['LOCATION:V\\, C']);
+  const [l] = loc(row({ address: HOST }));
+  assert.equal(l, "LOCATION:V\\, <script>x</script>' OR 1=1 --\\; a\\,b\\, C");
+});
+test('edit.js has the address label, hint and placeholder', () => {
+  const js = readFileSync(new URL('../public/js/edit.js', import.meta.url), 'utf8');
+  for (const t of ['Street address (optional)', 'Helps maps and Google find the place. Not shown on the site; it goes in the calendar file.', '12 Main St']) assert.ok(js.includes(t), t);
+});

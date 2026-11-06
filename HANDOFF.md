@@ -66,6 +66,8 @@
   `docs/review/photo-treatments/` DONE (018f486, sheet.png). Picks: hero A (a) era grade, hero B (b) riso / (f) MCCC,
   Live It Loud (c) poster, Push Past Fear (d) crowd, About (e) contact strip (swap its HANDS frame). **Privacy:** the
   child in the crowd is in frame on the current hero A + likely Push Past Fear; (a) and (d) leave him out: swap soon.
+- **Desktop (2026-11-06):** round-2 design ported (Music crate, link grids, Add to calendar + `.ics`, 404) and D61 show
+  address (edit-only; JSON-LD + .ics). `npm test` 131/131. Claims released except `server.js`, `src/lib/`.
 - **Desktop research round 3 DONE:** `launch-readiness.md` (host rec: Render Starter + disk, runner-up Azure B1;
   GitHub Actions daily rebuild; Fourthwall CD/vinyl to confirm by email), `discoverability-a11y.md`. Built the Desktop
   findings: Spotify skip link, one h1 per page, distinct link names, signup aria, robots.txt + sitemap.xml, MusicGroup +

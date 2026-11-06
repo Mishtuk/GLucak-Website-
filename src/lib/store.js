@@ -3,16 +3,17 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { createHash, randomBytes } from 'node:crypto';
 import { join } from 'node:path';
-import { validateShow } from './shows.js';
+import { validateShow, ADDR_LINE, ADDR_LONG } from './shows.js';
 
 export const MAX_SHOWS = 200;
-const FIELDS = ['date', 'time', 'type', 'venue', 'city', 'with', 'link'];
-const OPTIONAL = new Set(['time', 'with', 'link']);
+const FIELDS = ['date', 'time', 'type', 'venue', 'city', 'address', 'with', 'link'];
+const OPTIONAL = new Set(['time', 'address', 'with', 'link']);
 const MAX_LEN = 300;
 
 const PLAIN = {
   'bad date': 'Pick a real date.', 'bad time': 'Pick a time, or leave it empty.', 'bad type': 'Pick Show or Open mic.',
   'bad venue': 'Add the venue.', 'bad city': 'Add the city.', 'bad link': 'The link has to start with https:// (or http://), or leave it empty.',
+  'bad address': ADDR_LINE, [ADDR_LINE]: ADDR_LINE, [ADDR_LONG]: ADDR_LONG,
   'bad with': 'Leave "With" empty or add a name.', 'show must be an object': 'This row is broken. Delete it and add it again.',
 };
 

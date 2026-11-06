@@ -8,6 +8,7 @@ export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&a
 const validDate = (d) => { const t = new Date(`${d}T00:00:00Z`); return /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(t.getTime()) && t.toISOString().slice(0, 10) === d; };
 const httpUrl = (u) => { try { return ['http:', 'https:'].includes(new URL(u).protocol); } catch { return false; } };
 
+export const ADDR_LINE = 'Put the address on one line.', ADDR_LONG = 'That address is too long. 120 letters at most.';
 /** Returns the row if valid, else throws. */
 export function validateShow(r) {
   if (!r || typeof r !== 'object') throw new Error('show must be an object');
@@ -17,6 +18,12 @@ export function validateShow(r) {
   for (const k of ['venue', 'city']) if (typeof r[k] !== 'string' || !r[k].trim()) throw new Error(`bad ${k}`);
   if (r.link != null && (typeof r.link !== 'string' || !httpUrl(r.link))) throw new Error('bad link');
   if (r.with != null && (typeof r.with !== 'string' || !r.with.trim())) throw new Error('bad with');
+  if (r.address != null) {
+    if (typeof r.address !== 'string') throw new Error('bad address');
+    const a = r.address.trim();
+    if (/[\x00-\x1f\x7f\u2028\u2029]/.test(a)) throw new Error(ADDR_LINE);
+    if (a.length > 120) throw new Error(ADDR_LONG);
+  }
   return r;
 }
 
@@ -100,7 +107,7 @@ export function showsLdHtml(rows, now = new Date()) {
     const m = r.city.match(/^(.+?),\s*([A-Za-z]{2})$/);
     return { '@context': 'https://schema.org', '@type': 'MusicEvent', name: `GLucak at ${r.venue}`, startDate,
       eventStatus: 'https://schema.org/EventScheduled', eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-      location: { '@type': 'Place', name: r.venue, address: { '@type': 'PostalAddress', addressLocality: m ? m[1] : r.city, ...(m && { addressRegion: m[2].toUpperCase() }) } },
+      location: { '@type': 'Place', name: r.venue, address: { '@type': 'PostalAddress', ...(r.address?.trim() && { streetAddress: r.address.trim() }), addressLocality: m ? m[1] : r.city, ...(m && { addressRegion: m[2].toUpperCase() }) } },
       performer: { '@type': 'MusicGroup', name: 'GLucak' }, ...(r.type === 'show' && r.link && { offers: { '@type': 'Offer', url: r.link } }) };
   });
   return events.length ? `<script type="application/ld+json">${JSON.stringify(events).replace(/</g, '\\u003c')}</script>` : '';
@@ -171,7 +178,7 @@ export function icsFor(r, now = new Date()) {
   const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//GLucak//glucak.com//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', ...(r.time ? VTIMEZONE : []),
     'BEGIN:VEVENT', `UID:${showId(r)}@glucak.com`, `DTSTAMP:${stamp(now).slice(0, 15)}Z`, ...when,
     `SUMMARY:${icsText(r.type === 'open-mic' ? `GLucak open mic at ${r.venue}` : `GLucak at ${r.venue}`)}`,
-    `LOCATION:${icsText(`${r.venue}, ${r.city}`)}`, `DESCRIPTION:${icsText(desc.join('\n'))}`, ...(url ? [`URL:${url}`] : []), 'END:VEVENT', 'END:VCALENDAR'];
+    `LOCATION:${icsText([r.venue, r.address?.trim(), r.city].filter(Boolean).join(', '))}`, `DESCRIPTION:${icsText(desc.join('\n'))}`, ...(url ? [`URL:${url}`] : []), 'END:VEVENT', 'END:VCALENDAR'];
   return lines.map(fold).join(CRLF) + CRLF;
 }
 
