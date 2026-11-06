@@ -49,8 +49,8 @@ R2-6: animations (normal and reduced motion) on the new pages
   404.html: 0 animations
   404.html reduced: 0 animations
 R2-7: Home height at 390x660 (D39 cap 5.8 without the note) and the poster
-  ?hero=ab: 3939px = 5.97 screens, 5.80 without the note (top 1384, shows 882, about 450, join 594, footer 568)
-  ?shows=none: 3614px = 5.48 screens, 5.31 without the note (top 1384, shows 556, about 450, join 594, footer 568)
+  ?hero=ab: 3940px = 5.97 screens, 5.80 without the note (top 1364, shows 903, about 450, join 594, footer 568)
+  ?shows=none: 3615px = 5.48 screens, 5.31 without the note (top 1364, shows 577, about 450, join 594, footer 568)
   poster / rows: {"poster":212,"rows":[60,60]}
 R2-8: Music page at 390x844 and 1280x800: where the grid starts, tiles in the first screen, page length
   390x844: grid top 771px, 2 columns, cover 166px, grid 1599px, page 3203px = 3.80 screens

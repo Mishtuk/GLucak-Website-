@@ -1200,8 +1200,9 @@ Sources: the owner's picks of the Desktop's `/v2/` Home, items 1-4 (`docs/review
 item 5 by the Laptop boss under D25 (the owner may overrule: one switch, 18e); `docs/research/modern-references.md` items 1-5;
 `assets/from-gabe/social/INDEX.md` (USE / MAYBE verdicts); the boss review of the port, `docs/review/v2-port-review.md` (F1-F5).
 **Built** by the Desktop at **3ee444d** (`RiseBand.astro`, `VideoBlock.astro`, `index.astro`, `content.js` `HEADER_STYLE` +
-`videoRow()`, `Base.astro`, the "v2 port" block at the end of `global.css`). This section documents what is built, with the
-build's class names (`v2-*`), and lists the changes still to make in 18h (D1-D7, which take in the boss's F1-F5).
+`videoRow()` + `PHOTO_CREDITS`, `Base.astro`, the "v2 port" block at the end of `global.css`), with the boss's F1-F5 fixed at
+**db72e35**. This section documents what is built, with the build's class names (`v2-*`), and lists the four changes still
+to make in 18h (D1, D2, D4, D7).
 **Prototype:** `prototype/index.html` (Home) is the build's markup and CSS (block "18. v2 picks" in `prototype/styles.css`,
 before the 17 block) plus 18h, each marked `DELTA` there. Switch: `?header=scrim`. Check: `node prototype/tools/v2picks.mjs`
 (report and shots in `docs/review/v2-picks/`).
@@ -1215,7 +1216,7 @@ Section 3 says "no shadows, no cards". **Amended: no shadows; one panel is allow
 band from "word + embed box" into a thing you can play. Its look is fixed so it doesn't spread: `bg-2` ground, 2px corners
 (`--radius-s`), no border, no shadow, no hover lift, no tint from the cover. No other block on the site gets a panel.
 
-**Markup** (`RiseBand.astro`, `release` true; Music keeps the bare player, `release={false}`), in this source order (18h D6):
+**Markup** (`RiseBand.astro`, `release` true; Music keeps the bare player, `release={false}`), in this source order:
 `div.v2-card` > `div.rise-play` (`a.skip.skip-inline` "Skip the Spotify player", `div.player-box` 352px,
 `p.under-player#after-player` with **Play full songs on Spotify**, plus SoundCloud only if the release has its own
 `soundcloud`) > `article.v2-rel` (`img.v2-cover`, `div.v2-rel-text` > `p.v2-kicker` "Latest {type} · {Mon D, YYYY}", `h3` title
@@ -1226,13 +1227,13 @@ exact, `p.credit` artists line (D33, only with a second artist), `a.btn.btn-soli
 cover row, so the player's top stays on the first phone screen. **From 900px the cover row leads** (`.v2-card > .v2-rel {
 order: -1; }`), the player under it. Measured at 390x660: player top **556px**, 42px above the phone bar (was 508 / 90px
 before the picks; the v2 compare page had it at 780). `.band-rise .v2-split { gap: 0; }` and `.v2-card { padding-top:
-var(--space-xs); }` under 900px keep it that high. **Built the other way round** (cover row first in the source, `.rise-play {
-order: -1 }` under 900px): on phones Tab then goes to Listen under the player before jumping up to the skip link (boss F5).
+var(--space-xs); }` under 900px keep it that high. The source order is the phone order (boss F5, db72e35; 3ee444d had the
+cover row first and moved the player up with `order`, so on phones Tab met Listen under the player before the skip link).
 
 **Sizes:** cover 36% of the panel on phones (117px at 390), 2fr : 3fr of the panel from 900px (250px at 1280); cover file
 as made (`width="400" height="400"`, not lazy). Panel padding 0.75rem (1rem from 900px). Title `--step-2`, balanced.
 Kicker and artists 16px `muted` (kicker 700). Listen 52px. **Kicker words:** "Latest single · Sep 4, 2026" (type from
-`releases.json`, date by `dateLine`); no date: "Latest single". The date never breaks inside itself (18h item 8).
+`releases.json`, date by `dateLine`); no date: "Latest single". The date never breaks inside itself (18h item 5).
 
 **Supersedes** section 5 item 1's release block (96px / 160px cover, "Latest release. Listen on:", the **every platform** /
 SoundCloud links, and on Home "Listen everywhere", which the card's Listen replaces), the From Gabe placement "from 900px in
@@ -1249,10 +1250,12 @@ You're Not Alone, Duck, Dodge, Jump, Fight). No videos: one card to the channel 
 - **Phones: a still swipe row.** Cards 82% wide, so the next one peeks; `scroll-snap-type: x mandatory`, `overscroll-behavior-x:
   contain`, `overflow-x: auto`, `position: relative` (keeps the new-tab hint inside). It costs no more height than the old box.
 - **Not a carousel (section 8 clarified):** no autoplay, no timer, no arrows, no dots, no loop, no `scroll-behavior: smooth`.
-  It moves only while a finger moves it, or to bring a card that takes keyboard focus fully into view (instant, 18h item 9,
-  boss F3). A carousel that moves by itself stays banned.
-- Titles: 16px 700, two-line clamp at 100% (the full title is the link's name); whole at 200% (18h D3). Hover underlines the
-  title. Pressed (16e): the thumbnail's edge goes `text`, the title inverts; the picture is never changed.
+  It moves only while a finger moves it, or to bring a card that takes keyboard focus fully into view: `public/js/app.js`
+  `focusin` -> `scrollIntoView({ block: 'nearest', inline: 'nearest' })`, instant (boss F3, db72e35; Chrome otherwise leaves a
+  focused card 46px on screen). A carousel that moves by itself stays banned.
+- Titles: 16px 700, whole, no clamp (boss F4, db72e35: a two-line clamp hid 125 of 208px of the Duck, Dodge, Jump, Fight title
+  at 200%); the longest takes 3-4 lines in a phone card. Hover underlines the title. Pressed (16e): the thumbnail's edge goes
+  `text`, the title inverts; the picture is never changed.
 - **Built: three across from 700px** (and on /shows/ a swipe row again in its narrow column from 72rem). **The owner's pick
   said "from 900px the latest big and two stacked"**: 18h D1 (700-899px keeps three across).
 
@@ -1286,11 +1289,11 @@ stills are `display: none` + `loading="lazy"` under 900px and are never fetched 
   OK"`): 4:5 (22rem wide at most, D2), the shop's hatch on `bg-2`, 2px dashed `muted` edge, the words "Photo slot: crowd shot.
   Waiting on Gabe's OK." on a `bg` label. From 900px only. When Gabe says yes, the file still needs a crop that keeps the
   child out (section 3b's rule).
-- **Credits** (footer `.credits`, boss F1: each picture named by its source, only where it shows): "Photo: Alexander Kealey."
-  · "Garage still: Joseph Lucak." **from 900px only** (`span.credit-wide`) · "Live stills: from GLucak's Crooked Eye video." ·
-  "IDENTITY art: from GLucak's Instagram." Change the last two when Gabe answers INDEX.md questions 1-2. **Built:** "Video still:
-  Joseph Lucak." at every width, which on a phone credits the Crooked Eye still to him (F1). /shows/ shows the (c) poster art and
-  needs `credits={[C.kealey]}` (F1).
+- **Credits** (footer `.credits`, boss F1, db72e35: each picture named by its source): Home "Photo: Alexander Kealey. Video
+  still: Joseph Lucak. Video stills: GLucak on YouTube. IDENTITY art: from GLucak's Instagram." (Joseph Lucak for the Duck,
+  Dodge, Jump, Fight thumbnail at every width and the garage still from 900px; the Crooked Eye stills and the IDENTITY art by
+  source until Gabe answers INDEX.md questions 1-2). /shows/: Kealey + Joseph Lucak. `CREDIT_FOR` in `content.js` maps each
+  image to its credit and `test/credits.test.js` checks every built page against it. Three lines at 390 (+24px, paid in D7).
 
 ### 18d. Each phrase beside its content from 900px (pick 4)
 From 900px every Home band is `div.wrap.v2-split`, `grid-template-columns: minmax(0, 5fr) minmax(0, 7fr)`, gap `--space-xl`:
@@ -1319,78 +1322,62 @@ over the hero" and the D64(2) scrim as the default. The hero scrim's two top ell
 the photo) now sit mostly under the band; harmless, left as built.
 
 ### 18f. Measured (`node prototype/tools/v2picks.mjs`, report `docs/review/v2-picks/v2picks-report.txt`)
-The prototype is the build plus 18h, with both "From Gabe" quotes in (D39's measure; the build ships without them until Gabe
-OKs them).
+The prototype is the build (db72e35) plus 18h, with both "From Gabe" quotes in (D39's measure; the build ships without them
+until Gabe OKs them).
 | Check | Result |
 |---|---|
-| **Home height, 390x660, D39 cap 5.8** | **5.80 screens without the note (3827px = 5.798)**, both quotes in, with D4 and D7 and the F1 credits (3 lines at 390). Without D4 the prototype measured **6.08**; the boss measured the build with quotes at **6.13** (F2) and without at 5.76. Expect the build with D4 + D7 + F1 near **5.85**: if it is still over when the quotes flip, show one quote on Home (the boss's F2 option: L2 is 76px + gap) or log a cap change. No shows: 5.31. `?header=scrim`: 5.72 |
+| **Home height, 390x660, D39 cap 5.8** | **5.80 screens without the note (3828px)**, both quotes in, with D4 and D7. The prototype as built (no D4 / D7) would be 4057px = **6.15**: D4 takes 185px, D7 44px. The boss measured the build with quotes at 6.13 at 3ee444d (F2); db72e35 then added a credit line and whole video titles (about +53px at 390), so expect the build with D4 + D7 near **5.85**, about 35px over. Before `QUOTES_APPROVED` flips: port D4 + D7, measure, and if still over, show one quote on Home (the boss's F2 option: L2 is 76px + gap) or log a cap change. Quotes off, the build measured 5.76 at 3ee444d. No shows: 5.31. `?header=scrim`: 5.72 |
 | **Spotify player, px from the top** | 390x660: **556**, 42px above the phone bar; 390x844: 226px visible; 320x568: 524, under the bar (it was 476, 30px visible, before the picks; at 320x660 74px show); `?header=scrim` 504 (94px). 900x800: 713 (87px on screen); 1280x800: 902, under the cover row (the card leads there) |
 | Photos | 7 pictures at 320 / 390 / 899, 9 at 900 / 1280, **none repeated**; a phone downloads none of the wide-only stills |
 | Header | `rgb(17,17,17)` solid at scroll 0 on Home at 390 and 1280; the scrim switch gives the gradient |
-| Swipe row | 390: row 349px, scrolls to 890 inside itself, page 390 (no sideways page scroll); 320: 280 / 721 / 320. Tab to the 2nd card: the row scrolls to it (card at x 21-307, was 323-609 in the build, F3). 1280 (D1): latest 443px wide, two stacked 222px |
+| Swipe row | 390: row 349px, scrolls to 890 inside itself, page 390 (no sideways page scroll); 320: 280 / 721 / 320. Tab to the 2nd card: the row scrolls 302px and the card shows whole at x 21-307 (it stayed at 323-609 before F3). 1280 (D1): latest 443px wide, two stacked 222px |
 | Contrast, 3 eras, 390 and 1280 | Lowest: card Listen 5.33 (IDENTITY guess), kicker / artists on `bg-2` 7.41-8.49, video titles and tag on `bg` 14+; **none under the floor** |
 | Targets | 11 in the new pieces at 320 and 390, none under 48px (Home 39, none under 48: round2.mjs R2-2) |
 | Motion | Reduced motion: 0 animations; normal: 1 (the glow). The row's `scroll-behavior` is `auto` |
-| **Text at 200%** (`node prototype/tools/a11y200.mjs`, swipe-row cards exempt inside `.v2-vrow`, the row itself checked) | **0 issues in 66 views** (Home, no shows, IDENTITY guess, Music, Shop, product, 404, edit x4; 320 / 390 / 1280; 100% and 200%). Without D3 the clamp hides 125 of 208px of the Duck, Dodge, Jump, Fight title at 390 / 200% and 208 of 291 at 1280 / 200% (F4). Now line at 390x660 / 200%: **354-498px**, clear of the bar at 598 (built: 569-665) |
+| **Text at 200%** (`node prototype/tools/a11y200.mjs`; cards inside a scrolling `.v2-vrow` are exempt from "past the edge", the row itself is checked) | **0 issues in 66 views** (Home, no shows, IDENTITY guess, Music, Shop, product, 404, edit x4; 320 / 390 / 1280; 100% and 200%). Now line at 390x660 / 200%: **354-498px**, clear of the bar at 598 (569-665 before the boss's fix) |
 | Round 2 (`node prototype/tools/round2.mjs`) | No sideways scroll (the glow excepted, by design), targets none under 48px, 16px minimum, contrast lowest 8.77:1, every pressable changes, 0 transitions, Music / 404 0 animations, Home 5.80, poster 212px, CSP and errors none |
 | Shots | `docs/review/v2-picks/`: Home 390 first / full, 320 full, 900 full, 1280 first / full, the scrim switch at 390, IDENTITY guess 1280, no shows 390, the row swiped one card. `laptop-variant/`: my first pass before the build landed (not proposed further). 200% first screens: `docs/review/a11y-200/home-*-200.png` |
 
 **Not verified:** Safari / iOS (scroll-snap with the 82% peek, `display: contents` on `.v2-push-body`, `order` in a grid,
-`-webkit-line-clamp`, container queries in rem, `scrollIntoView` inline in a snap row); the Instagram in-app browser; the build's
-click-to-load iframe inside a swipe card (the prototype links out); screen readers on the card.
+container queries in rem, `scrollIntoView` inline in a snap row); the Instagram in-app browser; the build's click-to-load
+iframe inside a swipe card (the prototype links out); screen readers on the card.
 
-### 18g. Check the port against this (the build at 3ee444d, by selector)
+### 18g. Check the port against this (the build at db72e35, by selector)
 Built and matching: `html[data-header]` from `HEADER_STYLE`; the two `--strip` rules; `.v2-split` / `.v2-side` / `.v2-main` and the
-900px grid; `.v2-wide-only` (none + lazy under 900px); the `.v2-card` panel; `.band-rise .v2-split { gap: 0 }` + `.v2-card {
-padding-top: var(--space-xs) }` under 900px; `.v2-rel` 36% / 2fr : 3fr; `.v2-main .poster-art { display: none }` + the
-one-column poster areas; the `.v2-vrow` swipe row (82%, snap, contain, relative); `.v2-push-body`, `.v2-belt`, `.v2-slot`;
-`.v2-identity` 26% / 12rem with its 20rem / 26rem big-text rules; `videoRow(3)`. Also: the `.played` hide is Home-only
-(`.v2-main .played`), so Home's empty state shows no Played rows (section 7's "then Played rows" now means /shows/); the
-quotes stay out until `QUOTES_APPROVED` (and D39, 18f).
+900px grid; `.v2-wide-only` (none + lazy under 900px); the `.v2-card` panel with `div.rise-play` first in the source and
+`@media (min-width: 900px) { .v2-card > .v2-rel { order: -1; } }`; `.band-rise .v2-split { gap: 0 }` + `.v2-card { padding-top:
+var(--space-xs) }` under 900px; `.v2-rel` 36% / 2fr : 3fr; `.v2-main .poster-art { display: none }` + the one-column poster
+areas; the `.v2-vrow` swipe row (82%, snap, contain, relative) with the `focusin` line in `app.js`; `.v2-vtitle` unclamped;
+`.v2-push-body`, `.v2-belt`, `.v2-slot`; `.v2-identity` 26% / 12rem with its 20rem / 26rem big-text rules; `.hero-inner` as a
+container with `.hero-actions` hidden under 16rem on phones; `videoRow(3)`; `PHOTO_CREDITS` / `CREDIT_FOR`. Also: the `.played`
+hide is Home-only (`.v2-main .played`), so Home's empty state shows no Played rows (section 7's "then Played rows" now means
+/shows/); the quotes stay out until `QUOTES_APPROVED` (and D39, 18f).
 
-### 18h. Port of v2: what is still to change (for the Desktop; the CSS is the `DELTA` part of the prototype's block 18, word for word)
+### 18h. Port of v2: what is still to change (for the Desktop; the CSS is the DELTAS part at the end of the prototype's block 18, word for word)
 1. **D1, video row from 900px (the owner's pick 2):** `@media (min-width: 900px) { .v2-vrow { grid-template-columns: minmax(0,
-   2fr) minmax(0, 1fr); } .v2-vid:first-child { grid-row: 1 / span 2; } }` after the built `min-width: 700px` rule; the first
-   card's `sizes` becomes `(min-width: 900px) 34vw, 82vw`. /shows/: its 72rem rule still wins inside `.shows-grid`; check
-   900-1151px there, where the row is full width.
+   2fr) minmax(0, 1fr); } .v2-vid:first-child { grid-row: 1 / span 2; } }` after the built `min-width: 700px` rule (700-899px
+   keeps three across); the first card's `sizes` becomes `(min-width: 900px) 34vw, 82vw`. /shows/: its 72rem rule still wins
+   inside `.shows-grid`; check 900-1151px there, where the row is full width.
 2. **D2, FEAR's one-line lock with the still under it (pick 4):** `index.astro`: the push phrase becomes `<span class="phrase fit
    lock-push">` (the built `.lock-push` rules do the rest from 900px). CSS: `.v2-push .v2-push-body { display: contents; }`,
    `.v2-push .v2-side { grid-area: side; }`, and from 900px `.band-push.v2-push > .wrap.v2-split { grid-template-columns:
    minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: 'side bio' 'p1 bio' 'p1 act' 'p1 p2'; grid-template-rows: auto auto
    auto 1fr; row-gap: var(--space-l); } .v2-push .v2-slot { width: min(100%, 22rem); }` (the children keep their built
    `grid-area`s). Belt `sizes="(min-width: 900px) 40vw, 30vw"`.
-3. **D3, the clamp at 200% (boss F4, 1.4.4):** keep the clamp at 100% and lift it only where text is enlarged:
-   `.v2-videos { container-type: inline-size; }`, `@container (width < 15rem) { .v2-vrow { grid-auto-flow: row;
-   grid-auto-columns: auto; overflow: visible; scroll-snap-type: none; } .v2-vtitle { display: block; -webkit-line-clamp: none;
-   overflow: visible; } }` and `@media (min-width: 900px) { @container (width < 26rem) { .v2-vtitle { display: block;
-   -webkit-line-clamp: none; overflow: visible; } } }`. 15rem is under every 100% phone (320 = 17.5rem). Same result as F4's
-   "drop the clamp" at 200%, with no height at 100% (unclamped, the Duck title takes 3-4 lines in a phone card).
-4. **D4, Push Past Fear on phones (pays for the quotes, boss F2):** with D2's `display: contents`: `.band-push.v2-push >
+3. **D4, Push Past Fear on phones (pays for the quotes, boss F2):** with D2's `display: contents`: `.band-push.v2-push >
    .wrap.v2-split { grid-template-columns: minmax(0, 1fr) 30%; grid-template-areas: 'side p1' 'bio bio' 'act act'; }` and
    `@media (max-width: 899px) { .v2-push .v2-belt { align-self: stretch; height: 0; min-height: 100%; object-fit: cover;
    object-position: 50% 22%; } }`. The still stands beside the lockup at the lockup's height; the bio runs full width (6 lines,
    was 9 in the 70% column). **-185px at 390.**
-5. **D5, the 200% Now line under the phone bar: the boss's fix,** `.hero-inner { container-type: inline-size; } @media
-   (max-width: 699px) { @container (width < 16rem) { .hero-actions { display: none; } } }`. With enlarged text on a phone the
-   hero's Listen / Shows (the same two links the bar always shows under 700px) step aside: Now line 354-498 at 390x660 / 200%,
-   clear of the bar. 100% and 700px+ unchanged. (My first proposal moved the Now line above the buttons; this is simpler and
-   loses nothing.)
-6. **D6, player first in the source (boss F5):** in `RiseBand.astro` put `div.rise-play` before `article.v2-rel`; replace
-   `@media (max-width: 899px) { .v2-card > .rise-play { order: -1; } }` with `@media (min-width: 900px) { .v2-card > .v2-rel {
-   order: -1; } }`. Tab and screen readers then follow the phone screen; the visual jump moves to desktop only.
-7. **D7, D39 after F1's longer credits (+24px at 390):** `@media (max-width: 899px) { .v2-videos { margin-top: var(--space-m);
-   } .band-push.v2-push { padding-top: var(--space-m); } .band-push.v2-push > .wrap.v2-split { row-gap: var(--space-s); } }`.
-8. **Credits (F1):** `index.astro` credits `[C.kealey, <span class="credit-wide"> Garage still: Joseph Lucak.</span>, 'Live
-   stills: from GLucak's Crooked Eye video.', 'IDENTITY art: from GLucak's Instagram.']` (however `Footer` prints them; the
-   garage line only from 900px: `.credit-wide { display: none; } @media (min-width: 900px) { .credit-wide { display: inline; }
-   }`); /shows/ gets `credits={[C.kealey]}`. **Kicker date:** print it with no-break spaces (`Sep&nbsp;4,&nbsp;2026`, in the
-   kicker or in `dateLine`), so a narrow card breaks after "·", never inside the date.
-9. **Keyboard in the row (F3), `public/js/app.js`:** `document.querySelectorAll('.v2-vrow').forEach((r) =>
-   r.addEventListener('focusin', (e) => e.target.closest('.v2-vid')?.scrollIntoView({ block: 'nearest', inline: 'start' })));`
-   (the prototype's `app.js` has the same line). Instant, so it is not motion.
-10. **Leave out of `global.css` (prototype only):** the lines marked "prototype only" (`.v2-rel-text .credit`, `.v2-thumb
-   .yt-img`): the build has its own `.credit` and `.yt-img` rules.
-11. **Dead on Home after this** (check Music, /shows/ and About before removing): the 16f `.rise-player:has(~ .release)
+4. **D7, D39 after the named credits (+24px) and the whole titles (+29px):** `.v2-card > .quote { margin-top: 0; }` and
+   `@media (max-width: 899px) { .v2-card { padding-bottom: var(--space-xs); } .v2-videos { margin-top: var(--space-m); }
+   .band-push.v2-push { padding-top: var(--space-m); } .band-push.v2-push > .wrap.v2-split { row-gap: var(--space-s); } }`.
+   **-44px at 390.** (The quote's own margin is a gap twice over inside the panel; the rest are 0.25-0.5rem each.)
+5. **Kicker date:** print it with no-break spaces (`Sep&nbsp;4,&nbsp;2026`, in the kicker or in `dateLine`), so a narrow card
+   breaks after "·", never inside the date ("Sep / 4, 2026" at 390 in my first pass).
+6. **Leave out of `global.css` (prototype only):** the lines marked "prototype only" (`.v2-rel-text .credit`, `.v2-thumb
+   .yt-img`, the `.quote-chip` line): the build has its own `.credit` and `.yt-img` rules and no chip.
+7. **Dead on Home after this** (check Music, /shows/ and About before removing): the 16f `.rise-player:has(~ .release)
    .under-link` line, `.rise-grid`'s `.release, .quote { grid-column: 1; }`. `rise-grid`, `rise-player`, `shows-grid`,
    `PushPhoto` and the poster art stay (Music, /shows/, About use them). `/v2/` and `v2.css` can go when the owner no longer
    wants the side-by-side.

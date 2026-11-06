@@ -210,7 +210,7 @@
 
   // DESIGN 18b (boss F3): a card that takes keyboard focus in the swipe row is brought fully into view (Chrome leaves a
   // partly visible card where it is). Instant, not smooth: it moves only because the user pressed Tab.
-  document.querySelectorAll('.v2-vrow').forEach((r) => r.addEventListener('focusin', (e) => e.target.closest('.v2-vid')?.scrollIntoView({ block: 'nearest', inline: 'start' })));
+  document.querySelectorAll('.v2-vrow').forEach((r) => r.addEventListener('focusin', (e) => e.target.closest('.v2-vid')?.scrollIntoView({ block: 'nearest', inline: 'nearest' })));
 
   /* ---------- Sign-up: the real form posts to our server; here nothing leaves the page ---------- */
   $('#signup').addEventListener('submit', (e) => {

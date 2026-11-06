@@ -1,7 +1,7 @@
 V2-1: Home height at 390x660 (D39 cap 5.8 screens without the note; both quotes in, one poster show)
-  index.html: 3939px = 5.97 screens, 5.80 without the note (top 1384, shows 882, about 450, join 594, footer 568)
-  index.html?shows=none: 3614px = 5.48 screens, 5.31 without the note (top 1384, shows 556, about 450, join 594, footer 568)
-  index.html?header=scrim: 3887px = 5.89 screens, 5.72 without the note (top 1332, shows 882, about 450, join 594, footer 568)
+  index.html: 3940px = 5.97 screens, 5.80 without the note (top 1364, shows 903, about 450, join 594, footer 568)
+  index.html?shows=none: 3615px = 5.48 screens, 5.31 without the note (top 1364, shows 577, about 450, join 594, footer 568)
+  index.html?header=scrim: 3888px = 5.89 screens, 5.72 without the note (top 1312, shows 903, about 450, join 594, footer 568)
 V2-2: the Spotify player, px from the top of the page (phone bar top = height - 62)
   390x660: player top 556, 42px of it on the first screen above the bar; release cover top 1051
   390x844: player top 556, 226px of it on the first screen above the bar; release cover top 1051
@@ -27,9 +27,9 @@ V2-6: phrase sizes in the 5 : 7 split (font-size px; FEAR as two fitted lines wo
   1280: {"column":486,"RISE":218,"LIVE":108,"PUSH_PAST_FEAR_one_line":82,"FEAR_if_two_lines":274,"THE_TIME":145,"IS_NOW":176}
   1440: {"column":552,"RISE":245,"LIVE":122,"PUSH_PAST_FEAR_one_line":93,"FEAR_if_two_lines":311,"THE_TIME":165,"IS_NOW":200}
 V2-7: the swipe row at 390 / 320 (scrolls inside itself, the page never scrolls sideways) and the 900px+ grid
-  320: {"page":320,"row":[280,721],"overflowX":"auto","cards":[[20,230,177],[266,230,177],[511,230,177]]}
-  390: {"page":390,"row":[349,890],"overflowX":"auto","cards":[[21,286,209],[323,286,209],[625,286,209]]}
-  1280: {"page":1280,"row":[681,681],"overflowX":"visible","cards":[[561,443,361],[1020,222,173],[1020,222,173]]}
+  320: {"page":320,"row":[280,721],"overflowX":"auto","cards":[[20,230,219],[266,230,219],[511,230,219]]}
+  390: {"page":390,"row":[349,890],"overflowX":"auto","cards":[[21,286,230],[323,286,230],[625,286,230]]}
+  1280: {"page":1280,"row":[681,681],"overflowX":"visible","cards":[[561,443,403],[1020,222,173],[1020,222,214]]}
 V2-8: contrast of the new pieces, three eras (text 4.5:1, display type 3:1)
   placeholder 390: lowest card Listen 5.71, card kicker 7.68, card artists 7.68; under the floor: none
   placeholder 1280: lowest card Listen 5.71, card kicker 7.68, card artists 7.68; under the floor: none

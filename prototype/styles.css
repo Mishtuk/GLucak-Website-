@@ -982,7 +982,7 @@ a, button, summary, label { -webkit-tap-highlight-color: transparent; }
 /* =====================================================================================================================
    18. v2 picks (owner, 2026-11-06: items 1-4 of the Desktop's /v2/ Home, plus the solid header). DESIGN.md section 18.
    Same selectors and values as the build's "v2 port" block in global.css (3ee444d), so the two can be diffed line by line.
-   Lines marked DELTA (and D1-D7 below) are not in the build yet: they are the port list in DESIGN 18h.
+   The DELTAS part at the end (D1, D2, D4, D7) is not in the build yet: they are the port list in DESIGN 18h.
    No new animation, no new colour role, no shadow: everything comes from the era tokens.
    ===================================================================================================================== */
 
@@ -1005,8 +1005,7 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
    no border, no shadow). Phones: the PLAYER comes first, so its top stays on the first phone screen; from 900px the cover
    row leads. */
 .v2-card { display: grid; gap: var(--space-s); padding: var(--space-s); background: var(--bg-2); border-radius: var(--radius-s); align-content: start; }
-/* DELTA D6 (boss F5): the source order is the phone order (player first), so the build's `@media (max-width: 899px) { .v2-card >
-   .rise-play { order: -1; } }` becomes this, and Tab follows the screen on phones. */
+/* Boss F5 (db72e35): the source order is the phone order (player first); from 900px the cover row leads. */
 @media (min-width: 900px) { .v2-card > .v2-rel { order: -1; } }
 .rise-play { display: grid; gap: var(--space-s); }
 .rise-play .under-player { margin-top: 0; }
@@ -1036,7 +1035,7 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 .v2-thumb { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--bg-2); border: 2px solid var(--line); }
 .v2-thumb .yt-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; } /* prototype only: the build's .yt-img rule */
 .v2-thumb .yt-play { top: 50%; width: 56px; height: 56px; }
-.v2-vtitle { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-weight: 700; font-size: var(--step--1); line-height: 1.3; }
+.v2-vtitle { font-weight: 700; font-size: var(--step--1); line-height: 1.3; } /* no clamp (boss F4, db72e35): titles are whole at every text size */
 .v2-tag { padding: 0 0.4rem; background: var(--text); color: var(--bg); }
 @media (hover: hover) { .v2-vid a:hover .v2-vtitle { text-decoration: underline; text-underline-offset: 3px; } }
 .v2-vid a:active .v2-thumb { border-color: var(--text); }
@@ -1084,7 +1083,7 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 /* The row's 48px calendar button pokes 4px below its 60px row at desktop widths; keep "All shows" clear of it. */
 @media (min-width: 900px) { .v2-main .shows + .text-link { margin-top: 4px; } }
 
-/* ---------- DELTAS (not in the build yet; DESIGN 18h; D6 sits with the card rules above) ---------- */
+/* ---------- DELTAS D1, D2, D4, D7 (not in the build yet; DESIGN 18h). The Now-line rule among them is built (db72e35). ---------- */
 /* D1, owner's pick 2 ("from 900px the latest big and two stacked"; the build has three across from 700px). 700-899px
    keeps three across (tablets: no phone bar, no side column). */
 @media (min-width: 900px) {
@@ -1109,27 +1108,20 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
   .band-push.v2-push > .wrap.v2-split { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: 'side bio' 'p1 bio' 'p1 act' 'p1 p2'; grid-template-rows: auto auto auto 1fr; row-gap: var(--space-l); }
   .v2-push .v2-slot { width: min(100%, 22rem); }
 }
-/* D3, text at 200% (1.4.4: no loss of content). A two-line clamp hides the rest of a long title, and at 200% on a phone the
-   82% cards are narrower than the words. Under 15rem (only reachable at 175%+ on a phone; 320 at 100% is 17.5rem) the row
-   stacks and the titles are whole; from 900px under 26rem (200% at 1280) the titles are whole. */
-.v2-videos { container-type: inline-size; }
-@container (width < 15rem) {
-  .v2-vrow { grid-auto-flow: row; grid-auto-columns: auto; overflow: visible; scroll-snap-type: none; }
-  .v2-vtitle { display: block; -webkit-line-clamp: none; overflow: visible; }
-}
-@media (min-width: 900px) { @container (width < 26rem) { .v2-vtitle { display: block; -webkit-line-clamp: none; overflow: visible; } } }
-/* D5, text at 200% on a phone (the boss's fix, v2-port-review.md): the Now line sat under the fixed phone bar on the first
+/* Now line at 200% on a phone (the boss's fix, built in db72e35): the Now line sat under the fixed phone bar on the first
    screen (390x660: 569-665, bar from 598) because the two hero buttons wrap to two full-width rows. They are the same two
    links as the bar's Listen and Shows, always on screen under 700px, so under 16rem of hero (only with enlarged text: 320
    at 100% is 17.5rem) they step aside. Nothing is lost; at 100% and from 700px nothing changes. */
 .hero-inner { container-type: inline-size; }
 @media (max-width: 699px) { @container (width < 16rem) { .hero-actions { display: none; } } }
-/* Credits (boss F1): each picture named by its source; the garage still only where it shows (from 900px). */
-.credit-wide { display: none; }
-@media (min-width: 900px) { .credit-wide { display: inline; } }
-/* D7, D39 after F1: the named credits take a third line at 390 (+24px). Paid back on phones only: Watch sits 1rem under
-   the shows (not 1.5rem), and PUSH PAST FEAR starts 1rem under its edge (like RISE) with 0.75rem between its rows. */
+/* D7, D39 after the named credits (a third line at 390, +24px) and the whole video titles (+29px): -44px. On phones Watch
+   sits 1rem under the shows (not 1.5rem), and PUSH PAST FEAR starts 1rem under its edge (like RISE) with 0.75rem rows. */
+/* After F4 (titles unclamped, +29px in the row) two more: inside the panel the quote takes the panel's own 0.75rem gap
+   (no margin of its own), and on phones the panel's bottom padding matches its top (0.5rem). */
+.v2-card > .quote { margin-top: 0; }
+.v2-card > .quote .quote-chip { top: calc(100% + 0.25rem); } /* prototype-only chip: below the quote, not over Listen */
 @media (max-width: 899px) {
+  .v2-card { padding-bottom: var(--space-xs); }
   .v2-videos { margin-top: var(--space-m); }
   .band-push.v2-push { padding-top: var(--space-m); }
   .band-push.v2-push > .wrap.v2-split { row-gap: var(--space-s); }
