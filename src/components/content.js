@@ -6,14 +6,26 @@ export { era };
 // Header look, one place: 'solid' = a solid dark band from the first paint (v2, follows D25); 'scrim' = the gradient scrim over the Home hero until you scroll.
 export const HEADER_STYLE = 'solid';
 // D21/D23: a "From Gabe" quote ships only after Gabe OKs it. Flip this when he does; until then no quote is in the page.
-export const QUOTES_APPROVED = false;
+export const QUOTES_APPROVED = false; // D39: Home is ~220px over the 5.8-screen cap with both quotes in: trim ~220px or re-rule the cap before flipping this.
 const QUOTES = {
   rise: { text: 'God will always be with you, and will never leave you in the valley. Trust me, I know.', url: 'https://www.instagram.com/p/Dd6keDDDefE/', credit: 'GLucak, Instagram, Sep 2026' },
   live: { text: 'Hope to see you there!', url: 'https://www.youtube.com/watch?v=zmhbfHppXNM', credit: 'GLucak, YouTube, Sep 2026' },
 };
 /** The band's quote, or null (nothing renders). */
 export const quote = (band) => (QUOTES_APPROVED ? QUOTES[band] ?? null : null);
-export const PHOTO_CREDITS = { kealey: 'Photo: Alexander Kealey.', mccc: 'Video: Montgomery County Community College, MSP program group.' };
+export const PHOTO_CREDITS = {
+  kealey: 'Photo: Alexander Kealey.', mccc: 'Video: Montgomery County Community College, MSP program group.',
+  joseph: 'Video still: Joseph Lucak.', // camera on Duck, Dodge, Jump, Fight only
+  yt: 'Video stills: GLucak on YouTube.', // Crooked Eye live stills: videographer unknown (asked Gabe, rights Q1)
+  identity: "IDENTITY art: from GLucak's Instagram.", // designer unknown (rights Q2)
+};
+// Image src -> the credit it needs. Pages list their credits by hand; test/credits.test.js scans each built page's images against this so they can't drift.
+export const CREDIT_FOR = [
+  [/\/media\/v2\/(belt|stage)-/, PHOTO_CREDITS.yt],
+  [/identity-art-/, PHOTO_CREDITS.identity],
+  [/\/media\/v2\/garage-|videos\/K-OZiNvQB14-/, PHOTO_CREDITS.joseph],
+  [/a-era-grade/, PHOTO_CREDITS.kealey],
+];
 export const SITE_URL = (import.meta.env.SITE_URL ?? 'https://glucak.com').replace(/\/$/, '');
 export const SPOTIFY_EMBED = 'https://open.spotify.com/embed/playlist/0D45boIc9xWAdDjz1uTDRo';
 export const SPOTIFY_PLAYLIST = 'https://open.spotify.com/playlist/0D45boIc9xWAdDjz1uTDRo';

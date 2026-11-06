@@ -11,9 +11,9 @@ const css = readFileSync(join(ROOT, 'src/styles/global.css'), 'utf8');
 test('release card: cover, Listen and the player in one panel; the player leads on phones (CSS order under 900px)', () => {
   const h = home();
   const card = h.slice(h.indexOf('class="v2-card"'));
-  assert.ok(card.indexOf('v2-cover') < card.indexOf('class="player"'), 'DOM: cover row first (desktop reading order)');
-  assert.ok(card.includes('>Listen<'));
-  assert.match(css, /@media \(max-width: 899px\) \{ \.v2-card > \.rise-play \{ order: -1; \} \}/);
+  assert.ok(card.indexOf('class="player"') < card.indexOf('v2-cover'), 'DOM: player first, so Tab reaches it before Listen on phones');
+  assert.ok(card.indexOf('class="player"') < card.indexOf('>Listen<'));
+  assert.match(css, /@media \(min-width: 900px\) \{ \.v2-card > \.v2-rel \{ order: -1; \} \}/);
 });
 
 test('video row: latest + 2 featured, local thumbnails that exist, facade kept, 3 across from 700px', () => {
@@ -32,7 +32,7 @@ test('Home: no image src repeats, and the credits cover the photos shown', () =>
   const h = home();
   const srcs = [...h.matchAll(/<img [^>]*?\bsrc="([^"]+)"/g)].map((m) => m[1]).filter((s) => !s.startsWith('data:') && !s.endsWith('.svg') && !/mark-identity/.test(s));
   assert.equal(new Set(srcs).size, srcs.length, `repeats: ${srcs.join(' ')}`);
-  assert.ok(h.includes('Photo: Alexander Kealey.') && h.includes('Video still: Joseph Lucak.'));
+  assert.ok(h.includes('Photo: Alexander Kealey.') && h.includes('Video still: Joseph Lucak.') && h.includes('Video stills: GLucak on YouTube.') && h.includes('IDENTITY art: from'));
   assert.ok(!h.includes('d-crowd'), 'the crowd photo is gone from Home');
 });
 
@@ -46,4 +46,23 @@ test('HEADER_STYLE: one switch in content.js, default solid, read by Base, with 
 test('phrase beside its content: 5 : 7 grid from 900px, phones stacked', () => {
   assert.match(css, /@media \(min-width: 900px\) \{\s*\.band > \.wrap\.v2-split \{ grid-template-columns: minmax\(0, 5fr\) minmax\(0, 7fr\)/);
   assert.match(css, /\.v2-split \{ display: grid; grid-template-columns: minmax\(0, 1fr\)/);
+});
+
+test('credits match the images each page shows; clamp gone; focusin handler; 200% Now-line rule', () => {
+  const content = readFileSync(join(ROOT, 'src/components/content.js'), 'utf8');
+  const CREDIT_FOR = [[/\/media\/v2\/(belt|stage)-/, 'Video stills: GLucak on YouTube.'], [/identity-art-/, 'IDENTITY art: from'], [/\/media\/v2\/garage-|videos\/K-OZiNvQB14-/, 'Video still: Joseph Lucak.'], [/a-era-grade/, 'Photo: Alexander Kealey.']];
+  assert.ok(content.includes('CREDIT_FOR'));
+  for (const page of ['index.html', 'shows/index.html', 'about/index.html', 'music/index.html']) {
+    const h = readFileSync(join(ROOT, 'dist', page), 'utf8');
+    const credits = h.match(/class="credits">([^<]*)</)?.[1] ?? '';
+    const srcs = [...h.matchAll(/src="([^"]+)"/g)].map((m) => m[1]);
+    for (const [re, c] of CREDIT_FOR) {
+      if (c.startsWith('Photo:')) continue; // Kealey art on /shows/ is injected at serve time, not in the static HTML
+      assert.equal(srcs.some((s) => re.test(s)), credits.includes(c), `${page}: ${c}`);
+    }
+  }
+  assert.ok(readFileSync(join(ROOT, 'dist/shows/index.html'), 'utf8').includes('Photo: Alexander Kealey.'));
+  assert.ok(!/line-clamp/.test(css.match(/\.v2-vtitle \{[^}]*\}/)[0]));
+  assert.match(readFileSync(join(ROOT, 'public/js/app.js'), 'utf8'), /focusin[^]*scrollIntoView\(\{ block: 'nearest', inline: 'nearest' \}\)/);
+  assert.match(css, /@media \(max-width: 699px\) \{ @container \(width < 16rem\) \{ \.hero-actions \{ display: none; \} \} \}/);
 });

@@ -18,7 +18,7 @@ const ld = JSON.stringify([
 
 const HERO = 'ab'; // D34: A (GLUCAK over the photo) under 900px, B (photo in the name, riso) from 900px up; 'a' / 'b' still work
 ---
-<Base title="GLucak" home hero={HERO} credits={[C.kealey, 'Video still: Joseph Lucak.', ...(HERO === 'b' ? [C.mccc] : [])]}>
+<Base title="GLucak" home hero={HERO} credits={[C.kealey, C.joseph, C.yt, C.identity, ...(HERO === 'b' ? [C.mccc] : [])]}>
   <script type="application/ld+json" slot="head" set:html={ld}></script>
   <div class="top">
     <div class="glow" aria-hidden="true"></div>

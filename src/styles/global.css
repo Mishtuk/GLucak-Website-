@@ -992,7 +992,7 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 /* (1) Release card: cover, title, Listen and the player in one panel. Panels allowed (2px corners), no shadow.
    Phones: the PLAYER comes first (owner pick), so its top stays on the first phone screen; from 900px the cover row leads. */
 .v2-card { display: grid; gap: var(--space-s); padding: var(--space-s); background: var(--bg-2); border-radius: var(--radius-s); align-content: start; }
-@media (max-width: 899px) { .v2-card > .rise-play { order: -1; } }
+@media (min-width: 900px) { .v2-card > .v2-rel { order: -1; } }
 .rise-play { display: grid; gap: var(--space-s); }
 .rise-play .under-player { margin-top: 0; }
 .v2-rel { display: grid; grid-template-columns: 36% minmax(0, 1fr); gap: var(--space-m); align-items: end; }
@@ -1019,7 +1019,7 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 .v2-vid iframe.yt { display: block; }
 .v2-thumb { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--bg-2); border: 2px solid var(--line); }
 .v2-thumb .yt-play { top: 50%; width: 56px; height: 56px; }
-.v2-vtitle { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-weight: 700; font-size: var(--step--1); line-height: 1.3; }
+.v2-vtitle { font-weight: 700; font-size: var(--step--1); line-height: 1.3; }
 .v2-tag { padding: 0 0.4rem; background: var(--text); color: var(--bg); }
 @media (hover: hover) { .v2-vid a:hover .v2-vtitle { text-decoration: underline; text-underline-offset: 3px; } }
 .v2-vid a:active .v2-thumb { border-color: var(--text); }
@@ -1066,3 +1066,7 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 @media (max-width: 899px) { .band-rise .v2-split { gap: 0; } .v2-card { padding-top: var(--space-xs); } }
 /* The row's 48px calendar button pokes 4px below its 60px row at desktop widths; keep "All shows" clear of it. */
 @media (min-width: 900px) { .v2-main .shows + .text-link { margin-top: 4px; } }
+
+/* Now line at 200% text on phones: the hero buttons wrap to two rows and push the Now line under the phone bar, which holds the same Listen / Shows. */
+.hero-inner { container-type: inline-size; }
+@media (max-width: 699px) { @container (width < 16rem) { .hero-actions { display: none; } } }

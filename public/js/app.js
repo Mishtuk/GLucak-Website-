@@ -91,6 +91,9 @@
     });
   });
 
+  /* Swipe row: a focused card scrolls fully into view (instant, no smooth motion) */
+  document.querySelectorAll('.v2-vrow').forEach((r) => r.addEventListener('focusin', (e) => e.target.closest('.v2-vid')?.scrollIntoView({ block: 'nearest', inline: 'nearest' })));
+
   const year = $('#year');
   if (year) year.textContent = String(new Date().getFullYear());
 })();

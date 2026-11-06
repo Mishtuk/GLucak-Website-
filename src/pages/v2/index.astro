@@ -15,7 +15,7 @@ const latest = latestVideo();
 const featured = videos.filter((v) => v.featured && /^[\w-]{11}$/.test(v.id ?? '') && v.id !== latest?.id)
   .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '')).slice(0, 2);
 const row = [latest, ...featured].filter(Boolean).map((v) => ({ ...v, href: `https://www.youtube.com/watch?v=${v.id}`, thumb: `/media/videos/${v.id}` }));
-const credits = [C.kealey, 'Video still: Joseph Lucak.'];
+const credits = [C.kealey, C.joseph];
 ---
 <Base title="GLucak (v2 preview)" home hero="ab" credits={credits}>
   <meta name="robots" content="noindex" slot="head" />

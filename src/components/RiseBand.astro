@@ -2,7 +2,7 @@
 import Quote from './Quote.astro';
 import { credit, dateLine, releases, SPOTIFY_EMBED, SPOTIFY_PLAYLIST } from './content.js';
 // Home (release): one panel with the cover, title, Listen and the player; a garage still beside it from 900px (v2 port).
-// Phones: the player comes first in the panel (CSS order), so the Spotify top stays on the first screen.
+// The player is first in the DOM (phones: first on screen, and Tab reaches it before Listen); from 900px CSS order puts the cover row first.
 // release={false} on /music/: the player alone (the crate's first released tile is that release); Rise is its h1 (release title drops to h2).
 const { h1 = false, release = true } = Astro.props;
 const H = h1 ? 'h1' : 'h2', T = h1 ? 'h2' : 'h3';
@@ -15,16 +15,6 @@ const r = releases()[0];
       {release && <img class="v2-photo v2-wide-only v2-land" src="/media/v2/garage-480.webp" srcset="/media/v2/garage-480.webp 480w, /media/v2/garage-874.webp 874w" sizes="40vw" width="874" height="492" alt="GLucak in a tire shop garage, from the Duck, Dodge, Jump, Fight video" loading="lazy" />}
     </div>
     <div class:list={[release && 'v2-card']}>
-      {release && <article class="v2-rel">
-        <img class="v2-cover" src={r.cover} alt={r.placeholder ? `Placeholder for the ${r.title} cover art` : `${r.title} cover art`} width="400" height="400" />
-        <div class="v2-rel-text">
-          <p class="v2-kicker">Latest {r.type ?? 'release'}{r.date && <> &middot; {dateLine(r.date)}</>}</p>
-          <T>{r.title}</T>
-          {credit(r) && <p class="credit">{credit(r)}</p>}
-          <a class="btn btn-solid" href={r.link} rel="noopener" aria-label={`Listen to ${r.title}`}>Listen</a>
-          {r.placeholder && <p class="ph-chip inline">Placeholder cover</p>}
-        </div>
-      </article>}
       <div class={release ? 'rise-play' : 'rise-player'}>
         <a class="skip skip-inline" href="#after-player">Skip the Spotify player</a>
         <div class="player-box">
@@ -38,6 +28,16 @@ const r = releases()[0];
             : <a class="under-link" href={r.link} rel="noopener" aria-label={`Listen everywhere: ${r.title}`}>Listen everywhere</a>}
         </p>
       </div>
+      {release && <article class="v2-rel">
+        <img class="v2-cover" src={r.cover} alt={r.placeholder ? `Placeholder for the ${r.title} cover art` : `${r.title} cover art`} width="400" height="400" />
+        <div class="v2-rel-text">
+          <p class="v2-kicker">Latest {r.type ?? 'release'}{r.date && <> &middot; {dateLine(r.date)}</>}</p>
+          <T>{r.title}</T>
+          {credit(r) && <p class="credit">{credit(r)}</p>}
+          <a class="btn btn-solid" href={r.link} rel="noopener" aria-label={`Listen to ${r.title}`}>Listen</a>
+          {r.placeholder && <p class="ph-chip inline">Placeholder cover</p>}
+        </div>
+      </article>}
       {release && <Quote band="rise" />}
     </div>
   </div>
