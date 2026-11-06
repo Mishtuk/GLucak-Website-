@@ -291,7 +291,7 @@ async function optD() {
 const FRAMES = [
   ['GABE', { left: 1150, top: 1450, width: 1500, height: 1000 }],
   ['CROSS', { left: 3200, top: 1100, width: 1500, height: 1000 }],
-  ['HANDS', { left: 1820, top: 2600, width: 1200, height: 800 }],
+  ['MIC', { left: 2050, top: 1750, width: 1050, height: 700 }],
   ['KIT', { left: 50, top: 2050, width: 1425, height: 950 }],
 ];
 function silver(img) { // neutral B&W print from this frame's own black and white points, a touch warm, gentle shoulder
@@ -378,14 +378,7 @@ async function optS() {
   const W = 2000, pad = 40, items = [], esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
   let y = 150;
   const row = (cells, h, title) => { let x = pad; if (title) items.push({ text: title, x, y: y - 14, size: 22, colour: '#9a9a9a' }); for (const c of cells) { items.push({ ...c, x, y, h }); x += c.w + 30; } y += h + 120; };
-  // The site's duotone is a CSS SVG filter over a full-colour web copy, so rebuild it here (DESIGN 3): grayscale, then
-  // a two-stop table from bg to the peak = bg mixed toward accent, stopping at the last mix with 4:1 against text.
-  let t = 0; while (t < 1 && contrast(mix(BG, ACCENT, t + 0.01), TEXT) >= 4) t += 0.01;
-  const peak = mix(BG, ACCENT, t), cur = await load(ROOT + 'prototype/assets/live-kealey-1600.webp', null, 1600, 1067);
-  for (let p = 0; p < cur.d.length; p += 3) { const g = lum(cur.d[p], cur.d[p + 1], cur.d[p + 2]); for (let c = 0; c < 3; c++) cur.d[p + c] = BG[c] + (peak[c] - BG[c]) * g; }
-  const curFile = T + '_current-duotone.png'; { const b = Buffer.alloc(cur.d.length); for (let i = 0; i < b.length; i++) b[i] = clamp(cur.d[i]) * 255; await sharp(b, { raw: { width: 1600, height: 1067, channels: 3 } }).png().toFile(curFile); }
-  row([{ file: curFile, w: 800, label: 'NOW', name: 'Plain duotone (current site, rebuilt)', slot: 'Hero A today, for comparison' },
-       { file: T + 'a-era-grade-1600.webp', w: 800, label: 'A', name: 'Era grade, printed down for text', slot: 'Hero A (desktop 1600/800)' },
+  row([{ file: T + 'a-era-grade-1600.webp', w: 800, label: 'A', name: 'Era grade, printed down for text', slot: 'Hero A (desktop 1600/800)' },
        { file: T + 'a-era-grade-phone-800.webp', w: 320, label: 'A', name: 'Phone crop', slot: 'Hero A under 700px' }], 533, 'PLACEHOLDER ERA (bg #111, accent #ff4d2e). Every colour below comes from the era file.');
   row([{ file: T + 'b-riso-1000.webp', w: 755, label: 'B', name: 'Two-colour riso, off-register', slot: 'Hero B slot (G[photo]LUCAK)' },
        { file: T + 'c-poster-600.webp', w: 427, label: 'C', name: 'Gig-poster cut, torn edge', slot: 'Live It Loud poster', paper: true },
@@ -407,7 +400,6 @@ async function optS() {
   }
   svg += '</svg>';
   await sharp({ create: { width: W, height: H, channels: 3, background: '#161616' } }).composite([{ input: Buffer.from(svg), left: 0, top: 0 }, ...comps]).png({ palette: true, quality: 95, colours: 256, effort: 10 }).toFile(T + 'sheet.png');
-  rmSync(curFile);
   console.log(`  sheet.png ${W}x${H}, ${Math.round(statSync(T + 'sheet.png').size / 1024)} KB`);
 }
 

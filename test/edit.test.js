@@ -106,7 +106,8 @@ test('injection: <script> and SQL text are stored as plain text and rendered esc
   assert.equal(stored.venue, '<script>alert(1)</script>');
   assert.equal(stored.city, "' OR 1=1 --");
   const html = await page();
-  assert.ok(!html.includes('<script>') && !html.includes('<img'), 'no live markup');
+  assert.ok(!html.includes('<script>') && !html.includes('<img src=x'), 'no live markup');
+  assert.ok(html.includes('&lt;img src=x onerror=alert(1)&gt;'), 'the with-line payload is shown escaped');
   assert.ok(html.includes('&lt;script&gt;alert(1)&lt;/script&gt;') && html.includes('&#39; OR 1=1 --') && html.includes('&quot;&gt;&lt;img'));
   const api = await (await fetch(`${base}/edit/api/shows`, { headers: { cookie } })).json();
   assert.equal(api.shows[0].city, "' OR 1=1 --", 'the editor gets the exact text back');

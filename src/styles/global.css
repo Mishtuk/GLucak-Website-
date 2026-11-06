@@ -218,8 +218,6 @@ html[data-home][data-motion] .site-header:not(.is-solid):not(:has(details[open])
 /* Phones: the portrait crop, pinned to its top so his face stays in the strip above the name. From 700px: the whole
    frame, his face falls in the gap between G and L (the gap and the photo both scale with the width, so it holds). */
 .hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; } /* (a) is pre-cropped on Gabe (D34) */
-/* Hero A on phones: 24px more open strip above the name for his face (player stays at 80px+ above the bar). */
-@media (max-width: 699px) { html[data-hero='a'] .hero-inner, html[data-hero='ab'] .hero-inner { padding-top: calc(var(--header-h) + 1.75rem); } }
 /* Scrim: only where small text sits. Top right for Menu / the nav (4.5:1), the bottom ramp for the Now line. The rest of
    the photo stays at full duotone strength, so his face above the name isn't dimmed (the ceiling already keeps the name
    and slogan at 3:1 or better). */
@@ -229,6 +227,33 @@ html[data-home][data-motion] .site-header:not(.is-solid):not(:has(details[open])
     radial-gradient(ellipse 62% 130px at 100% 0, color-mix(in srgb, var(--bg) 55%, transparent), transparent),
     linear-gradient(to bottom, transparent 42%, color-mix(in srgb, var(--bg) 80%, transparent) 70%, var(--bg));
 }
+/* Hero A under 900px (D34; tuned 2026-11-05 so his face is seen, not hidden behind GLUCAK).
+   --strip: the open strip above the name, header included. Phones: header + 1.75rem = 88px (the player keeps 80px+ above
+   the bar). 700-899px (tablets, no bar): header + 11vw, because the name grows with the width and his head with it.
+   The photo is (a)'s portrait file (800x1000, his glasses at y 335 = 41.875% of its width), pinned by width and lifted:
+   margin-top in % is a share of the width, so his eyes land 2.625rem above the strip's end at every width. Hair, glasses
+   and eyes show in the strip; mouth and mic meet the top of the letters. The photo then ends above the hero's bottom; the
+   mask fades its last 22% into bg, under the bottom ramp. */
+@media (max-width: 899px) {
+  :root { --strip: calc(var(--header-h) + 1.75rem); }
+  html:not([data-hero='b']) .hero-inner { padding-top: var(--strip); }
+  .hero-photo img {
+    position: absolute; left: 0; top: 0; height: auto; margin-top: calc(var(--strip) - 2.625rem - 41.875%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent); mask-image: linear-gradient(to bottom, #000 78%, transparent);
+  }
+  /* Lifting the photo puts his white shirt and the cross behind the name (3.07:1 with no veil at 390, too close to 3). A
+     light veil starts 1rem above the strip's end (under his eyes) and holds bg at 30% from 0.5rem below it, behind name
+     and slogan. A small top-left ellipse keeps the hidden brand area at 3.9:1 (no-JS shows the brand there). His face
+     stays clear. */
+  .hero-photo::after {
+    background:
+      radial-gradient(ellipse 62% 130px at 100% 0, color-mix(in srgb, var(--bg) 55%, transparent), transparent),
+      radial-gradient(ellipse 40% 110px at 0 0, color-mix(in srgb, var(--bg) 45%, transparent), transparent),
+      linear-gradient(to bottom, transparent calc(var(--strip) - 1.5rem), color-mix(in srgb, var(--bg) 30%, transparent) calc(var(--strip) + 2.5rem)),
+      linear-gradient(to bottom, transparent 42%, color-mix(in srgb, var(--bg) 80%, transparent) 70%, var(--bg));
+  }
+}
+@media (min-width: 700px) and (max-width: 899px) { :root { --strip: calc(var(--header-h) + 11vw); } }
 img.duo { filter: url('#duo'); }
 
 .name { container-type: inline-size; font-weight: 400; }
@@ -330,15 +355,36 @@ html[data-shows='none'] .quote-live { display: none; }
 /* ---------- Live It Loud ---------- */
 .band-live { padding-top: var(--space-l); }
 .shows-grid { display: grid; gap: var(--space-s); margin-top: var(--space-l); }
+.shows { container-type: inline-size; }
+/* Poster with art (treatment (c), the gig-poster cut). Phones: the fitted date across the top as before, then place, time
+   and Tickets on the left and the art on the right, a square bled to the card's right and bottom edges, so the torn edge
+   is the poster's foot. Costs 114px at 390 over the text-only poster (a full-width art band cost 360). */
 .poster {
-  position: relative; display: grid; grid-template-columns: 1fr auto; gap: 0 var(--space-m); align-items: end;
+  position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 55%; gap: 0 var(--space-m);
+  grid-template-rows: auto auto auto 1fr; grid-template-areas: 'date date' 'place art' 'meta art' 'btn art'; align-items: start;
   padding: var(--space-m); background: var(--text); color: var(--bg); background-image: var(--texture);
 }
-.poster-date { grid-column: 1 / -1; margin-bottom: var(--space-s); }
+/* `darken` lets the art's paper (#f5f5f5) take the card's paper and grain in every era, so only ink and tear show.
+   Framed from just above his head to just under the tear (source rows ~95-695 of 750). Halftone: never shown under ~0.6x
+   of its file on a 2x+ screen, so `sizes` in app.js matches the slot. */
+.poster picture { display: contents; }
+.poster-art {
+  grid-area: art; align-self: end; width: calc(100% + var(--space-m)); max-width: none; aspect-ratio: 1; height: auto;
+  margin: 0 calc(-1 * var(--space-m)) calc(-1 * var(--space-m)) 0;
+  object-fit: cover; object-position: 50% 63%; mix-blend-mode: darken;
+}
+.poster-date { grid-area: date; margin-bottom: var(--space-s); }
 .ln-date { font-size: calc(100cqi / var(--w-date)); }
-.poster-place { grid-column: 1; font-weight: 800; font-size: var(--step-1); line-height: 1.2; }
-.poster-meta { grid-column: 1; font-size: var(--step--1); }
-.poster .btn-show { grid-column: 2; grid-row: 2 / 4; background: var(--accent); color: var(--accent-text); border-color: var(--bg); }
+.poster-place { grid-area: place; font-weight: 800; font-size: var(--step-1); line-height: 1.2; }
+.poster-meta { grid-area: meta; font-size: var(--step--1); }
+.poster .btn-show { grid-area: btn; justify-self: start; align-self: end; margin-top: var(--space-s); background: var(--accent); color: var(--accent-text); border-color: var(--bg); }
+/* Card 37rem and up (the text keeps 13rem): the art is a 23rem square bled to the top, right and bottom; the date moves
+   into the left column above place, time and Tickets. */
+@container (min-width: 37rem) {
+  .poster { grid-template-columns: minmax(0, 1fr) 23rem; grid-template-rows: auto 1fr auto auto; grid-template-areas: 'date art' 'place art' 'meta art' 'btn art'; }
+  .poster-art { margin-top: calc(-1 * var(--space-m)); }
+  .poster-place { align-self: end; }
+}
 .ph-chip-dark { top: -0.85rem; bottom: auto; }
 .row {
   display: grid; grid-template-columns: 4.5rem 1fr auto; gap: 0 var(--space-s); align-items: center;
@@ -375,7 +421,8 @@ html[data-shows='none'] .quote-live { display: none; }
 /* No overflow clipping here: the About tab stands above this box on the band's edge (it was clipped before 2026-11-05).
    The photo is inset: 0 with object-fit, so nothing else can spill. */
 .push-head { position: relative; }
-.push-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; } /* (d) crowd panorama, child out of frame */
+.push-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 8% 50%; } /* (d) crowd, child out of frame */
+@media (min-width: 753px) { .push-photo { object-position: 50% 50%; } }
 .push-head::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 30%, transparent), color-mix(in srgb, var(--bg) 12%, transparent) 40%, color-mix(in srgb, var(--bg) 62%, transparent)); }
 .push-title { position: static; padding-block: 1.75rem 1.25rem; }
 .push-title .phrase { position: relative; z-index: 2; }
@@ -407,9 +454,10 @@ html[data-shows='none'] .quote-live { display: none; }
 .identity-when .text-link { min-height: 48px; }
 .identity-state .btn { margin-top: 0.25rem; }
 
-/* Photo credits for this page (CREDITS.md wording). The MCCC still appears only in hero B. */
+/* Photo credits for this page (CREDITS.md wording). The MCCC still appears only in hero B under 900px. */
 .credits { margin-top: var(--space-xs); color: var(--muted); font-size: var(--step--1); }
 html:not([data-hero='b']) .credit-b { display: none; }
+@media (min-width: 900px) { .credit-b { display: none; } }
 
 /* ---------- Footer ---------- */
 .site-footer { position: relative; z-index: 2; border-top: 4px solid var(--text); padding-block: var(--space-l); background: var(--bg-2); background-image: var(--texture); }
@@ -462,7 +510,6 @@ html:not([data-hero='b']) .credit-b { display: none; }
   .phrase-rise { font-size: clamp(8rem, 17vw, 20rem); }
   .cover { width: 160px; height: 160px; }
 
-  .shows-grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--space-xl); align-items: start; }
   .push-title { padding-block: 5rem 2rem; }
   .lock-push .ln { display: inline; font-size: calc(100cqi / var(--w-push)); margin: 0; }
   .ln-push1::after { content: '\00a0'; }
@@ -474,6 +521,10 @@ html:not([data-hero='b']) .credit-b { display: none; }
   .now-grid { margin-top: 0; gap: var(--space-l); }
   .socials { justify-content: space-between; }
   .shows-grid { gap: var(--space-xl); }
+}
+/* Shows beside the video only from 72rem: below that the poster art would not fit beside its text. */
+@media (min-width: 72rem) {
+  .shows-grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: start; }
 }
 
 /* ---------- Added in the port ---------- */

@@ -111,3 +111,12 @@ test('Now line: next show within 14 days, else empty so the release line stays; 
   const bad = nowHtml([row({ date: '2026-12-04', venue: '<script>x</script>', city: "' OR 1=1 --" })], now);
   assert.ok(!bad.includes('<script>') && bad.includes('&lt;script&gt;'));
 });
+
+test('poster art: only the poster li has it, rows never', async () => {
+  
+  const mk = (d, venue) => ({ date: d, type: 'show', venue, city: 'X' });
+  const out = showsHtml([mk('2030-01-01', 'A'), mk('2030-01-02', 'B'), mk('2030-01-03', 'C')], new Date('2029-12-01T12:00:00Z'));
+  assert.equal(out.split('poster-art').length - 1, 1);
+  assert.match(out, /<li class="poster"><picture><img class="poster-art graded"/);
+  assert.ok(!/<li class="row">[^]*?poster-art[^]*?<\/li>/.test(out.replace(/<li class="poster">[^]*?<\/li>/, '')));
+});

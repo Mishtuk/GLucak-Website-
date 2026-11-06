@@ -133,12 +133,14 @@ test('Spotify box keeps the loading / blocked note under the iframe; no era-word
   assert.ok(!html('/music/').includes('Era word:'));
 });
 
-test('privacy (D34): the whole-frame crowd photo (with the child) is not used anywhere; credits list only photos shown', () => {
+test('privacy (D34/D39): no whole-frame crowd photo or Paslier/live-mccc file is used; no Paslier credit; contact strip files exist', () => {
   for (const p of Object.keys(pages)) {
-    assert.ok(!/live-kealey-(800|1600|phone)/.test(html(p)), `${p}: whole-frame Kealey photo`);
-    assert.ok(!html(p).includes('live-paslier') || html(p).includes('Sylvain Paslier'), `${p}: Paslier shown without credit`);
+    assert.ok(!/live-kealey|live-mccc-478|live-paslier/.test(html(p)), `${p}: removed photo referenced`);
+    assert.ok(!html(p).includes('Paslier'), `${p}: Paslier credit`);
   }
-  assert.ok(!html('/').includes('Sylvain Paslier') && !html('/about/').includes('Sylvain Paslier'), 'credit for a photo not shown');
+  for (const f of ['e-contact-1600', 'e-contact-phone-800']) assert.ok(existsSync(join(import.meta.dirname, `../docs/review/photo-treatments/${f}.webp`)), f);
+  for (const f of ['c-poster-600', 'c-poster-1000', 'f-mccc-240', 'f-mccc-478']) assert.ok(existsSync(join(DIST, `media/${f}.webp`)), f);
+  assert.ok(!readdirSync(join(DIST, 'media')).some((f) => /live-kealey|live-mccc-478/.test(f)));
 });
 
 test('shop: /shop/ has the marker; every page carries the empty Shop markers and no Shop link in the static build', () => {
