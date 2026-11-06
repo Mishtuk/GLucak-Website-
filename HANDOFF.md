@@ -136,7 +136,8 @@ Later (not before the owner says go): DESIGN.md -> Astro scaffold from Riverside
   answered and dropped: playlist, logos, photos (`assets/from-gabe/`); IDENTITY date (Aug 13, 2027, his own post). Merged
   from CONTEXT.md, home.md, social-content.md, round2.md, round2-boss.md, shop / admin copy and D49. Paste a group at a time.
   *Launch blockers (send first)*
-  1. **[LAUNCH]** What email should fans and venues use to book you?
+  1. ~~What email should fans and venues use to book you?~~ Settled by the owner: a glucak.com address forwarding to his
+     Gmail (CONTEXT.md). Booking chips stay placeholders until the domain exists.
   2. **[LAUNCH]** What is your current show list? For each: date, venue, city, ticket or details link, and is it a show or an open mic?
   3. **[LAUNCH]** Is Riverside (Horsham) on Jan 16 confirmed, and is it ticketed or free?
   4. **[LAUNCH]** Which of your logos did you make, and which did Dave Bahm make? (The credits need it.)

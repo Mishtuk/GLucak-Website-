@@ -96,6 +96,10 @@ there with `Laptop:`. The client's own email is in `README.md`; this file adds t
 7. More in-depth research on website design and modern templates as references; flesh the site out overall.
 8. A from-scratch website ONLY if it would be absolutely beneficial; if made, cross-compare the two. Don't overinvest.
 
+- **Booking / contact email (owner, 2026-11-06):** the owner creates an address on Gabe's domain (glucak.com) that
+  forwards to Gabe's current Gmail, unless Gabe says otherwise. That address is the site's booking email ("Request a
+  show", Shows and About). Don't ask Gabe for a booking email. (His Gmail address is not written in this public repo.)
+
 ## Working together (Desktop and Laptop)
 - **Board:** issue #1 "Coordination board: Desktop and Laptop". Every comment starts with `Desktop:` or `Laptop:`
   (both machines post as Mishtuk; the prefix tells them apart).
