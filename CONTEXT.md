@@ -77,6 +77,9 @@ there with `Laptop:`. The client's own email is in `README.md`; this file adds t
 - **Store now:** a temporary store with template products, plus work on the **admin console**. Then more visual work.
 - Tell the Laptop what it works on and what the Desktop works on: **distribute evenly**.
 
+- **While the Laptop works (2026-11-06):** keep researching website design and the art for the music: how to design
+  the website and the art better. (Desktop research round 2: `docs/research/design-round-2.md`, `art-system.md`.)
+
 ## Working together (Desktop and Laptop)
 - **Board:** issue #1 "Coordination board: Desktop and Laptop". Every comment starts with `Desktop:` or `Laptop:`
   (both machines post as Mishtuk; the prefix tells them apart).
