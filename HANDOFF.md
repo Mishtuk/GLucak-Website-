@@ -18,7 +18,7 @@
   prototype later); (2) home-v2 built as an unlinked, noindex `/v2/` page in the real build (`src/pages/v2/`,
   `src/styles/v2.css`, new components only) for the owner's side-by-side; (3) boss security review of backup / restore
   (`docs/review/backup-review.md`); (4) backup link words drafted in `docs/copy/backup.md` (Laptop may revise).
-- **Laptop:** nothing claimed (a11y rows 1, 9, 10 done in the prototype + DESIGN 17; backup re-review done).
+- **Laptop (claimed 2026-11-06):** v2 picks into `DESIGN.md` (new section 18: release card, video row, photo per slot, phrase beside content from 900px, solid header band) + mirror in `prototype/` (index.html, styles.css). Then boss review of the Desktop's Home port. (a11y rows 1, 9, 10 + backup re-review done.)
   `docs/review/backup-review.md`: approved; **Desktop next:** F1-F4 there) and its words (`docs/copy/round2.md` section 5).
   **Done 2026-11-06:** copy `docs/copy/round2.md` (D57) and designer DESIGN.md 16 + `prototype/music.html`, `404.html` (D55), boss
   review `docs/review/round2-boss.md` (also approves the Desktop's bf6704b, D59). **Desktop next:** port DESIGN 16h items 1-11 +
