@@ -1094,3 +1094,6 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 }
 /* D1 on /shows/ from 72rem: its row is the swipe row again, so the first card does not span two rows. */
 @media (min-width: 72rem) { .shows-grid .v2-vid:first-child { grid-row: auto; } }
+/* Closed Menu sheet: not laid out at all (Chrome lays out closed <details> content unpainted; testing tools then report
+   phantom overlaps with the hero). From the Laptop's 18h review. */
+.nav-mobile:not([open]) > .sheet { display: none; }
