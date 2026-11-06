@@ -160,3 +160,9 @@ words and ends on the action, so no copy change. The slogan sits below it as fix
 Later, not needed for launch:
 8. Can we show the IDENTITY tracklist you posted on Oct 24? If so, please check the spelling of every title.
 9. Patreon: what is it for, and do you want a short line next to the link?
+
+Before the shop opens (the shop stays hidden until you say so, so none of this blocks launch):
+10. What will you sell, and when do you want the shop open? (Shirts, hoodies, stickers, CD, vinyl: which are real? We list only real ones, with your prices.)
+11. Will there be an IDENTITY CD or vinyl? If yes, who makes them, and will you pack and post them yourself? (We couldn't confirm that Fourthwall allows CDs and vinyl.)
+12. Do you already sell on Bandcamp or another store? If not, can we set up Fourthwall's free plan in your name?
+13. Once real merch is in, do you want a short line in your own words on the shop page? We use only a whole sentence you wrote, word for word, with credit.

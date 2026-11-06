@@ -106,6 +106,13 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   passing a guess off as Gabe's colours. The cover-derived player colour follows his playlist cover, not the era, and
   clashed (maroon on violet); dark grey fits every era's dark `bg`. B works in any palette because no text sits over
   the photo; A flattens in cool colours under the brightness cap.
+- **D37** (2026-11-05, Laptop boss): Shop and admin copy (L3, `docs/copy/shop.md`, `admin.md`). **Ruling:** sample
+  products show no price. The sample banner shows only when every product is a sample. The buying note ("You pay on
+  the store's own page. We never see your card details.") sits only under a Buy button. While `SHOP_ENABLED` is off, a
+  products save says the shop isn't open to fans yet (the server picks the message). On a 409 the message says that
+  reloading clears your changes; copy only, no merge, no saved draft, no "save mine anyway". **Why:** D36 says samples
+  must be obvious and a price reads as real; every message has to be true for Gabe; two editors rarely collide, and
+  overwriting the other save is what the version check prevents.
 - **D34** (2026-11-05, Desktop, owner delegated the call): Which hero? **Ruling:** both, by width: **A** (GLUCAK over
   the full photo) on phones and small screens, **B** (G[photo]LUCAK) from 900px up. A uses photo treatment (a) era grade,
   B uses (b) riso (or (f) MCCC still where B's slot is small). **Why:** both boss reviews found A stronger on phones and B
