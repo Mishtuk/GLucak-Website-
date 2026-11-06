@@ -19,14 +19,15 @@ export const GO = 'https://wingsmusic.lnk.to/370407-Go';
 export const SOUNDCLOUD = 'https://soundcloud.com/glucak';
 export const PATREON = 'https://patreon.com/GLucakMusic';
 export const YOUTUBE = 'https://www.youtube.com/channel/UCha7GtkOI9A0dzbTG3igbLg';
+// id = the icon symbol (Icons.astro). Order is the footer's (DESIGN 16b).
 export const SOCIALS = [
-  ['Instagram', 'https://www.instagram.com/glucakofficial/'],
-  ['Threads', 'https://www.threads.com/@glucakofficial'],
-  ['X', 'https://x.com/GLucakOfficial'],
-  ['YouTube', YOUTUBE],
-  ['SoundCloud', SOUNDCLOUD],
-  ['Spotify', 'https://open.spotify.com/artist/1SxMTO4oSXDbNSNzxx7cVX'],
-  ['Patreon', PATREON],
+  { id: 'instagram', name: 'Instagram', href: 'https://www.instagram.com/glucakofficial/' },
+  { id: 'threads', name: 'Threads', href: 'https://www.threads.com/@glucakofficial' },
+  { id: 'x', name: 'X', href: 'https://x.com/GLucakOfficial' },
+  { id: 'youtube', name: 'YouTube', href: YOUTUBE },
+  { id: 'spotify', name: 'Spotify', href: 'https://open.spotify.com/artist/1SxMTO4oSXDbNSNzxx7cVX' },
+  { id: 'soundcloud', name: 'SoundCloud', href: SOUNDCLOUD },
+  { id: 'patreon', name: 'Patreon', href: PATREON },
 ];
 
 // import.meta.glob survives bundling (a URL relative to this file doesn't once Astro bundles it). Missing file = null.
@@ -62,6 +63,12 @@ export function latestVideo() {
     return { ...v, id };
   }).filter((v) => /^[\w-]{11}$/.test(v.id ?? ''));
   return rows.length ? newest(rows)[0] : null;
+}
+
+/** Every release for the Music crate (DESIGN 16a): valid rows minus IDENTITY (its own block), newest date first, undated last. `coming` = after the New York day. */
+export function crate() {
+  const today = etDay();
+  return newest((load('releases') ?? []).filter((r) => r?.title && http(r.link) && r.title !== 'IDENTITY')).map((r) => ({ ...r, coming: Boolean(r.date) && r.date > today }));
 }
 
 /** Announced releases not out yet, soonest first (from his own posts, see docs/research/social-content.md). */

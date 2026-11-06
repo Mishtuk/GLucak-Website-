@@ -1,45 +1,35 @@
 ---
 import Base from '../../layouts/Base.astro';
 import RiseBand from '../../components/RiseBand.astro';
-import { releases, upcoming, era, SOUNDCLOUD, identity, dateLine, credit, TYPE_TAG } from '../../components/content.js';
+import { crate, era, SOUNDCLOUD, identity, dateLine, credit, TYPE_TAG } from '../../components/content.js';
 const idn = identity();
-const all = releases();
-const soon = upcoming().filter((r) => r.title !== 'IDENTITY'); // IDENTITY has its own block below
+const tiles = crate(); // all releases but IDENTITY (its own block below), newest first
+const shortDate = (d) => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 ---
 <Base image="music" title="Music | GLucak" current="music" description="Listen to GLucak: the playlist, every release, and IDENTITY.">
-  <RiseBand h1 />
-  <section class="band" aria-labelledby="h-releases">
+  <RiseBand h1 release={false} />
+  <section class="band releases-band" id="releases" aria-labelledby="h-releases">
     <div class="wrap">
       <h2 id="h-releases" class="prose-h">All releases</h2>
-      {soon.length > 0 && (
-        <ul class="releases coming">
-          {soon.map((r) => (
-            <li class="release-row">
-              <p class="release-meta">{TYPE_TAG[r.type] ?? ''} &middot; Out {dateLine(r.date)}</p>
-              <h3>{r.title}</h3>
-              {credit(r) && <p class="credit">{credit(r)}</p>}
-              <p class="listen-on"><a href={r.link} rel="noopener" aria-label={`Pre-save ${r.title}`}>Pre-save</a></p>
+      {tiles.length > 0 && (
+        <ul class="crate">
+          {tiles.map((r) => (
+            <li class="tile" data-state={r.coming ? 'coming' : undefined}>
+              <a class="tile-link" href={r.link} rel="noopener">
+                {r.cover
+                  ? <img class="tile-art" src={r.cover} alt="" width="300" height="300" loading="lazy" />
+                  : <span class="tile-art tile-art-none" aria-hidden="true">{r.coming && <span class="tile-when">{shortDate(r.date)}</span>}</span>}
+                <span class="tile-text">
+                  <h3 class="tile-title">{r.title}</h3>
+                  {credit(r) && <span class="tile-artists">{credit(r)}</span>}
+                  <span class="tile-meta">{TYPE_TAG[r.type] && r.type !== 'single' && <span class="tile-tag">{TYPE_TAG[r.type]}</span>}{r.coming ? `Out ${dateLine(r.date)}` : dateLine(r.date)}</span>
+                  <span class="tile-go">{r.coming ? 'Pre-save' : 'Listen'}</span>
+                </span>
+              </a>
             </li>
           ))}
         </ul>
       )}
-      <ul class="releases">
-        {all.map((r) => (
-          <li class="release">
-            <img class="cover" src={r.cover} alt={r.placeholder ? `Placeholder for the ${r.title} cover art` : `${r.title} cover art`} width="400" height="400" loading="lazy" />
-            <div class="release-text">
-              {(TYPE_TAG[r.type] || r.date) && <p class="release-meta">{[TYPE_TAG[r.type], dateLine(r.date)].filter(Boolean).join(' · ')}</p>}
-              <h3>{r.title}</h3>
-              {credit(r) && <p class="credit">{credit(r)}</p>}
-              <p class="listen-on">
-                <a href={r.link} rel="noopener" aria-label={`Listen to ${r.title}`}>Listen</a>
-                {r.soundcloud && <a href={r.soundcloud} rel="noopener" aria-label={`${r.title} on SoundCloud`}>SoundCloud</a>}
-              </p>
-              {r.placeholder && <p class="ph-chip inline">Placeholder cover</p>}
-            </div>
-          </li>
-        ))}
-      </ul>
       {idn.date ? (
           <div class="identity-state">
             {era.mark && <img class="mark mark-identity" src={era.mark} alt="" width="300" height="96" loading="lazy" />}<p class="identity identity-lg">IDENTITY</p>

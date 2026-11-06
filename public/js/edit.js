@@ -135,6 +135,7 @@
   const STATUSES = [['coming-soon', 'Coming soon'], ['available', 'Available (shows Buy once it has a Link)'], ['sold-out', 'Sold out'], ['sample', 'Sample (shows Coming soon, no price)']];
   const SHORT = { 'coming-soon': 'Coming soon', available: 'Available', 'sold-out': 'Sold out', sample: 'Sample' };
   let uploads = 0; // photo uploads on their way
+  let waitMsg = false; // Save was pressed during an upload, so the Products message says to wait; cleared when the upload ends
   const IMAGE = /^\/media\/(?:shop\/[a-z0-9]+(?:-[a-z0-9]+)*\.(?:webp|png|jpg)|uploads\/[a-f0-9]{32}\.webp)$/; // same rule as the server
   const UPLOADABLE = ['image/jpeg', 'image/png', 'image/webp'];
   const slug = (s) => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60).replace(/-+$/, '');
@@ -181,7 +182,7 @@
       say(upMsg, 'Uploading…', 'busy');
       uploads++;
       let r;
-      try { r = await upload(f); } finally { uploads--; }
+      try { r = await upload(f); } finally { uploads--; if (!uploads && waitMsg) { waitMsg = false; say(T.products.msg, ''); } }
       file.value = '';
       if (!r.path) return say(upMsg, r.message, 'error');
       image.value = r.path;
@@ -339,7 +340,7 @@
   async function save(kind) {
     if (saving[kind]) return; // no second save while one is on its way
     const t = T[kind], list = rows(kind), btn = $(kind === 'shows' ? 'save' : 'p-save'), add = $(kind === 'shows' ? 'add' : 'p-add');
-    if (kind === 'products' && uploads) return say(t.msg, 'Uploading…', 'busy'); // an upload would land in a row the reply rebuilds
+    if (kind === 'products' && uploads) { waitMsg = true; return say(t.msg, 'Wait for the photo to finish uploading, then press Save.', 'busy'); } // an upload would land in a row the reply rebuilds
     for (const r of list) { say(r.err, ''); r.classList.remove('bad'); }
     saving[kind] = true;
     btn.setAttribute('aria-disabled', 'true');

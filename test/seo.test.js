@@ -49,7 +49,7 @@ test('home MusicGroup + WebSite JSON-LD parses; sameAs is SOCIALS', () => {
   assert.equal(m.length, 1);
   const [group, site] = JSON.parse(m[0][1]);
   assert.equal(group['@type'], 'MusicGroup');
-  const socials = [...html('/').match(/<ul class="socials">[\s\S]*?<\/ul>/)[0].matchAll(/href="([^"]+)"/g)].map((x) => x[1]); // footer is built from SOCIALS
+  const socials = [...html('/').match(/<ul class="links">[\s\S]*?<\/ul>/)[0].matchAll(/<a href="(https[^"]+)"/g)].map((x) => x[1]); // footer is built from SOCIALS
   assert.ok(socials.length > 3);
   assert.deepEqual(group.sameAs, socials);
   assert.deepEqual(group.genre, ['EDM', 'Hip-Hop/Rap', 'Rock']);

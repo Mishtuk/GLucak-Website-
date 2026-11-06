@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import MobileBar from '../components/MobileBar.astro';
 import Footer from '../components/Footer.astro';
+import Icons from '../components/Icons.astro';
 import { era, SITE_URL } from '../components/content.js';
 
 interface Props { title: string; description?: string; home?: boolean; hero?: 'a' | 'b'; current?: 'music' | 'shows' | 'about'; credits?: string[]; image?: string }
@@ -58,6 +59,7 @@ const table = (i) => `${lo[i].toFixed(3)} ${hi[i].toFixed(3)}`;
     <script is:inline src="/js/app.js" defer></script>
   </head>
   <body>
+    <Icons />
     <a class="skip" href="#main">Skip to content</a>
 
     <!-- Duotone for live photos only. The tables come from the era colors at build. Covers never use this. -->

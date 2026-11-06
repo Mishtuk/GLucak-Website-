@@ -1,7 +1,7 @@
 ---
 import Quote from './Quote.astro';
 import { credit, releases, SPOTIFY_EMBED, SPOTIFY_PLAYLIST } from './content.js';
-const { h1 = false } = Astro.props; // /music/ has no hero, so Rise is its h1 (and the release title drops to h2)
+const { h1 = false, release = true } = Astro.props; // release={false} on /music/: the crate's first released tile is that release // /music/ has no hero, so Rise is its h1 (and the release title drops to h2)
 const H = h1 ? 'h1' : 'h2', T = h1 ? 'h2' : 'h3';
 const r = releases()[0];
 ---
@@ -17,11 +17,11 @@ const r = releases()[0];
       </div>
       <p class="under-player" id="after-player">
         <a class="btn btn-line btn-small" href={SPOTIFY_PLAYLIST} rel="noopener">Play full songs on Spotify</a>
-        <a class="under-link" href={r.link} rel="noopener" aria-label={`Listen to ${r.title} everywhere`}>Listen everywhere</a>
+        <a class="under-link" href={r.link} rel="noopener" aria-label={`Listen everywhere: ${r.title}`}>Listen everywhere</a>
       </p>
     </div>
 
-    <article class="release">
+    {release && <article class="release">
       <img class="cover" src={r.cover} alt={r.placeholder ? `Placeholder for the ${r.title} cover art` : `${r.title} cover art`} width="400" height="400" loading="lazy" />
       <div class="release-text">
         <T>{r.title}</T>
@@ -33,7 +33,7 @@ const r = releases()[0];
         </p>
         {r.placeholder && <p class="ph-chip inline">Placeholder cover</p>}
       </div>
-    </article>
-    <Quote band="rise" />
+    </article>}
+    {release && <Quote band="rise" />}
   </div>
 </section>

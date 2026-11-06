@@ -8,7 +8,7 @@ import { randomBytes } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { extname, join, normalize, sep } from 'node:path';
 import { brotliCompressSync, constants as zc, gzipSync } from 'node:zlib';
-import { nowHtml, showsHtml, showsLdHtml } from './src/lib/shows.js';
+import { icsById, nowHtml, showsHtml, showsLdHtml } from './src/lib/shows.js';
 import { signup } from './src/lib/signup.js';
 import { allow, checkLogin, clearFailures, cookieHeader, locked, parseEditors, readCookie, recordFailure, sameOrigin, signSession, verifySession, SESSION_DAYS, USER_LOCK } from './src/lib/auth.js';
 import { checkShows, listVersion, readList, readShows, saveList } from './src/lib/store.js';
@@ -89,9 +89,16 @@ function send(req, res, status, type, body, extra = {}) {
   res.end(req.method === 'HEAD' ? undefined : out);
 }
 
+/** The 404 page (src/pages/404.astro) with status 404; the shop links are filled in like any page. Plain text if the build is missing. */
 function notFound(req, res) {
   const f = join(DIST, '404.html');
-  send(req, res, 404, TYPES['.html'], existsSync(f) ? readFileSync(f) : Buffer.from('Not found'), { 'Cache-Control': 'no-cache' });
+  let body = Buffer.from('Not found');
+  if (existsSync(f)) {
+    let html = readFileSync(f, 'utf8');
+    try { html = inject(html, '/404'); } catch (e) { console.error('inject failed on 404', e.message); }
+    body = Buffer.from(html);
+  }
+  send(req, res, 404, TYPES['.html'], body, { 'Cache-Control': 'no-cache', 'X-Robots-Tag': 'noindex' });
 }
 
 /** POST /api/signup. Form or JSON body, max 2 KB. JSON reply for the page's script; 303 back to the form without JS. */
@@ -253,6 +260,13 @@ function handle(req, res) {
     });
   }
   if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405, { ...baseHeaders(req), Allow: 'GET, HEAD' }); return res.end(); }
+  const ics = url.pathname.match(/^\/shows\/([a-z0-9-]+)\.ics$/); // Add to calendar: an upcoming show by id (showId in src/lib/shows.js)
+  if (ics) {
+    let text = null;
+    try { text = icsById(readShows(DATA, SHOWS), ics[1]); } catch (e) { console.error('ics failed', e.message); }
+    if (!text) return notFound(req, res);
+    return send(req, res, 200, 'text/calendar; charset=utf-8', Buffer.from(text), { 'Content-Disposition': `attachment; filename="glucak-${ics[1]}.ics"`, 'Cache-Control': 'no-cache' });
+  }
   if (url.pathname.startsWith('/media/uploads/')) { // only server-made names (32 hex + .webp), so nothing can climb out
     const name = url.pathname.slice('/media/uploads/'.length);
     const st = UPLOAD_NAME.test(name) ? statSafe(join(UPLOADS, name)) : null;

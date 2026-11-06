@@ -12,7 +12,7 @@ const idn = identity();
 // MusicGroup + WebSite JSON-LD (data, not script: CSP ignores it). '<' escaped so nothing can close the tag.
 const ld = JSON.stringify([
   { '@context': 'https://schema.org', '@type': 'MusicGroup', name: 'GLucak', url: `${SITE_URL}/`, logo: `${SITE_URL}/media/apple-touch-icon-180.png`, image: `${SITE_URL}/media/og/home.png`,
-    genre: ['EDM', 'Hip-Hop/Rap', 'Rock'], sameAs: SOCIALS.map(([, href]) => href) },
+    genre: ['EDM', 'Hip-Hop/Rap', 'Rock'], sameAs: SOCIALS.map((s) => s.href) },
   { '@context': 'https://schema.org', '@type': 'WebSite', name: 'GLucak', url: `${SITE_URL}/` },
 ]).replace(/</g, '\\u003c');
 

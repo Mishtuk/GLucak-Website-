@@ -107,7 +107,7 @@ test('approved copy is on each page verbatim; no ASK GABE; no quote ships', () =
     'Nevertheless, no matter the musical style or genre, be it his debut single or his upcoming 3rd album (rumored to be his best work yet), the mission statement has always been the same: Rise, Live It Loud, Push Past Fear, The Time Is Now.'];
   const want = {
     '/': ['Live It Loud', bio[0], 'Get the next show and every new song first.'],
-    '/music/': ['All releases', 'Hear more on SoundCloud', 'Latest release. Listen on:', 'Pre-save IDENTITY'],
+    '/music/': ['All releases', 'Hear more on SoundCloud', 'Pre-save IDENTITY'],
     '/shows/': ['Live It Loud', 'Book GLucak:'],
     '/about/': [...bio, 'Find GLucak', 'Booking and shows', 'Photo credits', 'Photo: Alexander Kealey'],
   };
@@ -119,13 +119,12 @@ test('approved copy is on each page verbatim; no ASK GABE; no quote ships', () =
   }
 });
 
-test('Music: artists credit shown; upcoming releases never listed as released', () => {
+test('Music: artists credit shown on the tile; upcoming releases are tiles in the crate (Pre-save), never listed as released', () => {
   const m = html('/music/');
-  assert.match(m, /class="credit"[^>]*>GLucak, J-BOY</);
-  const released = m.split('<ul class="releases">').pop(); // last list = released
-  for (const t of ['Who I Am', 'Scenic Route']) assert.ok(!released.split('<div class="identity-state">')[0].includes(`<h3>${t}</h3>`), t);
-  assert.ok(!released.split('<div class="identity-state">')[0].includes('<h3>IDENTITY</h3>'));
-  assert.match(m, /<h3>Duck, Dodge, Jump, Fight<\/h3>/);
+  assert.match(m, /class="tile-artists">GLucak, J-BOY</);
+  assert.match(m, /data-state="coming"[^>]*>[\s\S]*?<h3 class="tile-title">Who I Am<\/h3>[\s\S]*?Pre-save/);
+  assert.ok(!m.includes('<h3 class="tile-title">IDENTITY</h3>'));
+  assert.match(m, /<h3 class="tile-title">Duck, Dodge, Jump, Fight<\/h3>/);
 });
 
 test('Spotify box keeps the loading / blocked note under the iframe; no era-word placeholder line on Music', () => {
@@ -159,12 +158,19 @@ test('D47: no phrase hidden by default (only .fade-wait, added by app.js), print
   const css = [...html('/').matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1]).join('\n');
   for (const m of css.matchAll(/([^{}]+)\{([^{}]*opacity:\s*0[;}][^{}]*)\}/g)) if (/\.phrase/.test(m[1])) assert.match(m[1], /\.fade-wait/, `hidden phrase needs the JS class: ${m[1]}`);
   assert.match(css, /@media print\s*\{[^}]*\.fade \.phrase\s*\{[^}]*opacity:\s*1/);
-  for (const sel of ['.btn-solid:active', '.btn-line:active', '.product-card:active', '.sheet a:active', '.phone-bar a:active']) {
+  for (const sel of ['.btn-solid:active', '.btn-line:active', '.tile-link:active', '.sheet a:active', '.phone-bar a:active']) {
     const rules = [...css.matchAll(/([^{}]*)\{([^{}]*)\}/g)].filter((m) => m[1].includes(sel));
     assert.ok(rules.length, `${sel} rule`);
-    assert.ok(rules.every((m) => !/transition|animation/.test(m[2])), `${sel} has no transition`);
+    assert.ok(rules.every((m) => !/transition:\s*(?!none)|animation/.test(m[2])), `${sel} has no transition`);
   }
   const app = readFileSync(join(import.meta.dirname, '../public/js/app.js'), 'utf8');
   assert.ok(app.includes("classList.add('fade-wait')") && app.includes('>= innerHeight'));
   assert.match(css, /prefers-reduced-motion:\s*no-preference\)\s*\{[^}]*\.fade\.fade-wait/);
+});
+
+test('404 page is built: Wrong turn, noindex, Listen / Shows / Home', () => {
+  const h = readFileSync(join(DIST, '404.html'), 'utf8');
+  assert.match(h, /<title>Page not found - GLucak<\/title>/);
+  assert.ok(h.includes('Wrong') && h.includes('turn.'));
+  assert.match(h, /name="robots" content="noindex"/);
 });

@@ -2,8 +2,8 @@
 import Base from '../../layouts/Base.astro';
 import PushPhoto from '../../components/PushPhoto.astro';
 import { PATREON, PHOTO_CREDITS as C, SOCIALS } from '../../components/content.js';
-const links = Object.fromEntries(SOCIALS);
-const ORDER = ['Spotify', 'YouTube', 'Instagram', 'SoundCloud', 'Patreon', 'Threads', 'X'];
+const ORDER = ['spotify', 'youtube', 'instagram', 'soundcloud', 'threads', 'x', 'patreon'];
+const links = ORDER.map((id) => SOCIALS.find((s) => s.id === id));
 ---
 <Base image="about" title="About | GLucak" current="about" credits={[C.kealey]} description="GLucak: Epilepsy survivor, Producer-Rapper/DJ, making energetic music with faith.">
   <section class="band band-push" aria-labelledby="h-push">
@@ -25,8 +25,8 @@ const ORDER = ['Spotify', 'YouTube', 'Instagram', 'SoundCloud', 'Patreon', 'Thre
     </div>
     <div class="wrap prose">
       <h2>Find GLucak</h2>
-      <ul class="socials">
-        {ORDER.map((n) => <li><a href={links[n]} rel="noopener">{n}</a></li>)}
+      <ul class="links links-lg">
+        {links.map((s) => <li class={s.id === 'patreon' ? 'links-wide' : undefined}><a href={s.href} rel="noopener"><svg aria-hidden="true"><use href={`#i-${s.id}`} /></svg><span>{s.name}</span></a></li>)}
       </ul>
       <h2>Booking and shows</h2>
       <p class="muted">Book GLucak: <span class="ph-chip inline">Placeholder: booking email pending</span></p>

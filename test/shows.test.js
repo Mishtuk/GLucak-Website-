@@ -51,8 +51,8 @@ test('button label rule', () => {
   const html = (o) => showsHtml([row(o)], now);
   assert.match(html({ link: 'https://x.com' }), />Tickets</);
   assert.match(html({ type: 'open-mic', link: 'https://x.com' }), />Details</);
-  assert.doesNotMatch(html({}), /<a /);
-  assert.doesNotMatch(html({ type: 'open-mic' }), /<a /);
+  assert.doesNotMatch(html({}), /btn-show/);
+  assert.doesNotMatch(html({ type: 'open-mic' }), /btn-show/);
 });
 
 test('injection stays inert', () => {
@@ -103,25 +103,25 @@ test('empty state: never blank, Played rows if any, no Request button without a 
 
 const WIA = { title: 'Who I Am', date: '2026-11-13', link: 'https://wingsmusic.lnk.to/WhoIAm' };
 const GO = { title: 'Go', date: '2026-03-20', link: 'https://wingsmusic.lnk.to/370407-Go' };
-const link = (href, text, label, rel = ' rel="noopener"') => `<a href="${href}" aria-label="${label}"${rel}>${text}</a>`;
-const OUT13 = link(WIA.link, 'Out Nov 13: Who I Am', 'Who I Am, out Nov 13. Opens the release link');
+const link = (href, text, rel = ' rel="noopener"') => `<a href="${href}"${rel}>${text}</a>`;
+const OUT13 = link(WIA.link, 'Out Nov 13: Who I Am');
 
 test('Now line D45: Nov 6 / 13 / 20 / 21 pick Out Nov 13, Out today, Out now, then a show or the newest release', () => {
   const rels = [GO, WIA];
   assert.equal(nowHtml([], noon('2026-11-06'), rels), OUT13);
   assert.equal(nowHtml([], noon('2026-10-30'), rels), OUT13, '14 days ahead');
   assert.ok(!nowHtml([], noon('2026-10-29'), rels).includes('Out Nov 13'), '15 days ahead: not yet');
-  assert.equal(nowHtml([], noon('2026-11-13'), rels), link(WIA.link, 'Out today: Who I Am', 'Listen to Who I Am'));
-  assert.equal(nowHtml([], noon('2026-11-20'), rels), link(WIA.link, 'Out now: Who I Am', 'Listen to Who I Am'));
+  assert.equal(nowHtml([], noon('2026-11-13'), rels), link(WIA.link, 'Out today: Who I Am'));
+  assert.equal(nowHtml([], noon('2026-11-20'), rels), link(WIA.link, 'Out now: Who I Am'));
   const show = row({ date: '2026-11-28', venue: 'The Rail', city: 'Doylestown' });
-  assert.equal(nowHtml([show], noon('2026-11-21'), rels), link('#shows', 'Nov 28: The Rail, Doylestown', 'The Rail, Doylestown, Nov 28. Details', ''));
-  assert.equal(nowHtml([], noon('2026-11-21'), rels), link(WIA.link, 'Out now: Who I Am', 'Listen to Who I Am'), 'newest release');
-  assert.equal(nowHtml([row({ date: '2026-12-21' })], noon('2026-11-21'), [GO]), link(GO.link, 'Out now: Go', 'Listen to Go'), 'show too far: newest');
+  assert.equal(nowHtml([show], noon('2026-11-21'), rels), link('#shows', 'Show Nov 28: The Rail, Doylestown', ''));
+  assert.equal(nowHtml([], noon('2026-11-21'), rels), link(WIA.link, 'Out now: Who I Am'), 'newest release');
+  assert.equal(nowHtml([row({ date: '2026-12-21' })], noon('2026-11-21'), [GO]), link(GO.link, 'Out now: Go'), 'show too far: newest');
   assert.equal(nowHtml([], noon('2026-11-21'), []), '', 'nothing at all');
 });
 
 test('Now line D45: a show on the day says Today; a coming release beats a show; day 14 counts, 15 does not', () => {
-  assert.equal(nowHtml([row({ date: '2026-12-01', venue: 'Pub', city: 'Philly' })], noon('2026-12-01'), []), link('#shows', 'Today: Pub, Philly', 'Pub, Philly, Dec 1. Details', ''));
+  assert.equal(nowHtml([row({ date: '2026-12-01', venue: 'Pub', city: 'Philly' })], noon('2026-12-01'), []), link('#shows', 'Show today: Pub, Philly', ''));
   assert.equal(nowHtml([row({ date: '2026-11-08' })], noon('2026-11-06'), [GO, WIA]), OUT13);
   assert.ok(nowHtml([row({ date: '2026-12-15' })], noon('2026-12-01'), []).includes('#shows'));
   assert.equal(nowHtml([row({ date: '2026-12-16' })], noon('2026-12-01'), []), '');
