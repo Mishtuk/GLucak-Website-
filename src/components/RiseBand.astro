@@ -31,7 +31,7 @@ const r = releases()[0];
       {release && <article class="v2-rel">
         <img class="v2-cover" src={r.cover} alt={r.placeholder ? `Placeholder for the ${r.title} cover art` : `${r.title} cover art`} width="400" height="400" />
         <div class="v2-rel-text">
-          <p class="v2-kicker">Latest {r.type ?? 'release'}{r.date && <> &middot; {dateLine(r.date)}</>}</p>
+          <p class="v2-kicker">Latest {r.type ?? 'release'}{r.date && <> &middot; {dateLine(r.date).replaceAll(" ", " ")}</>}</p>
           <T>{r.title}</T>
           {credit(r) && <p class="credit">{credit(r)}</p>}
           <a class="btn btn-solid" href={r.link} rel="noopener" aria-label={`Listen to ${r.title}`}>Listen</a>

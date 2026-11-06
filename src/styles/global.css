@@ -351,7 +351,7 @@ html[data-hero='b'] .slot img { width: 100%; height: 100%; object-fit: cover; ob
 .quote-text, .quote-text p { display: inline; font-size: var(--step-1); font-weight: 700; line-height: 1.3; }
 .quote-text p::before { content: '\201C'; }
 .quote-text p::after { content: '\201D'; }
-.quote-credit { display: inline; margin-left: 0.4rem; color: var(--muted); font-size: var(--step--1); line-height: 1.3; }
+.quote-credit { display: block; margin-left: 0.4rem; color: var(--muted); font-size: var(--step--1); line-height: 1.3; }
 .quote-credit a { display: inline-flex; align-items: center; min-height: 48px; vertical-align: middle; color: var(--muted); text-underline-offset: 3px; }
 /* Prototype-only chip, sits in the gap above the quote, so it adds no height. */
 .quote-chip { top: -1.65rem; bottom: auto; right: 0; }
@@ -510,7 +510,6 @@ html:not([data-hero='b']) .credit-b { display: none; }
   .rise-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-m) var(--space-xl); align-items: start; }
   .spine:has(.phrase-rise) { grid-column: 1; }
   .rise-player { grid-column: 2; grid-row: 1 / span 2; margin-top: 0; }
-  .release, .quote { grid-column: 1; }
   .phrase-rise { font-size: clamp(8rem, 17vw, 20rem); }
   .cover { width: 160px; height: 160px; }
 
@@ -821,7 +820,6 @@ a, button, summary, label { -webkit-tap-highlight-color: transparent; }
 /* Under 700px "Listen everywhere" goes: it is the same smart link as the release's "every platform" 150px below it. From
    700px it sits beside the Spotify button at no height and stays. */
 /* Boss ruling (D55): Home only (the release block follows the player there). Music has no release block, so it keeps the link. */
-@media (max-width: 699px) { .rise-player:has(~ .release) .under-link { display: none; } }
 /* About's larger list (not prototyped): three max-content columns at the bigger size overflow a phone (423px at 390), so keep two until 520px. */
 .links-lg { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (min-width: 520px) { .links-lg { grid-template-columns: repeat(3, minmax(max-content, 1fr)); } }
@@ -1070,3 +1068,29 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 /* Now line at 200% text on phones: the hero buttons wrap to two rows and push the Now line under the phone bar, which holds the same Listen / Shows. */
 .hero-inner { container-type: inline-size; }
 @media (max-width: 699px) { @container (width < 16rem) { .hero-actions { display: none; } } }
+
+/* ---------- v2 port deltas D1, D2, D4, D7 (DESIGN 18h; word for word from prototype block 18) ---------- */
+/* D1: from 900px the latest big and two stacked; 700-899px keeps three across. */
+@media (min-width: 900px) {
+  .v2-vrow { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+  .v2-vid:first-child { grid-row: 1 / span 2; }
+}
+/* D2 + D4, the Push Past Fear band: the body's children join the band grid. */
+.v2-push .v2-push-body { display: contents; }
+.band-push.v2-push > .wrap.v2-split { grid-template-columns: minmax(0, 1fr) 30%; grid-template-areas: 'side p1' 'bio bio' 'act act'; }
+.v2-push .v2-side { grid-area: side; }
+@media (max-width: 899px) { .v2-push .v2-belt { align-self: stretch; height: 0; min-height: 100%; object-fit: cover; object-position: 50% 22%; } }
+@media (min-width: 900px) {
+  .band-push.v2-push > .wrap.v2-split { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: 'side bio' 'p1 bio' 'p1 act' 'p1 p2'; grid-template-rows: auto auto auto 1fr; row-gap: var(--space-l); }
+  .v2-push .v2-slot { width: min(100%, 22rem); }
+}
+/* D7 */
+.v2-card > .quote { margin-top: 0; }
+@media (max-width: 899px) {
+  .v2-card { padding-bottom: var(--space-xs); }
+  .v2-videos { margin-top: var(--space-m); }
+  .band-push.v2-push { padding-top: var(--space-m); }
+  .band-push.v2-push > .wrap.v2-split { row-gap: var(--space-s); }
+}
+/* D1 on /shows/ from 72rem: its row is the swipe row again, so the first card does not span two rows. */
+@media (min-width: 72rem) { .shows-grid .v2-vid:first-child { grid-row: auto; } }

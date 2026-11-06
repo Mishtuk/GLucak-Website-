@@ -66,3 +66,14 @@ test('credits match the images each page shows; clamp gone; focusin handler; 200
   assert.match(readFileSync(join(ROOT, 'public/js/app.js'), 'utf8'), /focusin[^]*scrollIntoView\(\{ block: 'nearest', inline: 'nearest' \}\)/);
   assert.match(css, /@media \(max-width: 699px\) \{ @container \(width < 16rem\) \{ \.hero-actions \{ display: none; \} \} \}/);
 });
+
+test('18h: D1 video grid from 900px, lock-push on FEAR, no-break kicker date, dead 16f rules gone', () => {
+  assert.match(css, /@media \(min-width: 900px\) \{\s*\.v2-vrow \{ grid-template-columns: minmax\(0, 2fr\) minmax\(0, 1fr\); \}\s*\.v2-vid:first-child \{ grid-row: 1 \/ span 2; \}/);
+  const h = home();
+  assert.match(h, /<span class="phrase fit lock-push"><span class="ln ln-push1">Push Past/);
+  assert.match(h, /sizes="\(min-width: 900px\) 34vw, 82vw"/);
+  assert.match(h, /sizes="\(min-width: 900px\) 40vw, 30vw"/);
+  const k = h.match(/<p class="v2-kicker">([^]*?)<\/p>/)[1];
+  assert.match(k, /[A-Z][a-z]{2} \d{1,2}, \d{4}/, 'the date has no breaking spaces');
+  assert.ok(!css.includes('.rise-player:has(~ .release)') && !/\.release, \.quote \{ grid-column: 1/.test(css));
+});
