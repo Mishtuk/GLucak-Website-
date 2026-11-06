@@ -22,6 +22,8 @@
     D3 admin v2 (`/edit/` tabs Shows | Products, add / edit / delete / reorder, photo upload -> sharp webp, metadata
     stripped, 5 MB / 40 MP caps, `/media/uploads/` served from DATA_DIR). `npm test` 86/86. Preview: `node
     tools/preview.mjs --publish` -> https://mishtuk.github.io/GLucak-Website-/ (static snapshot, edit + sign-up off).
+    Share images per page (`node tools/og.mjs [--era path]` -> public/media/og/*.png, 1200x630, og/twitter/canonical in
+    Base), perf pass (`tools/perf.mjs`, docs/review/perf.md: 80-141 KB per page without Spotify, CLS 0). `npm test` 91/91.
     Claims released except `server.js`, `src/lib/`.
 - **Owner, 2026-11-02:** approved direction.md + ROADMAP.md. Sends Gabe section 8. Decides hosting; registers
   glucak.com (auto-renew). Accounts in Gabe's name, owner co-manages. Work only on what doesn't need Gabe's answers.
