@@ -219,7 +219,7 @@ html[data-home][data-motion] .site-header:not(.is-solid):not(:has(details[open])
    frame, his face falls in the gap between G and L (the gap and the photo both scale with the width, so it holds). */
 .hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; } /* (a) is pre-cropped on Gabe (D34) */
 /* Hero A on phones: 24px more open strip above the name for his face (player stays at 80px+ above the bar). */
-@media (max-width: 699px) { html[data-hero='a'] .hero-inner { padding-top: calc(var(--header-h) + 1.75rem); } }
+@media (max-width: 699px) { html[data-hero='a'] .hero-inner, html[data-hero='ab'] .hero-inner { padding-top: calc(var(--header-h) + 1.75rem); } }
 /* Scrim: only where small text sits. Top right for Menu / the nav (4.5:1), the bottom ramp for the Now line. The rest of
    the photo stays at full duotone strength, so his face above the name isn't dimmed (the ceiling already keeps the name
    and slogan at 3:1 or better). */
@@ -515,3 +515,16 @@ iframe.yt { width: 100%; border: 0; }
 @media (min-width: 700px) { .product-detail { grid-template-columns: minmax(0, 24rem) 1fr; } }
 /* With the shop on, the closing line gains "Shop." and is wider; re-fit it (measured: Listen. Shows. Shop. Join.). */
 .ln-close:has(a[href$="/shop/"]) { --w-close: 10.46; } /* measured 10.443em */
+/* D34 'ab': hero A under 900px, hero B (riso photo in the name) from 900px up. Same geometry as B's desktop rules. */
+html[data-hero='ab'] .slot { display: none; }
+@media (min-width: 900px) {
+  html[data-hero='ab'] .hero-photo { display: none; }
+  html[data-hero='ab'] .name-row { --k: 1.9; --fs: calc(100cqi / (var(--w-name) + var(--k) + 0.1)); }
+  html[data-hero='ab'] .slot {
+    display: block; position: relative; flex: none; overflow: hidden;
+    width: calc(var(--fs) * var(--k)); height: calc(var(--fs) * 1.34);
+    margin-inline: 0.05em; background: var(--bg-2);
+  }
+  html[data-hero='ab'] .slot picture { display: contents; }
+  html[data-hero='ab'] .slot img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+}

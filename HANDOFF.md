@@ -24,6 +24,8 @@
     tools/preview.mjs --publish` -> https://mishtuk.github.io/GLucak-Website-/ (static snapshot, edit + sign-up off).
     Share images per page (`node tools/og.mjs [--era path]` -> public/media/og/*.png, 1200x630, og/twitter/canonical in
     Base), perf pass (`tools/perf.mjs`, docs/review/perf.md: 80-141 KB per page without Spotify, CLS 0). `npm test` 91/91.
+    Hero D34 built: `HERO = 'ab'` (A + (a) under 900px, B + (b) riso from 900px up; the hidden one gets a 1x1 data GIF,
+    so one photo downloads). Next: port the Laptop's L1 / L2 when they land (waiting; Laptop quiet since ~22:55).
     Claims released except `server.js`, `src/lib/`.
 - **Owner, 2026-11-02:** approved direction.md + ROADMAP.md. Sends Gabe section 8. Decides hosting; registers
   glucak.com (auto-renew). Accounts in Gabe's name, owner co-manages. Work only on what doesn't need Gabe's answers.
