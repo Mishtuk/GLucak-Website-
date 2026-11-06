@@ -75,6 +75,11 @@
       buy.rel = 'noopener';
       body.append(buy, el('p', 'product-note', "You pay on the store's own page. We never see your card details."));
     } else body.append(status(p));
+    // a11y audit row 10 (2.4.3, DESIGN 17c): the way back to the grid, last in the detail. #h-shop is the page's h1, so
+    // the :target moves off the detail (it hides) and the page lands on MERCH with the grid under it.
+    const back = el('a', 'text-link product-back', 'Back to all merch');
+    back.href = '#h-shop';
+    body.append(back);
     art.append(media(p), ...tape(p), body);
     return art;
   }

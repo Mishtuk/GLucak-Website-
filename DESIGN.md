@@ -457,6 +457,11 @@ change, and the device setting stops it (D19).
 Text 4.5:1. Large text and controls 3:1. Targets 48px minimum. Nothing under 16px on phones. Tabs 16px or more, exact nav word, real
 content right under the heading (D6). Tab and phrase share one `<h2>`: `<span class="tab">Shows</span> <span class="phrase">Live It Loud</span>`,
 so screen readers and find-in-page get both. 3px focus ring in `text`. Skip link. No autoplay sound.
+**Spotify player focus (a11y audit row 9, 2.4.7, accepted 2026-11-06):** the embed's `<iframe>` gets no ring of ours
+(`outline: none` on our side); the focus ring on the controls inside it is Spotify's own, drawn in their document, and we
+can't style it. Accepted: it is a third-party frame, its own controls do show focus, and the "Skip the Spotify player" link
+before it (and the audit's row 2 fix) keeps keyboard users from having to walk through it.
+Text at 200% (1.4.4 / 1.4.10): section 17.
 
 ## 10. Gabe's edit screen
 **The look of `/edit/` (sign-in, tabs, rows, editor form, upload, save bar, every message state) is section 15.** This
@@ -1078,3 +1083,104 @@ Copy the "Round 2" CSS block from `prototype/styles.css` (16a to 16f) to the end
    `.product-card:active` brightness filter, `.sheet a:active`): 16e replaces them, so one pressed rule set exists and pictures are
    never changed.
 11. **Copy changes from D57** (Now line show state, no aria-label on the Now link): `docs/copy/round2.md` section 1, as amended.
+
+## 17. Text at 200% (a11y audit rows 1, 9, 10; Laptop designer, 2026-11-06)
+Audit: `docs/research/discoverability-a11y.md` Part 2. Row 9 is the note in section 9. Check: `node prototype/tools/a11y200.mjs`
+(every prototype page at 320 / 390 / 1280, root font 100% and 200%; sideways scroll is measured against the device width,
+because in mobile emulation Chrome widens the layout viewport to fit the overflow; also overlaps, clipped text, targets under
+48px). `--url http://localhost:PORT` runs it on the build; `--inject` adds this section's prototype block to the build first.
+Report and shots in `docs/review/a11y-200/`: `report.txt` + first screens at 200% (prototype, fixed), `look-*.png` (the
+problem spots, fixed), `before/` (the same spots before), `build/report.txt` (the build at c8a4aa1+), `build-fixed/report.txt`
+(the build with 17b applied by `--inject`). The Desktop's `README.md` and `before*/after*` shots there are its c8a4aa1 pass.
+
+**How the fixes work.** Root font 200% doubles rem and em, not px and not px media queries, so every fix keys on text size:
+(a) a flex row that wraps only when a word stops fitting (`flex: 1 1 0%` + the automatic min-width), or (b) a container
+query in rem (rem in a container query is the root size: 15rem is 240px at 100%, 480px at 200%). Each threshold sits below
+what the narrowest 100% layout (320px) measures, so **100% is pixel-identical** (diffed shot for shot: only the D64 header
+sync and the new Back link differ). Prototype: 0 issues in 66 views (was 27). Build at 97c5f91 (after c8a4aa1): 15 of
+48 views still fail (320 at 200% on every page: phone-bar words, Menu, link grid, shop grid; shop 390; `/edit/` tabs and date
+fields; a long poster place word under the art at 100%). The same build with 17b injected: 0 of 48.
+
+### 17a. Causes (audit row 1)
+| Symptom | Real cause | Fix |
+|---|---|---|
+| Hero Shows button off-screen | `.hero-actions`: two `flex: 1` buttons, no wrap | wrap (a) |
+| GLUCAK collides with Menu | 94px mark + 1.75rem word + Menu in one fixed, px-height row; the word's line-height 1.5 made the bar 84px, taller than `--header-h` | line-height 1; word capped at 11.5cqi of the header; mark hidden under 19rem; desktop nav falls back to Menu under 36rem |
+| "Music" label overlaps hero text | the 84px header over a 60px slot (it covers the tab under it) | as above |
+| Poster photo over Tickets | `1fr` text column beside a 55% art column; Tickets is wider than the column | under 15rem the art goes under the text, full bleed |
+| Rows off-screen | `4.5rem / 1fr / auto` row: the 1fr can't hold the place and Details is pushed out. `min-width: 0` on `.row-text` (suggested) would only let the text spill instead | under 17rem: date + calendar, then place, then the button |
+| Bottom-bar labels touch | four 1rem labels in quarter columns (90px words in 80px at 320) | labels capped at 7cqi of the bar (22px at 320, 27px at 390). The bar stays one 62px row: body padding and scroll-padding use `--bar-h` in px, so two rows would cover content and focus |
+| `/edit/` Products tab clipped | `.ed-tabs` grid `1fr 1fr` | wrapping flex (a) |
+| Footer links overlap (also at 1280) | `.links`: 3 columns `minmax(max-content, 1fr)` from 380px, 7 from 900px | 7 from 52rem, 3 from 21rem, 2 from 15.5rem, else 1 |
+| Found while testing | skip link peeking out (`top: -100px` < its height at 200%); release title beside the cover; Spotify note cut off in its 352px box; shop grid; product detail name 4 letters wide; editor date input's own min width; "Request a show" nowrap; video label climbing out of its box; Menu 7px off-screen (its -0.85rem margin outgrew the gutter); the 1.25rem gutter floor doubling to 40px; a long poster place word under the art (also at 100% on the build's real data, 320) | 17b |
+
+### 17b. Port of a11y fixes (for the Desktop coder)
+The Desktop's c8a4aa1 made a first pass in `src/` while the Laptop was out. This list is the **delta from the current
+`global.css`** (items say what to replace). Copy the prototype's "17. Text at 200%" block (from its header comment to the end of `prototype/styles.css`) to the **end** of
+`src/styles/global.css` word for word, except the lines marked below. It must stay last: it overrides media rules. Per selector:
+
+**`src/styles/global.css`**
+1. `.skip { top: -100vh; }` (`.skip:focus { top: 0.5rem; }` and the `.skip-inline` rules unchanged).
+2. Header: `.site-header { container-type: inline-size; }` · `.brand { line-height: 1; font-size: min(1.75rem, 11.5cqi); }` ·
+   `@container (width < 19rem) { .mark-head { display: none; } }` · `@container (width < 36rem) { .nav-desktop, .header-listen
+   { display: none; } .nav-mobile { display: block; } }` · `.nav-mobile summary { margin-right: calc(-1 * min(0.85rem,
+   var(--gutter))); }`. Checked with D64's scrim and `view-transition-name: site-header`. **Replace c8a4aa1's header pass:**
+   remove `container-type: inline-size` from `.header-bar` and its `@container (max-width: 19rem) { .mark + .brand-word { display:
+   none; } }`. Why: GLUCAK is the name and the link's visible label, the mark is decorative (`alt=""`); and above 19rem the
+   word's 1.5 line-height still makes the bar 84px, which only `line-height: 1` fixes.
+3. `:root { --gutter: clamp(20px, 12.8px + 2vw, 40px); }` (the same px as `clamp(1.25rem, 0.8rem + 2vw, 2.5rem)` at a 16px root).
+4. `.hero-actions, .lost-actions { flex-wrap: wrap; }`, and set c8a4aa1's `.hero-actions .btn { flex: 1 1 auto; }` back to
+   `flex: 1` (auto basis makes LISTEN and SHOWS unequal at 100%; with basis 0 they stay equal halves and still wrap).
+5. `.release { flex-wrap: wrap; }` · `.release-text { flex: 1 1 0%; }`
+6. `.player-box { height: auto; min-height: 352px; }` · `.player { height: 100%; }` (the build sets `height: 352px` on both).
+7. Shows: `.rows { container-type: inline-size; }` (the Played `ul.rows`; `.shows` already is one) ·
+   `@container (width < 15rem) { .poster { grid-template-columns: minmax(0, 1fr); grid-template-rows: none;
+   grid-template-areas: 'date' 'place' 'meta' 'btn' 'art'; } .poster-art { width: calc(100% + 2 * var(--space-m)); margin:
+   var(--space-m) calc(-1 * var(--space-m)) calc(-1 * var(--space-m)); } }` ·
+   `@container (width < 17rem) { .row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'date cal' 'text text'
+   'btn btn'; row-gap: var(--space-xs); padding-block: var(--space-s); } .row-date, .row:not(:has(.cal-btn)) .row-date
+   { grid-row: auto; align-self: center; } .cal-btn { justify-self: end; align-self: center; margin: 0; } .row > .btn-show
+   { justify-self: start; } }` · `.poster-place, .poster-meta { overflow-wrap: break-word; hyphens: auto; }`. **Delete c8a4aa1's
+   `@container (max-width: 17rem) { .row … .poster … }` block** at the end of the file (these two replace it: the calendar
+   glyph stays beside the date instead of costing a line, and the poster keeps its art beside the text down to 15rem).
+   c8a4aa1's `.shows, .rows { container-type: inline-size; }` stays (then drop the `.rows` line from the copied block).
+8. `.empty-actions .btn { white-space: normal; text-align: center; }`
+9. Video facade: `.yt { display: flex; flex-direction: column; justify-content: flex-end; overflow: visible; }` and, **instead
+   of the prototype's `.yt-note` line**, `.yt-title { position: relative; z-index: 1; inset: auto; margin: 0 0.75rem 0.6rem; }`
+   (the same place as the build's `inset: auto 0.75rem 0.6rem`; `.yt-img` stays absolute under it).
+10. Links: `.wrap:has(> .links) { container-type: inline-size; }` (the footer wrap and About's `.wrap.prose`) ·
+   `@media (min-width: 900px) { @container (width < 52rem) { .site-footer .links { grid-template-columns: repeat(3,
+   minmax(max-content, 1fr)); } .site-footer .links-wide { grid-column: 1 / -1; } } }` ·
+   `@container (width < 21rem) { .links { grid-template-columns: repeat(2, minmax(0, 1fr)); } }` ·
+   `@container (width < 15.5rem) { .links { grid-template-columns: minmax(0, 1fr); } }`. **Revert c8a4aa1's auto-fit lines:**
+   `.links` base back to `repeat(2, minmax(0, 1fr))`; `@media (min-width: 380px)` back to `repeat(3, minmax(max-content, 1fr))`;
+   `.site-footer .links` at 900px back to `repeat(7, minmax(max-content, 1fr))`; `.links-lg` back to `@media (min-width: 380px)
+   and (max-width: 519px) { .links-lg { grid-template-columns: repeat(2, minmax(0, 1fr)); } }`. Why: identical at 100% (auto-fit
+   moved the columns) and D63 F1's "a cell is at least its word" holds at every size.
+11. `.phone-bar { container-type: inline-size; }` · `.phone-bar a { font-size: min(1rem, 7cqi); }` (keep c8a4aa1's
+   `repeat(4, minmax(0, 1fr))`: equal columns either way; the cap is what keeps the words apart).
+12. Shop: `.band-shop > .wrap { container-type: inline-size; }` · `@container (width < 11.5rem) { .shop-grid
+   { grid-template-columns: minmax(0, 1fr); } }` · `@container (width < 17rem) { .product-detail { grid-template-columns:
+   minmax(0, 1fr); grid-template-rows: none; } .product-detail .product-name { grid-column: 1; grid-row: 1; } .product-detail
+   .product-media { grid-column: 1; grid-row: 2; max-width: 66%; } .product-detail .product-tape { grid-column: 1; grid-row: 2; }
+   .product-detail .product-price { grid-column: 1; grid-row: 3; } }` (after the existing `max-width: 699px` detail rules).
+13. Back link (17c): `.product-back { margin-top: var(--space-xs); font-size: var(--step--1); }` · `@media (max-width: 699px)
+   { .product-detail .product-body > .product-back { grid-column: 1 / -1; } }`
+14. **Leave out** (prototype only): `.ph-note`, both `.hero-chip.is-long` lines, `.yt-note`, and the editor lines (next item).
+
+**`src/pages/edit/index.astro`** (end of its `<style is:global>`): `.ed-tabs { display: flex; flex-wrap: wrap; }` ·
+`.ed-tab { flex: 1 1 0%; }` · `.ed { container-type: inline-size; }` · `@container (width < 17rem) { .ed-row { padding:
+var(--space-s) var(--space-xs); } .ed-row-head, .ed-row-head:has(.ed-row-date) { grid-template-columns: minmax(0, 1fr); }
+.ed-choice { padding-inline: var(--space-xs); gap: var(--space-xs); } .ed-choice span { min-width: 0; overflow-wrap: anywhere; } }`
+· `.ed-two { grid-template-columns: minmax(0, 1fr); }` · `@media (min-width: 480px) { .ed-two { grid-template-columns:
+repeat(2, minmax(0, 1fr)); } }` (replaces the `1fr 1fr` line) · `.ed-field { min-width: 0; }`
+
+**Markup:** `src/lib/products.js` `detail()`: append `<a class="text-link product-back" href="#h-shop">Back to all merch</a>` as
+the **last child of `.product-body`** (after `actionHtml(p)`); `#h-shop` is the shop page's `h1` id. Test: each detail has
+exactly one, with that href.
+
+### 17c. "Back to all merch" (audit row 10, WCAG 2.4.3; overrides L2's "no Back link", kept small)
+Words: **Back to all merch** (the page's own word, MERCH; no arrow glyph). Place: last in the detail, after Buy and its note (or
+the status line), so the first screen on arrival from a card is unchanged and Buy stays where it was. Look: the `.text-link`
+(700 weight, underline, 48px target) one step down (`--step--1`), a full-width row on phones. It links to the page's `h1`
+(`#h-shop`): the hash leaves the detail, so the detail hides (D41 F1) and the page lands on MERCH with the grid under it.
