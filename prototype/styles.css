@@ -830,3 +830,138 @@ html:has(.ed-body) { scroll-padding: 1rem 0 10rem; } /* a focused field never hi
   .ed-bar .ed-msg { order: 0; grid-column: 1; grid-row: 1; }
   .ed-bar .ed-main { grid-column: 2; grid-row: 1; }
 }
+
+/* =====================================================================================================================
+   Round 2 (2026-11-06, D47 / D53): cover grid, link grid, Add to calendar, 404, instant :active. DESIGN.md section 16.
+   Port these blocks word for word (section 16h lists where each goes).
+   ===================================================================================================================== */
+
+/* ---------- 16a. Music: the crate (cover grid) ---------- */
+/* Covers as made: never tinted, filtered, bordered or overlaid. Two columns on phones, three from 700px, four from 900px.
+   The whole tile is one link (to the release's smart link, or its pre-save while it's coming). */
+.crate { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-l) var(--space-m); margin-top: var(--space-m); }
+.tile { min-width: 0; }
+.tile-link { display: grid; align-content: start; height: 100%; text-decoration: none; }
+.tile-link:focus-visible { outline-offset: 4px; }
+.tile-art { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; background: var(--bg-2); }
+/* No art yet (a coming single, or a cover file still missing): the hatch ("nothing real here yet", as in the shop) with
+   the release date on a bg label, like a date sticker on an empty sleeve. Never a cover we made (D51). */
+.tile-art-none {
+  display: grid; place-items: center; container-type: inline-size;
+  background-color: var(--bg-2); background-image: var(--hatch); border: 2px solid var(--line);
+}
+.tile-when {
+  padding: 0.12em 0.16em; background: var(--bg); color: var(--text);
+  font-family: var(--font-display); font-weight: 900; font-size: 24cqi; line-height: 0.82; text-transform: uppercase;
+  white-space: nowrap;
+}
+/* The text under the cover. Inset by 0.5rem of padding and pulled back by the same margin, so at rest it lines up with
+   the cover's edges and when pressed the inverted block has air around the words. */
+.tile-text { display: grid; gap: 0.3rem; justify-items: start; margin-inline: -0.5rem; padding: 0.6rem 0.5rem 0.5rem; }
+.tile-title { font-family: var(--font-display); font-weight: 900; font-size: 1.375rem; line-height: 1; text-transform: uppercase; text-wrap: balance; overflow-wrap: anywhere; }
+.tile-artists { color: var(--muted); font-size: var(--step--1); line-height: 1.25; }
+.tile-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.5rem; color: var(--muted); font-size: var(--step--1); line-height: 1.25; font-variant-numeric: tabular-nums; }
+.tile[data-state='coming'] .tile-meta { color: var(--text); font-weight: 700; }
+/* Album / EP only (singles are most of the grid, so the tag marks the exception). The Now tag's look. */
+.tile-tag { padding: 0 0.4rem; background: var(--text); color: var(--bg); font-weight: 700; line-height: 1.5; }
+.tile-go { margin-top: 0.15rem; font-weight: 700; font-size: var(--step--1); line-height: 1.25; text-decoration: underline; text-underline-offset: 3px; }
+@media (hover: hover) { .tile-link:hover .tile-title { text-decoration: underline; text-decoration-thickness: 0.06em; text-underline-offset: 0.1em; } }
+@media (min-width: 700px) { .crate { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-xl) var(--space-l); } }
+@media (min-width: 900px) { .crate { grid-template-columns: repeat(4, minmax(0, 1fr)); } .tile-title { font-size: 1.625rem; } }
+.releases-band { padding-top: var(--space-l); }
+.releases-band .identity-state { margin-top: var(--section); }
+
+/* ---------- 16b. Link grid (footer on every page, About's "Find GLucak") ---------- */
+/* Brand glyph (Simple Icons, CC0, one colour = currentColor, never recoloured per brand) + the word. Ruled rows like
+   the show rows, so the grid reads as a list, not as buttons. Two columns under 380px, three from 380px (the six socials
+   in two rows), Patreon on its own full row (support, not a social). Footer from 900px: all seven in one row.
+   SoundCloud, the widest word, goes last in its row, so at 380-400px its last few px run into the page gutter, never into Spotify. */
+.links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-m); margin-top: var(--space-xs); border-bottom: 2px solid var(--line); }
+.links li { min-width: 0; border-top: 2px solid var(--line); }
+.links a {
+  display: flex; align-items: center; gap: 0.4rem; min-height: 48px; margin-inline: -0.5rem; padding-inline: 0.5rem;
+  font-size: var(--step--1); font-weight: 700; line-height: 1.2; text-decoration: none;
+}
+.links svg { width: 20px; height: 20px; flex: none; fill: currentColor; }
+.links-wide { grid-column: 1 / -1; }
+@media (hover: hover) { .links a:hover span { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; } }
+@media (min-width: 380px) { .links { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 900px) {
+  .site-footer .links { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+  .site-footer .links-wide { grid-column: auto; }
+}
+/* About: the same list, one step bigger (it is the page's content there, not its footer). */
+.links-lg a { min-height: 56px; font-size: var(--step-0); gap: 0.65rem; }
+.links-lg svg { width: 24px; height: 24px; }
+
+/* ---------- 16c. Add to calendar (D53: a server-made .ics per upcoming show) ---------- */
+/* Same calendar-plus glyph everywhere (stroke, like the phone bar's icons), always beside the date it saves, never a word:
+   the words cost the poster a line (31px at 390, over the D39 cap). Screen readers get the full name (aria-label).
+   Poster: a 48px square stamped at the date's right end, in the date's own grid area, so it costs no height; the date
+   line gives up 3.5rem of its width for it (the fitted date shrinks about 16%, the poster gets about 13px shorter). */
+.cal-icon { width: 24px; height: 24px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.poster-date { padding-right: 3.5rem; }
+.cal-link {
+  grid-area: date; justify-self: end; align-self: start; display: grid; place-items: center; width: 48px; height: 48px;
+  color: var(--bg); border: 3px solid var(--bg); border-radius: var(--radius-s);
+}
+/* Rows: the glyph sits under the date. Its button is 48x48 but draws 24x24: the extra 12px on each side reaches into the
+   row's padding and the gap above, where nothing else can be tapped, so the row stays 60px. */
+.row { grid-template-areas: 'date text btn' 'cal text btn'; }
+.row-date { grid-area: date; align-self: end; }
+.row-text { grid-area: text; }
+.row > .btn-show { grid-area: btn; }
+.cal-btn { grid-area: cal; justify-self: start; align-self: start; display: grid; place-items: center; width: 48px; height: 48px; margin: -12px; padding: 12px; color: inherit; }
+.row:not(:has(.cal-btn)) .row-date { grid-row: 1 / span 2; align-self: center; } /* Played rows: no glyph, the date centres as before */
+
+/* ---------- 16d. 404 ---------- */
+:root { --w-lost: 5.2211; --w-lost1: 2.8179; --w-lost2: 2.1825; } /* WRONG TURN. / WRONG / TURN., measured x 1.003 (round2.mjs --measure) */
+.band-lost { padding-top: var(--space-l); }
+/* An empty crate divider: the tab with nothing written on it, hatched. Decorative (aria-hidden). */
+.tab-blank { width: 4.5rem; background-color: var(--text); background-image: repeating-linear-gradient(-45deg, var(--bg) 0 2px, transparent 2px 8px); }
+.lost-title { display: block; }
+.ln-lost1 { font-size: calc(100cqi / var(--w-lost1)); }
+.ln-lost2 { font-size: calc(100cqi / var(--w-lost2)); margin-top: 0.08em; }
+.lost-line { margin-top: var(--space-m); font-size: var(--step-1); font-weight: 700; line-height: 1.3; max-width: 30rem; }
+.lost-actions { display: flex; gap: var(--space-s); margin-top: var(--space-l); }
+.lost-actions .btn { flex: 1; }
+.lost-home { margin-top: var(--space-xs); }
+@media (min-width: 900px) {
+  .lost-title .ln { display: inline; font-size: calc(100cqi / var(--w-lost)); margin: 0; }
+  .ln-lost1::after { content: '\00a0'; }
+  .lost-title { white-space: nowrap; font-size: 0; }
+  .lost-actions { display: inline-flex; }
+  .lost-actions .btn { flex: none; min-width: 11rem; }
+}
+
+/* ---------- 16e. Pressed: instant :active on everything you can tap (D47) ---------- */
+/* One rule: pressed = the colours swap (ground and ink trade places), at once. No transition, no movement, no scale, no
+   shadow, so nothing animates and reduced motion has nothing to stop. It answers a finger only, one swap per tap. Covers
+   and photos are never changed: a pressed tile outlines its cover and inverts its words instead. */
+a, button, summary, label { -webkit-tap-highlight-color: transparent; }
+.btn:active, .btn-solid:active, .btn-line:active, .btn-show:active, .motion-btn:not(:disabled):active,
+.links a:active, .text-link:active, .under-link:active, .listen-on a:active, .now a:active, .legal a:active,
+.quote-credit a:active, .ln-close a:active, .nav-desktop a:active, .sheet a:active, .nav-mobile summary:active {
+  background: var(--text); color: var(--bg); border-color: var(--text); transition: none;
+}
+/* On the poster's paper the ink block is bg with paper letters. */
+.poster .btn-show:active, .cal-link:active { background: var(--bg); color: var(--text); border-color: var(--bg); }
+/* Rows' Tickets / Details is already text on bg-ink, so pressed turns it to the outline look. */
+.row .btn-show:active { background: var(--bg); color: var(--text); border-color: var(--text); }
+/* The row glyph's 48px box reaches past the date column, so only a 36px square round the glyph inverts. */
+.cal-btn:active { background: linear-gradient(var(--text), var(--text)) center / 36px 36px no-repeat; color: var(--bg); }
+.tile-link:active .tile-art, .product-link:active .product-media { outline: 4px solid var(--text); outline-offset: 0; }
+.tile-link:active .tile-text { background: var(--text); color: var(--bg); }
+.tile-link:active .tile-text :is(.tile-artists, .tile-meta) { color: var(--bg); }
+.tile-link:active .tile-tag { background: var(--bg); color: var(--text); }
+.product-link:active .product-name { background: var(--text); color: var(--bg); }
+.yt:active { border-style: solid; border-color: var(--text); }
+.yt:active .yt-play { background: var(--text); }
+.ed-btn:not(:disabled):not([aria-disabled='true']):active, .ed-tab:active, .ed-main:not([aria-disabled='true']):active,
+.ed-file-wrap:active .ed-file { background: var(--text); color: var(--bg); border-color: var(--text); }
+/* .phone-bar a:active stays as built: accent ground, accent-text. */
+
+/* ---------- 16f. Home height (D39): the proposed trim that pays for the link grid ---------- */
+/* Under 700px "Listen everywhere" goes: it is the same smart link as the release's "every platform" 150px below it. From
+   700px it sits beside the Spotify button at no height and stays. */
+@media (max-width: 699px) { .under-player .under-link { display: none; } }

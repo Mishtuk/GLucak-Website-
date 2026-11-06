@@ -11,6 +11,10 @@ Known and in the prototype: Spotify artist link `https://open.spotify.com/artist
 **L2 (2026-11-05): Shop and the admin console** are designed in sections 14 and 15 and prototyped in `prototype/shop.html`
 and `prototype/edit.html` (both open from disk). `node prototype/check.mjs --shop` checks them alone.
 
+**Round 2 (2026-11-06): Music cover grid, footer / About link grid, Add to calendar, 404, pressed feedback** are section 16,
+prototyped in `prototype/music.html`, `prototype/404.html` and Home's Shows block and footer. `node prototype/tools/round2.mjs`
+checks them (shots in `docs/review/round2-design/`); the port list is 16h.
+
 **Open the prototype:** `prototype/index.html` from disk. Switches: `?hero=a` `?hero=b` `?shows=none`
 `?era=placeholder-b` `?identity=out` `?identity=none`. Re-check with `node prototype/check.mjs` (results in
 `prototype/shots/check-report.txt`), then `node prototype/tools/hero-pick.mjs` for the owner's side-by-side.
@@ -365,8 +369,8 @@ worked out once, New York time, at build or page load, and **never ticks**: no l
 "1 day" singular. On release day and after: `<p class="identity-when">Out now. <a class="text-link">Listen</a></p>` and no
 pre-save. No date: the mark and the word only. Gabe's own post settles the date, so the old "IDENTITY, 2027" line is retired.
 
-**Footer (every page).** Closing line "Listen. Shows. Join." fitted, each word a link. Labelled links: Instagram, Threads, X,
-YouTube, SoundCloud, Spotify, Patreon. Slogan. **Photo credits** for that page (`.credits`, muted 16px, section 3b). **Motion on/off**. Automatic year. Privacy. On pages other than Home, add the
+**Footer (every page).** Closing line "Listen. Shows. Join." fitted, each word a link. The link grid (section 16b): Instagram, Threads, X,
+YouTube, Spotify, SoundCloud, Patreon. Slogan. **Photo credits** for that page (`.credits`, muted 16px, section 3b). **Motion on/off**. Automatic year. Privacy. On pages other than Home, add the
 sign-up above the links. The prototype's note about placeholders is removed.
 
 **Phone bar (under 700px, every page, D8).** Always visible: never hides on scroll, so **delete Riverside's hide script**. Listen,
@@ -375,7 +379,7 @@ Shows, Watch, Join; icon plus 16px label, 60px tall plus safe area. Shop replace
 
 ## 6. Other launch pages
 Same header, footer, bar, tokens and tabs. Each page opens with its one fitted phrase, tab above.
-- **Music** (tab Music, RISE): the player; releases as a cover strip with listen links; the IDENTITY block, `era.word` as a fitted line
+- **Music** (tab Music, RISE): the player; releases as the cover grid, the crate (section 16a); the IDENTITY block, `era.word` as a fitted line
   with tracks filling in toward Scenic Route as the larger last row (slots and titles wait on Gabe, D10); SoundCloud.
 - **Shows** (tab Shows, LIVE IT LOUD): table of Date, Venue, City, Tickets; on phones, stacked rows; `with` under the venue. **Played** list.
   Booking email. Empty state as in section 7.
@@ -543,6 +547,8 @@ output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
      the built `fetch` upload and its "Uploading…" line (D41 F2: no progress bar, no XHR);
      `save()` guards with `aria-disabled` (15i); the empty line gets `ed-help ed-empty`; drop the past-row opacity (CSS does it).
      All data still through `textContent` / `value` only.
+- **Port of round 2 (verdict task 7): section 16h.** Cover grid, link grid, Add to calendar, 404, pressed states; CSS block "Round 2" at the
+  end of `prototype/styles.css`, word for word.
 - **CSP:** the prototype ran clean under the exact `server.js` CSP. **No inline scripts:** Riverside's `is:inline` scripts in `Header` and
   `MobileBar` won't run under `script-src 'self'`; move them to external files. `boot.js` must load blocking in `<head>`.
 - **`filter: url(#duo)`** needs the SVG in the same document: print it in `Base` layout.
@@ -556,6 +562,7 @@ output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
 ## 12. Measured (2026-11-05, Gabe's real photos; Chrome headless over DevTools, `Emulation.setDeviceMetricsOverride`, so 320 and 390 are true widths)
 | Check | Result |
 |---|---|
+| **Round 2 (2026-11-06, `node prototype/tools/round2.mjs`, section 16g)** | No sideways scroll at 320 / 390 / 1280 (Home, Music, 404, Shop); targets none under 48px; 16px minimum; contrast lowest 8.77:1 at rest, 16.83:1 pressed, 3 eras; 0 animations on Music and 404; every pressable changes colour, 0 transitions; **Home 5.78 screens** at 390x660 without the note with the 16f trim (5.86 without it) |
 | **L2, Shop and admin console (CHECK 7, `node prototype/check.mjs --shop`, report `shots/check-shop-report.txt`; also in the full run)** | **Re-run 2026-11-06 after D41 (F1-F4).** **No sideways scroll** at 320, 390 and 1280 on 12 states (shop samples / mixed / empty / off; one detail targeted: sample, available with Buy, sold out; edit sign-in, products uploading + 409, products with errors + sign-out ask, shows, empty). **Tap targets:** 3 to 40 per state, **none under 48px** at 320 or 390 (radio rows measured by their label; the file input lies over its 56px button). **Smallest text 16px** (status lines, chips, hints). **Contrast** (45 pairs per era against the nearest painted background, every page state): lowest 5.71:1 placeholder, 7.41:1 placeholder-b, 5.33:1 identity-guess (the accent Buy / Save buttons), field borders 7.41:1+, **none under the floor**. D6: tab "Shop" 17px 700, nav word matches; MERCH 133px at 390. **First products:** top of the first picture at y 362 (y 341 at 320x568); two pictures fully and four partly in view at 390x844, four fully at 1280x800. **Shop page height (D41 F1: only the targeted detail shows; 5 details in the markup, 0 shown without a hash, 1 with):** grid only **1748px = 2.07 screens at 390x844** (2.65 at 390x660; 1791px = 3.15 at 320x568; 1618px = 2.02 at 1280x800), was 3644px = 4.32 at 390x844 with every detail shown. With one detail: sample 2120px = 2.51 at 390x844, available 2168px = 2.57, sold out 2042px = 2.42 (2094-2167px at 1280). **Buy's note (or the status line) is on the first screen** when you arrive from a card: bottom at y 535 (available), 474 (sample), 409 (sold out) against a fold at 782 (390x844) and 598 (390x660); y 333-430 at 1280. **Animations 0** on both pages, normal and reduced motion, also after opening a row and switching tabs. **No innerHTML** (or outerHTML / insertAdjacentHTML / document.write) in `shop.js` or `admin.js`. **CSP and errors: none.** Both open from disk (the font *preload* is refused on `file://` there, as on Home; `@font-face` still loads it). Home unchanged: player 90px visible, 5.80 screens, flash 0.0001 |
 | **L1, treatments + hero by width (D34), re-run 2026-11-05 with `?hero=ab` added to every loop** | Player at 390x660: ab / a **90px visible**, b 80 (unchanged). No sideways scroll at 320, 390, 1280 for ab, a, b. **One hero photo per width (CHECK 2b):** 320, 390, 800, 899 fetch only `a-era-grade-phone-800`; 900 and 1280 only `b-riso-600`. **His face in the strip (A):** eyes at y 46 on phones (name starts at 88; hair top -4 at 390, chin 102), y 106 at 800 (name at 148). **Text over (a), lifted, with the phone veil:** at 390: name **4.65**, slogan **6.18**, brand 3.93 (need 3); Menu **6.82**, Now **14.18** (need 4.5). Second era 4.60 / 5.93 / 3.90 / 6.69 / 11.80; IDENTITY guess 4.76 / 6.43 / 3.95 / 6.94 / 13.86. At 320: 4.72 / 6.02 / 3.94 / 6.35 / 14.29 (second era 4.65 / 5.86, guess 4.83 / 5.81, Menu 6.26-6.48, Now 11.82-14.29). At 800x1024: 3.97 / 8.65 / 4.26 / 7.80 / 13.50. Without the veil the name was 3.07. PUSH PAST FEAR over (d): **5.39:1**. Tap targets 36, none under 48px (Tickets beside the art included). Solid pairs unchanged (lowest 5.33, IDENTITY guess). Reduced motion: no animations. Flash: 86 / 87 / 94 frames, largest change 0.0001. CSP and errors: none; opens from disk. **Home height at 390x660: ab 3938px = 5.80 screens without the note** (was 5.61): the poster art adds 114px (poster 177 to 291px). Cap 5.8 (D39) |
 | Player top at 390x660, clear of the bar (before L1) | A: top 508, bar 598, **90px visible** (was 114; A gave 24px to the strip for his face). B: top 518, **80px visible** (unchanged). Holds with the real Now line "Out now: Duck, Dodge, Jump, Fight (feat. J-BOY)", which wraps to two lines inside its 48px. Box 352px, the real embed |
@@ -621,6 +628,13 @@ output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
 - **A real product photo on the card** was not tried (none exist). The hatch sits under every picture; an opaque photo hides
   it. A product photo with transparency would show the hatch through it: the upload re-encode should flatten onto `bg-2` if
   that ever looks wrong.
+
+- **Round 2 (section 16), Chrome only.** Not run on a real iPhone: `:active` with the empty touchstart listener, `-webkit-tap-highlight-color`,
+  tapping a `text/calendar` link (iOS Add to Calendar sheet; Android downloads the file and offers the calendar app), and **the
+  Instagram in-app browser with an .ics link** (it may not hand the file to the calendar; then the fan has to open the page in
+  Safari). Whether fans read the calendar-plus glyph without words is a guess: watch the real-phone test, and if they don't, the
+  words go back on the Shows page poster only (it has no height cap). The coming singles' real art was not fetched (Linkfire's
+  440px square may be a promo, not the cover). Covers are 300px files: soft on 2x screens from 700px (16h item 8).
 
 ## 14. Shop (`/shop/`, L2 2026-11-05, D36 / D37 / D8)
 **Prototype:** `prototype/shop.html` (`?shop=samples` default | `mixed` (one example per fan state, prototype only) | `empty`,
@@ -860,3 +874,199 @@ order as built, button first), Save full width. **From 700px** the message left,
 ### 15j. Measured (prototype, `check.mjs --shop`, section 12)
 No sideways scroll at 320 / 390 / 1280 in every state; all targets 48px+ (radio rows measured by their label); smallest text 16px;
 lowest contrast 5.33:1 (the accent buttons in the IDENTITY guess era), field borders 7.41:1+; 0 animations.
+
+## 16. Round 2: Music cover grid, link grid, Add to calendar, 404, pressed feedback (Laptop designer, 2026-11-06)
+Sources: `docs/review/round2-verdict.md` task 5, D47, D51, D53, `docs/research/design-round-2.md` items 5-8 and 10,
+`docs/copy/round2.md` (copy, word for word) and `docs/copy/music.md`. **Prototype:** `prototype/music.html`, `prototype/404.html`,
+the Shows block and footer of `prototype/index.html` (both open from disk; `?era=` works on all three). CSS: the block headed
+"Round 2" at the end of `prototype/styles.css`, sections 16a to 16f, **copy it word for word**. Checks: `node
+prototype/tools/round2.mjs` (report and shots in `docs/review/round2-design/`). Port list: 16h.
+
+**Hard rules held:** nothing new moves (0 animations on Music and 404, normal and reduced; no transition on any pressed state);
+covers are never tinted, filtered, bordered or overlaid (D51); only our two fonts; Logo D only in the header and IDENTITY block, on
+solid dark ground, as before; every target 48px or more; 16px minimum; contrast passes in all three eras (16g).
+
+### 16a. Music: the crate (cover grid)
+**The idea:** flipping through a record crate. The covers are Gabe's most eye-catching material, so they do the work: a plain grid,
+no frames, no hover zoom, words underneath like a sleeve's spine.
+
+**Page order (Music):** the RISE band (tab Music, RISE, the player, Play full songs on Spotify, Listen everywhere from 700px),
+**without** its latest-release block (the crate's first released tile is the same release; the build's `RiseBand` takes a
+`release={false}` prop on Music), then a `band releases-band` with "All releases" (`prose-h`), the crate, the IDENTITY block
+(`margin-top: var(--section)`), "Hear more on SoundCloud".
+
+**Grid:** `ul.crate`, 2 columns under 700px, 3 from 700px, 4 from 900px; gap `--space-l --space-m` (from 700px `--space-xl
+--space-l`). At 390 a cover is 166px (2 x 166 = 332 device px on a 2x phone, close to the 300px files); at 1280 it is 283px.
+
+**Order:** every row of `releases.json` except IDENTITY (it has its own block), **newest date first, one sort, no special cases**.
+Coming releases are simply the newest, so they lead: today Scenic Route (Jan 15) then Who I Am (Nov 13), side by side in the first
+row at every width, then Duck, Dodge, Jump, Fight and so on back to Time is at the Essence. Undated rows go last. On release day
+(New York time, the daily rebuild) a coming tile becomes a released one in place; nothing moves position.
+
+**Tile markup** (the whole tile is one link):
+```html
+<li class="tile" data-state="coming">                       <!-- data-state only while the date is after today -->
+  <a class="tile-link" href="{link}" rel="noopener">
+    <img class="tile-art" src="/media/covers/{slug}.webp" alt="" width="300" height="300" loading="lazy">
+    <!-- no cover file: <span class="tile-art tile-art-none" aria-hidden="true"><span class="tile-when">Nov 13</span></span> -->
+    <span class="tile-text">
+      <h3 class="tile-title">{title}</h3>
+      <span class="tile-artists">{artists}</span>              <!-- only when credit(r) is set (D33) -->
+      <span class="tile-meta"><span class="tile-tag">Album</span>Dec 19, 2025</span>   <!-- tag for album / ep only -->
+      <span class="tile-go">Listen</span>                     <!-- coming: Pre-save -->
+    </span>
+  </a>
+</li>
+```
+- **Title exact** from `releases.json` (checked against Spotify, D31), shown in the display face uppercased by CSS only (the text
+  node stays exact, as everywhere else); 1.375rem (1.625rem from 900px), `text-wrap: balance`, `overflow-wrap: anywhere`.
+- **Artists line** (D33): 16px `muted`, only with a second artist ("GLucak, J-BOY", "GLucak, Micah Haun").
+- **Meta line:** released "Sep 4, 2026" (16px `muted`, tabular figures); coming "Out Nov 13, 2026" (16px 700 `text`). Copy:
+  music.md section 2. **Type tag only for Album and EP**, in the Now tag's look (`text` ground, `bg` letters): singles are most of
+  the grid, so the tag marks the exception instead of saying "Single" nine times. (Changes music.md's "Single · Sep 4, 2026" meta;
+  copywriter / boss to OK; no new words.)
+- **Action word** "Listen" (released) or "Pre-save" (coming), 16px 700 underlined: it says what a tap does. Copy: music.md.
+- **Cover `alt=""`:** the title is already the link's text (D41 F4's rule). This replaces music.md's "{title} cover art" alt in
+  the grid only; Home's release block keeps its alt.
+
+**What a tap does:** opens the release's `link` (its smart link, or its Spotify page) in the same tab, `rel="noopener"`, no new
+window; a coming tile opens the same smart link, which carries the pre-save. One target per tile (about 166x290px at 390). No
+SoundCloud link on tiles (no release has one today; if one gets a `soundcloud`, it goes on Home's release block, not here).
+
+**No art yet** (a coming single without a cover file, or any release whose `cover` is missing): `.tile-art-none`, the shop's
+hatch on `bg-2` with a 2px `--line` edge, and the date ("Nov 13", short month + day) as a `bg` label in the display face at 24cqi,
+like a date sticker on an empty sleeve. It is never a made-up cover (D51). A released row without a cover shows the same slot
+without the label. **Coming singles' real art:** when a square cover exists (Spotify after release; the smart link's
+`artwork-440x440` only if it is the cover as made, not a promo), the Desktop's `tools/fetch-covers.mjs` saves it like the others and
+the slot becomes the cover. The verdict's "placeholder cover" is this slot (the grey X box in `public/media/placeholder-cover.svg`
+is retired from the grid).
+
+**Hover** (hover devices): the title underlines (0.06em). **Pressed:** 16e. **Focus:** 3px `text` ring, offset 4px.
+
+**States:** coming (hatched slot or art, "Out {date}", Pre-save) / released (cover, date, Listen) / album or EP (tag) / no cover
+(hatched slot, no label) / no releases at all: the crate is omitted and the IDENTITY block follows the heading (never an empty grid).
+
+### 16b. Link grid (footer on every page, About's "Find GLucak")
+**Replaces `ul.socials`** (loose wrapping words, "X" alone on a line). `ul.links`: a ruled list of glyph + word.
+- **Glyphs:** the brand marks from Simple Icons (CC0 1.0), one colour (`fill: currentColor`, so `text`), 20px, as drawn: never
+  recoloured per brand, redrawn or outlined. Printed once per page as an inline sprite (`<svg class="defs" aria-hidden="true"
+  width="0" height="0">` with `<symbol id="i-instagram" viewBox="0 0 24 24">` and so on; copy the paths from the sprite at the
+  top of `prototype/music.html`). Inline, so CSP needs nothing new. 6.3 KB for all seven.
+- **Cell:** `<li><a href rel="noopener"><svg aria-hidden="true"><use href="#i-x"/></svg><span>X</span></a></li>`: 48px tall, 16px
+  700, gap 0.4rem, no underline (the rules and glyphs say "list of links"; hover underlines the word). Rows ruled with 2px `--line`
+  (top of each cell, bottom of the list), like the show rows.
+- **Columns:** 2 under 380px; **3 from 380px** (the six socials in two rows); **Patreon on its own full row** (`li.links-wide`,
+  `grid-column: 1 / -1`): it is support, not a social, so the odd seventh item is a deliberate row, not an orphan. Footer from
+  900px: all seven in one row. Footer order: Instagram, Threads, X, YouTube, Spotify, **SoundCloud**, Patreon (Spotify and
+  SoundCloud swap): SoundCloud is the widest word (glyph + gap + word = 116px) and at 380-399px it runs 3-6px past its cell, so it
+  goes last in its row, where the overrun lands in the page gutter, never on Spotify's glyph. Under 380px two columns.
+- **About ("Find GLucak"):** the same list with `links-lg` (56px rows, `--step-0`, 24px glyphs), in About's order with Patreon
+  moved last (Spotify, YouTube, Instagram, SoundCloud, Threads, X, then Patreon wide). Not prototyped (About isn't); same CSS.
+
+### 16c. Add to calendar (D53)
+**Where:** the poster card and every upcoming row (shows and open mics), on Home and the Shows page. **Not** on Played rows (past
+shows have no `.ics`; the server answers 404). **What:** a link to the server-made `.ics` for that show (verdict task 7).
+- **The glyph, always beside the date it saves:** calendar-plus (`#i-cal` in the sprite: rect 3/5/18x16, line at y 10, two rings,
+  a + in the page), stroke 2, round caps, like the phone bar's icons. **No visible words.** Why: "Add to calendar" in words cost
+  the poster a line (+31px at 390: Home 5.84, over the D39 cap), and in a row it either doubles the row or squeezes the venue to
+  33px at 320. A calendar-with-a-plus next to a date is the common sign for "save this date". **Accessible name** (round2.md):
+  `aria-label="Add {venue} on {Mon D} to your calendar"` (contains no visible text, so 2.5.3 has nothing to mismatch).
+- **Poster:** `a.cal-link`, a 48px square stamped at the right end of the date line: 3px `bg` border, transparent, the glyph 24px in
+  `bg` ink. It shares the date's grid area (`grid-area: date; justify-self: end; align-self: start`) and `.poster-date` gets
+  `padding-right: 3.5rem`, so the fitted date shrinks about 16% and the **poster is 13px shorter than before** (278px at 390).
+  Works in both poster layouts (phone and the 37rem container) because both have a `date` area.
+- **Rows:** `a.cal-btn` under the date (`grid-template-areas: 'date text btn' 'cal text btn'`, the date `align-self: end`). The glyph
+  draws 24px; its box is 48x48 (`margin: -12px; padding: 12px`), reaching into the row padding and the gap above, where nothing
+  else is tappable, so **rows stay 60px**. Played rows have no glyph and their date centres as before (`:has()`).
+- **States:** default / hover (none beyond the cursor) / pressed (16e: poster square fills `bg` with a `text` glyph; row glyph gets
+  a 36px `text` square behind a `bg` glyph) / focus ring. No "added" state: the phone's calendar takes over and we can't know.
+  No time in the data: all-day event (round2.md). Show today: still has it. A show with no ticket link: still has it.
+- **The file** (coder, from round2.md): `GET /shows/{date}-{venue-slug}.ics`, `Content-Type: text/calendar; charset=utf-8`,
+  `Content-Disposition: attachment; filename="glucak-{date}-{venue-slug}.ics"`, no `download` attribute on the link (iOS Safari
+  opens a `text/calendar` response as "Add to Calendar"; `download` can turn it into a plain file). CRLF, RFC 5545 escaping
+  (`\\ \; \, \n`), http(s) URL only. `prototype/assets/sample-show.ics` is a valid all-day example.
+
+### 16d. 404
+Copy: round2.md section 2, word for word. `<title>Page not found - GLucak</title>`, `noindex`, status 404. Same header (no nav item
+current), footer and phone bar as every subpage. **Nothing moves.**
+- **Tab: an empty crate divider.** `span.tab.tab-blank` (aria-hidden): the tab's shape with no word, hatched `bg` on `text`. The
+  crate has a gap where this page should be; no invented label, and D6's exact-nav-word rule isn't bent.
+- **Heading:** h1 "Wrong turn." as a fitted lockup: phones two lines ("WRONG" / "TURN.", TURN. the bigger word, like PUSH PAST /
+  FEAR), from 900px one line. `--w-lost: 5.2211; --w-lost1: 2.8179; --w-lost2: 2.1825` (measured x 1.003).
+- Then the line "That page isn't here. The music is." (`--step-1`, 700), **Listen** (solid, to Music) and **Shows** (outline, to
+  Shows), the hero's 52px pair, side by side, full width on phones; then **Home** as a text link. aria-labels from round2.md.
+- Everything above the bar in one 390x844 screen (the footer starts at y 590); at 320x640 the buttons and Home are in view.
+- The prototype `404.html` uses page-relative links; the build uses `/music/`, `/shows/`, `/`.
+
+### 16e. Pressed: instant `:active` (D47; the Desktop builds it)
+**One rule: pressed = ground and ink swap places, at once.** No transition, no movement, no scale, no shadow, no opacity change.
+It is feedback to a finger, one swap per tap, so it isn't motion and stays on under reduced motion and with the Motion switch off.
+The largest pressed area is a full-width link cell or tile text block (about 349x52 or 182x130 at 390), far under WCAG 2.3.1's
+small-area threshold; and it only happens as often as someone taps.
+| What | At rest | Pressed |
+|---|---|---|
+| `.btn-solid` (Listen, Join, Patreon, Follow, Buy) | `accent` / `accent-text` | `text` ground, `bg` letters (= its hover) |
+| `.btn-line` (Shows, Pre-save, Spotify button) | outline | `text` ground, `bg` letters |
+| Row Tickets / Details (`.row .btn-show`) | `text` / `bg` | `bg` ground, `text` letters, `text` border |
+| Poster Tickets, poster calendar | `accent` fill / outline square on paper | `bg` ground, `text` letters (an ink block on the paper) |
+| Text links (`.text-link`, Now link, Listen everywhere, listen-on, credit, legal, the closing LISTEN. SHOWS. JOIN., nav, sheet, Menu), link cells, Motion | plain | `text` block behind `bg` letters |
+| Cover tile, product card | cover / picture as made | 4px `text` outline round the cover, the words below inverted (cover never changed) |
+| Row calendar glyph | glyph | 36px `text` square behind a `bg` glyph |
+| Video facade | dashed edge | solid `text` edge, play square `text` |
+| Admin buttons and tabs (`.ed-btn`, `.ed-main`, `.ed-tab`, upload) | as section 15 | inverted |
+| Phone bar | as built | as built (`accent` / `accent-text`) |
+Plus `a, button, summary, label { -webkit-tap-highlight-color: transparent; }` (our own feedback replaces the grey flash), and
+**iOS needs a touch listener for `:active` to fire:** `boot.js` adds `document.addEventListener('touchstart', () => {}, { passive:
+true })` (one line, no work done). Hover rules stay inside `@media (hover: hover)`, so a tap never leaves a sticky hover.
+
+### 16f. Home height (D39) and the trim that pays for it
+The link grid costs the footer 56px at 390 (7 links in 48px rows need 3 rows where wrapped words took 2). D39: additions trim
+first. **Proposed trim (boss to approve): under 700px "Listen everywhere" is hidden**: it is the same smart link as the release
+block's "every platform" 150px below it, and the full-width Spotify button already sits there. From 700px it stays beside the
+button at no height. The calendar costs nothing (poster 13px shorter, rows unchanged). **Result: Home 5.78 screens at 390x660
+without the note** (was 5.80; top 1260 (-56), shows 931 (-13), footer 520 (+56)). No shows booked: 5.46. If the boss rejects the
+trim, Home is 5.86 and needs another trim or a logged cap change.
+
+### 16g. Measured (`node prototype/tools/round2.mjs`, report `docs/review/round2-design/round2-report.txt`)
+| Check | Result |
+|---|---|
+| Sideways scroll | None at 320, 390, 1280 on Home (shows / no shows), Music (two eras), 404, Shop (the glow layer is wider by design and clipped, as before) |
+| Tap targets | Home 38, Music 31, 404 21, Shop 24 at 320 and 390: **none under 48px** (row calendar 48x48 box) |
+| Smallest text | 16px everywhere (Now tag, player note, tile meta, link words) |
+| Contrast, 3 eras, at rest and pressed (`CSS.forcePseudoState`) | Lowest at rest: tile artists 9.01 (placeholder) / 8.77 (placeholder-b) / 9.69 (identity guess); link words and glyphs 14.22+; calendar on the poster 16.83+. Pressed: 16.83+. **None under the floor** |
+| Pressed | Every button, link, card and cell on Home (32), Music (29), 404 (19), Shop (22) changes colour when pressed; **0 have a transition** |
+| Motion | 0 animations on Music and 404, normal and reduced motion. Home unchanged (two motions, section 8) |
+| Home height | **5.78 screens** at 390x660 without the note (cap 5.8), poster 278px, rows 60px (16f) |
+| Music page | Grid starts at y 715 (after the 352px player); 390x844: 2 columns, cover 166px, page 3.73 screens; 1280x800: 4 columns, cover 283px, 3.48 screens |
+| CSP and errors | None under the real CSP |
+| Shots | `docs/review/round2-design/`: music 320 / 390 / 1280 full, Music in the IDENTITY guess, 404 at 320 / 390 / 1280, Home 320 / 390 / 1280 full, shows and footer close-ups at 390 and 1280, pressed tiles and buttons at 390 |
+
+### 16h. Port of round 2 (for the Desktop coder; verdict task 7, plus D47's `:active`)
+Copy the "Round 2" CSS block from `prototype/styles.css` (16a to 16f) to the end of `src/styles/global.css`, word for word. Then:
+1. **`src/components/Icons.astro`** (new): the sprite from `prototype/music.html` (seven Simple Icons symbols + `i-cal`), printed
+   once in `Base.astro` right after `<body>`. Credit "Brand icons: Simple Icons (CC0)" in a source comment; no page credit needed.
+2. **`Footer.astro`:** replace `<ul class="socials">…` with `<ul class="links">`, each item `<li><a href rel="noopener"><svg
+   aria-hidden="true"><use href="#i-{id}"/></svg><span>{name}</span></a></li>`, Patreon's `li` gets `class="links-wide"`. Give
+   `SOCIALS` in `content.js` an `id` per row and the 16b order (`instagram threads x youtube spotify soundcloud patreon`). Remove the old `.socials`
+   rules from `global.css`.
+3. **`about/index.astro`:** "Find GLucak" becomes `<ul class="links links-lg">` with the same items, `ORDER` = Spotify, YouTube,
+   Instagram, SoundCloud, Threads, X, Patreon (wide).
+4. **`music/index.astro`:** `<RiseBand release={false} />` (RiseBand skips its `article.release` and quote when false); the
+   releases band becomes `<section class="band releases-band" id="releases">` with `prose-h` "All releases", one `ul.crate` built
+   from **all** rows (released and upcoming, minus IDENTITY) sorted newest date first, tile markup as 16a. Coming = `date >
+   etDay()`: `data-state="coming"`, "Out {dateLine}", Pre-save; no cover -> `.tile-art-none` with "{Mon D}". Drop the
+   `releases coming` list, `release-row`, the `Single ·` meta and the "Placeholder cover" chip. IDENTITY block and the SoundCloud
+   line stay after the crate (`.releases-band .identity-state` sets the gap).
+5. **`src/lib/shows.js`:** `posterHtml` and `rowHtml` print the calendar link for **upcoming rows only** (a `past` flag from
+   `playedHtml`): poster `<a class="cal-link" href="/shows/{key}.ics" aria-label="Add {venue} on {Mon D} to your calendar"><svg
+   class="cal-icon" aria-hidden="true"><use href="#i-cal"/></svg></a>` right after the `.poster-date`; rows `<a class="cal-btn" …>`
+   (same inside) right after `.row-date`. `{venue}` escaped; `{key}` = the same date + venue slug the `.ics` route derives. Tests: the
+   link is absent on Played rows; a venue with `<script>` / quotes stays escaped in the `aria-label`.
+6. **The `.ics` route and `404.astro`:** as verdict task 7. 404 markup: copy `prototype/404.html`'s `<main>` (links `/music/`,
+   `/shows/`, `/`), add `--w-lost*` to `:root`. Served with status 404 for unknown paths.
+7. **`public/js/` boot script:** the one `touchstart` line from `prototype/boot.js` (16e). No other JS.
+8. **Covers:** `fetch-covers.mjs` saves a 640px file next to the 300px one where Spotify has it, and the tile gets `srcset="… 300w,
+   … 640w" sizes="(min-width: 900px) 18rem, (min-width: 700px) 30vw, 45vw"` (at 1280 the 300px file shows at 283px, soft on 2x).
+   Nice to have, not blocking.
+9. **Home trim (16f), only after the boss approves it:** the `@media (max-width: 699px) { .under-player .under-link { display:
+   none; } }` line. Without it the build's Home grows by the link grid's 56px.

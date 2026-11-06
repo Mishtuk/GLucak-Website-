@@ -67,6 +67,17 @@
     return a;
   };
   const place = (s) => `${s.venue}, ${s.city}`;
+  // Round 2 (D53, DESIGN 16c): Add to calendar. The build links /shows/{date}-{venue-slug}.ics (server-made, escaped);
+  // the prototype links one sample file. A glyph beside the date (poster: a stamped square), the full name for screen readers.
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const calIcon = () => { const s = document.createElementNS(SVGNS, 'svg'); s.setAttribute('class', 'cal-icon'); s.setAttribute('aria-hidden', 'true'); const u = document.createElementNS(SVGNS, 'use'); u.setAttribute('href', '#i-cal'); s.append(u); return s; };
+  function cal(s, words) {
+    const a = el('a', words ? 'cal-link' : 'cal-btn');
+    a.href = 'assets/sample-show.ics';
+    a.setAttribute('aria-label', `Add ${s.venue} on ${s.date} to your calendar`);
+    a.append(calIcon());
+    return a;
+  }
 
   // The poster's art: treatment (c), the gig-poster cut (one ink, coarse screen, torn bottom edge). Halftone, so it is
   // screened at 600 and 1000px and `sizes` matches the slot: about half the width on phones, 23rem when the card is wide.
@@ -94,12 +105,14 @@
     li.append(meta);
     const b = action(s);
     if (b) li.append(b);
+    li.append(cal(s, true));
     li.append(el('span', 'ph-chip ph-chip-dark', 'Placeholder show'));
     return li;
   }
-  function row(s) {
+  function row(s, past = false) {
     const li = el('li', 'row');
     li.append(el('span', 'row-date', s.date));
+    if (!past) li.append(cal(s, false)); // Played rows: no calendar (past shows have no .ics)
     const t = el('span', 'row-text');
     t.append(el('span', 'row-place', place(s)));
     t.append(el('span', 'row-kind', s.type === 'open-mic' ? 'Open mic' : 'Show'));
@@ -112,7 +125,7 @@
     const box = el('div', 'played');
     box.append(el('h3', '', 'Played'));
     const ul = el('ul', 'rows');
-    GL.played.forEach((s) => ul.append(row(s)));
+    GL.played.forEach((s) => ul.append(row(s, true)));
     box.append(ul);
     return box;
   }

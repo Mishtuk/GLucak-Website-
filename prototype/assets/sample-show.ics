@@ -1,0 +1,16 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//GLucak//Shows//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:2026-12-05-venue-name@glucak.com
+DTSTAMP:20261106T120000Z
+DTSTART;VALUE=DATE:20261205
+DTEND;VALUE=DATE:20261206
+SUMMARY:GLucak at Venue name
+LOCATION:Venue name\, City
+DESCRIPTION:GLucak live.\nWith Guest name.\nVenue name\, City\nTickets: https://example.com/placeholder
+URL:https://example.com/placeholder
+END:VEVENT
+END:VCALENDAR

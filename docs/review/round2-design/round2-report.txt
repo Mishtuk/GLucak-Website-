@@ -1,0 +1,79 @@
+R2-1: no sideways scroll at 320, 390, 1280
+  home: 320: 320/320 OVERFLOW glow:391, 390: 390/390 OVERFLOW glow:476, 1280: 1280/1280 OVERFLOW glow:1562
+  home no shows: 320: 320/320 OVERFLOW glow:391, 390: 390/390 OVERFLOW glow:476, 1280: 1280/1280 OVERFLOW glow:1562
+  music: 320: 320/320, 390: 390/390, 1280: 1280/1280
+  music identity-guess: 320: 320/320, 390: 390/390, 1280: 1280/1280
+  404: 320: 320/320, 390: 390/390, 1280: 1280/1280
+  shop: 320: 320/320, 390: 390/390, 1280: 1280/1280
+R2-2: tap targets at 320 and 390 (every link and button; under 48px listed)
+  home at 320: 38 targets, under 48px: none
+  home at 390: 38 targets, under 48px: none
+  home no shows at 320: 33 targets, under 48px: none
+  home no shows at 390: 33 targets, under 48px: none
+  music at 320: 32 targets, under 48px: none
+  music at 390: 32 targets, under 48px: none
+  music identity-guess at 320: 32 targets, under 48px: none
+  music identity-guess at 390: 32 targets, under 48px: none
+  404 at 320: 21 targets, under 48px: none
+  404 at 390: 21 targets, under 48px: none
+  shop at 320: 24 targets, under 48px: none
+  shop at 390: 24 targets, under 48px: none
+R2-3: smallest text at 320 and 390
+  home at 320: [["16","now-tag"],["17","SUMMARY"],["18","row-place"]]
+  home at 390: [["16","now-tag"],["17","SUMMARY"],["18","row-place"]]
+  home no shows at 320: [["16","now-tag"],["17","SUMMARY"],["18","row-place"]]
+  home no shows at 390: [["16","now-tag"],["17","SUMMARY"],["18","row-place"]]
+  music at 320: [["16","player-note"],["17","SUMMARY"],["18","TIME"]]
+  music at 390: [["16","player-note"],["17","SUMMARY"],["18","TIME"]]
+  music identity-guess at 320: [["16","player-note"],["17","SUMMARY"],["18","TIME"]]
+  music identity-guess at 390: [["16","player-note"],["17","SUMMARY"],["18","TIME"]]
+  404 at 320: [["16","SPAN"],["17","SUMMARY"],["18","text-link"]]
+  404 at 390: [["16","SPAN"],["17","SUMMARY"],["18","text-link"]]
+  shop at 320: [["16","product-status is-coming-soon"],["17","SUMMARY"],["18","shop-banner"]]
+  shop at 390: [["16","product-status is-coming-soon"],["17","SUMMARY"],["18","shop-banner"]]
+R2-4: contrast of the new pieces, every era, normal and pressed (:active forced over CDP); text 4.5:1, glyphs and display 3:1
+  placeholder: 14 pairs, lowest tile artists 9.01:1, link cell word 14.77:1, link icon 14.77:1, calendar on poster 17.32:1; under the floor: none
+  placeholder pressed: 14 pairs, lowest link cell word 17.32:1, link icon 17.32:1, calendar on poster 17.32:1, calendar icon in row 17.32:1; under the floor: none
+  placeholder-b: 14 pairs, lowest tile artists 8.77:1, link cell word 14.22:1, link icon 14.22:1, calendar on poster 16.83:1; under the floor: none
+  placeholder-b pressed: 14 pairs, lowest link cell word 16.83:1, link icon 16.83:1, calendar on poster 16.83:1, calendar icon in row 16.83:1; under the floor: none
+  identity-guess: 14 pairs, lowest tile artists 9.69:1, link cell word 15.10:1, link icon 15.10:1, calendar on poster 17.24:1; under the floor: none
+  identity-guess pressed: 14 pairs, lowest link cell word 17.24:1, link icon 17.24:1, calendar on poster 17.24:1, calendar icon in row 17.24:1; under the floor: none
+R2-5: :active on every button and card: pressed colours differ from rest, and no transition anywhere
+  index.html: 32 pressables, unchanged when pressed: 0, with a transition: 0
+  music.html: 30 pressables, unchanged when pressed: 0, with a transition: 0
+  404.html: 19 pressables, unchanged when pressed: 0, with a transition: 0
+  shop.html: 22 pressables, unchanged when pressed: 0, with a transition: 0
+R2-6: animations (normal and reduced motion) on the new pages
+  music.html: 0 animations
+  music.html reduced: 0 animations
+  404.html: 0 animations
+  404.html reduced: 0 animations
+R2-7: Home height at 390x660 (D39 cap 5.8 without the note) and the poster
+  ?hero=ab: 3925px = 5.95 screens, 5.78 without the note (top 1260, shows 931, about 575, join 578, footer 520)
+  ?shows=none: 3713px = 5.63 screens, 5.46 without the note (top 1260, shows 718, about 575, join 578, footer 520)
+  poster / rows: {"poster":278,"rows":[60,60]}
+R2-8: Music page at 390x844 and 1280x800: where the grid starts, tiles in the first screen, page length
+  390x844: grid top 771px, 2 columns, cover 166px, grid 1599px, page 3203px = 3.80 screens
+  1280x800: grid top 715px, 4 columns, cover 283px, grid 1288px, page 2782px = 3.48 screens
+R2-9: shots
+  music-390-full.png
+  music-1280-full.png
+  music-320-full.png
+  music-identity-guess-390.png
+  404-390.png
+  404-1280.png
+  404-320.png
+  404-390-full.png
+  home-390-full.png
+  home-1280-full.png
+  home-320-full.png
+  home-identity-guess-390-full.png
+  shop-390-full.png
+  shows-390.png
+  shows-1280.png
+  footer-390.png
+  footer-1280.png
+  pressed-390.png
+  pressed-buttons-390.png
+Page errors and CSP (real CSP; Spotify's own frame noise ignored):
+  none
