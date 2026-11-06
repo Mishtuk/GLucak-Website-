@@ -2,13 +2,14 @@
 // shows list into the HTML at the <!--gl:shows--> marker on every request (so past shows drop off by themselves), and
 // the shop at <!--gl:shop--> the same way. SHOP_ENABLED=1 adds Shop to the nav, phone bar and footer (D8, D36).
 // Gabe's edit screen lives under /edit/: sign-in, then GET/POST /edit/api/shows and /edit/api/products, and
-// POST /edit/api/upload for product images (served back from /media/uploads/). Node 22+ built-ins, plus sharp for uploads.
+// POST /edit/api/upload for product images (served back from /media/uploads/), GET /edit/api/backup for a backup file. Node 22+ built-ins, plus sharp for uploads.
 import { createServer } from 'node:http';
 import { randomBytes } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { extname, join, normalize, sep } from 'node:path';
 import { brotliCompressSync, constants as zc, gzipSync } from 'node:zlib';
-import { icsById, nowHtml, showsHtml, showsLdHtml } from './src/lib/shows.js';
+import { etDay, icsById, nowHtml, showsHtml, showsLdHtml } from './src/lib/shows.js';
+import { makeBackup } from './src/lib/backup.js';
 import { signup } from './src/lib/signup.js';
 import { allow, checkLogin, clearFailures, cookieHeader, locked, parseEditors, readCookie, recordFailure, sameOrigin, signSession, verifySession, SESSION_DAYS, USER_LOCK } from './src/lib/auth.js';
 import { checkShows, listVersion, readList, readShows, saveList } from './src/lib/store.js';
@@ -178,6 +179,14 @@ async function handleEdit(req, res, url) {
     const who = editor(req, url);
     if (!who) return json(401, { error: 'signed_out' });
     return json(200, { editor: who, [kind]: readList(DATA, list.fallback, list.file), version: listVersion(DATA, list.fallback, list.file) });
+  }
+  if (req.method === 'GET' && p === '/edit/api/backup') { // one JSON file of the live data (src/lib/backup.js), for Gabe to keep
+    const who = editor(req, url);
+    if (!who) return json(401, { error: 'signed_out' });
+    if (!allow(`backup:${who}`, 10, 60 * 60e3)) return json(429, { error: 'slow_down', message: 'Too many backups. Wait an hour, then try again.' });
+    const body = Buffer.from(JSON.stringify(makeBackup(DATA, { shows: SHOWS, products: PRODUCTS }))); // ponytail: built in memory, fine under the 50 MB restore cap
+    console.log(new Date().toISOString(), `backup downloaded by ${who}: ${body.length} bytes`);
+    return send(req, res, 200, 'application/json', body, { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex', 'Content-Disposition': `attachment; filename="glucak-backup-${etDay()}.json"` });
   }
   if (req.method !== 'POST') return json(405, { error: 'method' }, { Allow: 'POST' });
   if (!sameOrigin(req.headers)) return json(403, { error: 'origin', message: "That didn't go through. Try again." });

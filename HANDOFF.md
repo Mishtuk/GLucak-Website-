@@ -67,8 +67,10 @@
   `docs/review/photo-treatments/` DONE (018f486, sheet.png). Picks: hero A (a) era grade, hero B (b) riso / (f) MCCC,
   Live It Loud (c) poster, Push Past Fear (d) crowd, About (e) contact strip (swap its HANDS frame). **Privacy:** the
   child in the crowd is in frame on the current hero A + likely Push Past Fear; (a) and (d) leave him out: swap soon.
-- **Desktop (2026-11-06): backup + restore** for DATA_DIR (launch risk #1). Claimed: `server.js`, `src/lib/`,
-  `public/js/edit.js`, `src/pages/edit/`, `tools/backup.mjs`, `test/`.
+- **Desktop (2026-11-06): backup + restore DONE.** /edit/ 'Download a backup' (GET /edit/api/backup, signed in, 10/h,
+  one JSON with shows + products + uploads); restore is owner-only CLI: `node tools/backup.mjs export [out]`,
+  `restore <file>` (dry run) / `--yes` (validates everything first, saves `DATA_DIR/pre-restore-<time>.json`, atomic
+  writes). Words at src/pages/edit/index.astro:64-65 await the Laptop. `npm test` 136/136.
 - **Desktop (2026-11-06):** round-2 design ported (Music crate, link grids, Add to calendar + `.ics`, 404) and D61 show
   address (edit-only; JSON-LD + .ics). `npm test` 131/131. Claims released except `server.js`, `src/lib/`.
 - **Desktop research round 3 DONE:** `launch-readiness.md` (host rec: Render Starter + disk, runner-up Azure B1;

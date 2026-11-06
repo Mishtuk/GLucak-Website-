@@ -60,6 +60,10 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
             <p id="p-msg" class="ed-msg" role="status"></p>
           </div>
         </div>
+        <div class="ed-backup">
+          <!-- COPY: Laptop --><a class="ed-btn ed-plain" href="/edit/api/backup" download aria-describedby="backup-hint">Download a backup</a>
+          <!-- COPY: Laptop --><p id="backup-hint" class="ed-hint">Saves your shows, products and photos in one file. Keep it somewhere safe.</p>
+        </div>
       </section>
     </main>
     <style is:global>
@@ -119,6 +123,8 @@ html:has(.ed-body) { scroll-padding: 1rem 0 10rem; } /* a focused field never hi
   .ed-btn:not(:disabled):not([aria-disabled='true']):hover { background: var(--text); color: var(--bg); border-color: var(--text); }
 }
 
+/* Backup: one plain link under both tabs (both lists and the photos go in one file). */
+.ed-backup { margin-block: var(--space-l) var(--space-xl); padding-top: var(--space-m); border-top: 2px dashed var(--line); }
 .ed-who { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xs) var(--space-m); margin-top: var(--space-l); font-weight: 700; }
 /* Sign out with unsaved changes: the paper box, two plain buttons (D41 F3: one accent button per view, and that is Save). */
 .ed-ask { margin-top: var(--space-m); padding: var(--space-m); background: var(--text); color: var(--bg); font-weight: 700; }
