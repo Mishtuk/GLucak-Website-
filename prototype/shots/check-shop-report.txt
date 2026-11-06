@@ -1,0 +1,84 @@
+CHECK 7 (L2): Shop and admin console
+CHECK 7a: no sideways scroll at 320, 390, 1280
+  shop: 320: 320/320, 390: 390/390, 1280: 1280/1280
+  shop mixed: 320: 320/320, 390: 390/390, 1280: 1280/1280
+  shop empty: 320: 320/320, 390: 390/390, 1280: 1280/1280
+  shop off: 320: 320/320, 390: 390/390, 1280: 1280/1280
+  detail sample: 320: 320/320, 390: 390/390, 1280: 1280/1280
+  detail buy: 320: 320/320, 390: 390/390, 1280: 1280/1280
+  detail sold out: 320: 320/320, 390: 390/390, 1280: 1280/1280
+  edit sign-in: 320: 320/320, 390: 390/390, 1280: 1280/1280
+  edit products: 320: 320/320, 390: 390/390, 1280: 1280/1280
+  edit products error: 320: 320/320, 390: 390/390, 1280: 1280/1280
+  edit shows: 320: 320/320, 390: 390/390, 1280: 1280/1280
+  edit empty: 320: 320/320, 390: 390/390, 1280: 1280/1280
+CHECK 7b: tap targets (every link, button, field and the upload button) at 320 and 390
+  shop at 320: 24 targets, under 48px: none
+  shop at 390: 24 targets, under 48px: none
+  shop mixed at 320: 24 targets, under 48px: none
+  shop mixed at 390: 24 targets, under 48px: none
+  shop empty at 320: 19 targets, under 48px: none
+  shop empty at 390: 19 targets, under 48px: none
+  shop off at 320: 23 targets, under 48px: none
+  shop off at 390: 23 targets, under 48px: none
+  detail sample at 320: 24 targets, under 48px: none
+  detail sample at 390: 24 targets, under 48px: none
+  detail buy at 320: 25 targets, under 48px: none
+  detail buy at 390: 25 targets, under 48px: none
+  detail sold out at 320: 24 targets, under 48px: none
+  detail sold out at 390: 24 targets, under 48px: none
+  edit sign-in at 320: 3 targets, under 48px: none
+  edit sign-in at 390: 3 targets, under 48px: none
+  edit products at 320: 38 targets, under 48px: none
+  edit products at 390: 38 targets, under 48px: none
+  edit products error at 320: 40 targets, under 48px: none
+  edit products error at 390: 40 targets, under 48px: none
+  edit shows at 320: 18 targets, under 48px: none
+  edit shows at 390: 18 targets, under 48px: none
+  edit empty at 320: 5 targets, under 48px: none
+  edit empty at 390: 5 targets, under 48px: none
+CHECK 7c: smallest text at 320 and 390 (three smallest sizes and where)
+  shop at 320: [["16","product-status is-coming-soon"],["17","SUMMARY"],["18","shop-banner"]]
+  shop at 390: [["16","product-status is-coming-soon"],["17","SUMMARY"],["18","shop-banner"]]
+  shop mixed at 320: [["16","ph-chip inline"],["17","SUMMARY"],["18","product-price"]]
+  shop mixed at 390: [["16","ph-chip inline"],["17","SUMMARY"],["18","product-price"]]
+  detail buy at 320: [["16","ph-chip inline"],["17","SUMMARY"],["18","product-price"]]
+  detail buy at 390: [["16","ph-chip inline"],["17","SUMMARY"],["18","product-price"]]
+  edit products at 320: [["16","ph-chip inline"],["17","ed-btn ed-plain"],["18","SPAN"]]
+  edit products at 390: [["16","ph-chip inline"],["17","ed-btn ed-plain"],["18","SPAN"]]
+  edit shows at 320: [["16","ph-chip inline"],["17","ed-btn ed-plain"],["18","SPAN"]]
+  edit shows at 390: [["16","ph-chip inline"],["17","ed-btn ed-plain"],["18","SPAN"]]
+  edit sign-in at 320: [["16","ph-chip inline"],["17","LABEL"],["18","ed-msg"]]
+  edit sign-in at 390: [["16","ph-chip inline"],["17","LABEL"],["18","ed-msg"]]
+CHECK 7d: contrast, computed colors against the nearest painted background, every era (text 4.5:1; field borders and large display 3:1)
+  placeholder: 45 pairs, lowest Buy 5.71:1, main button 5.71:1, footer muted 7.68:1, field border 7.68:1; under the floor: none
+  placeholder-b: 45 pairs, lowest footer muted 7.41:1, field border 7.41:1, row number 7.41:1, row meta 7.41:1; under the floor: none
+  identity-guess: 45 pairs, lowest Buy 5.33:1, main button 5.33:1, footer muted 8.49:1, field border 8.49:1; under the floor: none
+CHECK 7e: D6 tab on the Shop page at 390
+  {"tab":"Shop","size":"17px","weight":"700","navWord":true,"merch":"133px font, 348px wide of 349"}
+CHECK 7f: where the first products sit (first screen, without scrolling)
+  320x568: first picture top 341px, fold 506px; pictures fully in view 2, partly 2; page 1791px = 3.15 screens
+  390x844: first picture top 362px, fold 782px; pictures fully in view 2, partly 4; page 1748px = 2.07 screens
+  390x660: first picture top 362px, fold 598px; pictures fully in view 2, partly 2; page 1748px = 2.65 screens
+  1280x800: first picture top 362px, fold 800px; pictures fully in view 4, partly 5; page 1618px = 2.02 screens
+CHECK 7f2 (D41 F1): only the targeted detail shows; page height with it, and Buy + note on the first screen
+  no hash at 390x844: details in the page 5, shown 0; page 1748px = 2.07 screens
+  no hash at 390x660: details in the page 5, shown 0; page 1748px = 2.65 screens
+  no hash at 1280x800: details in the page 5, shown 0; page 1618px = 2.02 screens
+  sample at 390x844: details in the page 5, shown 1 (product-sample-glucak-tee); page 2120px = 2.51 screens; Buy note / status bottom at y 474 of fold 782 (in view)
+  sample at 390x660: details in the page 5, shown 1 (product-sample-glucak-tee); page 2120px = 3.21 screens; Buy note / status bottom at y 474 of fold 598 (in view)
+  sample at 1280x800: details in the page 5, shown 1 (product-sample-glucak-tee); page 2094px = 2.62 screens; Buy note / status bottom at y 350 of fold 800 (in view)
+  available at 390x844: details in the page 5, shown 1 (product-example-available); page 2168px = 2.57 screens; Buy note / status bottom at y 535 of fold 782 (in view)
+  available at 390x660: details in the page 5, shown 1 (product-example-available); page 2168px = 3.28 screens; Buy note / status bottom at y 535 of fold 598 (in view)
+  available at 1280x800: details in the page 5, shown 1 (product-example-available); page 2167px = 2.71 screens; Buy note / status bottom at y 430 of fold 800 (in view)
+  sold out at 390x844: details in the page 5, shown 1 (product-example-sold-out); page 2042px = 2.42 screens; Buy note / status bottom at y 409 of fold 782 (in view)
+  sold out at 390x660: details in the page 5, shown 1 (product-example-sold-out); page 2042px = 3.09 screens; Buy note / status bottom at y 409 of fold 598 (in view)
+  sold out at 1280x800: details in the page 5, shown 1 (product-example-sold-out); page 2167px = 2.71 screens; Buy note / status bottom at y 333 of fold 800 (in view)
+CHECK 7g: motion on the Shop and admin pages (animations after load and after opening a row; reduced motion)
+  shop: animations 0 (normal), 0 (reduced motion)
+  edit: animations 0 (normal), 0 (reduced motion)
+CHECK 7h: HTML-from-strings in shop.js, admin.js: none (textContent / value / attributes only)
+Opens from disk: shop.html: 5 .product-card rendered, font true; file:// only: Failed to load resource: net::ERR_FAILED big-shoulders-display-900.woff2
+Opens from disk: edit.html: 8 .ed-row rendered, font true; file:// only: Failed to load resource: net::ERR_FAILED big-shoulders-display-900.woff2
+Page errors and CSP (served with the real CSP):
+  none

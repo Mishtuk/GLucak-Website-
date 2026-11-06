@@ -108,6 +108,8 @@ Row errors (Server, each starts "Show N:" and the card gets a "!" mark):
 | Empty state (new) | none | **No products yet. Press Add product.** | 38 |
 | Save | Save products | **Save products** (keep) | 13 |
 | Reorder | Up / Down | **Move up / Move down** | 7 / 9 |
+| Open a row (L2, D41) | (new) | **Edit** (pressed look + `aria-expanded` show it's open; no "Close" label) | 4 |
+| Sign-out confirm, stay button (D41) | Stay | **Stay** (keep as built; a plain button, not the accent one) | 4 |
 | Delete | Delete | **Delete** (keep) | 6 |
 | Delete confirm | Delete {name}? It goes away when you press Save. | **keep** (falls back to "this product") | n/a |
 | Products would not load | Couldn't load the products. Reload the page. | **keep** | 44 |

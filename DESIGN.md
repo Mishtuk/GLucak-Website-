@@ -8,6 +8,9 @@ era (colors). Type is **locked** (section 2). Hero A vs B waits on the owner's p
 waiting on Gabe: IDENTITY colors and art, the booking email, and his OK on the two "From Gabe" quotes (R1, L2 in `docs/copy/home.md`).
 Known and in the prototype: Spotify artist link `https://open.spotify.com/artist/1SxMTO4oSXDbNSNzxx7cVX` (footer Spotify link).
 
+**L2 (2026-11-05): Shop and the admin console** are designed in sections 14 and 15 and prototyped in `prototype/shop.html`
+and `prototype/edit.html` (both open from disk). `node prototype/check.mjs --shop` checks them alone.
+
 **Open the prototype:** `prototype/index.html` from disk. Switches: `?hero=a` `?hero=b` `?shows=none`
 `?era=placeholder-b` `?identity=out` `?identity=none`. Re-check with `node prototype/check.mjs` (results in
 `prototype/shots/check-report.txt`), then `node prototype/tools/hero-pick.mjs` for the owner's side-by-side.
@@ -404,7 +407,8 @@ Same header, footer, bar, tokens and tabs. Each page opens with its one fitted p
     confirms its crop: same frame as hero A, Gabe plus one back of a head, so it passes the rule.
 - **From Gabe on other pages:** the same style and rules as Home (section 5), at most one per band, after the band's main content.
 - **Privacy:** plain text page, footer link only. Covers email sign-up and the Spotify embed.
-- **Hidden shop slot:** one nav entry and a link to the Fourthwall store, off by a switch. No shop page in phase 3.
+- **Shop** (tab Shop, MERCH): built early (D36, temporary store), designed in **section 14**. Off by `SHOP_ENABLED`; when on,
+  Shop joins the nav, the sheet and the footer line, and replaces Watch in the phone bar (D8).
 
 ## 7. States
 | Case | Shows |
@@ -451,6 +455,8 @@ content right under the heading (D6). Tab and phrase share one `<h2>`: `<span cl
 so screen readers and find-in-page get both. 3px focus ring in `text`. Skip link. No autoplay sound.
 
 ## 10. Gabe's edit screen
+**The look of `/edit/` (sign-in, tabs, rows, editor form, upload, save bar, every message state) is section 15.** This
+section keeps the scope.
 One simple form page per thing, large fields, plain words, phone friendly. Built on Riverside's admin pattern; every field escaped on
 output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
 - **Shows:** list with Add, Edit, Delete. Fields: Date (date picker), Time (optional), Type (Show / Open mic), Venue, City, Link (optional, hint:
@@ -506,6 +512,37 @@ output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
     `sizes="(min-width: 640px) 23rem, 50vw"`, and the shows/video split moving from 900px to 72rem. `src/lib/shows.js` prints the art
     in the poster `li` only (rows never get it).
   - Credits: the MCCC credit only with `HERO = 'b'` under 900px; Paslier's credit goes (his still isn't used).
+- **Port of L2 for D4 (2026-11-05): Shop (section 14) and the admin console (section 15).** CSS is the block headed "L2" at the end
+  of `prototype/styles.css`; copy it word for word. In order:
+  1. **`src/styles/global.css`:** add to `:root` `--w-merch: 2.6128;` and `--hatch: repeating-linear-gradient(-45deg,
+     color-mix(in srgb, var(--line) 70%, transparent) 0 2px, transparent 2px 14px);`; add `[hidden] { display: none !important; }` and
+     `.vh {…}` from the prototype's reset; add the `aria-current` rules (nav, sheet, phone bar) from "Subpages"; **replace** the built
+     Shop block (`.shop-title .phrase` to `@media (min-width: 700px) { .product-detail … }`) with the prototype's "Shop" block; keep
+     the built `.ln-close:has(a[href$="/shop/"]) { --w-close: 10.46; }` (the prototype's `.ln-close-shop` is its stand-in).
+     The Shop block includes **`.shop-details .product-detail:not(:target) { display: none; }`** (D41 F1: only the detail you
+     came to shows; the server still prints every detail, so shared `#product-<id>` links work).
+  2. **`src/pages/shop/index.astro`:** the phrase becomes `<span class="phrase fit"><span class="ln ln-merch">Merch</span></span>`.
+  3. **`src/lib/products.js`:** `card()`: `<li class="product-card" data-status="${p.status}">`, then after `img(…)` the tape
+     (`<span class="product-tape" aria-hidden="true">Sample</span>` for sample, `…>Sold out</span>` for sold-out, nothing else).
+     `detail()`: `data-status` on the `article` and the same tape after its `img`. Status `p`: `class="product-status ${cls}"`
+     with `is-sold-out` / `is-available` (buyable) / `is-coming-soon` (everything else), on the card and in `actionHtml()` (replaces
+     the `is-sold-out`-only logic). **The card's `img` gets `alt=""`** (D41 F4: the name is already the link's text); the
+     detail's `img` keeps `alt="{name}"`. Everything else (escaping, price rule, Buy + note) unchanged. Tests: the tape and class
+     appear for each status; the tape's text is never data; card `alt` empty, detail `alt` the escaped name.
+  4. **`tools/make-shop-samples.mjs`:** render `prototype/assets/shop/sample-*.svg` as they are to transparent WebP
+     (`sharp(svg).webp({ quality: 90, alphaQuality: 100 })`), same names in `public/media/shop/`. No era colours, no text in the image.
+  5. **`src/pages/edit/index.astro`:** replace the `<style is:global>` rules with the prototype's "Admin console" block (keep
+     `[hidden]`); `#out-ask` becomes `<div id="out-ask" class="ed-ask" role="alert" hidden><p>…question…</p><p class="ed-ask-btns">
+     <button id="out-yes" class="ed-btn">Sign out</button> <button id="out-no" class="ed-btn">Stay</button></p></div>` (Stay is a
+     plain `ed-btn`, D41 F3: one accent button per view);
+     Add buttons get `ed-add`. The Save button stays before its message (CSS reorders).
+  6. **`public/js/edit.js`** (the prototype's `prototype/admin.js` is a working reference with the same names): `say(el, text,
+     state)` sets `data-state` per the table in 15h; rows rebuilt as 15f (head, actions, `fieldset.ed-form[hidden]` with a `.vh`
+     legend, Edit with `aria-expanded` / `aria-controls`, new rows open, error rows `.bad` + open, `err` in the head); `number()` also
+     disables Move up on the first row and Move down on the last; Status as radios (15g); the upload button markup (15g), keeping
+     the built `fetch` upload and its "Uploading…" line (D41 F2: no progress bar, no XHR);
+     `save()` guards with `aria-disabled` (15i); the empty line gets `ed-help ed-empty`; drop the past-row opacity (CSS does it).
+     All data still through `textContent` / `value` only.
 - **CSP:** the prototype ran clean under the exact `server.js` CSP. **No inline scripts:** Riverside's `is:inline` scripts in `Header` and
   `MobileBar` won't run under `script-src 'self'`; move them to external files. `boot.js` must load blocking in `<head>`.
 - **`filter: url(#duo)`** needs the SVG in the same document: print it in `Base` layout.
@@ -519,6 +556,7 @@ output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
 ## 12. Measured (2026-11-05, Gabe's real photos; Chrome headless over DevTools, `Emulation.setDeviceMetricsOverride`, so 320 and 390 are true widths)
 | Check | Result |
 |---|---|
+| **L2, Shop and admin console (CHECK 7, `node prototype/check.mjs --shop`, report `shots/check-shop-report.txt`; also in the full run)** | **Re-run 2026-11-06 after D41 (F1-F4).** **No sideways scroll** at 320, 390 and 1280 on 12 states (shop samples / mixed / empty / off; one detail targeted: sample, available with Buy, sold out; edit sign-in, products uploading + 409, products with errors + sign-out ask, shows, empty). **Tap targets:** 3 to 40 per state, **none under 48px** at 320 or 390 (radio rows measured by their label; the file input lies over its 56px button). **Smallest text 16px** (status lines, chips, hints). **Contrast** (45 pairs per era against the nearest painted background, every page state): lowest 5.71:1 placeholder, 7.41:1 placeholder-b, 5.33:1 identity-guess (the accent Buy / Save buttons), field borders 7.41:1+, **none under the floor**. D6: tab "Shop" 17px 700, nav word matches; MERCH 133px at 390. **First products:** top of the first picture at y 362 (y 341 at 320x568); two pictures fully and four partly in view at 390x844, four fully at 1280x800. **Shop page height (D41 F1: only the targeted detail shows; 5 details in the markup, 0 shown without a hash, 1 with):** grid only **1748px = 2.07 screens at 390x844** (2.65 at 390x660; 1791px = 3.15 at 320x568; 1618px = 2.02 at 1280x800), was 3644px = 4.32 at 390x844 with every detail shown. With one detail: sample 2120px = 2.51 at 390x844, available 2168px = 2.57, sold out 2042px = 2.42 (2094-2167px at 1280). **Buy's note (or the status line) is on the first screen** when you arrive from a card: bottom at y 535 (available), 474 (sample), 409 (sold out) against a fold at 782 (390x844) and 598 (390x660); y 333-430 at 1280. **Animations 0** on both pages, normal and reduced motion, also after opening a row and switching tabs. **No innerHTML** (or outerHTML / insertAdjacentHTML / document.write) in `shop.js` or `admin.js`. **CSP and errors: none.** Both open from disk (the font *preload* is refused on `file://` there, as on Home; `@font-face` still loads it). Home unchanged: player 90px visible, 5.80 screens, flash 0.0001 |
 | **L1, treatments + hero by width (D34), re-run 2026-11-05 with `?hero=ab` added to every loop** | Player at 390x660: ab / a **90px visible**, b 80 (unchanged). No sideways scroll at 320, 390, 1280 for ab, a, b. **One hero photo per width (CHECK 2b):** 320, 390, 800, 899 fetch only `a-era-grade-phone-800`; 900 and 1280 only `b-riso-600`. **His face in the strip (A):** eyes at y 46 on phones (name starts at 88; hair top -4 at 390, chin 102), y 106 at 800 (name at 148). **Text over (a), lifted, with the phone veil:** at 390: name **4.65**, slogan **6.18**, brand 3.93 (need 3); Menu **6.82**, Now **14.18** (need 4.5). Second era 4.60 / 5.93 / 3.90 / 6.69 / 11.80; IDENTITY guess 4.76 / 6.43 / 3.95 / 6.94 / 13.86. At 320: 4.72 / 6.02 / 3.94 / 6.35 / 14.29 (second era 4.65 / 5.86, guess 4.83 / 5.81, Menu 6.26-6.48, Now 11.82-14.29). At 800x1024: 3.97 / 8.65 / 4.26 / 7.80 / 13.50. Without the veil the name was 3.07. PUSH PAST FEAR over (d): **5.39:1**. Tap targets 36, none under 48px (Tickets beside the art included). Solid pairs unchanged (lowest 5.33, IDENTITY guess). Reduced motion: no animations. Flash: 86 / 87 / 94 frames, largest change 0.0001. CSP and errors: none; opens from disk. **Home height at 390x660: ab 3938px = 5.80 screens without the note** (was 5.61): the poster art adds 114px (poster 177 to 291px). Cap 5.8 (D39) |
 | Player top at 390x660, clear of the bar (before L1) | A: top 508, bar 598, **90px visible** (was 114; A gave 24px to the strip for his face). B: top 518, **80px visible** (unchanged). Holds with the real Now line "Out now: Duck, Dodge, Jump, Fight (feat. J-BOY)", which wraps to two lines inside its 48px. Box 352px, the real embed |
 | Slogan and GLUCAK, no horizontal scroll | scrollWidth equals viewport at 320, 390, 1280 on both heroes. Slogan is two forced lines at 320: 41px and 21.6px |
@@ -566,3 +604,259 @@ output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
 - No PEAT run. The flash result rests on the code having one 24s loop, not on the 3.4 fps sample.
 - Screen readers and a keyboard-only pass were not run. Hero B's slot is thumbnail-sized on phones, as D14 predicted.
 - The Music, Shows and About pages, and the footer sign-up on them, are specified here, not prototyped.
+- **L2, Shop and admin (sections 14, 15), Chrome only.** Not run in Safari / iOS: `display: contents` on `#shop-mount` and
+  `.product-body` inside a grid, the tape's grid-area containing block (an absolutely positioned grid child), `rotate`,
+  `:has()` (save bar edge, radio rows, upload focus ring), `color-scheme: dark` on the native date / time pickers, `accent-color`
+  on the radios, and `:target` showing the one detail after a tap, Back, and a shared link opened from Instagram's in-app
+  browser (D41 F1). Real-phone test list.
+- **The placeholder line art ships as SVG in the prototype only.** The build's `IMAGE` rule allows webp / png / jpg, so the
+  Desktop renders the same SVGs to transparent WebP (`tools/make-shop-samples.mjs`); the alpha edge of the dashes at 600px
+  was not checked.
+- **Screen readers on the collapsed admin rows** (Edit with `aria-expanded` / `aria-controls`, the visually hidden legend, the
+  radio fieldset) and the tape being `aria-hidden` were reasoned, not heard.
+- **New words not in `docs/copy/admin.md`:** the button **Edit** (the brief asks for it; it opens a row's form). Everything
+  else on both pages is copy from shop.md / admin.md or a word those files already use (Sample, Sold out, the short status
+  names). Edit and Stay are approved (D41, in `docs/copy/admin.md`). (No Back link on the detail, by D41: the browser's Back and the phone bar's
+  Shop return to the grid.)
+- **A real product photo on the card** was not tried (none exist). The hatch sits under every picture; an opaque photo hides
+  it. A product photo with transparency would show the hatch through it: the upload re-encode should flatten onto `bg-2` if
+  that ever looks wrong.
+
+## 14. Shop (`/shop/`, L2 2026-11-05, D36 / D37 / D8)
+**Prototype:** `prototype/shop.html` (`?shop=samples` default | `mixed` (one example per fan state, prototype only) | `empty`,
+`?open=no` = the switched-off preview, `?era=`). Copy: `docs/copy/shop.md`, word for word. Products: `src/data/products.json`.
+
+**The idea: the merch table at the show.** Gig merch is laid out on a table, each thing with a strip of masking tape on it, the
+tour poster behind. Three pieces carry it, all from the system that already exists: the fitted MERCH (the band phrase),
+**paper** (poster paper = `text` ground, `bg` ink) for anything a fan must read before buying (the sample banner, the tape), and
+the **hatch** for "nothing real here yet". One loud thing: **the tape**. No new colours, no new type, no motion.
+
+### 14a. Heading
+`<h1 class="spine shop-title" id="h-shop"><span class="tab">Shop</span> <span class="phrase fit"><span class="ln ln-merch">Merch</span></span></h1>`
+(the build has a plain `<span class="phrase">Merch</span>`; make it fitted like every other page). `.ln-merch { font-size:
+calc(100cqi / var(--w-merch)); }`, `--w-merch: 2.6128` (MERCH measured 2.6050em × 1.003). D6 holds: the tab is the exact nav word
+(Shop, 17px, 700), real content (the banner, then products) sits right under. At 390 MERCH is 133px type, 348 of 349px wide.
+**From 900px** the band's `.wrap` is a grid `minmax(0, 7fr) minmax(0, 5fr)`, gap `--space-xl`, `align-items: end`, and
+`#shop-mount { display: contents }`, so MERCH takes the left 7 columns (rows 1-2) and the banner sits beside its foot (column 2,
+row 2), the preview chip above it (row 1); grid, details and the empty slot span both columns. The first products start at
+y 362 at 1280x800 (four fully in view).
+
+### 14b. Preview chip and sample banner
+- **Preview chip** (`SHOP_ENABLED` off): unchanged, `<p class="shop-preview"><span class="ph-chip inline">Preview: the shop is not open yet</span></p>`.
+- **Sample banner** (only when **every** product is a sample, D37): `<p class="shop-banner" role="note">This shop is a preview.
+  Everything here is a sample and can't be bought.</p>`. Paper: `background-color: var(--text); background-image: var(--texture);
+  color: var(--bg)`, 700, `--step-0`, line-height 1.35, `max-width: 40rem`, padding `--space-s` `--space-m`, left padding
+  `calc(--space-m + .75rem)`; a `::before` hatch stub 0.75rem wide on the left edge: `repeating-linear-gradient(-45deg, var(--bg) 0
+  3px, transparent 3px 9px)`. The same `text` / `bg` pair the era test already holds to 4.5:1, so it passes in every era by construction.
+
+### 14c. Product grid and card
+**Two columns on phones.** Why: four products in the first screen and a half (the first two pictures fully in view at 390x660,
+four partly at 390x844); one column is a full screen per product, five screens of samples before anything else. 16px text still
+fits the 132px column at 320. Three columns from 700px, four from 1100px. `.shop-grid { grid-template-columns: repeat(2,
+minmax(0, 1fr)); gap: var(--space-l) var(--space-m); }`, from 700px `gap: var(--space-xl) var(--space-l)`.
+
+Markup (build + **L2 additions in bold**):
+`<li class="product-card" **data-status="{status}"**><a class="product-link" href="#product-{id}"><img class="product-media" …>`**`<span
+class="product-tape" aria-hidden="true">Sample</span>`**`<p class="product-name">…</p><p class="product-price">…</p><p class="product-status
+**is-coming-soon**">Coming soon</p></a></li>`. Price only when not a sample (built). Order: picture, tape, name, price, status.
+- **The card is one link** (the whole card, ~170x260px at 390). No hover motion: on hover devices only the name underlines (0.06em).
+  Focus: the 3px `text` ring, offset 4px.
+- **Picture:** `alt=""` on the card (D41 F4: the name is already the link's text, so a screen reader hears it once); square,
+  `object-fit: cover`, 2px `--line` border, `background-color: var(--bg-2); background-image: var(--hatch)`.
+  `--hatch: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--line) 70%, transparent) 0 2px, transparent 2px 14px)` in
+  `:root`. The hatch shows only through transparent placeholder art; a real (opaque) photo covers it.
+- **Name:** display face 900, 1.5rem, line-height 1, uppercase, `text-wrap: balance`, `overflow-wrap: anywhere`.
+- **Price:** reading face 800, `--step-0`, tabular figures. "Free" for 0 (built).
+- **Status (never colour alone): a square glyph + the word**, reading face 700, 16px, `text`: `::before` 0.75em square, 2px
+  `currentColor` border. `is-available` filled; `is-coming-soon` hollow; `is-sold-out` hollow with a diagonal stroke and the word in
+  `muted`; `is-sample` dashed (admin rows only: fans see Coming soon). Class from status: sold-out -> `is-sold-out`; available with a
+  link -> `is-available`; everything else (sample, coming-soon, available without a link) -> `is-coming-soon`. It matches
+  `statusText()`.
+- **The tape** (only two words ever: **Sample** for status sample, **Sold out** for sold-out; nothing on Available or Coming soon):
+  `position: absolute; top: .75rem; left: -.4rem; rotate: -4deg;` paper (`text` + texture, `bg` ink), display face 900, 1.25rem
+  (1.5rem from 700px), uppercase, letter-spacing .03em, padding `.2rem .55rem .15rem`, `pointer-events: none`. **Static**, never
+  animated. `aria-hidden="true"`: the name already starts "Sample:" and the status line says Sold out. It moves the word SAMPLE
+  out of the image (the built webps bake it in at a size that is about 6px on a phone) into real text at 20px.
+- **Sold out:** `[data-status='sold-out'] .product-media { filter: grayscale(1); opacity: .55; }` (static), plus the tape and the
+  crossed glyph.
+
+### 14d. Placeholder pictures (replace the built SAMPLE webps)
+The built images bake in the placeholder era's colours (red-orange on #111: wrong in every other era), Arial, and 30px text that
+is ~6px on a phone. **New art: `prototype/assets/shop/sample-{tee,hoodie,identity-cd,identity-vinyl,sticker}.svg`**, 800x800,
+**transparent**, no text: the object as a **dashed outline** (`stroke="#fff" stroke-opacity=".8" stroke-width="10"
+stroke-dasharray="30 18"`) plus four print **crop marks** in the corners (`stroke-opacity=".55"`, width 6). A dashed outline on a
+hatched ground reads as a pattern-cutting sheet, never as a merch photo, in every era (white at 80% sits on any dark `bg-2`; all
+eras are dark, D25). The Desktop's `tools/make-shop-samples.mjs` renders these SVGs as they are to transparent WebP
+(`sharp(svg).webp({ quality: 90, alphaQuality: 100 })`, same file names, ~600-800px), so `products.json` doesn't change.
+
+### 14e. Product detail (`article.product-detail#product-{id}`, under the grid)
+Markup: built, plus `data-status="{status}"` on the `article` and the same tape `span` right after the `img`. Rules:
+- **Only the detail you came to shows (D41 F1):** `.shop-details .product-detail:not(:target) { display: none; }`. The server
+  still prints every detail, so a shared `/shop/#product-{id}` link opens that product; without a hash the page is the grid
+  alone (2.07 screens at 390x844 instead of 4.32). No Back link and no new words: the browser's Back and the phone bar's Shop
+  return to the grid. The detail's picture keeps `alt="{name}"`.
+- `.shop-details`: grid, gap `--section`, `margin-top: --section`. `.product-detail`: grid, `position: relative`, gap `--space-m`,
+  `padding-top: --space-l`, `border-top: 4px solid var(--line)`; **`:target` turns that edge `text`** (you see which one you
+  came to). Scroll offset comes from `html`'s existing `scroll-padding-top` (header + tab).
+- **Phones (under 700px): the poster pattern.** `grid-template-columns: minmax(0, 1fr) 48%; grid-template-rows: auto 1fr; gap:
+  var(--space-s) var(--space-m)`; `.product-body { display: contents }` so its children join the article's grid: picture column 2
+  rows 1-2; name column 1 row 1 (display 900, `--step-2`, line-height .95); price column 1 row 2 (display 900, `--step-2`);
+  description, sizes, Buy, note and status span both columns below. **Why:** with a full-width picture (the built layout) Buy sat
+  under the phone bar at 390x844; now Buy and its note are on the first screen when you arrive from a card.
+- **From 700px:** `grid-template-columns: minmax(0, 22rem) minmax(0, 1fr)` (28rem from 900px), gap `--space-xl`; body is a grid,
+  gap `--space-s`, `justify-items: start`; name `--step-3`.
+- **Tape on the detail:** `grid-row: 1; grid-column: 2` on phones, `grid-column: 1` from 700px, `top: .75rem`: an absolutely
+  positioned grid child uses its grid area as the containing block, so it lands on the picture's corner in both layouts.
+- Description: `--step-0`, `max-width: 40rem`, `white-space: pre-line` (built). Sizes: 700, the built line "Sizes: S, M, L, XL,
+  2XL". **Sizes are text, not boxes:** boxes look tappable, and size is picked on the store's page.
+- **Buy** (`btn btn-solid product-buy`, the site's 52px accent button): full width on phones, `min-width: 12rem` and start-aligned
+  from 700px. **The note** right under it, only there: muted 16px, `max-width: 30rem`: "You pay on the store's own page. We never
+  see your card details." (D37).
+- **Not buyable:** the status line as on the card at `--step-1` with its glyph: Coming soon or Sold out. A label, never a box, so it
+  can't read as a disabled button.
+
+### 14f. States
+| Case | Shows |
+|---|---|
+| Every product is a sample (today) | Banner; every card: tape **Sample**, no price, hollow glyph "Coming soon"; detail: no price, no Buy, no note |
+| Some real, some samples | No banner (D37); samples still taped, no price |
+| Available with a link | Price; filled glyph "Available"; detail: price, **Buy** + the note |
+| Available, no link yet / Coming soon | Price; hollow glyph "Coming soon"; no Buy, no note |
+| Sold out | Price; grey picture at 55%; tape **Sold out**; crossed glyph, muted "Sold out"; no Buy |
+| Free (price 0) | "Free" as the price line |
+| No hash / a `#product-{id}` hash | The grid alone / the grid plus that one detail, its 4px top edge in `text` (D41 F1) |
+| No products | `<p class="shop-empty">Nothing in the shop yet.</p>`: display 900 `--step-3` uppercase, inside a 2px dashed `muted` slot, padding `--space-xl --space-m`. No second line (copy) |
+| Shop off (`SHOP_ENABLED` unset) | The preview chip; no Shop in nav, sheet or footer; Watch in the phone bar (D8) |
+| Shop on | Shop in the nav and the sheet (`aria-current="page"` here: underlined 3px), the footer line "Listen. Shows. Shop. Join." (`--w-close` 10.46, built), the phone bar's Shop item (`aria-current`: a 3px `text` bar on its top edge, `box-shadow: inset 0 3px 0 var(--text)`) |
+| Motion | None on the page: 0 animations, normal or reduced (the tape is a static rotation) |
+
+## 15. Admin console (`/edit/`, L2 2026-11-05)
+**Prototype:** `prototype/edit.html` (fakes the server). Switches: `?view=signin|editor`, `?tab=shows|products`, `?open=<row>`,
+`?bar=dirty|saving|saved|shopoff|conflict|offline|errors`, `?upload=busy|error|done`, `?list=empty`,
+`?login=signing|wrong|locked|off`, `?ask=1`. Copy: `docs/copy/admin.md`, word for word, plus the button **Edit** (section 13).
+
+**Principles.** Gabe isn't technical and edits on his phone: one column (max 46rem, `width: min(100% - 2rem, 46rem)`), the site's
+tokens and type, everything a 48px+ target (52px fields, 56px main buttons), every message in words plus a glyph, nothing moves.
+The list stays short and scannable (rows collapsed), and the thing being edited is always outlined in `text`.
+
+### 15a. Shell
+`.ed-body { padding-bottom: 0; color-scheme: dark; }` (**`color-scheme: dark` is new:** without it Chrome draws the date / time
+picker icons black on our dark field). `html:has(.ed-body) { scroll-padding: 1rem 0 10rem; }` so a focused field never sits
+under the sticky save bar. Title "Edit the site": display 900, `--step-3`, uppercase, line-height .9.
+
+### 15b. Sign-in card
+`.ed-card`: `max-width: 28rem`, padding `--space-l`, `bg-2`, 2px `--line` border with a **4px `text` top edge** (the band edge),
+heading display 900 `--step-2` uppercase. Labels 700 1.0625rem, `margin-top: --space-m`. **Sign in** is `.ed-main`, full width,
+`margin-top: --space-l`. The message line under it takes `data-state` (15g): "Signing in…" busy; wrong password, lockout, not
+switched on, no connection: error (the paper box).
+
+### 15c. Fields (both tabs)
+`input` (not file / radio), `select`, `textarea`: block, full width, `min-height: 52px`, `margin-top: .3rem`, padding `.5rem .75rem`,
+`--step-0`, `text` on `bg`, **2px `muted` border** (the built `--line` border is about 2.3:1 against `bg`; `muted` is 7.4:1+ in every
+era, so the field edge passes the 3:1 control rule), radius 2px. Focus: 3px `text` outline, offset 2px, border `text`. Textarea min
+7.5rem. Placeholder `muted`. Hints: block, 16px, `muted`, `margin-top: .3rem`, line-height 1.35 (after the field, as built).
+`.ed-two` (Date | Time, Type | Price) side by side from 480px.
+
+### 15d. Buttons
+- `.ed-btn`: inline-flex, centred, `min-height: 48px; min-width: 48px; padding: .5rem 1rem`, 700 1.0625rem, `text` on `bg`, 2px
+  `text` border. Hover (hover devices only): inverted. No transitions.
+- `.ed-main` (Sign in, Save shows / Save products): **the site's `.btn` look**: display 900 1.5rem uppercase, `accent` fill,
+  `accent-text`, 56px. **One per view** (D41 F3: Stay in the sign-out confirm is a plain `ed-btn`).
+- `.ed-add` (Add show / Add product): full width, 56px, **3px dashed** `text` border: an empty slot to fill.
+- `:disabled` (Move up on the first row, Move down on the last): `muted` text, dashed `--line` border, `cursor: not-allowed`.
+  **New:** the build moves nothing at the ends; a button that does nothing is worse than one that says it can't.
+- `.ed-plain` (Sign out): border `muted`.
+
+### 15e. Signed in, sign-out confirm, tabs, help, empty
+- `.ed-who`: flex, space-between, wrap, 700: "Signed in as {name}" and Sign out.
+- **Sign out with unsaved changes** (`#out-ask`, class **`ed-ask`**, a `div` holding the question `p` and `p.ed-ask-btns`): the paper
+  box (`text` ground, `bg` ink, 700, padding `--space-m`); buttons in a 2-column grid, gap .5rem: **Sign out** and **Stay**, both
+  plain `ed-btn` (`text` on `bg`, they stand out on the paper by themselves; Save keeps the view's one accent button).
+- **Tabs** `.ed-tabs`: two halves of one bar, `grid-template-columns: 1fr 1fr`, 2px `text` border. `.ed-tab`: 56px, 800 `--step-0`,
+  transparent; **`[aria-selected=true]` inverted** (`text` ground, `bg` letters), the crate-tab look. Focus ring offset 3px.
+  Arrow keys as built.
+- `.ed-help`: `muted`, `max-width: 40rem`. **Empty list:** the built empty line gets `class="ed-help ed-empty"`: 2px dashed `muted`
+  border, padding `--space-l --space-m`, `text`, 700: "No shows yet. Press Add show." / "No products yet. Press Add product."
+
+### 15f. Rows (both tabs): collapsed head + actions, Edit opens the form
+**New structure** (replaces each built `fieldset.ed-show`):
+```html
+<li class="ed-row" data-status="sample">                      <!-- products only: data-status -->
+  <div class="ed-row-head">
+    <img class="ed-thumb" alt="" width="64" height="64">        <!-- products; shows: <p class="ed-row-date">Dec 5</p> -->
+    <div class="ed-row-text">
+      <p class="ed-row-num">Product 1</p>
+      <p class="ed-row-title">Sample: GLucak tee</p>            <!-- shows: the venue -->
+      <p class="ed-row-meta"><span class="product-status is-sample">Sample</span></p>
+    </div>
+    <p class="ed-err" role="alert"></p>                         <!-- moved here from the end of the form -->
+  </div>
+  <div class="ed-actions ed-actions-4">                         <!-- shows: Edit, Delete; no ed-actions-4 -->
+    <button class="ed-btn">Move up</button><button class="ed-btn">Move down</button>
+    <button class="ed-btn ed-edit" aria-expanded="false" aria-controls="form-7">Edit</button>
+    <button class="ed-btn ed-del">Delete</button>
+  </div>
+  <fieldset class="ed-form" id="form-7" hidden><legend class="vh">Product 1</legend> …fields… </fieldset>
+</li>
+```
+- `.ed-row`: padding `--space-m`, `bg-2`, 2px `--line` border, radius 2px. Open (`.is-open`): border `text`. List gap `--space-m`.
+- Head: grid `64px minmax(0, 1fr)` (shows: `4.25rem`), gap `.25rem .75rem`, centred. Thumb 64px, `object-fit: cover`, hatch on `bg`,
+  2px `--line`. Date: display 900 1.5rem uppercase, "Dec 5" (month short + day, from the date field). Number: 16px 700 `muted`.
+  Title: 800 `--step-0`, `overflow-wrap: anywhere`, hidden while empty (a new row is named by its number; no invented words).
+  Meta: 16px `muted`, flex wrap, gap `.25rem .75rem`. **Products:** the status glyph + short word in `text` (Coming soon, Available,
+  Sold out, Sample: the first words of the built options) and the price ("$25.00", "Free") unless it's a sample (D37). **Shows:**
+  "{City}, Show" / "{City}, Open mic", plus a **Played** tag for past dates (2px `muted` border, `text`, 700).
+- **Past shows** ("grey" in the help line): **no opacity** (the built 0.6 drops muted text under 4.5:1); instead the row border is
+  dashed and the title and date are `muted` (7.4:1+).
+- **Actions:** grid, 2 equal columns, gap .5rem, `margin-top: --space-s`, button padding-inline .5rem: products Move up | Move down /
+  Edit | Delete (each about 122px at 320); from 600px products one row of four, shows two buttons of max 9rem. Same place on every
+  row. **Edit** toggles the form: `aria-expanded`, and when open the button is inverted (`text` ground). Opening focuses the first
+  field. Delete keeps the built `confirm()`.
+- **New rows** (Add show prepends, Add product appends, as built) open at once, focus on the first field.
+- **A row with a save error:** `.bad` = 3px `text` border, a paper "!" square after the number (`.ed-row-num::after`, 1.5rem,
+  `text` ground, `bg` ink, 800), the message in the head as a paper line (`.ed-err`: `text` ground, `bg` ink, 700, padding
+  `.5rem .75rem`), and the row opens. The built `.ed-err::before { content: '! ' }` goes.
+
+### 15g. The editor form
+`.ed-form`: no fieldset border, `border-top: 2px dashed var(--line)`, `margin-top: --space-m`, padding-top `--space-xs`. Fields
+and their order as built (admin.md labels and hints), except:
+- **Status is four radio rows, not a `<select>`** (new): the option labels are long ("Sample (shows Coming soon, no price)") and a
+  closed select cut them off at 390. `<fieldset class="ed-choices"><legend>Status</legend><label class="ed-choice"><input type="radio"
+  name="status-N" value="coming-soon"><span>Coming soon</span></label>…</fieldset>`: rows 52px, gap .5rem, `bg`, 2px `muted` border,
+  radius 2px; checked row 3px `text` border and 700; radio 1.5rem, `accent-color: var(--text)`; the whole row is the target; focus
+  ring on the row via `:has(input:focus-visible)`.
+- **Photo** (the path field stays, as built), then `.ed-upload`: a 120px preview (`.ed-pic`, hatch until there is a picture) and
+  beside it (stacked under 400px) the upload: `<span class="ed-file-wrap"><label class="ed-btn ed-file" for="fN">Upload a
+  photo</label><input type="file" id="fN" class="ed-file-input" accept="image/jpeg,image/png,image/webp"></span>`: the label is a full-width
+  56px button with a 3px border; **the real file input lies over it** (`position: absolute; inset: 0; opacity: 0`), so the whole
+  button is the target and the native "No file chosen" never shows; focus ring on the label via `:has(.ed-file-input:focus-visible)`.
+  Then the hint "JPG, PNG or WebP, up to 5 MB.", then the message line (`.ed-hint.ed-upmsg`, 16px 700 `text`, states in 15h):
+  **"Uploading…" (busy)** while the built `fetch` upload runs, then "Uploaded. Press Save to keep it." (ok) or the error box.
+  **No progress bar** (D41 F2): uploads are 5 MB at most, the busy line says it's working, and a bar would need XHR and a moving
+  element for little gain.
+
+### 15h. Messages: one look for every message line (`.ed-msg`, `.ed-upmsg`)
+`edit.js`'s `say(el, text, state)` sets `el.dataset.state` (and removes it for none). Flex, gap .6rem, 700, line-height 1.35,
+`text`; `.ed-msg` `--step-0`, `.ed-upmsg` 16px; hidden while empty. A 1rem glyph from `::before`, **never colour alone**:
+| `data-state` | Glyph | Used for (exact copy, admin.md) |
+|---|---|---|
+| `dirty` | hollow ring (2px, round) | "Not saved yet." |
+| `busy` | ring, left half filled (static) | "Signing in…", "Saving…", "Uploading…" |
+| `ok` | a tick (0.5 x 0.95rem, 3px right and bottom borders, rotated 45deg) | "Saved. It's on the site now.", "Saved. The shop isn't open to fans yet, so they won't see it until it's switched on.", "Uploaded. Press Save to keep it.", "Signed in again. Press Save." |
+| `error` | **the paper box** (`text` ground, `bg` ink, padding `.6rem .75rem`) with a 1.4rem "!" square in `bg` / `text` | every error: wrong name / password, lockout, not switched on, no connection, the upload errors, "Not saved. Fix the … marked with !, then press Save.", the 409 line, "You were signed out. …", "Couldn't load the products. Reload the page." |
+
+### 15i. The save bar (`.ed-bar`, per tab)
+Sticky at the bottom of its tab (`position: sticky; bottom: 0; z-index: 5`), `bg`, 2px `--line` top border, padding `--space-s` (+ safe
+area at the bottom). Grid, gap .5rem: **the message above the button on phones** (`.ed-msg { order: -1 }`: read, then press; DOM
+order as built, button first), Save full width. **From 700px** the message left, Save right: `grid-template-columns: minmax(0, 1fr)
+16rem`. The bar's top edge goes to **4px `text`** while the message is `dirty` or `error` (`.ed-bar:has(.ed-msg[data-state=dirty])`).
+- **Saving:** Save gets `aria-disabled="true"` (**new:** `save()` returns early while one is on its way; the built page can send
+  two), drawn as an outline with a dashed border, `cursor: progress`; the label doesn't change; the message "Saving…" (busy).
+- **Saved:** ok, with the server's message (the shop-off line comes from `server.js`, D37).
+- **409:** error box with "Someone else saved the {shows/products} just now, so yours didn't save. Reloading shows their changes but
+  clears yours, so write down what you changed first." Rows untouched. At 320 it's 5 lines, the bar ~230px; acceptable for a rare
+  message that must be read.
+
+### 15j. Measured (prototype, `check.mjs --shop`, section 12)
+No sideways scroll at 320 / 390 / 1280 in every state; all targets 48px+ (radio rows measured by their label); smallest text 16px;
+lowest contrast 5.33:1 (the accent buttons in the IDENTITY guess era), field borders 7.41:1+; 0 animations.

@@ -2,6 +2,7 @@
 //   node prototype/check.mjs            all checks and screenshots
 //   node prototype/check.mjs --measure  print fitted-line widths in em, for the --w-* tokens in styles.css
 //   node prototype/check.mjs --shots    screenshots only
+//   node prototype/check.mjs --shop     Shop + admin console only (CHECK 7, shots shop-* product-* edit-*), report in check-shop-report.txt
 // Serves prototype/ on localhost with the site's real CSP, drives Chrome over the DevTools Protocol, and sets exact
 // viewport sizes with Emulation.setDeviceMetricsOverride, so 320 and 390 are true widths, not a window-size guess.
 import { spawn } from 'node:child_process';
@@ -87,7 +88,7 @@ await cdp('Page.enable'); await cdp('Runtime.enable'); await cdp('Log.enable');
 const problems = [];
 listeners.push((m) => {
   if (m.method === 'Runtime.exceptionThrown') problems.push('JS error: ' + m.params.exceptionDetails.text + ' ' + (m.params.exceptionDetails.exception?.description ?? ''));
-  if (m.method === 'Log.entryAdded' && /Content Security Policy|Failed to load/i.test(m.params.entry.text)) problems.push(m.params.entry.text);
+  if (m.method === 'Log.entryAdded' && /Content Security Policy|Failed to load/i.test(m.params.entry.text)) problems.push(m.params.entry.text + (m.params.entry.url ? ' ' + m.params.entry.url : ''));
 });
 const evaluate = async (expr) => {
   const r = await cdp('Runtime.evaluate', { expression: expr, awaitPromise: true, returnByValue: true });
@@ -118,13 +119,125 @@ const report = [];
 const line = (s) => { report.push(s); console.log(s); };
 mkdirSync(join(ROOT, 'shots'), { recursive: true });
 
+/* ---------- L2 (2026-11-05): Shop and admin console pages. `node prototype/check.mjs --shop` runs only these. ---------- */
+const SHOP = BASE.replace('index.html', 'shop.html');
+const EDIT = BASE.replace('index.html', 'edit.html');
+const EDITOR = '?view=editor&tab=products&open=0';
+async function shopShots() {
+  await load(SHOP, 390, 844); await fullShot('shop-390.png');
+  await load(SHOP, 1280, 800); await fullShot('shop-1280.png');
+  await load(SHOP, 1280, 800); await firstScreen('shop-1280-first.png');
+  await load(SHOP, 390, 844); await firstScreen('shop-390-first.png');
+  await load(SHOP + '#product-sample-glucak-tee', 390, 844); await firstScreen('product-390.png');
+  await load(SHOP + '?shop=mixed#product-example-available', 390, 844); await firstScreen('product-available-390.png');
+  await load(SHOP + '?shop=mixed', 390, 844); await fullShot('shop-mixed-390.png');
+  await load(SHOP + '?shop=empty&open=no', 390, 844); await firstScreen('shop-empty-390.png');
+  await load(SHOP + '?era=identity-guess', 390, 844); await firstScreen('shop-identity-guess-390.png');
+  await load(SHOP + '?era=placeholder-b&shop=mixed', 1280, 800); await firstScreen('shop-placeholder-b-1280.png');
+  await load(EDIT + EDITOR + '&bar=dirty', 390, 844); await fullShot('edit-390.png');
+  await load(EDIT + EDITOR + '&bar=dirty', 1280, 800); await fullShot('edit-1280.png');
+  await load(EDIT + '?login=wrong', 390, 844); await firstScreen('edit-signin-390.png');
+  await load(EDIT + '?view=editor&tab=products&open=1&upload=busy&bar=conflict', 390, 844); await fullShot('edit-conflict-upload-390.png');
+  await load(EDIT + '?view=editor&tab=products&open=1&upload=error&bar=shopoff&ask=1', 320, 700); await fullShot('edit-states-320.png');
+  await load(EDIT + '?view=editor&tab=shows&bar=errors', 390, 844); await fullShot('edit-shows-390.png');
+  await load(EDIT + '?view=editor&tab=products&list=empty&bar=saving', 390, 844); await firstScreen('edit-empty-390.png');
+  await load(EDIT + '?view=editor&tab=products&open=1&upload=busy&bar=saving', 390, 844); await evaluate(`document.querySelector('.is-open .ed-choices').scrollIntoView()`); await sleep(100); await firstScreen('edit-upload-390.png');
+}
+async function shopChecks() {
+  const SHOP_PAGES = [['shop', SHOP], ['shop mixed', SHOP + '?shop=mixed'], ['shop empty', SHOP + '?shop=empty'], ['shop off', SHOP + '?open=no'],
+    ['detail sample', SHOP + '#product-sample-glucak-tee'], ['detail buy', SHOP + '?shop=mixed#product-example-available'], ['detail sold out', SHOP + '?shop=mixed#product-example-sold-out'],
+    ['edit sign-in', EDIT + '?login=locked'], ['edit products', EDIT + EDITOR + '&upload=busy&bar=conflict'], ['edit products error', EDIT + '?view=editor&tab=products&open=1&upload=error&bar=errors&ask=1'],
+    ['edit shows', EDIT + '?view=editor&tab=shows&open=0&bar=saved'], ['edit empty', EDIT + '?view=editor&list=empty&bar=saving']];
+  line('CHECK 7 (L2): Shop and admin console');
+  line('CHECK 7a: no sideways scroll at 320, 390, 1280');
+  for (const [name, url] of SHOP_PAGES) {
+    const out = [];
+    for (const w of [320, 390, 1280]) {
+      await load(url, w, 700);
+      const r = await evaluate(`(()=>{const over=[...document.querySelectorAll('body *')].filter(e=>e.getBoundingClientRect().right>innerWidth+1&&!e.closest('.vh,.sheet')).slice(0,4).map(e=>(typeof e.className==='string'?e.className:e.tagName)+':'+Math.round(e.getBoundingClientRect().right));return {s:document.documentElement.scrollWidth,w:innerWidth,over}})()`);
+      out.push(`${w}: ${r.s}/${r.w}${r.over.length ? ' OVERFLOW ' + r.over.join(' ') : ''}`);
+    }
+    line(`  ${name}: ${out.join(', ')}`);
+  }
+  line('CHECK 7b: tap targets (every link, button, field and the upload button) at 320 and 390');
+  for (const [name, url] of SHOP_PAGES) for (const w of [320, 390]) {
+    await load(url, w, 700);
+    const all = await evaluate(`[...document.querySelectorAll('a,button,input,select,textarea,summary')].filter(e=>e.offsetParent!==null||getComputedStyle(e).position==='fixed').filter(e=>!e.closest('.skip,.sheet')).map(e=>{const b=(/radio|checkbox/.test(e.type)&&e.closest('label')?e.closest('label'):e).getBoundingClientRect();return {t:(e.textContent.trim()||e.type||e.tagName).slice(0,18),h:Math.round(b.height),w:Math.round(b.width)}})`);
+    const bad = all.filter((s) => s.h < 48 || s.w < 48);
+    line(`  ${name} at ${w}: ${all.length} targets, under 48px: ${bad.length ? JSON.stringify(bad) : 'none'}`);
+  }
+  line('CHECK 7c: smallest text at 320 and 390 (three smallest sizes and where)');
+  for (const [name, url] of [['shop', SHOP], ['shop mixed', SHOP + '?shop=mixed'], ['detail buy', SHOP + '?shop=mixed#product-example-available'], ['edit products', EDIT + EDITOR + '&upload=error&bar=conflict'], ['edit shows', EDIT + '?view=editor&tab=shows&open=0'], ['edit sign-in', EDIT + '?login=wrong']]) for (const w of [320, 390]) {
+    await load(url, w, 700);
+    line(`  ${name} at ${w}: ` + JSON.stringify(await evaluate(`(()=>{const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);const m={};let n;while(n=w.nextNode()){if(!n.textContent.trim())continue;const p=n.parentElement;if(p.closest('script,style,svg,.sheet,.skip,.vh,option'))continue;if(p.offsetParent===null&&getComputedStyle(p).position!=='fixed')continue;const s=parseFloat(getComputedStyle(p).fontSize);m[s]=m[s]||(typeof p.className==='string'&&p.className||p.tagName)}return Object.entries(m).sort((a,b)=>a[0]-b[0]).slice(0,3)})()`)));
+  }
+  line('CHECK 7d: contrast, computed colors against the nearest painted background, every era (text 4.5:1; field borders and large display 3:1)');
+  const PAIRS = `[['banner','.shop-banner'],['tape','.product-tape'],['card name','.product-card .product-name'],['card price','.product-card .product-price'],['status available','.product-card .is-available'],['status coming soon','.product-card .is-coming-soon'],['status sold out','.product-card .is-sold-out'],['detail name','.product-detail .product-name'],['description','.product-desc'],['sizes','.product-sizes'],['Buy','.product-buy'],['buying note','.product-note'],['empty','.shop-empty'],['chip','.ph-chip'],['tab','.tab'],['bar label','.phone-bar a'],['footer muted','.legal'],
+    ['admin title','.ed-title'],['card label','.ed-card label'],['tab on','.ed-tab[aria-selected=true]'],['tab off','.ed-tab[aria-selected=false]'],['help','.ed-help'],['empty line','.ed-empty'],['row number','.ed-row-num'],['row title','.ed-row-title'],['row meta','.ed-row-meta'],['row status','.ed-row-meta .product-status'],['Played tag','.ed-tag'],['past date','.ed-row.past .ed-row-date'],['field label','.ed-field label'],['hint','.ed-hint'],['field text','.ed input:not([type=file])'],['Edit open','.ed-edit[aria-expanded=true]'],['button','.ed-actions .ed-btn:not(:disabled)'],['disabled button (exempt)','.ed-btn:disabled'],['upload button','.ed-file'],['main button','.ed-main'],['message error','.ed-msg[data-state=error]'],['message ok','.ed-msg[data-state=ok]'],['message dirty','.ed-msg[data-state=dirty]'],['upload message','.ed-upmsg[data-state]'],['row error','.ed-err:not(:empty)'],['ask box','.ed-ask p'],['Played row border','.ed-tag','border']]`;
+  const contrastOf = `(()=>{const x=document.createElement('canvas').getContext('2d',{willReadFrequently:true});const rgb=c=>{x.clearRect(0,0,1,1);x.fillStyle=c;x.fillRect(0,0,1,1);return [...x.getImageData(0,0,1,1).data]};
+    const bgOf=e=>{for(let n=e;n;n=n.parentElement){const c=rgb(getComputedStyle(n).backgroundColor);if(c[3]>0)return c}return rgb(getComputedStyle(document.documentElement).backgroundColor)};
+    const out=[];for(const [n,s,prop] of ${PAIRS}){const e=[...document.querySelectorAll(s)].find(x=>x.offsetParent!==null||getComputedStyle(x).position==='fixed');if(!e)continue;const cs=getComputedStyle(e);out.push([n,rgb(prop==='border'?cs.borderTopColor:cs.color).slice(0,3),bgOf(prop==='border'?e.parentElement:e).slice(0,3)])}
+    for(const f of document.querySelectorAll('.ed input:not([type=file]),.ed select')){if(f.offsetParent===null)continue;out.push(['field border',rgb(getComputedStyle(f).borderTopColor).slice(0,3),bgOf(f.parentElement).slice(0,3)]);break}
+    return out})()`;
+  for (const era of ['placeholder', 'placeholder-b', 'identity-guess']) {
+    const all = [];
+    for (const url of [SHOP + `?era=${era}`, SHOP + `?shop=mixed&era=${era}`, SHOP + `?shop=empty&open=no&era=${era}`, SHOP + `?era=${era}#product-sample-glucak-tee`, SHOP + `?shop=mixed&era=${era}#product-example-available`, SHOP + `?shop=mixed&era=${era}#product-example-sold-out`, EDIT + `?era=${era}&login=wrong`, EDIT + `?view=editor&tab=products&open=1&upload=error&bar=conflict&ask=1&era=${era}`, EDIT + `?view=editor&tab=products&open=0&upload=done&bar=errors&era=${era}`, EDIT + `?view=editor&tab=shows&open=0&bar=saved&era=${era}`, EDIT + `?view=editor&list=empty&bar=dirty&era=${era}`]) {
+      await load(url, 390, 700);
+      for (const [n, a, b] of await evaluate(contrastOf)) if (!all.some((p) => p[0] === n)) all.push([n, ratio(lum(...a), lum(...b))]);
+    }
+    all.sort((a, b) => a[1] - b[1]);
+    const need = (n) => (/border|exempt/.test(n) ? 3 : 4.5);
+    const fails = all.filter(([n, r]) => r < need(n) && !/exempt/.test(n));
+    line(`  ${era}: ${all.length} pairs, lowest ${all.slice(0, 4).map(([n, r]) => `${n} ${r.toFixed(2)}:1`).join(', ')}; under the floor: ${fails.length ? fails.map(([n, r]) => `${n} ${r.toFixed(2)}`).join(', ') : 'none'}`);
+  }
+  line('CHECK 7e: D6 tab on the Shop page at 390');
+  await load(SHOP, 390, 700);
+  line('  ' + JSON.stringify(await evaluate(`(()=>{const t=document.querySelector('.tab'),c=getComputedStyle(t),ln=document.querySelector('.ln-merch'),b=ln.getBoundingClientRect();return {tab:t.textContent,size:c.fontSize,weight:c.fontWeight,navWord:[...document.querySelectorAll('.sheet a,.phone-bar span')].some(a=>a.textContent===t.textContent),merch:Math.round(parseFloat(getComputedStyle(ln).fontSize))+'px font, '+Math.round(b.width)+'px wide of '+Math.round(ln.parentElement.getBoundingClientRect().width)}})()`)));
+  line('CHECK 7f: where the first products sit (first screen, without scrolling)');
+  for (const [w, h] of [[320, 568], [390, 844], [390, 660], [1280, 800]]) {
+    await load(SHOP, w, h);
+    const r = await evaluate(`(()=>{const c=[...document.querySelectorAll('.product-card .product-media')].map(i=>i.getBoundingClientRect());const bar=document.querySelector('.phone-bar').getBoundingClientRect();const fold=getComputedStyle(document.querySelector('.phone-bar')).display==='none'?innerHeight:bar.top;return {first:Math.round(c[0].top),fold:Math.round(fold),full:c.filter(b=>b.bottom<=fold).length,some:c.filter(b=>b.top<fold).length,h:document.documentElement.scrollHeight}})()`);
+    line(`  ${w}x${h}: first picture top ${r.first}px, fold ${r.fold}px; pictures fully in view ${r.full}, partly ${r.some}; page ${r.h}px = ${(r.h / h).toFixed(2)} screens`);
+  }
+  line('CHECK 7f2 (D41 F1): only the targeted detail shows; page height with it, and Buy + note on the first screen');
+  for (const [name, hash, q] of [['no hash', '', ''], ['sample', '#product-sample-glucak-tee', ''], ['available', '#product-example-available', '?shop=mixed'], ['sold out', '#product-example-sold-out', '?shop=mixed']]) for (const [w, h] of [[390, 844], [390, 660], [1280, 800]]) {
+    await load(SHOP + q + hash, w, h);
+    const r = await evaluate(`(()=>{const d=[...document.querySelectorAll('.product-detail')];const shown=d.filter(x=>getComputedStyle(x).display!=='none');const bar=document.querySelector('.phone-bar');const fold=getComputedStyle(bar).display==='none'?innerHeight:bar.getBoundingClientRect().top;const note=document.querySelector('.product-detail:target .product-note, .product-detail:target .product-status');return {all:d.length,shown:shown.map(x=>x.id),h:document.documentElement.scrollHeight,end:note?Math.round(note.getBoundingClientRect().bottom):null,fold:Math.round(fold)}})()`);
+    line(`  ${name} at ${w}x${h}: details in the page ${r.all}, shown ${r.shown.length}${r.shown.length ? ' (' + r.shown.join(', ') + ')' : ''}; page ${r.h}px = ${(r.h / h).toFixed(2)} screens${r.end != null ? `; Buy note / status bottom at y ${r.end} of fold ${r.fold} (${r.end <= r.fold ? 'in view' : 'BELOW THE FOLD'})` : ''}`);
+  }
+  line('CHECK 7g: motion on the Shop and admin pages (animations after load and after opening a row; reduced motion)');
+  for (const [name, url, act] of [['shop', SHOP, ''], ['edit', EDIT + '?view=editor&tab=products', `document.querySelector('.ed-edit').click();document.querySelector('#tab-shows').click();`]]) {
+    await load(url, 390, 700);
+    if (act) { await evaluate(act); await sleep(200); }
+    const normal = await evaluate(`document.getAnimations().length`);
+    await load(url, 390, 700, [{ name: 'prefers-reduced-motion', value: 'reduce' }]);
+    line(`  ${name}: animations ${normal} (normal), ${await evaluate(`document.getAnimations().length`)} (reduced motion)`);
+  }
+  const SCRIPTS = ['shop.js', 'admin.js'];
+  const unsafe = SCRIPTS.filter((f) => /innerHTML|outerHTML|insertAdjacentHTML|document\.write/.test(readFileSync(join(ROOT, f), 'utf8').replace(/\/\/.*$/gm, '')));
+  line(`CHECK 7h: HTML-from-strings in ${SCRIPTS.join(', ')}: ${unsafe.length ? 'FOUND in ' + unsafe.join(', ') : 'none (textContent / value / attributes only)'}`);
+  for (const [f, q, sel] of [['shop.html', '', '.product-card'], ['edit.html', '?view=editor&tab=products', '.ed-row']]) {
+    const before = problems.length;
+    await load('file:///' + ROOT.replaceAll('\\', '/') + '/' + f + q, 390, 700);
+    // From disk only: Chrome refuses the crossorigin font *preload* on file:// (index.html does the same); @font-face still loads it.
+    const disk = problems.splice(before).map((p) => p.replace(/file:\/\/\/\S+\//, ''));
+    line(`Opens from disk: ${f}: ${await evaluate(`document.querySelectorAll('${sel}').length`)} ${sel} rendered, font ${await evaluate(`document.fonts.check('900 40px "Big Shoulders Display"')`)}${disk.length ? `; file:// only: ${disk.join(' | ')}` : ''}`);
+  }
+}
+
 try {
   if (mode === '--measure') {
     await load(BASE, 1280, 800);
     const out = await evaluate(`(()=>{const c=document.createElement('canvas').getContext('2d');c.font='900 1000px "Big Shoulders Display"';
       const m=s=>(c.measureText(s).width/1000).toFixed(4);
-      return {name:m('GLUCAK'),g:m('G'),lucak:m('LUCAK'),sl1:m('RISE, LIVE IT LOUD,'),sl2:m('PUSH PAST FEAR, THE TIME IS NOW.'),slogan:m('RISE, LIVE IT LOUD, PUSH PAST FEAR, THE TIME IS NOW.'),live:m('LIVE IT LOUD'),push1:m('PUSH PAST'),push2:m('FEAR'),push:m('PUSH PAST FEAR'),now1:m('THE TIME'),now2:m('IS NOW'),rise:m('RISE'),date:m('MMM 00'),close:m('LISTEN. SHOWS. JOIN.')}})()`);
+      return {name:m('GLUCAK'),g:m('G'),lucak:m('LUCAK'),sl1:m('RISE, LIVE IT LOUD,'),sl2:m('PUSH PAST FEAR, THE TIME IS NOW.'),slogan:m('RISE, LIVE IT LOUD, PUSH PAST FEAR, THE TIME IS NOW.'),live:m('LIVE IT LOUD'),push1:m('PUSH PAST'),push2:m('FEAR'),push:m('PUSH PAST FEAR'),now1:m('THE TIME'),now2:m('IS NOW'),rise:m('RISE'),date:m('MMM 00'),close:m('LISTEN. SHOWS. JOIN.'),merch:m('MERCH'),closeShop:m('LISTEN. SHOWS. SHOP. JOIN.')}})()`);
     console.log(out);
+  } else if (mode === '--shop') {
+    await shopShots();
+    await shopChecks();
+    line('Page errors and CSP (served with the real CSP):');
+    line(problems.length ? problems.map((p) => '  ' + p).join('\n') : '  none');
+    writeFileSync(join(ROOT, 'shots', 'check-shop-report.txt'), report.join('\n') + '\n');
   } else {
     const shotsOnly = mode === '--shots';
     for (const [name, q] of [['hero-ab', '?hero=ab'], ['hero-a', '?hero=a'], ['hero-b', '?hero=b']]) {
@@ -136,6 +249,7 @@ try {
     await load(BASE, 390, 844); await evaluate(`document.querySelector('.nav-mobile').open=true`); await sleep(100); await firstScreen('menu-open-390.png');
     await load(BASE + '?era=placeholder-b', 390, 844); await firstScreen('era-swap-390-first.png');
     for (const q of ['?hero=ab', '?hero=a', '?hero=b']) { await load(BASE + q, 390, 660); await firstScreen(`${q.slice(1).replace('=', '-')}-390x660-first.png`); }
+    await shopShots();
 
     if (!shotsOnly) {
       line('CHECK 1: player top on the first phone screen (390x660), clear of the bar');
@@ -266,6 +380,8 @@ try {
       }
       if (movers.size) line('  overlaps: ' + [...movers].join('; '));
       line(`  most animations running on the visible screen, brisk scroll, sampled every 150px: ${most}`);
+
+      await shopChecks();
 
       line('Page errors and CSP (served with the real CSP):');
       line(problems.length ? problems.map((p) => '  ' + p).join('\n') : '  none');

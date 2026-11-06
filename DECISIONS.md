@@ -118,6 +118,13 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   (c) stays at every width. Any later addition trims the same height first; raising the cap again needs a logged
   decision. **Why:** the 114px is the poster art the owner approved in D34; it serves main action 2 (shows) on phones,
   where most fans arrive. Dropping it under 700px still missed the cap (5.63) and removed it where it matters most.
+- **D41** (2026-11-05, Laptop boss): Shop and admin console design (L2, DESIGN.md sections 14 / 15). **Ruling:**
+  approved with fixes. On `/shop/` only the targeted product detail shows (`.product-detail:not(:target) { display:
+  none }`): the grid is the page, a card opens its detail, back or the bar's Shop returns. No upload progress bar
+  (fetch + "Uploading…"). "Stay" is a plain button (one accent button per view). Card pictures get `alt=""` (the name
+  is the link text). New words "Edit" (opens a row) and "Stay" approved. **Why:** grid plus every detail repeated was
+  4-6 phone screens of the same five samples, harder to find, not easier (the Puck Live lesson); separate pages are
+  too much for five samples; the progress bar was unasked-for code with untested iOS behaviour.
 - **D34** (2026-11-05, Desktop, owner delegated the call): Which hero? **Ruling:** both, by width: **A** (GLUCAK over
   the full photo) on phones and small screens, **B** (G[photo]LUCAK) from 900px up. A uses photo treatment (a) era grade,
   B uses (b) riso (or (f) MCCC still where B's slot is small). **Why:** both boss reviews found A stronger on phones and B

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Edit the site | GLucak (prototype)</title>
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="preload" href="fonts/big-shoulders-display-900.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script src="boot.js"></script>
+  <script src="data.js" defer></script>
+  <script src="admin.js" defer></script>
+</head>
+<body class="ed-body">
+  <!-- Same shell as src/pages/edit/index.astro (ids, roles, copy from docs/copy/admin.md). L2 changes are marked in
+       DESIGN.md section 15. admin.js fakes the server: nothing leaves the page. Switches: ?view=signin|editor,
+       ?tab=shows|products, ?open=<row index>, ?bar=dirty|saving|saved|shopoff|conflict|offline|errors,
+       ?upload=busy|error|done, ?list=empty, ?login=signing|wrong|locked|off, ?ask=1. -->
+  <main class="ed">
+    <h1 class="ed-title">Edit the site</h1>
+    <p class="ed-proto"><span class="ph-chip inline">Prototype: example data, nothing is saved</span></p>
+    <noscript><p>This page needs JavaScript. Turn it on, then reload.</p></noscript>
+
+    <form id="login" class="ed-card" method="post" action="#">
+      <h2>Sign in</h2>
+      <label for="username">Name</label>
+      <input id="username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required maxlength="64">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="200">
+      <button class="ed-btn ed-main" type="submit">Sign in</button>
+      <p id="login-msg" class="ed-msg" role="status"></p>
+    </form>
+
+    <section id="editor" hidden>
+      <p class="ed-who"><span id="who"></span> <button id="logout" class="ed-btn ed-plain" type="button">Sign out</button></p>
+      <div id="out-ask" class="ed-ask" role="alert" hidden><p>You have changes that aren't saved. Sign out anyway?</p>
+        <p class="ed-ask-btns"><button id="out-yes" class="ed-btn" type="button">Sign out</button> <button id="out-no" class="ed-btn" type="button">Stay</button></p></div>
+      <div class="ed-tabs" role="tablist" aria-label="What to edit">
+        <button id="tab-shows" class="ed-tab" type="button" role="tab" aria-selected="true" aria-controls="panel-shows">Shows</button>
+        <button id="tab-products" class="ed-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-products" tabindex="-1">Products</button>
+      </div>
+      <div id="panel-shows" class="ed-panel" role="tabpanel" aria-labelledby="tab-shows">
+        <p class="ed-help">Change anything, then press Save. Past shows are grey: they stay on the Shows page under Played.</p>
+        <button id="add" class="ed-btn ed-add" type="button">Add show</button>
+        <ol id="list" class="ed-list"></ol>
+        <div class="ed-bar">
+          <button id="save" class="ed-btn ed-main" type="button">Save shows</button>
+          <p id="msg" class="ed-msg" role="status"></p>
+        </div>
+      </div>
+      <div id="panel-products" class="ed-panel" role="tabpanel" aria-labelledby="tab-products" hidden>
+        <p class="ed-help">Products show on the Shop page in this order. Use Move up and Move down. Change anything, then press Save.
+          Fans buy on the store's own page (the Link). This site never takes card details.</p>
+        <button id="p-add" class="ed-btn ed-add" type="button">Add product</button>
+        <ol id="p-list" class="ed-list"></ol>
+        <div class="ed-bar">
+          <button id="p-save" class="ed-btn ed-main" type="button">Save products</button>
+          <p id="p-msg" class="ed-msg" role="status"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
