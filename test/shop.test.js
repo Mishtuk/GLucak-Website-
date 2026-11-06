@@ -42,7 +42,7 @@ test('/shop/ is filled per visit from the shipped samples: banner, Coming soon, 
   assert.ok(!html.includes('>Buy<'), 'samples are never buyable');
 });
 
-test('Shop links: none without SHOP_ENABLED (Watch stays); with it nav + footer get Shop, the bar swaps Watch for Shop', async () => {
+test('Shop links: none without SHOP_ENABLED; with it nav + footer get Shop, but the bar keeps Watch while nothing is available (D42)', async () => {
   for (const p of ['/', '/music/', '/shows/', '/about/', '/shop/']) {
     const html = await (await get(p)).text();
     assert.ok(!html.includes('href="/shop/"'), `${p} off`);
@@ -54,7 +54,7 @@ test('Shop links: none without SHOP_ENABLED (Watch stays); with it nav + footer 
       assert.match(html.match(/<nav class="nav-desktop"[\s\S]*?<\/nav>/)[0], />Shop<\/a>/, `${p} nav`);
       assert.match(html.match(/<nav class="sheet"[\s\S]*?<\/nav>/)[0], />Shop<\/a>/, `${p} menu`);
       const bar = html.match(/<nav class="phone-bar"[\s\S]*?<\/nav>/)[0];
-      assert.ok(bar.includes('<span>Shop</span>') && !bar.includes('Watch'), `${p} bar`);
+      assert.ok(bar.includes('<span>Watch</span>') && !bar.includes('<span>Shop</span>'), `${p} bar keeps Watch (only samples)`);
       assert.match(html.match(/<p class="closing[\s\S]*?<\/p>/)[0], /href="\/shop\/">Shop\.<\/a>/, `${p} footer`);
     }
     const r = await get('/shop/');
@@ -187,4 +187,39 @@ test('/media/uploads/: only server-made names; traversal and junk 404', async ()
     '/media/uploads/../products.json', `/media/uploads/${'a'.repeat(32)}.webp`, `/media/uploads/${'A'.repeat(32)}.webp`, '/media/uploads/x.html', '/media/uploads/']) {
     assert.equal((await get(p)).status, 404, p);
   }
+});
+
+test('D42 on the server: with SHOP_ENABLED the bar swaps Watch for Shop once a product is available, per visit', async () => {
+  const barOf = async () => (await (await get('/')).text()).match(/<nav class="phone-bar"[\s\S]*?<\/nav>/)[0];
+  await withShop(async () => {
+    assert.equal((await save([product({ status: 'coming-soon', link: undefined })])).status, 200);
+    assert.ok((await barOf()).includes('<span>Watch</span>'), 'no available product: Watch');
+    assert.equal((await save([product()])).status, 200);
+    const bar = await barOf();
+    assert.ok(bar.includes('<span>Shop</span>') && !bar.includes('Watch'), 'one available: Shop');
+  });
+  assert.ok((await barOf()).includes('<span>Watch</span>'), 'shop off again: Watch');
+});
+
+test('/shop/ L2: only the targeted detail shows (CSS), card imgs alt empty', async () => {
+  await save([product({ status: 'sample', link: undefined }), product({ id: 'two', name: 'Two', status: 'sold-out', order: 1 })]);
+  const html = await shop();
+  assert.ok(html.includes('class="phrase fit"') && html.includes('ln-merch'));
+  assert.match(html,/\.shop-details \.product-detail:not\(:target\)\s*\{\s*display:\s*none/);
+  const cards = html.match(/<li class="product-card"[\s\S]*?<\/li>/g) ?? [];
+  assert.equal(cards.length, 2);
+  assert.ok(cards.every((c) => c.includes('alt=""')), 'card imgs alt empty');
+});
+
+test('/edit/ L2: collapsed rows, radio statuses, Stay plain, no innerHTML / XHR / progress bar', async () => {
+  const page = await (await get('/edit/')).text();
+  assert.match(page, /<div id="out-ask" class="ed-ask"[^>]*>[\s\S]*?<button id="out-no" class="ed-btn" type="button">Stay<\/button>/);
+  assert.ok(page.includes('class="ed-btn ed-add"') && page.includes('color-scheme:dark'));
+  assert.ok(!/\.ed-row\.past[^{]*\{[^}]*opacity/.test(page), 'past rows: no opacity');
+  assert.match(page, /\.ed-row\.past\{[^}]*border-style:dashed/);
+  const js = await (await get('/js/edit.js')).text();
+  for (const t of ["'ed-row'", "'ed-row-head'", "'ed-actions'", "'ed-form'", 'hidden: true', "'aria-expanded'", "'aria-controls'", "type: 'radio'", "'ed-choice'", "'ed-file-input'", "'Uploading…'", "'Move up'", "'Edit'"]) assert.ok(js.includes(t), t);
+  assert.ok(!js.includes('innerHTML') && !js.includes('XMLHttpRequest') && !js.includes('onprogress'));
+  assert.ok(js.includes('r.up.disabled = i === 0') && js.includes('r.down.disabled = i === list.length - 1'), 'ends disabled');
+  assert.ok(js.includes("btn.setAttribute('aria-disabled', 'true')") && js.includes('if (saving[kind]) return'), 'Save guarded while saving');
 });

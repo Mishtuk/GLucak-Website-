@@ -80,16 +80,21 @@ const buyable = (p) => p.status === 'available' && Boolean(p.link);
 export const statusText = (p) => (p.status === 'sold-out' ? 'Sold out' : buyable(p) ? 'Available' : 'Coming soon');
 const anchor = (p) => `product-${p.id}`;
 
+const statusCls = (p) => (p.status === 'sold-out' ? 'is-sold-out' : buyable(p) ? 'is-available' : 'is-coming-soon');
+const statusP = (p) => `<p class="product-status ${statusCls(p)}">${statusText(p)}</p>`;
+// The tape's words are fixed (never data): only Sample and Sold out.
+const tape = (p) => (p.status === 'sample' ? '<span class="product-tape" aria-hidden="true">Sample</span>' : p.status === 'sold-out' ? '<span class="product-tape" aria-hidden="true">Sold out</span>' : '');
+
 /** Buy opens the provider's product page; anything else is a plain label, never a button that does nothing. */
 export function actionHtml(p) {
   if (buyable(p)) return `<a class="btn btn-solid product-buy" href="${esc(p.link)}" rel="noopener">Buy</a><p class="product-note">You pay on the store's own page. We never see your card details.</p>`;
-  return `<p class="product-status${p.status === 'sold-out' ? ' is-sold-out' : ''}">${statusText(p)}</p>`;
+  return statusP(p);
 }
 
-const img = (p, cls) => `<img class="${cls}" src="${esc(p.image)}" alt="${esc(p.name)}" width="600" height="600" loading="lazy" decoding="async" />`;
+const img = (p, cls, alt) => `<img class="${cls}" src="${esc(p.image)}" alt="${alt}" width="600" height="600" loading="lazy" decoding="async" />`;
 const priceHtml = (p) => (p.status === 'sample' ? '' : `<p class="product-price">${price(p.price)}</p>`); // a sample's price would read as real (D37)
-const card = (p) => `<li class="product-card"><a class="product-link" href="#${anchor(p)}">${img(p, 'product-media')}<p class="product-name">${esc(p.name)}</p>${priceHtml(p)}<p class="product-status">${statusText(p)}</p></a></li>`;
-const detail = (p) => `<article class="product-detail" id="${anchor(p)}">${img(p, 'product-media')}<div class="product-body"><h2 class="product-name">${esc(p.name)}</h2>${priceHtml(p)}${p.description ? `<p class="product-desc">${esc(p.description)}</p>` : ''}${p.sizes?.length ? `<p class="product-sizes">Sizes: ${p.sizes.map(esc).join(', ')}</p>` : ''}${actionHtml(p)}</div></article>`;
+const card = (p) => `<li class="product-card" data-status="${p.status}"><a class="product-link" href="#${anchor(p)}">${img(p, 'product-media', '')}${tape(p)}<p class="product-name">${esc(p.name)}</p>${priceHtml(p)}${statusP(p)}</a></li>`;
+const detail = (p) => `<article class="product-detail" id="${anchor(p)}" data-status="${p.status}">${img(p, 'product-media', esc(p.name))}${tape(p)}<div class="product-body"><h2 class="product-name">${esc(p.name)}</h2>${priceHtml(p)}${p.description ? `<p class="product-desc">${esc(p.description)}</p>` : ''}${p.sizes?.length ? `<p class="product-sizes">Sizes: ${p.sizes.map(esc).join(', ')}</p>` : ''}${actionHtml(p)}</div></article>`;
 
 /** The /shop/ marker: optional Preview chip (shop not switched on), sample banner, grid, then one detail per product. */
 export function productsHtml(rows, { preview = false } = {}) {
@@ -102,11 +107,13 @@ export function productsHtml(rows, { preview = false } = {}) {
 
 // SHOP_ENABLED (D8, D36): the built pages carry empty markers; the server fills them per request.
 const BAG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 12H6Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>';
-/** Header nav + menu sheet get Shop; the phone bar's Watch becomes Shop; the footer line gets Shop. Off: markers emptied. */
-export function shopLinks(html, { enabled, path }) {
+/** Header nav + menu sheet + footer line get Shop when enabled. The phone bar's Watch becomes Shop only when it's enabled AND
+ *  something is buyable (D42); `rows` are the products. Off: markers emptied, Watch stays. */
+export function shopLinks(html, { enabled, path, rows = [] }) {
   const cur = path.startsWith('/shop/') ? ' aria-current="page"' : '';
+  const bar = enabled && valid(rows).some((p) => p.status === 'available');
   return html
     .replaceAll('<!--gl:nav-shop-->', enabled ? `<a href="/shop/"${cur}>Shop</a>` : '')
-    .replace(/<!--gl:watch-->([\s\S]*?)<!--\/gl:watch-->/, (_, watch) => (enabled ? `<a href="/shop/"${cur}>${BAG}<span>Shop</span></a>` : watch))
+    .replace(/<!--gl:watch-->([\s\S]*?)<!--\/gl:watch-->/, (_, watch) => (bar ? `<a href="/shop/"${cur}>${BAG}<span>Shop</span></a>` : watch))
     .replaceAll('<!--gl:footer-shop-->', enabled ? ' <a href="/shop/">Shop.</a>' : '');
 }

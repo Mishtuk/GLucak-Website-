@@ -72,9 +72,9 @@ test('button rules: Buy only when available with a link; otherwise a plain label
   assert.match(buy, /^<a class="btn btn-solid product-buy" href="https:\/\/shop\.example\/tee" rel="noopener">Buy<\/a><p class="product-note">You pay on the store's own page\. We never see your card details\.<\/p>$/);
   for (const status of ['sample', 'coming-soon']) {
     const h = actionHtml(good({ status, link: 'https://shop.example/tee' }));
-    assert.equal(h, '<p class="product-status">Coming soon</p>', status);
+    assert.equal(h, '<p class="product-status is-coming-soon">Coming soon</p>', status);
   }
-  assert.equal(actionHtml(good({ status: 'available' })), '<p class="product-status">Coming soon</p>', 'available but no link yet');
+  assert.equal(actionHtml(good({ status: 'available' })), '<p class="product-status is-coming-soon">Coming soon</p>', 'available but no link yet');
   assert.equal(actionHtml(good({ status: 'sold-out', link: 'https://shop.example/tee' })), '<p class="product-status is-sold-out">Sold out</p>');
   for (const s of ['sample', 'coming-soon', 'sold-out']) assert.ok(!/<button|<a /.test(actionHtml(good({ status: s, link: 'https://x.com' }))), s);
 });
@@ -105,15 +105,40 @@ test('buying note only under a Buy button', () => {
   assert.ok(!actionHtml(good()).includes(note), 'available without a link');
 });
 
-test('shopLinks: Shop in nav, bar (replacing Watch) and footer only when enabled', () => {
+test('shopLinks: nav + footer follow enabled; the bar swaps Watch for Shop only when enabled AND something is available (D42)', () => {
   const page = '<nav class="nav-desktop"><a href="/music/">Music</a><!--gl:nav-shop--></nav><nav class="sheet"><!--gl:nav-shop--></nav>'
     + '<nav class="phone-bar"><a href="/shows/">Shows</a><!--gl:watch--><a href="/#shows-video"><span>Watch</span></a><!--/gl:watch--></nav>'
     + '<p class="closing"><a href="/shows/">Shows.</a><!--gl:footer-shop--> <a href="#join">Join.</a></p>';
-  const off = shopLinks(page, { enabled: false, path: '/' });
-  assert.ok(!off.includes('/shop/') && off.includes('<span>Watch</span>') && !off.includes('gl:nav-shop'));
-  const on = shopLinks(page, { enabled: true, path: '/shop/' });
-  assert.equal(on.match(/<a href="\/shop\/" aria-current="page">Shop<\/a>/g).length, 2, 'desktop nav + menu sheet');
-  assert.ok(on.includes('<span>Shop</span>') && !on.includes('Watch'), 'Shop replaces Watch in the bar');
-  assert.ok(on.includes('<a href="/shop/">Shop.</a>'));
-  assert.ok(!shopLinks(page, { enabled: true, path: '/music/' }).includes('aria-current'));
+  const samples = [good({ status: 'sample' }), good({ id: 'b', status: 'coming-soon' }), good({ id: 'c', status: 'sold-out' })];
+  const one = [...samples, good({ id: 'd', status: 'available' })];
+  const off = shopLinks(page, { enabled: false, path: '/', rows: one });
+  assert.ok(!off.includes('/shop/') && off.includes('<span>Watch</span>') && !off.includes('gl:nav-shop'), 'off: nothing, even with an available product');
+  const only = shopLinks(page, { enabled: true, path: '/shop/', rows: samples });
+  assert.equal(only.match(/<a href="\/shop\/" aria-current="page">Shop<\/a>/g).length, 2, 'desktop nav + menu sheet');
+  assert.ok(only.includes('<span>Watch</span>') && !only.includes('<span>Shop</span>'), 'enabled, nothing buyable: Watch stays');
+  assert.ok(only.includes('<a href="/shop/">Shop.</a>'));
+  const on = shopLinks(page, { enabled: true, path: '/shop/', rows: one });
+  assert.ok(on.includes('<span>Shop</span>') && !on.includes('Watch'), 'enabled + one available: Shop replaces Watch');
+  assert.ok(shopLinks(page, { enabled: true, path: '/shop/', rows: [good({ status: 'available', price: -1 })] }).includes('Watch'), 'an invalid row does not count');
+  assert.ok(!shopLinks(page, { enabled: true, path: '/music/', rows: one }).includes('aria-current'));
+});
+
+test('L2 markup: status classes + words, tape only for sample / sold-out, card img alt empty, detail img alt the name', () => {
+  const html = (status, o = {}) => productsHtml([good({ status, name: 'Tee "x"', ...o })]);
+  for (const [status, cls, word] of [['coming-soon', 'is-coming-soon', 'Coming soon'], ['sample', 'is-coming-soon', 'Coming soon'], ['sold-out', 'is-sold-out', 'Sold out']]) {
+    const h = html(status);
+    assert.equal((h.match(new RegExp('<p class="product-status ' + cls + '">' + word + '</p>', 'g')) ?? []).length, 2, status + ': card + detail');
+    assert.ok(h.includes('data-status="' + status + '"'), status);
+  }
+  assert.ok(html('available', { link: 'https://shop.example/t' }).includes('<p class="product-status is-available">Available</p>'), 'card says Available');
+  assert.ok(html('available').includes('product-status is-coming-soon'), 'available without a link reads Coming soon');
+  const tapes = (h) => [...h.matchAll(/<span class="product-tape" aria-hidden="true">([^<]*)<\/span>/g)].map((m) => m[1]);
+  assert.deepEqual(tapes(html('sample')), ['Sample', 'Sample']);
+  assert.deepEqual(tapes(html('sold-out')), ['Sold out', 'Sold out']);
+  assert.deepEqual(tapes(html('coming-soon')), []);
+  assert.deepEqual(tapes(html('available')), []);
+  assert.deepEqual(tapes(html('sample', { name: '<b>x</b>' })), ['Sample', 'Sample'], 'tape text is fixed, never data');
+  const h = html('coming-soon');
+  assert.match(h, /<li class="product-card"[^>]*><a class="product-link" href="#product-glucak-tee"><img class="product-media" src="[^"]+" alt=""/);
+  assert.match(h, /<article class="product-detail"[^>]*><img class="product-media" src="[^"]+" alt="Tee &quot;x&quot;"/);
 });

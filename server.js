@@ -62,9 +62,10 @@ const statSafe = (f) => { try { return statSync(f); } catch { return null; } };
 
 /** Fill the shop links, the shop, the shows and the Now line. Fails open (caller catches): an unreadable file leaves the static page. */
 function inject(html, path) {
-  html = shopLinks(html, { enabled: shopOn(), path });
+  const products = readList(DATA, PRODUCTS, 'products.json');
+  html = shopLinks(html, { enabled: shopOn(), path, rows: products });
   if (html.includes('<!--gl:shop-->')) {
-    const shop = productsHtml(readList(DATA, PRODUCTS, 'products.json'), { preview: !shopOn() });
+    const shop = productsHtml(products, { preview: !shopOn() });
     html = html.replace('<!--gl:shop-->', () => shop);
   }
   const shows = html.includes('<!--gl:shows-->'), now = html.includes('<!--gl:now-->');

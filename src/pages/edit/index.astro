@@ -35,25 +35,25 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
 
       <section id="editor" hidden>
         <p class="ed-who"><span id="who"></span> <button id="logout" class="ed-btn ed-plain" type="button">Sign out</button></p>
-        <p id="out-ask" class="ed-help" role="alert" hidden>You have changes that aren't saved. Sign out anyway?
-          <button id="out-yes" class="ed-btn" type="button">Sign out</button> <button id="out-no" class="ed-btn" type="button">Stay</button></p>
+        <div id="out-ask" class="ed-ask" role="alert" hidden><p>You have changes that aren't saved. Sign out anyway?</p>
+          <p class="ed-ask-btns"><button id="out-yes" class="ed-btn" type="button">Sign out</button> <button id="out-no" class="ed-btn" type="button">Stay</button></p></div>
         <div class="ed-tabs" role="tablist" aria-label="What to edit">
           <button id="tab-shows" class="ed-tab" type="button" role="tab" aria-selected="true" aria-controls="panel-shows">Shows</button>
           <button id="tab-products" class="ed-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-products" tabindex="-1">Products</button>
         </div>
-        <div id="panel-shows" role="tabpanel" aria-labelledby="tab-shows">
+        <div id="panel-shows" class="ed-panel" role="tabpanel" aria-labelledby="tab-shows">
           <p class="ed-help">Change anything, then press Save. Past shows are grey: they stay on the Shows page under Played.</p>
-          <button id="add" class="ed-btn" type="button">Add show</button>
+          <button id="add" class="ed-btn ed-add" type="button">Add show</button>
           <ol id="list" class="ed-list"></ol>
           <div class="ed-bar">
             <button id="save" class="ed-btn ed-main" type="button">Save shows</button>
             <p id="msg" class="ed-msg" role="status"></p>
           </div>
         </div>
-        <div id="panel-products" role="tabpanel" aria-labelledby="tab-products" hidden>
+        <div id="panel-products" class="ed-panel" role="tabpanel" aria-labelledby="tab-products" hidden>
           <p class="ed-help">Products show on the Shop page in this order. Use Move up and Move down. Change anything, then press Save.
             Fans buy on the store's own page (the Link). This site never takes card details.</p>
-          <button id="p-add" class="ed-btn" type="button">Add product</button>
+          <button id="p-add" class="ed-btn ed-add" type="button">Add product</button>
           <ol id="p-list" class="ed-list"></ol>
           <div class="ed-bar">
             <button id="p-save" class="ed-btn ed-main" type="button">Save products</button>
@@ -63,55 +63,153 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
       </section>
     </main>
     <style is:global>
-      [hidden] { display: none !important; }
-      .ed-body { padding-bottom: 0; }
-      .ed { width: min(100% - 2 * var(--space-m), 44rem); margin-inline: auto; padding-block: var(--space-xl); }
-      .ed-title { font-family: var(--font-display); font-weight: 900; text-transform: uppercase; font-size: var(--step-3); line-height: 1; margin-bottom: var(--space-l); }
-      .ed h2 { font-size: var(--step-1); margin-bottom: var(--space-s); }
-      .ed label { display: block; margin-top: var(--space-m); font-weight: 700; }
-      .ed input, .ed select, .ed textarea {
-        display: block; width: 100%; min-height: 48px; margin-top: 0.25rem; padding: 0.5rem 0.75rem;
-        font: inherit; font-size: var(--step-0); color: var(--text); background: var(--bg);
-        border: 2px solid var(--line); border-radius: var(--radius-s);
-      }
-      .ed input:focus-visible, .ed select:focus-visible, .ed textarea:focus-visible { outline: 3px solid var(--text); outline-offset: 1px; border-color: var(--text); }
-      .ed-hint { font-size: var(--step--1); color: var(--muted); }
-      .ed textarea { min-height: 6rem; resize: vertical; }
-      .ed input[type='file'] { padding: 0.6rem 0.75rem; }
-      .ed-tabs { display: flex; gap: var(--space-xs); margin-top: var(--space-l); border-bottom: 2px solid var(--line); }
-      .ed-tab {
-        min-height: 48px; padding: 0.5rem 1.25rem; margin-bottom: -2px; font: inherit; font-weight: 700;
-        color: var(--muted); background: none; border: 0; border-bottom: 4px solid transparent;
-      }
-      .ed-tab[aria-selected='true'] { color: var(--text); border-bottom-color: var(--accent); }
-      .ed-tab:focus-visible { outline: 3px solid var(--text); outline-offset: -3px; }
-      .ed-pic { display: block; width: 96px; height: 96px; margin-top: var(--space-s); object-fit: cover; background: var(--bg); border: 2px solid var(--line); }
-      .ed-pic:not([src]) { display: none; }
-      .ed-moves { display: flex; flex-wrap: wrap; gap: 0 var(--space-s); }
-      .ed-card, .ed-show { padding: var(--space-l); background: var(--bg-2); border: 2px solid var(--line); border-radius: var(--radius-s); }
-      .ed-btn {
-        min-height: 48px; min-width: 48px; padding: 0.5rem 1.25rem; margin-top: var(--space-m);
-        font-weight: 700; font-size: var(--step-0); color: var(--text); background: var(--bg);
-        border: 2px solid var(--text); border-radius: var(--radius-s);
-      }
-      .ed-main { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
-      .ed-plain { margin-top: 0; border-color: var(--line); }
-      .ed-who { display: flex; align-items: center; justify-content: space-between; gap: var(--space-m); flex-wrap: wrap; }
-      .ed-help { margin-top: var(--space-m); color: var(--muted); }
-      .ed-list { display: grid; gap: var(--space-l); margin-block: var(--space-l); }
-      .ed-show { min-width: 0; }
-      .ed-show legend { padding-inline: 0.25rem; font-weight: 700; }
-      .ed-show.past { opacity: 0.6; }
-      .ed-show.bad { border-color: var(--accent); }
-      .ed-tag { margin-left: 0.5rem; font-weight: 400; color: var(--muted); }
-      .ed-two { display: grid; gap: 0 var(--space-m); }
-      @media (min-width: 560px) { .ed-two { grid-template-columns: 1fr 1fr; } }
-      .ed-err { margin-top: var(--space-s); font-weight: 700; color: var(--text); }
-      .ed-err:empty, .ed-msg:empty { display: none; }
-      .ed-err::before { content: '! '; color: var(--accent); }
-      .ed-msg { margin-top: var(--space-s); font-weight: 700; }
-      .ed-bar { position: sticky; bottom: 0; padding-block: var(--space-s) calc(var(--space-s) + env(safe-area-inset-bottom)); background: var(--bg); border-top: 2px solid var(--line); }
-      .ed-bar .ed-btn { margin-top: 0; width: 100%; }
-    </style>
+/* ---------- Admin console (/edit/): plain, big, the same tokens ---------- */
+.ed-body { padding-bottom: 0; color-scheme: dark; } /* dark native pickers: the date / time icons stay visible on bg */
+html:has(.ed-body) { scroll-padding: 1rem 0 10rem; } /* a focused field never hides under the sticky save bar */
+.ed { width: min(100% - 2 * var(--space-m), 46rem); margin-inline: auto; padding-top: var(--space-xl); }
+.ed-title { font-family: var(--font-display); font-weight: 900; font-size: var(--step-3); line-height: 0.9; text-transform: uppercase; }
+.ed-proto { margin-top: var(--space-xs); }
+/* Sign-in: a card with the band's 4px top edge. */
+.ed-card { max-width: 28rem; margin-top: var(--space-l); padding: var(--space-l); background: var(--bg-2); border: 2px solid var(--line); border-top: 4px solid var(--text); border-radius: var(--radius-s); }
+.ed-card h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; }
+.ed-card > label, .ed-field > label { display: block; margin-top: var(--space-m); font-weight: 700; font-size: 1.0625rem; line-height: 1.3; }
+/* Fields: 52px, bg ground, a muted border (3:1+ against bg and bg-2 in every era), 3px text focus ring. */
+.ed input:not([type='file']):not([type='radio']), .ed select, .ed textarea {
+  display: block; width: 100%; min-height: 52px; margin-top: 0.3rem; padding: 0.5rem 0.75rem;
+  font: inherit; font-size: var(--step-0); color: var(--text); background: var(--bg);
+  border: 2px solid var(--muted); border-radius: var(--radius-s);
+}
+.ed textarea { min-height: 7.5rem; resize: vertical; line-height: 1.4; }
+.ed input:focus-visible, .ed select:focus-visible, .ed textarea:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; border-color: var(--text); }
+.ed ::placeholder { color: var(--muted); opacity: 1; }
+.ed-hint { display: block; margin-top: 0.3rem; font-size: var(--step--1); line-height: 1.35; color: var(--muted); }
+.ed-two { display: grid; gap: 0 var(--space-m); }
+@media (min-width: 480px) { .ed-two { grid-template-columns: 1fr 1fr; } }
+
+/* Status: radio rows with the full option words (a closed <select> cut them off at 390). The checked row is outlined in
+   text and its dot filled; the whole row is the target. */
+.ed-choices { min-width: 0; margin: var(--space-m) 0 0; padding: 0; border: 0; display: grid; gap: var(--space-xs); }
+.ed-choices legend { padding: 0; margin-bottom: 0.3rem; font-weight: 700; font-size: 1.0625rem; line-height: 1.3; }
+.ed-choice {
+  display: flex; align-items: center; gap: 0.75rem; min-height: 52px; padding: 0.4rem 0.75rem;
+  background: var(--bg); border: 2px solid var(--muted); border-radius: var(--radius-s); line-height: 1.3; cursor: pointer;
+}
+.ed-choice:has(input:checked) { border: 3px solid var(--text); font-weight: 700; }
+.ed .ed-choice input { flex: none; width: 1.5rem; height: 1.5rem; min-height: 0; margin: 0; accent-color: var(--text); }
+.ed-choice:has(input:focus-visible) { outline: 3px solid var(--text); outline-offset: 2px; }
+
+/* Buttons. ed-main is the site's .btn look (display face, accent): the one thing to press. */
+.ed-btn {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 48px; min-width: 48px; padding: 0.5rem 1rem;
+  font-weight: 700; font-size: 1.0625rem; line-height: 1.2; text-align: center;
+  color: var(--text); background: var(--bg); border: 2px solid var(--text); border-radius: var(--radius-s);
+}
+.ed-main {
+  min-height: 56px; background: var(--accent); color: var(--accent-text); border-color: var(--accent);
+  font-family: var(--font-display); font-weight: 900; font-size: 1.5rem; letter-spacing: 0.02em; text-transform: uppercase;
+}
+.ed-card .ed-main { width: 100%; margin-top: var(--space-l); }
+.ed-plain { border-color: var(--muted); }
+.ed-add { width: 100%; min-height: 56px; margin-top: var(--space-m); border-style: dashed; border-width: 3px; } /* an empty slot to fill */
+.ed-btn:disabled { color: var(--muted); border-color: var(--line); border-style: dashed; cursor: not-allowed; }
+.ed-main[aria-disabled='true'] { background: var(--bg); color: var(--text); border-color: var(--text); border-style: dashed; cursor: progress; }
+.ed-edit[aria-expanded='true'] { background: var(--text); color: var(--bg); }
+@media (hover: hover) {
+  .ed-btn:not(:disabled):not([aria-disabled='true']):hover { background: var(--text); color: var(--bg); border-color: var(--text); }
+}
+
+.ed-who { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xs) var(--space-m); margin-top: var(--space-l); font-weight: 700; }
+/* Sign out with unsaved changes: the paper box, two plain buttons (D41 F3: one accent button per view, and that is Save). */
+.ed-ask { margin-top: var(--space-m); padding: var(--space-m); background: var(--text); color: var(--bg); font-weight: 700; }
+.ed-ask-btns { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xs); margin-top: var(--space-s); }
+
+/* Tabs: two halves of one bar. The open one is inverted (text ground, bg letters), like the site's crate tabs. */
+.ed-tabs { display: grid; grid-template-columns: 1fr 1fr; margin-top: var(--space-l); border: 2px solid var(--text); border-radius: var(--radius-s); }
+.ed-tab { min-height: 56px; padding: 0.5rem 1rem; font: inherit; font-weight: 800; font-size: var(--step-0); color: var(--text); background: transparent; border: 0; }
+.ed-tab[aria-selected='true'] { background: var(--text); color: var(--bg); }
+.ed-tab:focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
+.ed-help { max-width: 40rem; margin-top: var(--space-m); color: var(--muted); }
+.ed-empty { padding: var(--space-l) var(--space-m); border: 2px dashed var(--muted); color: var(--text); font-weight: 700; }
+
+/* Rows: collapsed to a head (picture or date, number, name, status) and the actions; Edit opens the form under them. */
+.ed-list { display: grid; gap: var(--space-m); margin-block: var(--space-m) var(--space-l); }
+.ed-row { min-width: 0; padding: var(--space-m); background: var(--bg-2); border: 2px solid var(--line); border-radius: var(--radius-s); }
+.ed-row.is-open { border-color: var(--text); }
+.ed-row.past { border-style: dashed; }
+.ed-row.past .ed-row-title, .ed-row.past .ed-row-date { color: var(--muted); } /* "Past shows are grey" (copy), still 4.5:1 */
+.ed-row.bad { border: 3px solid var(--text); }
+.ed-row.bad .ed-row-num::after {
+  content: '!'; display: inline-grid; place-items: center; width: 1.5rem; height: 1.5rem; margin-left: 0.5rem;
+  background: var(--text); color: var(--bg); font-weight: 800; vertical-align: middle;
+}
+.ed-row-head { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 0.25rem 0.75rem; align-items: center; }
+.ed-row-head:has(.ed-row-date) { grid-template-columns: 4.25rem minmax(0, 1fr); }
+.ed-row-head .ed-err { grid-column: 1 / -1; }
+.ed-thumb, .ed-pic { object-fit: cover; background-color: var(--bg); background-image: var(--hatch); border: 2px solid var(--line); }
+.ed-thumb { width: 64px; height: 64px; }
+.ed-row-date { font-family: var(--font-display); font-weight: 900; font-size: 1.5rem; line-height: 1; text-transform: uppercase; white-space: nowrap; }
+.ed-row-text { min-width: 0; }
+.ed-row-num { font-size: var(--step--1); font-weight: 700; line-height: 1.3; color: var(--muted); }
+.ed-row-title { font-weight: 800; font-size: var(--step-0); line-height: 1.25; overflow-wrap: anywhere; }
+.ed-row-title:empty { display: none; }
+.ed-row-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.75rem; font-size: var(--step--1); line-height: 1.3; color: var(--muted); }
+.ed-row-meta .product-status { color: var(--text); }
+.ed-price { font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+.ed-tag { padding: 0 0.4rem; border: 2px solid var(--muted); color: var(--text); font-weight: 700; }
+/* Products: Move up | Move down / Edit | Delete in a 2x2 grid on phones (each about 122px at 320), one row of four from
+   600px. Shows: Edit | Delete. Same place on every row, so Gabe's thumb learns it. */
+.ed-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-xs); margin-top: var(--space-s); }
+.ed-actions .ed-btn { padding-inline: 0.5rem; }
+@media (min-width: 600px) {
+  .ed-actions-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ed-actions:not(.ed-actions-4) { grid-template-columns: repeat(2, minmax(0, 9rem)); }
+}
+.ed-err { margin-top: var(--space-xs); padding: 0.5rem 0.75rem; background: var(--text); color: var(--bg); font-weight: 700; line-height: 1.35; }
+.ed-err:empty { display: none; }
+
+/* The editor form, under its row. */
+.ed-form { min-width: 0; margin: var(--space-m) 0 0; padding: var(--space-xs) 0 0; border: 0; border-top: 2px dashed var(--line); }
+/* Photo: preview (hatched until there is one), then the upload button, its hint and the message ("Uploading…" busy). */
+.ed-upload { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: var(--space-m); align-items: start; margin-top: var(--space-s); }
+.ed-pic { width: 120px; height: 120px; }
+@media (max-width: 399px) { .ed-upload { grid-template-columns: 1fr; } }
+.ed-upload-side { min-width: 0; }
+.ed-file-wrap { position: relative; display: flex; }
+.ed-file { width: 100%; min-height: 56px; border-width: 3px; }
+.ed-file-input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.ed-file-wrap:has(.ed-file-input:focus-visible) .ed-file { outline: 3px solid var(--text); outline-offset: 3px; }
+@media (hover: hover) { .ed-file-wrap:hover .ed-file { background: var(--text); color: var(--bg); } }
+
+/* Messages: one look for every message line (sign-in, upload, save). data-state draws a glyph, never colour alone:
+   dirty = hollow ring, busy = half-filled ring (static), ok = a tick, error = the paper box with a "!" square. */
+.ed-msg, .ed-upmsg { display: flex; align-items: flex-start; gap: 0.6rem; margin-top: var(--space-s); font-weight: 700; font-size: var(--step--1); line-height: 1.35; color: var(--text); }
+.ed-msg { font-size: var(--step-0); }
+.ed-msg:empty, .ed-upmsg:empty { display: none; }
+:is(.ed-msg, .ed-upmsg)[data-state]::before { content: ''; flex: none; width: 1rem; height: 1rem; margin-top: 0.2rem; }
+:is(.ed-msg, .ed-upmsg)[data-state='dirty']::before { border: 2px solid currentColor; border-radius: 50%; }
+:is(.ed-msg, .ed-upmsg)[data-state='busy']::before { border: 2px solid currentColor; border-radius: 50%; background: linear-gradient(90deg, currentColor 50%, transparent 50%); }
+:is(.ed-msg, .ed-upmsg)[data-state='ok']::before { width: 0.5rem; height: 0.95rem; margin: 0 0.3rem 0 0.25rem; border: solid currentColor; border-width: 0 3px 3px 0; rotate: 45deg; }
+:is(.ed-msg, .ed-upmsg)[data-state='error'] { padding: 0.6rem 0.75rem; background: var(--text); color: var(--bg); }
+:is(.ed-msg, .ed-upmsg)[data-state='error']::before {
+  content: '!'; display: grid; place-items: center; width: 1.4rem; height: 1.4rem; margin-top: 0;
+  background: var(--bg); color: var(--text); font-weight: 800; line-height: 1;
+}
+
+/* The save bar: sticky at the bottom of its tab. Message above the button on phones (read, then press), beside it from
+   700px. Unsaved or failed: the bar's top edge goes to 4px text. */
+.ed-bar {
+  position: sticky; bottom: 0; z-index: 5; display: grid; gap: var(--space-xs);
+  padding: var(--space-s) 0 calc(var(--space-s) + env(safe-area-inset-bottom));
+  background: var(--bg); border-top: 2px solid var(--line);
+}
+.ed-bar .ed-msg { order: -1; margin-top: 0; }
+.ed-bar .ed-main { width: 100%; }
+.ed-bar:has(.ed-msg[data-state='dirty']), .ed-bar:has(.ed-msg[data-state='error']) { border-top: 4px solid var(--text); }
+@media (min-width: 700px) {
+  .ed-bar { grid-template-columns: minmax(0, 1fr) 16rem; align-items: center; column-gap: var(--space-m); }
+  .ed-bar .ed-msg { order: 0; grid-column: 1; grid-row: 1; }
+  .ed-bar .ed-main { grid-column: 2; grid-row: 1; }
+}
+        </style>
   </body>
 </html>
