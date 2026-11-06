@@ -122,6 +122,8 @@ const CHECK = (W) => String.raw`(()=>{
   // sideways: anything past the viewport (the glow, and the placeholder chip's own box, are exempt)
   for(const e of document.querySelectorAll('body *')){
     if(skip(e)||e.matches('.glow,.defs *,svg *')||!vis(e))continue;
+    // DESIGN 18b: cards inside the still swipe row scroll inside it (the row itself is checked; the page must not move)
+    if(e.parentElement&&e.parentElement.closest('.v2-vrow')&&/auto|scroll/.test(getComputedStyle(e.closest('.v2-vrow')).overflowX))continue;
     const r=e.getBoundingClientRect();
     if(r.right>W+1||r.left<-1){out.over.push(name(e)+' '+Math.round(r.left)+'..'+Math.round(r.right));}
   }
@@ -144,6 +146,7 @@ const CHECK = (W) => String.raw`(()=>{
   out.overlap=[...new Set(out.overlap)].slice(0,10);
   // clipped: a text run that leaves an ancestor that clips (overflow hidden / clip) or leaves the viewport sideways
   for(const b of boxes){if(b.k!=='text')continue;
+    if(b.e.closest('.v2-vrow')&&/auto|scroll/.test(getComputedStyle(b.e.closest('.v2-vrow')).overflowX))continue; // 18b: swiped into view, not lost
     if(b.r-sx>W+1||b.l-sx<-1){out.clip.push(b.id+' off-screen');continue}
     for(let a=b.e.parentElement;a&&a!==document.body;a=a.parentElement){const s=getComputedStyle(a);
       if(/hidden|clip/.test(s.overflowX)){const r=a.getBoundingClientRect();if(b.r-sx>r.right+1||b.l-sx<r.left-1){out.clip.push(b.id+' in '+name(a));break}}}

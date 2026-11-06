@@ -80,24 +80,10 @@
     return a;
   }
 
-  // The poster's art: treatment (c), the gig-poster cut (one ink, coarse screen, torn bottom edge). Halftone, so it is
-  // screened at 600 and 1000px and `sizes` matches the slot: about half the width on phones, 23rem when the card is wide.
-  function posterArt() {
-    const pic = el('picture');
-    const img = el('img', 'poster-art graded');
-    img.setAttribute('src', 'assets/c-poster-600.webp');
-    img.setAttribute('srcset', 'assets/c-poster-600.webp 600w, assets/c-poster-1000.webp 1000w');
-    img.setAttribute('sizes', '(min-width: 640px) 23rem, 50vw');
-    img.setAttribute('width', '600');
-    img.setAttribute('height', '750');
-    img.setAttribute('alt', '');
-    img.setAttribute('loading', 'lazy');
-    pic.append(img);
-    return pic;
-  }
+  // DESIGN 18c: the poster is text only. Its art, treatment (c), was the hero's photo again (one photo per slot, none
+  // repeated), so it went; it can come back with a second real photo that isn't the hero's.
   function poster(s) {
     const li = el('li', 'poster');
-    li.append(posterArt());
     const date = el('p', 'poster-date fit');
     date.append(el('span', 'ln ln-date', s.date));
     li.append(date, el('p', 'poster-place', place(s)));
@@ -221,6 +207,10 @@
     for (const e of list) if (e.isIntersecting) { e.target.classList.add('seen'); fades.unobserve(e.target); }
   }, { threshold: 0.2 });
   document.querySelectorAll('.fade').forEach((n) => fades.observe(n));
+
+  // DESIGN 18b (boss F3): a card that takes keyboard focus in the swipe row is brought fully into view (Chrome leaves a
+  // partly visible card where it is). Instant, not smooth: it moves only because the user pressed Tab.
+  document.querySelectorAll('.v2-vrow').forEach((r) => r.addEventListener('focusin', (e) => e.target.closest('.v2-vid')?.scrollIntoView({ block: 'nearest', inline: 'start' })));
 
   /* ---------- Sign-up: the real form posts to our server; here nothing leaves the page ---------- */
   $('#signup').addEventListener('submit', (e) => {

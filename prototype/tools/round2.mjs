@@ -108,7 +108,7 @@ try {
       const out = [];
       for (const w of [320, 390, 1280]) {
         await load(page, w, 700);
-        const r = await evaluate(`(()=>{const over=[...document.querySelectorAll('body *')].filter(e=>e.getBoundingClientRect().right>innerWidth+1&&!e.closest('.vh,.sheet,.skip')).slice(0,4).map(e=>(typeof e.className==='string'?e.className:e.tagName)+':'+Math.round(e.getBoundingClientRect().right));return {s:document.documentElement.scrollWidth,w:innerWidth,over}})()`);
+        const r = await evaluate(`(()=>{const over=[...document.querySelectorAll('body *')].filter(e=>e.getBoundingClientRect().right>innerWidth+1&&!e.closest('.vh,.sheet,.skip')&&!(e.parentElement&&e.parentElement.closest('.v2-vrow')&&/auto|scroll/.test(getComputedStyle(e.closest('.v2-vrow')).overflowX))).slice(0,4).map(e=>(typeof e.className==='string'?e.className:e.tagName)+':'+Math.round(e.getBoundingClientRect().right));return {s:document.documentElement.scrollWidth,w:innerWidth,over}})()`);
         out.push(`${w}: ${r.s}/${r.w}${r.over.length ? ' OVERFLOW ' + r.over.join(' ') : ''}`);
       }
       line(`  ${name}: ${out.join(', ')}`);
@@ -194,7 +194,7 @@ try {
       ['home-identity-guess-390-full.png', 'index.html?era=identity-guess', 390, 660, 1], ['shop-390-full.png', 'shop.html', 390, 844, 1]];
     for (const [file, page, w, h, full] of SHOTS) { await load(page, w, h); if (full) await fullShot(file); else await firstScreen(file); line('  ' + file); }
     // Close-ups: the shows block and footer at 390, normal and pressed.
-    for (const [file, page, sel, press, w] of [['shows-390.png', 'index.html', '#shows .shows-main', '', 390], ['shows-1280.png', 'index.html', '#shows .shows-grid', '', 1280], ['footer-390.png', 'index.html', '.site-footer', '', 390], ['footer-1280.png', 'index.html', '.site-footer', '', 1280], ['pressed-390.png', 'music.html', '.crate', '.crate .tile:nth-child(3) .tile-link, .site-footer .links li:nth-child(2) a', 390], ['pressed-buttons-390.png', 'index.html', '#shows .shows-main', '.poster .btn-show, .row:nth-of-type(2) .cal-btn, .poster .cal-link', 390]]) {
+    for (const [file, page, sel, press, w] of [['shows-390.png', 'index.html', '#shows .v2-main', '', 390], ['shows-1280.png', 'index.html', '#shows .v2-split', '', 1280], ['footer-390.png', 'index.html', '.site-footer', '', 390], ['footer-1280.png', 'index.html', '.site-footer', '', 1280], ['pressed-390.png', 'music.html', '.crate', '.crate .tile:nth-child(3) .tile-link, .site-footer .links li:nth-child(2) a', 390], ['pressed-buttons-390.png', 'index.html', '#shows .v2-main', '.poster .btn-show, .row:nth-of-type(2) .cal-btn, .poster .cal-link', 390]]) {
       await load(page, w, 900);
       if (press) await pressAll(press);
       const b = await evaluate(`(()=>{const e=document.querySelector('${sel}');e.scrollIntoView({block:'start'});const r=e.getBoundingClientRect();return {x:0,y:Math.max(0,r.top+scrollY-8),width:innerWidth,height:Math.min(r.height+16,3000)}})()`);

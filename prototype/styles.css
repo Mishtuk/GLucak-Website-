@@ -791,7 +791,7 @@ html:has(.ed-body) { scroll-padding: 1rem 0 10rem; } /* a focused field never hi
 
 /* The editor form, under its row. */
 .ed-form { min-width: 0; margin: var(--space-m) 0 0; padding: var(--space-xs) 0 0; border: 0; border-top: 2px dashed var(--line); }
-/* Photo: preview (hatched until there is one), then the upload button, its hint and the message ("Uploading…" busy). */
+/* Photo: preview (hatched until there is one), then the upload button, its hint and the message ("Uploadingâ€¦" busy). */
 .ed-upload { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: var(--space-m); align-items: start; margin-top: var(--space-s); }
 .ed-pic { width: 120px; height: 120px; }
 @media (max-width: 399px) { .ed-upload { grid-template-columns: 1fr; } }
@@ -978,6 +978,162 @@ a, button, summary, label { -webkit-tap-highlight-color: transparent; }
    700px it sits beside the Spotify button at no height and stays. */
 /* Boss ruling (D55): Home only (the release block follows the player there). Music has no release block, so it keeps the link. */
 @media (max-width: 699px) { .rise-player:has(~ .release) .under-link { display: none; } }
+
+/* =====================================================================================================================
+   18. v2 picks (owner, 2026-11-06: items 1-4 of the Desktop's /v2/ Home, plus the solid header). DESIGN.md section 18.
+   Same selectors and values as the build's "v2 port" block in global.css (3ee444d), so the two can be diffed line by line.
+   Lines marked DELTA (and D1-D7 below) are not in the build yet: they are the port list in DESIGN 18h.
+   No new animation, no new colour role, no shadow: everything comes from the era tokens.
+   ===================================================================================================================== */
+
+/* 18e. Header. One switch: <html data-header> = 'solid' (default; HEADER_STYLE in content.js) | 'scrim' (?header=scrim here).
+   'solid' = a solid bg band from the first paint (D25: Logo D on solid dark ground only). On phones the hero photo moves
+   down one header height, so his face sits between the band and the name. */
+html[data-header='solid'] .site-header { background: var(--bg) !important; border-color: var(--line) !important; }
+@media (max-width: 899px) { html[data-header='solid']:root { --strip: calc(var(--header-h) * 2 + 1.25rem); } }
+@media (min-width: 700px) and (max-width: 899px) { html[data-header='solid']:root { --strip: calc(var(--header-h) * 2 + 11vw); } }
+
+/* 18d. Each phrase beside its content from 900px (5 : 7). Phones keep the stacked order. */
+.v2-split { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-m); } /* a fixed track: the swipe row must not widen the page */
+.v2-split > *, .v2-main > * { min-width: 0; }
+.v2-photo { display: block; width: 100%; height: auto; background: var(--bg-2); }
+.v2-wide-only { display: none; }
+.band-push.v2-push { padding-top: var(--space-l); background-image: var(--texture); }
+.v2-main.now-grid { margin-top: 0; }
+
+/* 18a. Release card: cover, title, Listen and the player in one panel (the one exception to "no cards": bg-2, 2px corners,
+   no border, no shadow). Phones: the PLAYER comes first, so its top stays on the first phone screen; from 900px the cover
+   row leads. */
+.v2-card { display: grid; gap: var(--space-s); padding: var(--space-s); background: var(--bg-2); border-radius: var(--radius-s); align-content: start; }
+/* DELTA D6 (boss F5): the source order is the phone order (player first), so the build's `@media (max-width: 899px) { .v2-card >
+   .rise-play { order: -1; } }` becomes this, and Tab follows the screen on phones. */
+@media (min-width: 900px) { .v2-card > .v2-rel { order: -1; } }
+.rise-play { display: grid; gap: var(--space-s); }
+.rise-play .under-player { margin-top: 0; }
+.v2-rel { display: grid; grid-template-columns: 36% minmax(0, 1fr); gap: var(--space-m); align-items: end; }
+.v2-cover { width: 100%; height: auto; aspect-ratio: 1; }
+.v2-rel-text { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.35rem; justify-items: start; }
+.v2-rel-text > * { max-width: 100%; overflow-wrap: anywhere; }
+.v2-kicker { color: var(--muted); font-size: var(--step--1); font-weight: 700; line-height: 1.25; }
+.v2-rel-text .credit { color: var(--muted); font-size: var(--step--1); line-height: 1.25; } /* prototype only: the build's .credit rule */
+.v2-rel h3, .v2-rel h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; text-wrap: balance; overflow-wrap: anywhere; }
+.v2-rel .btn { margin-top: 0.35rem; }
+
+/* 18c. Shows: the poster's art is the hero's photo again (Kealey), so on Home it is dropped: one photo per slot. */
+.v2-main .poster-art { display: none; }
+.v2-main .poster { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: 'date' 'place' 'meta' 'btn'; }
+@container (min-width: 37rem) { .v2-main .poster { grid-template-areas: 'date' 'cal' 'place' 'meta' 'btn'; } }
+.v2-main .played { display: none; } /* the server prints Played on every page but '/'; Home never shows it */
+
+/* 18b. Video row: latest + 2 featured, real thumbnails. Phones: a still swipe row (scroll-snap, the next card peeks at 82%):
+   it moves only under a finger. No autoplay, no arrows, no dots, no loop, no smooth-scroll script. position: relative on
+   the row keeps the new-tab hint (.vh, absolute) inside the scroller. From 700px: three across. */
+.v2-videos { margin-top: var(--space-l); }
+.v2-vrow { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 82%; gap: var(--space-m); overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; padding-bottom: var(--space-xs); }
+.v2-vid { min-width: 0; scroll-snap-align: start; }
+.v2-vid a { display: grid; gap: 0.4rem; text-decoration: none; }
+.v2-vid iframe.yt { display: block; }
+.v2-thumb { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--bg-2); border: 2px solid var(--line); }
+.v2-thumb .yt-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; } /* prototype only: the build's .yt-img rule */
+.v2-thumb .yt-play { top: 50%; width: 56px; height: 56px; }
+.v2-vtitle { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-weight: 700; font-size: var(--step--1); line-height: 1.3; }
+.v2-tag { padding: 0 0.4rem; background: var(--text); color: var(--bg); }
+@media (hover: hover) { .v2-vid a:hover .v2-vtitle { text-decoration: underline; text-underline-offset: 3px; } }
+.v2-vid a:active .v2-thumb { border-color: var(--text); }
+.v2-vid a:active .v2-vtitle { background: var(--text); color: var(--bg); }
+.v2-videos h3, .v2-videos h2 { margin-bottom: var(--space-xs); }
+@media (min-width: 700px) { .v2-vrow { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; } }
+/* /shows/ puts the row in the narrow 5fr column from 72rem: back to the swipe row there. */
+@media (min-width: 72rem) { .shows-grid .v2-vrow { grid-auto-flow: column; grid-auto-columns: 82%; grid-template-columns: none; overflow-x: auto; } }
+
+/* 18c. Push Past Fear: a live still beside the bio (phones), then the actions full width. */
+.v2-push-body { display: grid; grid-template-columns: 30% minmax(0, 1fr); grid-template-areas: 'p1 bio' 'act act'; gap: var(--space-m); align-items: start; }
+.v2-belt { grid-area: p1; }
+.v2-slot { grid-area: p2; }
+.v2-bio { grid-area: bio; }
+.v2-push-body .push-actions { grid-area: act; }
+/* An empty, labelled slot where a MAYBE picture (needs Gabe's OK) would go. Never filled with the MAYBE file itself. */
+.v2-slot {
+  place-items: center; padding: var(--space-m); aspect-ratio: 4 / 5;
+  background-color: var(--bg-2); background-image: var(--hatch); border: 2px dashed var(--muted);
+}
+.v2-slot span { padding: 0.2rem 0.5rem; background: var(--bg); font-size: var(--step--1); font-weight: 700; line-height: 1.35; text-align: center; }
+
+/* 18c. IDENTITY art beside the countdown. */
+.v2-identity { display: grid; container-type: inline-size; grid-template-columns: 26% minmax(0, 1fr); gap: var(--space-m); align-items: center; }
+.v2-identity > * { min-width: 0; }
+/* Big text: under 20rem the art goes above the countdown (at 200% the IDENTITY word was wider than its 74% column). */
+@container (width < 20rem) { .v2-identity { grid-template-columns: minmax(0, 1fr); } .v2-identity .v2-photo { max-width: 50%; } .v2-identity .identity { overflow-wrap: anywhere; } .v2-identity .btn { max-width: 100%; white-space: normal; text-align: center; } }
+@media (min-width: 900px) { @container (width < 26rem) { .v2-identity { grid-template-columns: minmax(0, 1fr); } .v2-identity .v2-photo { max-width: 50%; } .v2-identity .identity { overflow-wrap: anywhere; } .v2-identity .btn { max-width: 100%; white-space: normal; text-align: center; } } } /* beside a 12rem art the column is tighter */
+
+@media (min-width: 900px) {
+  .band > .wrap.v2-split { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-xl); align-items: start; }
+  .v2-wide-only { display: block; }
+  .v2-slot.v2-wide-only { display: grid; }
+  .v2-side { display: grid; gap: var(--space-l); align-content: start; }
+  .v2-land { aspect-ratio: 874 / 492; }
+  .v2-tall { aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 30%; }
+  .v2-card { padding: var(--space-m); }
+  .v2-rel { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+  .v2-push-body { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: 'bio bio' 'act act' 'p1 p2'; gap: var(--space-l); }
+  .v2-belt { aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 25%; }
+  .v2-identity { grid-template-columns: 12rem minmax(0, 1fr); }
+}
+/* Phones: the Rise panel sits tight under the word so the Spotify top stays on the first screen (<= ~560px at 390). */
+@media (max-width: 899px) { .band-rise .v2-split { gap: 0; } .v2-card { padding-top: var(--space-xs); } }
+/* The row's 48px calendar button pokes 4px below its 60px row at desktop widths; keep "All shows" clear of it. */
+@media (min-width: 900px) { .v2-main .shows + .text-link { margin-top: 4px; } }
+
+/* ---------- DELTAS (not in the build yet; DESIGN 18h; D6 sits with the card rules above) ---------- */
+/* D1, owner's pick 2 ("from 900px the latest big and two stacked"; the build has three across from 700px). 700-899px
+   keeps three across (tablets: no phone bar, no side column). */
+@media (min-width: 900px) {
+  .v2-vrow { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+  .v2-vid:first-child { grid-row: 1 / span 2; }
+}
+/* D2 + D4, the Push Past Fear band. The body's children join the band grid (display: contents), so the still can sit
+   beside or under the lockup.
+   D4, phones: the lockup (left) with the still beside it (30%), cut to the lockup's height (height 0 + min-height 100%:
+   it adds nothing to the row); then the bio and the actions full width. The bio was 9 lines in a 70% column; full width
+   it is 6. Saves 190px at 390, which pays for the two "From Gabe" quotes when Gabe OKs them (D39 counts them).
+   FEAR is still the biggest word on the phone (129px at 390, IS NOW 127).
+   D2, from 900px: FEAR in the narrow column (owner's pick 4: "use the one-line lock if it's too heavy"). Fitted on two
+   lines in the 5fr column, FEAR is 274px at 1280 (311 at 1440), louder than the finale's IS NOW (176 / 200) and 2.5x
+   LIVE IT LOUD: too heavy. The existing .lock-push rule (one fitted line from 900px) applies again (markup: class
+   lock-push on the phrase). With the lockup that short, the still goes under it (left); bio, actions, waiting slot right. */
+.v2-push .v2-push-body { display: contents; }
+.band-push.v2-push > .wrap.v2-split { grid-template-columns: minmax(0, 1fr) 30%; grid-template-areas: 'side p1' 'bio bio' 'act act'; }
+.v2-push .v2-side { grid-area: side; }
+@media (max-width: 899px) { .v2-push .v2-belt { align-self: stretch; height: 0; min-height: 100%; object-fit: cover; object-position: 50% 22%; } }
+@media (min-width: 900px) {
+  .band-push.v2-push > .wrap.v2-split { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: 'side bio' 'p1 bio' 'p1 act' 'p1 p2'; grid-template-rows: auto auto auto 1fr; row-gap: var(--space-l); }
+  .v2-push .v2-slot { width: min(100%, 22rem); }
+}
+/* D3, text at 200% (1.4.4: no loss of content). A two-line clamp hides the rest of a long title, and at 200% on a phone the
+   82% cards are narrower than the words. Under 15rem (only reachable at 175%+ on a phone; 320 at 100% is 17.5rem) the row
+   stacks and the titles are whole; from 900px under 26rem (200% at 1280) the titles are whole. */
+.v2-videos { container-type: inline-size; }
+@container (width < 15rem) {
+  .v2-vrow { grid-auto-flow: row; grid-auto-columns: auto; overflow: visible; scroll-snap-type: none; }
+  .v2-vtitle { display: block; -webkit-line-clamp: none; overflow: visible; }
+}
+@media (min-width: 900px) { @container (width < 26rem) { .v2-vtitle { display: block; -webkit-line-clamp: none; overflow: visible; } } }
+/* D5, text at 200% on a phone (the boss's fix, v2-port-review.md): the Now line sat under the fixed phone bar on the first
+   screen (390x660: 569-665, bar from 598) because the two hero buttons wrap to two full-width rows. They are the same two
+   links as the bar's Listen and Shows, always on screen under 700px, so under 16rem of hero (only with enlarged text: 320
+   at 100% is 17.5rem) they step aside. Nothing is lost; at 100% and from 700px nothing changes. */
+.hero-inner { container-type: inline-size; }
+@media (max-width: 699px) { @container (width < 16rem) { .hero-actions { display: none; } } }
+/* Credits (boss F1): each picture named by its source; the garage still only where it shows (from 900px). */
+.credit-wide { display: none; }
+@media (min-width: 900px) { .credit-wide { display: inline; } }
+/* D7, D39 after F1: the named credits take a third line at 390 (+24px). Paid back on phones only: Watch sits 1rem under
+   the shows (not 1.5rem), and PUSH PAST FEAR starts 1rem under its edge (like RISE) with 0.75rem between its rows. */
+@media (max-width: 899px) {
+  .v2-videos { margin-top: var(--space-m); }
+  .band-push.v2-push { padding-top: var(--space-m); }
+  .band-push.v2-push > .wrap.v2-split { row-gap: var(--space-s); }
+}
 
 /* =====================================================================================================================
    17. Text at 200% (a11y audit row 1, WCAG 1.4.4 / 1.4.10, 2026-11-06). DESIGN.md section 17; port this block word for

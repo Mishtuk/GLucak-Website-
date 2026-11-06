@@ -1,0 +1,58 @@
+V2-1: Home height at 390x660 (D39 cap 5.8 screens without the note; both quotes in, one poster show)
+  index.html: 3939px = 5.97 screens, 5.80 without the note (top 1384, shows 882, about 450, join 594, footer 568)
+  index.html?shows=none: 3614px = 5.48 screens, 5.31 without the note (top 1384, shows 556, about 450, join 594, footer 568)
+  index.html?header=scrim: 3887px = 5.89 screens, 5.72 without the note (top 1332, shows 882, about 450, join 594, footer 568)
+V2-2: the Spotify player, px from the top of the page (phone bar top = height - 62)
+  390x660: player top 556, 42px of it on the first screen above the bar; release cover top 1051
+  390x844: player top 556, 226px of it on the first screen above the bar; release cover top 1051
+  320x568: player top 524, 0px of it on the first screen above the bar; release cover top 1053
+  390x660?header=scrim: player top 504, 94px of it on the first screen above the bar; release cover top 999
+  1280x800: player top 902, 0px of it on the first screen; release cover top 637
+  900x800: player top 713, 87px of it on the first screen; release cover top 533
+V2-3: one photo per slot, none repeated (visible pictures in <main>, the mark left out)
+  320: 7 pictures, 7 distinct: a-era-grade, duck-dodge-jump-fight, WZkvg5YMQ9w, ZGlnFchIVVY, K-OZiNvQB14, belt, identity-art
+  390: 7 pictures, 7 distinct: a-era-grade, duck-dodge-jump-fight, WZkvg5YMQ9w, ZGlnFchIVVY, K-OZiNvQB14, belt, identity-art
+  899: 7 pictures, 7 distinct: a-era-grade, duck-dodge-jump-fight, WZkvg5YMQ9w, ZGlnFchIVVY, K-OZiNvQB14, belt, identity-art
+  900: 9 pictures, 9 distinct: b-riso, garage, duck-dodge-jump-fight, stage, WZkvg5YMQ9w, ZGlnFchIVVY, K-OZiNvQB14, belt, identity-art
+  1280: 9 pictures, 9 distinct: b-riso, garage, duck-dodge-jump-fight, stage, WZkvg5YMQ9w, ZGlnFchIVVY, K-OZiNvQB14, belt, identity-art
+V2-4: pictures a phone actually downloads (no forced loading; page scrolled through slowly)
+  390: mark-identity-300.webp, a-era-grade-phone-800.webp, duck-dodge-jump-fight.webp, grain.png, WZkvg5YMQ9w-640.webp, ZGlnFchIVVY-640.webp, K-OZiNvQB14-640.webp, belt-320.webp, identity-art-240.webp
+  1280: mark-identity-300.webp, duck-dodge-jump-fight.webp, b-riso-600.webp, grain.png, garage-874.webp, stage-634.webp, WZkvg5YMQ9w-640.webp, ZGlnFchIVVY-640.webp, K-OZiNvQB14-640.webp, belt-634.webp, identity-art-240.webp
+V2-5: header from the first paint (Home, scrolled to 0)
+  390: {"background":"rgb(17, 17, 17)","image":"none","strip":"calc(60px * 2 + 1.25rem)","eyesFromTop":98}
+  1280: {"background":"rgb(17, 17, 17)","image":"none","strip":"","eyesFromTop":38}
+  390?header=scrim: {"background":"rgba(0, 0, 0, 0)","image":"linear-gradient(color(srgb 0.0666667 0.0","strip":"calc(60px + 1.75rem)","eyesFromTop":46}
+V2-6: phrase sizes in the 5 : 7 split (font-size px; FEAR as two fitted lines would be the column / 1.7743)
+  900: {"column":334,"RISE":153,"LIVE":74,"PUSH_PAST_FEAR_one_line":56,"FEAR_if_two_lines":188,"THE_TIME":100,"IS_NOW":121}
+  1280: {"column":486,"RISE":218,"LIVE":108,"PUSH_PAST_FEAR_one_line":82,"FEAR_if_two_lines":274,"THE_TIME":145,"IS_NOW":176}
+  1440: {"column":552,"RISE":245,"LIVE":122,"PUSH_PAST_FEAR_one_line":93,"FEAR_if_two_lines":311,"THE_TIME":165,"IS_NOW":200}
+V2-7: the swipe row at 390 / 320 (scrolls inside itself, the page never scrolls sideways) and the 900px+ grid
+  320: {"page":320,"row":[280,721],"overflowX":"auto","cards":[[20,230,177],[266,230,177],[511,230,177]]}
+  390: {"page":390,"row":[349,890],"overflowX":"auto","cards":[[21,286,209],[323,286,209],[625,286,209]]}
+  1280: {"page":1280,"row":[681,681],"overflowX":"visible","cards":[[561,443,361],[1020,222,173],[1020,222,173]]}
+V2-8: contrast of the new pieces, three eras (text 4.5:1, display type 3:1)
+  placeholder 390: lowest card Listen 5.71, card kicker 7.68, card artists 7.68; under the floor: none
+  placeholder 1280: lowest card Listen 5.71, card kicker 7.68, card artists 7.68; under the floor: none
+  placeholder-b 390: lowest card kicker 7.41, card artists 7.41, card Listen 10.12; under the floor: none
+  placeholder-b 1280: lowest card kicker 7.41, card artists 7.41, card Listen 10.12; under the floor: none
+  identity-guess 390: lowest card Listen 5.33, card kicker 8.49, card artists 8.49; under the floor: none
+  identity-guess 1280: lowest card Listen 5.33, card kicker 8.49, card artists 8.49; under the floor: none
+V2-9: tap targets in the new pieces at 320 and 390 (under 48px listed)
+  320: {"count":11,"small":[]}
+  390: {"count":11,"small":[]}
+V2-10: animations, reduced motion (must be 0) and normal (glow + heading fades only)
+  reduced: {"count":0,"names":[],"rowScrollBehavior":"auto"}
+  normal: {"count":1,"names":["drift"],"rowScrollBehavior":"auto"}
+V2-11: shots
+  home-390-first.png
+  home-390-full.png
+  home-320-full.png
+  home-1280-first.png
+  home-1280-full.png
+  home-900-full.png
+  home-390-scrim-first.png
+  home-identity-guess-1280-full.png
+  home-noshows-390-full.png
+  videos-390-swiped.png
+Page errors and CSP (real CSP; Spotify's own frame noise ignored):
+  none

@@ -92,102 +92,129 @@
         <p class="ph-chip hero-chip">Placeholder colors</p>
       </section>
 
+      <!-- DESIGN 18 (v2 picks), the same markup and classes as the build's Home (3ee444d: RiseBand.astro, VideoBlock.astro,
+           index.astro). From 900px every band is a 5 : 7 split (.v2-split): the phrase and a photo left (.v2-side), the
+           content right (.v2-main). Under 900px it is one column, as before. One photo per slot, none repeated (18c). -->
       <section class="band band-rise" id="music" aria-labelledby="h-rise">
-        <div class="wrap rise-grid">
-          <h2 class="spine" id="h-rise"><span class="tab">Music</span> <span class="phrase phrase-rise">Rise</span></h2>
-
-          <div class="rise-player">
-            <a class="skip skip-inline" href="#after-player">Skip the Spotify player</a>
-            <!-- Exactly 352px, reserved before the embed loads. The note sits under the iframe: seen only while it loads or if it's blocked. -->
-            <div class="player-box">
-              <p class="player-note">Loading the Spotify player. If it doesn't appear, use <strong>Play full songs on Spotify</strong> below.</p>
-              <iframe class="player" title="GLucak playlist on Spotify" src="https://open.spotify.com/embed/playlist/0D45boIc9xWAdDjz1uTDRo?utm_source=generator&amp;theme=0" width="100%" height="352" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
-            </div>
-            <p class="under-player" id="after-player">
-              <a class="btn btn-line btn-small" href="https://open.spotify.com/playlist/0D45boIc9xWAdDjz1uTDRo" rel="noopener">Play full songs on Spotify</a>
-              <a class="under-link" href="https://wingsmusic.lnk.to/DuckDodgeJumpFight" rel="noopener" aria-label="Listen everywhere: Duck, Dodge, Jump, Fight">Listen everywhere</a>
-            </p>
+        <div class="wrap v2-split">
+          <div class="v2-side">
+            <h2 class="spine" id="h-rise"><span class="tab">Music</span> <span class="phrase phrase-rise">Rise</span></h2>
+            <!-- 18c: from 900px only (display: none + lazy under 900px, so phones never fetch it). Still from the Duck, Dodge,
+                 Jump, Fight video, camera Joseph Lucak (INDEX.md yt-K-OZiNvQB14-1, USE). 874px is its native width. -->
+            <img class="v2-photo v2-wide-only v2-land" src="assets/garage-480.webp" srcset="assets/garage-480.webp 480w, assets/garage-874.webp 874w" sizes="40vw" width="874" height="492" alt="GLucak in a tire shop garage, from the Duck, Dodge, Jump, Fight video" loading="lazy">
           </div>
 
-          <article class="release">
-            <img class="cover" src="assets/covers/duck-dodge-jump-fight.webp" alt="Duck, Dodge, Jump, Fight cover art" width="300" height="300" loading="lazy">
-            <div class="release-text">
-              <h3>Duck, Dodge, Jump, Fight</h3>
-              <p class="muted release-artists">GLucak, J-BOY</p>
-              <p class="muted">Latest release. Listen on:</p>
-              <p class="listen-on">
-                <a href="https://wingsmusic.lnk.to/DuckDodgeJumpFight" rel="noopener">every platform</a>
-                <a href="https://soundcloud.com/glucak" rel="noopener">SoundCloud</a>
+          <!-- 18a: the release card, one bg-2 panel. Source order = the phone order (DESIGN 18h D6, boss F5; the build has the cover row first):
+               the player first, so it peeks into the first phone screen; from 900px the cover row leads (.v2-rel { order: -1 }). -->
+          <div class="v2-card">
+            <div class="rise-play">
+              <a class="skip skip-inline" href="#after-player">Skip the Spotify player</a>
+              <!-- Exactly 352px, reserved before the embed loads. The note sits under the iframe: seen only while it loads or if it's blocked. -->
+              <div class="player-box">
+                <p class="player-note">Loading the Spotify player. If it doesn't appear, use <strong>Play full songs on Spotify</strong> below.</p>
+                <iframe class="player" title="GLucak playlist on Spotify" src="https://open.spotify.com/embed/playlist/0D45boIc9xWAdDjz1uTDRo?utm_source=generator&amp;theme=0" width="100%" height="352" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+              </div>
+              <!-- Home: the Spotify button, plus SoundCloud only if the release has its own soundcloud link (none today). The
+                   card's Listen is the smart link, so "Listen everywhere" stays on Music only. -->
+              <p class="under-player" id="after-player">
+                <a class="btn btn-line btn-small" href="https://open.spotify.com/playlist/0D45boIc9xWAdDjz1uTDRo" rel="noopener">Play full songs on Spotify</a>
               </p>
             </div>
-          </article>
-
-          <!-- "From Gabe" (D21): one per band at most, after the band's main content, never above the player. Static.
-               R1 from docs/copy/home.md, exact. The chip is prototype-only: the quote ships only after Gabe's OK. -->
-          <figure class="quote">
-            <p class="quote-tag">From Gabe</p>
-            <blockquote class="quote-text"><p>God will always be with you, and will never leave you in the valley. Trust me, I know.</p></blockquote>
-            <figcaption class="quote-credit"><a href="https://www.instagram.com/p/Dd6keDDDefE/" rel="noopener">GLucak, Instagram, Sep 2026</a></figcaption>
-            <span class="ph-chip quote-chip">Pending Gabe's OK</span>
-          </figure>
+            <article class="v2-rel">
+              <img class="v2-cover" src="assets/covers/duck-dodge-jump-fight.webp" alt="Duck, Dodge, Jump, Fight cover art" width="300" height="300">
+              <div class="v2-rel-text">
+                <p class="v2-kicker">Latest single &middot; Sep&nbsp;4,&nbsp;2026</p>
+                <h3>Duck, Dodge, Jump, Fight</h3>
+                <p class="credit">GLucak, J-BOY</p>
+                <a class="btn btn-solid" href="https://wingsmusic.lnk.to/DuckDodgeJumpFight" rel="noopener" aria-label="Listen to Duck, Dodge, Jump, Fight">Listen</a>
+              </div>
+            </article>
+            <!-- "From Gabe" (D21): after the band's main content, inside the panel as built. R1 from docs/copy/home.md, exact.
+                 The chip is prototype-only: the quote ships only after Gabe's OK (QUOTES_APPROVED). -->
+            <figure class="quote">
+              <p class="quote-tag">From Gabe</p>
+              <blockquote class="quote-text"><p>God will always be with you, and will never leave you in the valley. Trust me, I know.</p></blockquote>
+              <figcaption class="quote-credit"><a href="https://www.instagram.com/p/Dd6keDDDefE/" rel="noopener">GLucak, Instagram, Sep 2026</a></figcaption>
+              <span class="ph-chip quote-chip">Pending Gabe's OK</span>
+            </figure>
+          </div>
         </div>
       </section>
     </div>
 
     <section class="band band-live" id="shows" aria-labelledby="h-live">
-      <div class="wrap">
-        <h2 class="spine fade" id="h-live"><span class="tab">Shows</span> <span class="phrase fit"><span class="ln ln-live">Live It Loud</span></span></h2>
+      <div class="wrap v2-split">
+        <div class="v2-side">
+          <h2 class="spine fade" id="h-live"><span class="tab">Shows</span> <span class="phrase fit"><span class="ln ln-live">Live It Loud</span></span></h2>
+          <!-- 18c: from 900px only. Live at Crooked Eye Brewery (INDEX.md yt-aZNW63M_C2E-2, USE): a 634x1128 screen capture,
+               so a portrait slot, never full-bleed. -->
+          <img class="v2-photo v2-wide-only v2-tall" src="assets/stage-360.webp" srcset="assets/stage-360.webp 360w, assets/stage-634.webp 634w" sizes="40vw" width="634" height="1128" alt="GLucak singing on stage at Crooked Eye Brewery" loading="lazy">
+        </div>
 
-        <div class="shows-grid">
-          <div class="shows-main">
-            <div id="shows-mount"></div>
-            <!-- L2 from docs/copy/home.md, exact. After All shows; not shown when no show is booked. -->
-            <figure class="quote quote-live">
-              <p class="quote-tag">From Gabe</p>
-              <blockquote class="quote-text"><p>Hope to see you there!</p></blockquote>
-              <figcaption class="quote-credit"><a href="https://www.youtube.com/watch?v=zmhbfHppXNM" rel="noopener">GLucak, YouTube, Sep 2026</a></figcaption>
-              <span class="ph-chip quote-chip">Pending Gabe's OK</span>
-            </figure>
-          </div>
-          <div class="video-block" id="shows-video">
-            <h3>Latest video</h3>
-            <!-- Facade: no YouTube loads until tapped. Without JS it is a plain link to the channel. -->
-            <a class="yt" href="https://www.youtube.com/channel/UCha7GtkOI9A0dzbTG3igbLg" rel="noopener">
-              <span class="yt-play" aria-hidden="true"></span>
-              <span class="yt-note">Latest video box. Loads on tap, fills itself from the channel feed.</span>
-            </a>
+        <div class="v2-main">
+          <!-- 18c: the poster is text only on Home (its art was the hero's photo again). app.js prints poster + rows + All shows. -->
+          <div id="shows-mount"></div>
+          <!-- L2 from docs/copy/home.md, exact. After All shows; not shown when no show is booked. -->
+          <figure class="quote quote-live">
+            <p class="quote-tag">From Gabe</p>
+            <blockquote class="quote-text"><p>Hope to see you there!</p></blockquote>
+            <figcaption class="quote-credit"><a href="https://www.youtube.com/watch?v=zmhbfHppXNM" rel="noopener">GLucak, YouTube, Sep 2026</a></figcaption>
+            <span class="ph-chip quote-chip">Pending Gabe's OK</span>
+          </figure>
+
+          <!-- 18b: Watch. The newest upload + the 2 newest featured (videoRow(3) in content.js), real thumbnails saved locally
+               (D64(3)). The build makes each card a click-to-load facade (youtube-nocookie iframe on tap); the prototype links
+               to YouTube. Phones: a still swipe row (scroll-snap; nothing moves by itself; the next card peeks). -->
+          <div class="video-block v2-videos" id="shows-video">
+            <h3>Watch</h3>
+            <ul class="v2-vrow">
+              <li class="v2-vid"><a href="https://www.youtube.com/watch?v=WZkvg5YMQ9w" rel="noopener">
+                <span class="v2-thumb"><img class="yt-img" src="assets/videos/WZkvg5YMQ9w-640.webp" srcset="assets/videos/WZkvg5YMQ9w-640.webp 640w, assets/videos/WZkvg5YMQ9w-1280.webp 1280w" sizes="(min-width: 900px) 34vw, 82vw" width="1280" height="720" alt="" loading="lazy" decoding="async"><span class="yt-play" aria-hidden="true"></span></span>
+                <span class="v2-vtitle"><span class="v2-tag">Latest</span> Hobbyist?</span>
+              </a></li>
+              <li class="v2-vid"><a href="https://www.youtube.com/watch?v=ZGlnFchIVVY" rel="noopener">
+                <span class="v2-thumb"><img class="yt-img" src="assets/videos/ZGlnFchIVVY-640.webp" srcset="assets/videos/ZGlnFchIVVY-640.webp 640w, assets/videos/ZGlnFchIVVY-1280.webp 1280w" sizes="(min-width: 900px) 22vw, 82vw" width="1280" height="720" alt="" loading="lazy" decoding="async"><span class="yt-play" aria-hidden="true"></span></span>
+                <span class="v2-vtitle"> You're Not Alone (Official Music Video)</span>
+              </a></li>
+              <li class="v2-vid"><a href="https://www.youtube.com/watch?v=K-OZiNvQB14" rel="noopener">
+                <span class="v2-thumb"><img class="yt-img" src="assets/videos/K-OZiNvQB14-640.webp" srcset="assets/videos/K-OZiNvQB14-640.webp 640w, assets/videos/K-OZiNvQB14-1280.webp 1280w" sizes="(min-width: 900px) 22vw, 82vw" width="1280" height="720" alt="" loading="lazy" decoding="async"><span class="yt-play" aria-hidden="true"></span></span>
+                <span class="v2-vtitle"> Duck, Dodge, Jump, Fight! (feat. J-BOY of J-BOY CULTURE)(Official Music Video)</span>
+              </a></li>
+            </ul>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="band band-push" id="about" aria-labelledby="h-push">
-      <div class="push-head">
-        <!-- Treatment (d), the crowd tritone: Gabe, the pallet cross, the crowd as backs of heads only. Already graded. -->
-        <picture>
-          <source media="(min-width: 753px)" srcset="assets/d-crowd-800.webp 800w, assets/d-crowd-1600.webp 1600w" sizes="100vw">
-          <img class="graded push-photo" src="assets/d-crowd-phone-800.webp" alt="" width="800" height="371" loading="lazy">
-        </picture>
-        <div class="wrap push-title">
+    <!-- 18c: no full-bleed photo behind the lockup any more ((d) was the hero's photo again). Markup as built, plus the
+         class lock-push (DESIGN 18h D2). Deltas not built yet: phones (D4) the still beside the lockup, then bio and actions
+         full width; from 900px (D2) one fitted line with the still under it, bio, actions and the waiting slot right. -->
+    <section class="band band-push v2-push" id="about" aria-labelledby="h-push">
+      <div class="wrap v2-split">
+        <div class="v2-side">
           <h2 class="spine fade" id="h-push"><span class="tab">About</span> <span class="phrase fit lock-push"><span class="ln ln-push1">Push Past</span> <span class="ln ln-push2">Fear</span></span></h2>
         </div>
-      </div>
-      <div class="wrap push-body">
-        <div class="bio">
+        <div class="v2-main v2-push-body">
+          <!-- Live at Crooked Eye Brewery, arm raised (INDEX.md yt-aZNW63M_C2E-4, USE). -->
+          <img class="v2-photo v2-belt" src="assets/belt-320.webp" srcset="assets/belt-320.webp 320w, assets/belt-634.webp 634w" sizes="(min-width: 900px) 40vw, 30vw" width="634" height="1128" alt="GLucak live at Crooked Eye Brewery, arm raised" loading="lazy">
+          <!-- 18c: where the MAYBE crowd shot (a child in frame, INDEX.md yt-GRVXG9cHRX4-2) would go. Never the file itself. -->
+          <div class="v2-slot v2-wide-only" role="img" aria-label="Empty photo slot: crowd shot, waiting on Gabe's OK"><span>Photo slot: crowd shot. Waiting on Gabe's OK.</span></div>
           <!-- D23: his words exact or not at all. Home shows bio sentence 1 only; the full bio, word for word, is on About. -->
-          <p class="bio-lead">Despite facing various difficulties and struggles over the years, Epilepsy survivor and Producer-Rapper/DJ GLucak has shown no intent to give up on either his Faith in God or his mission in creating energetic music to bring others to Christ.</p>
-        </div>
-        <div class="push-actions">
-          <a class="btn btn-solid" href="https://patreon.com/GLucakMusic" rel="noopener">Patreon</a>
-          <a class="btn btn-line pending" href="#about" title="About page comes with the build">About GLucak</a>
+          <p class="bio-lead v2-bio">Despite facing various difficulties and struggles over the years, Epilepsy survivor and Producer-Rapper/DJ GLucak has shown no intent to give up on either his Faith in God or his mission in creating energetic music to bring others to Christ.</p>
+          <div class="push-actions">
+            <a class="btn btn-solid" href="https://patreon.com/GLucakMusic" rel="noopener">Patreon</a>
+            <a class="btn btn-line pending" href="#about" title="About page comes with the build">About GLucak</a>
+          </div>
         </div>
       </div>
     </section>
 
     <section class="band band-now" id="join" aria-labelledby="h-now">
-      <div class="wrap">
-        <h2 class="spine fade" id="h-now"><span class="tab">Join</span> <span class="phrase fit lock-now"><span class="ln ln-now1">The Time</span> <span class="ln ln-now2">Is Now</span></span></h2>
-        <div class="now-grid">
+      <div class="wrap v2-split">
+        <div class="v2-side">
+          <h2 class="spine fade" id="h-now"><span class="tab">Join</span> <span class="phrase fit"><span class="ln ln-now1">The Time</span> <span class="ln ln-now2">Is Now</span></span></h2>
+        </div>
+        <div class="v2-main now-grid">
           <!-- Posts to our own server (CSP form-action 'self'). The server talks to Kit. app.js stops the post in this prototype. -->
           <form class="signup" id="signup" action="/api/signup" method="post">
             <label for="email">Get the next show and every new song first.</label>
@@ -197,13 +224,16 @@
             </div>
             <p class="signup-status" id="signup-status" role="status"></p>
           </form>
-          <!-- Same classes as the build (src/pages/index.astro). State by date, New York time, set once per page load:
-               the day count never ticks. Prototype switch: ?identity=out or ?identity=none. -->
-          <div class="identity-state" id="identity-state">
-            <img class="mark mark-identity" src="assets/mark-identity-300.webp" alt="" width="300" height="96" loading="lazy">
-            <p class="identity">IDENTITY</p>
-            <p class="identity-when" id="identity-when"><time datetime="2027-08-13">August 13, 2027</time> &middot; <span id="identity-days">281 days</span> to go</p>
-            <a class="btn btn-line identity-presave" id="identity-presave" href="https://wingsmusic.lnk.to/IDENTITY" rel="noopener">Pre-save IDENTITY</a>
+          <!-- 18c: the IDENTITY art beside the block (INDEX.md ig-De4m7omGlSq-2, USE; as made, never tinted). The block keeps the
+               build's classes; state by date, New York time, set once per load (never ticks). ?identity=out | none. -->
+          <div class="v2-identity">
+            <img class="v2-photo" src="assets/identity-art-240.webp" srcset="assets/identity-art-240.webp 240w, assets/identity-art-480.webp 480w" sizes="(min-width: 900px) 12rem, 26vw" width="480" height="597" alt="IDENTITY artwork: GLucak in blue light" loading="lazy">
+            <div class="identity-state" id="identity-state">
+              <img class="mark mark-identity" src="assets/mark-identity-300.webp" alt="" width="300" height="96" loading="lazy">
+              <p class="identity">IDENTITY</p>
+              <p class="identity-when" id="identity-when"><time datetime="2027-08-13">August 13, 2027</time> &middot; <span id="identity-days">281 days</span> to go</p>
+              <a class="btn btn-line identity-presave" id="identity-presave" href="https://wingsmusic.lnk.to/IDENTITY" rel="noopener">Pre-save IDENTITY</a>
+            </div>
           </div>
         </div>
       </div>
@@ -224,7 +254,7 @@
       </ul>
       <p class="footer-slogan">Rise, Live It Loud, Push Past Fear, The Time Is Now.</p>
       <!-- Credits for the photos on this page, in CREDITS.md wording. Each page lists only what it shows. -->
-      <p class="credits" id="credits">Photo: Alexander Kealey.<span class="credit-b"> Video: Montgomery County Community College, MSP program group.</span></p>
+      <p class="credits" id="credits">Photo: Alexander Kealey.<span class="credit-wide"> Garage still: Joseph Lucak.</span> Live stills: from GLucak's Crooked Eye video. IDENTITY art: from GLucak's Instagram.<span class="credit-b"> Video: Montgomery County Community College, MSP program group.</span></p>
       <div class="footer-row">
         <button class="motion-btn" id="motion" type="button" aria-pressed="true">Motion: on</button>
         <p class="legal">&copy; <span id="year">2026</span> GLucak. <a class="pending" href="#footer" title="Privacy page comes with the build">Privacy</a></p>

@@ -314,7 +314,7 @@ try {
         for (const [k, r] of Object.entries(rects)) { const bg = brightest(png, r); line(`    ${k}: text ${ratio(lum(...tl), bg).toFixed(2)}:1 against the brightest background (need ${['now', 'menu'].includes(k) ? '4.5' : '3'}:1)`); }
       }
       await load(BASE, 390, 660);
-      const pr = await evaluate(`(()=>{document.querySelector('.push-head').scrollIntoView({block:'center'});return new Promise(r=>requestAnimationFrame(()=>{document.querySelectorAll('.fade').forEach(n=>n.classList.add('seen'));setTimeout(()=>{const b=document.querySelector('#h-push .phrase').getBoundingClientRect();r({x:b.x,y:b.y,w:b.width,h:b.height})},750)}))})()`);
+      const pr = await evaluate(`(()=>{document.querySelector('#h-push').scrollIntoView({block:'center'});return new Promise(r=>requestAnimationFrame(()=>{document.querySelectorAll('.fade').forEach(n=>n.classList.add('seen'));setTimeout(()=>{const b=document.querySelector('#h-push .phrase').getBoundingClientRect();r({x:b.x,y:b.y,w:b.width,h:b.height})},750)}))})()`);
       await evaluate(`(()=>{const s=document.createElement('style');s.textContent='#h-push .phrase{visibility:hidden}';document.head.append(s)})()`);
       { const png = readPng(await shot()); const tl = await evaluate(`getComputedStyle(document.body).color.match(/\\d+/g).map(Number)`); line(`  PUSH PAST FEAR heading: ${ratio(lum(...tl), brightest(png, pr)).toFixed(2)}:1 (need 3:1)`); }
 
