@@ -2,7 +2,7 @@
 // screen's download (GET /edit/api/backup) and tools/backup.mjs. A backup coming back in is untrusted: every row is
 // re-validated and every photo re-encoded by sharp exactly like the upload route, all before anything is written.
 // Server-only (node:fs).
-import { mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { lstatSync, mkdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import { join } from 'node:path';
 import { checkShows, readList, saveList } from './store.js';
@@ -11,26 +11,33 @@ import { MAX_BYTES, UPLOAD_NAME, toWebp } from './upload.js';
 
 export const FORMAT = 'glucak-backup', VERSION = 1;
 export const MAX_FILE = 50 * 1024 * 1024;
-export const MAX_UPLOADS = 1000; // ponytail: orphan uploads count too; the 50 MB cap is the real limit
+export const MAX_UPLOADS = 1000; // ponytail: only photos the products use; the 50 MB cap is the real limit
+export const TOO_BIG = 'This backup is too big for one file. Tell the person who runs the site.';
 const B64 = /^[A-Za-z0-9+/]*={0,2}$/;
 const uploadsDir = (data) => join(data, 'uploads');
+const photoOf = (image) => String(image ?? '').match(/^\/media\/uploads\/(.+)$/)?.[1];
 
-/** The live data as a backup object. `fallback`: { shows, products } shipped files, used until Gabe has saved. */
+/** The live data as a backup object, with only the photos the products use (orphan uploads are never shown).
+ * `fallback`: { shows, products } shipped files, used until Gabe has saved. */
 export function makeBackup(data, fallback) {
-  let files = [];
-  try { files = readdirSync(uploadsDir(data), { withFileTypes: true }); } catch { /* no uploads yet */ }
+  let products = readList(data, fallback.products, 'products.json'); // first: every photo it names is on disk by now
+  if (!Array.isArray(products)) products = [];
   const uploads = {};
-  for (const f of files.filter((f) => f.isFile() && UPLOAD_NAME.test(f.name)).sort((a, b) => a.name.localeCompare(b.name))) {
-    uploads[f.name] = readFileSync(join(uploadsDir(data), f.name)).toString('base64');
+  for (const name of [...new Set(products.map((p) => photoOf(p?.image)))].filter((n) => n && UPLOAD_NAME.test(n)).sort()) {
+    const f = join(uploadsDir(data), name);
+    if (lstatSync(f, { throwIfNoEntry: false })?.isFile()) uploads[name] = readFileSync(f).toString('base64'); // not a symlink or folder
   }
   return { format: FORMAT, version: VERSION, created: new Date().toISOString(),
-    shows: readList(data, fallback.shows, 'shows.json'), products: readList(data, fallback.products, 'products.json'), uploads };
+    shows: readList(data, fallback.shows, 'shows.json'), products, uploads };
 }
+/** makeBackup as the bytes of one file. Callers refuse it over MAX_FILE (restore would): TOO_BIG. */
+export const backupBytes = (data, fallback) => Buffer.from(JSON.stringify(makeBackup(data, fallback)));
 
 const label = (name) => JSON.stringify(String(name).slice(0, 80)); // quoted and escaped: a hostile name can't drive the terminal
 
-/** Check a backup file's text. Returns { shows, products, uploads: Map<name, webp> } or { errors: [{ row, message }] }. */
-export async function checkBackup(text) {
+/** Check a backup file's text. `data`: DATA_DIR, where a product's photo may already be. Returns
+ * { shows, products, uploads: Map<name, webp>, warnings: [message] } or { errors: [{ row, message }] }. */
+export async function checkBackup(text, data) {
   const fail = (message) => ({ errors: [{ row: null, message }] });
   if (Buffer.byteLength(text) > MAX_FILE) return fail('The backup is bigger than 50 MB.');
   let b;
@@ -50,11 +57,13 @@ export async function checkBackup(text) {
     if (buf.length > MAX_BYTES) { bad('over 5 MB.'); continue; }
     try { uploads.set(name, await toWebp(buf)); } catch (e) { bad(e.message === 'too_many_pixels' ? 'over 40 megapixels.' : 'not a photo.'); }
   }
+  const onDisk = (name) => { try { return statSync(join(uploadsDir(data), name)).isFile(); } catch { return false; } };
+  const warnings = []; // a photo missing from the file and the disk: that product shows without it, the rest restores
   (p.rows ?? []).forEach((r, i) => {
-    const up = r.image.match(/^\/media\/uploads\/(.+)$/)?.[1];
-    if (up && !uploads.has(up)) errors.push({ row: i, message: `Product ${i + 1}: its photo ${label(up)} is not in the backup.` });
+    const up = photoOf(r.image);
+    if (up && !uploads.has(up) && !onDisk(up)) warnings.push(`Product ${i + 1}: its photo ${label(up)} is not in the backup, so it will be missing on the Shop page.`);
   });
-  return errors.length ? { errors } : { shows: s.rows, products: p.rows, uploads };
+  return errors.length ? { errors } : { shows: s.rows, products: p.rows, uploads, warnings };
 }
 
 /** Write a checked backup: photos first (temp + rename), then shows.json and products.json (atomic, old one kept as .prev). */
@@ -62,8 +71,7 @@ export function writeBackup(data, r, fallback) {
   mkdirSync(uploadsDir(data), { recursive: true });
   for (const [name, buf] of r.uploads) {
     const tmp = join(uploadsDir(data), `${name}.${randomBytes(4).toString('hex')}.tmp`); // never matches UPLOAD_NAME, so never served
-    writeFileSync(tmp, buf);
-    renameSync(tmp, join(uploadsDir(data), name));
+    try { writeFileSync(tmp, buf); renameSync(tmp, join(uploadsDir(data), name)); } catch (e) { rmSync(tmp, { force: true }); throw e; }
   }
   saveList(data, r.shows, fallback.shows, 'shows.json');
   saveList(data, r.products, fallback.products, 'products.json');

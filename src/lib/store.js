@@ -1,6 +1,6 @@
 // Live shows storage for the edit screen. Gabe's saved list lives in DATA_DIR (outside the build), so the public pages
 // pick it up on the next request. Server-only (node:fs): never import this from an Astro page.
-import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { createHash, randomBytes } from 'node:crypto';
 import { join } from 'node:path';
 import { validateShow, ADDR_LINE, ADDR_LONG } from './shows.js';
@@ -50,14 +50,18 @@ export function checkShows(list) {
   return errors.length ? { errors } : { rows };
 }
 
-/** Atomic save: write a temp file, keep the current list as <name>.prev.json, then rename over <name>.json. */
+/** Atomic save: write a temp file, keep the current list (if it parses) as <name>.prev.json, then rename over <name>.json. */
 export function saveList(dataDir, rows, fallback, name = 'shows.json') {
   mkdirSync(dataDir, { recursive: true });
   const file = join(dataDir, name);
   const tmp = join(dataDir, `${name}.${process.pid}.${randomBytes(4).toString('hex')}.tmp`);
-  writeFileSync(tmp, `${JSON.stringify(rows, null, 2)}\n`);
-  const current = liveFile(dataDir, fallback, name);
-  if (current && existsSync(current)) copyFileSync(current, join(dataDir, name.replace(/\.json$/, '.prev.json')));
-  renameSync(tmp, file);
+  const parses = (f) => { try { JSON.parse(readFileSync(f, 'utf8')); return true; } catch { return false; } };
+  try {
+    writeFileSync(tmp, `${JSON.stringify(rows, null, 2)}\n`);
+    const current = liveFile(dataDir, fallback, name);
+    // a damaged current list never replaces the last good .prev
+    if (current && existsSync(current) && parses(current)) copyFileSync(current, join(dataDir, name.replace(/\.json$/, '.prev.json')));
+    renameSync(tmp, file);
+  } catch (e) { rmSync(tmp, { force: true }); throw e; } // no stray .tmp after a failed save
 }
 export const saveShows = (dataDir, rows, fallback) => saveList(dataDir, rows, fallback, 'shows.json');

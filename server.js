@@ -9,7 +9,7 @@ import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'no
 import { extname, join, normalize, sep } from 'node:path';
 import { brotliCompressSync, constants as zc, gzipSync } from 'node:zlib';
 import { etDay, icsById, nowHtml, showsHtml, showsLdHtml } from './src/lib/shows.js';
-import { makeBackup } from './src/lib/backup.js';
+import { MAX_FILE, TOO_BIG, backupBytes } from './src/lib/backup.js';
 import { signup } from './src/lib/signup.js';
 import { allow, checkLogin, clearFailures, cookieHeader, locked, parseEditors, readCookie, recordFailure, sameOrigin, signSession, verifySession, SESSION_DAYS, USER_LOCK } from './src/lib/auth.js';
 import { checkShows, listVersion, readList, readShows, saveList } from './src/lib/store.js';
@@ -175,6 +175,8 @@ async function handleEdit(req, res, url) {
     send(req, res, status, 'application/json', Buffer.from(JSON.stringify(body)), { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex', ...extra });
   };
   if (!SECRET) return json(503, { error: 'off', message: "The edit screen isn't switched on yet. Tell the person who runs the site." });
+  // belt and braces over SameSite=Strict: a browser that says the GET came from another site gets nothing
+  if (req.method === 'GET' && p.startsWith('/edit/api/') && req.headers['sec-fetch-site'] === 'cross-site') return json(403, { error: 'origin', message: "That didn't go through. Try again." });
   const kind = p.match(/^\/edit\/api\/(shows|products)$/)?.[1], list = LISTS[kind];
   if (req.method === 'GET' && list) {
     const who = editor(req, url);
@@ -185,9 +187,15 @@ async function handleEdit(req, res, url) {
     const who = editor(req, url);
     if (!who) return json(401, { error: 'signed_out' });
     if (!allow(`backup:${who}`, 10, 60 * 60e3)) return json(429, { error: 'slow_down', message: 'Too many backups. Wait an hour, then try again.' });
-    const body = Buffer.from(JSON.stringify(makeBackup(DATA, { shows: SHOWS, products: PRODUCTS }))); // ponytail: built in memory, fine under the 50 MB restore cap
+    const body = backupBytes(DATA, { shows: SHOWS, products: PRODUCTS }); // ponytail: built in memory, fine under the 50 MB restore cap
+    if (body.length > MAX_FILE) { // restore would refuse it: say so now, not on the day it's needed
+      console.error(new Date().toISOString(), `backup refused for ${who}: ${body.length} bytes is over the ${MAX_FILE}-byte restore cap`);
+      return json(413, { error: 'too_big', message: TOO_BIG });
+    }
     console.log(new Date().toISOString(), `backup downloaded by ${who}: ${body.length} bytes`);
-    return send(req, res, 200, 'application/json', body, { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex', 'Content-Disposition': `attachment; filename="glucak-backup-${etDay()}.json"` });
+    // written directly, not through send(): no compression, so a big backup never stalls the public site on sync brotli
+    res.writeHead(200, { ...baseHeaders(req), 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex', 'Content-Disposition': `attachment; filename="glucak-backup-${etDay()}.json"` });
+    return res.end(body);
   }
   if (req.method !== 'POST') return json(405, { error: 'method' }, { Allow: 'POST' });
   if (!sameOrigin(req.headers)) return json(403, { error: 'origin', message: "That didn't go through. Try again." });
