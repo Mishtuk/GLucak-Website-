@@ -1,0 +1,1124 @@
+{
+ "home 320 100%": {
+  "screens": 5.98,
+  "h": 3949,
+  "sw": 320,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "a-era-grade [alt=\"\"]",
+   "duck-dodge-jump-fight",
+   "WZkvg5YMQ9w [alt=\"\"]",
+   "ZGlnFchIVVY [alt=\"\"]",
+   "K-OZiNvQB14 [alt=\"\"]",
+   "belt",
+   "identity-art",
+   "mark-identity [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": [],
+  "player": {
+   "t": 524,
+   "b": 876,
+   "l": 32,
+   "r": 288
+  },
+  "card": {
+   "t": 516,
+   "b": 1161,
+   "l": 20,
+   "r": 300
+  },
+  "cover": {
+   "t": 1057,
+   "b": 1149,
+   "l": 32,
+   "r": 124
+  },
+  "bar": {
+   "t": 598,
+   "b": 660,
+   "l": 0,
+   "r": 320
+  },
+  "header": {
+   "t": 0,
+   "b": 62,
+   "l": 0,
+   "r": 320
+  },
+  "now": {
+   "t": 353,
+   "b": 401,
+   "l": 20,
+   "r": 300
+  },
+  "credits": "Photo: Alexander Kealey. Video still: Joseph Lucak.",
+  "headerBg": "rgb(17, 17, 17)",
+  "strip": "calc(60px * 2 + 1.25rem)"
+ },
+ "home 390 100%": {
+  "screens": 5.76,
+  "h": 3801,
+  "sw": 390,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "a-era-grade [alt=\"\"]",
+   "duck-dodge-jump-fight",
+   "WZkvg5YMQ9w [alt=\"\"]",
+   "ZGlnFchIVVY [alt=\"\"]",
+   "K-OZiNvQB14 [alt=\"\"]",
+   "belt",
+   "identity-art",
+   "mark-identity [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": [],
+  "player": {
+   "t": 556,
+   "b": 908,
+   "l": 33,
+   "r": 357
+  },
+  "card": {
+   "t": 548,
+   "b": 1184,
+   "l": 21,
+   "r": 369
+  },
+  "cover": {
+   "t": 1055,
+   "b": 1172,
+   "l": 33,
+   "r": 150
+  },
+  "bar": {
+   "t": 598,
+   "b": 660,
+   "l": 0,
+   "r": 390
+  },
+  "header": {
+   "t": 0,
+   "b": 62,
+   "l": 0,
+   "r": 390
+  },
+  "now": {
+   "t": 385,
+   "b": 433,
+   "l": 21,
+   "r": 369
+  },
+  "credits": "Photo: Alexander Kealey. Video still: Joseph Lucak.",
+  "headerBg": "rgb(17, 17, 17)",
+  "strip": "calc(60px * 2 + 1.25rem)"
+ },
+ "home 1280 100%": {
+  "screens": 6.11,
+  "h": 4033,
+  "sw": 1280,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "b-riso [alt=\"\"]",
+   "garage",
+   "duck-dodge-jump-fight",
+   "stage",
+   "WZkvg5YMQ9w [alt=\"\"]",
+   "ZGlnFchIVVY [alt=\"\"]",
+   "K-OZiNvQB14 [alt=\"\"]",
+   "belt",
+   "identity-art",
+   "mark-identity [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": [
+   "Empty photo slot: crowd shot, waiting on Gabe's OK"
+  ],
+  "player": {
+   "t": 902,
+   "b": 1254,
+   "l": 577,
+   "r": 1226
+  },
+  "card": {
+   "t": 621,
+   "b": 1330,
+   "l": 561,
+   "r": 1242
+  },
+  "cover": {
+   "t": 637,
+   "b": 890,
+   "l": 577,
+   "r": 830
+  },
+  "bar": null,
+  "header": {
+   "t": 0,
+   "b": 74,
+   "l": 0,
+   "r": 1280
+  },
+  "now": {
+   "t": 503,
+   "b": 551,
+   "l": 426,
+   "r": 671
+  },
+  "credits": "Photo: Alexander Kealey. Video still: Joseph Lucak.",
+  "headerBg": "rgb(17, 17, 17)",
+  "strip": ""
+ },
+ "home 320 200%": {
+  "screens": 13.44,
+  "h": 8872,
+  "sw": 320,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "a-era-grade [alt=\"\"]",
+   "duck-dodge-jump-fight",
+   "WZkvg5YMQ9w [alt=\"\"]",
+   "ZGlnFchIVVY [alt=\"\"]",
+   "K-OZiNvQB14 [alt=\"\"]",
+   "belt",
+   "identity-art",
+   "mark-identity [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": [],
+  "player": {
+   "t": 923,
+   "b": 1376,
+   "l": 44,
+   "r": 276
+  },
+  "card": {
+   "t": 907,
+   "b": 2572,
+   "l": 20,
+   "r": 300
+  },
+  "cover": {
+   "t": 2464,
+   "b": 2548,
+   "l": 44,
+   "r": 128
+  },
+  "bar": {
+   "t": 598,
+   "b": 660,
+   "l": 0,
+   "r": 320
+  },
+  "header": {
+   "t": 0,
+   "b": 62,
+   "l": 0,
+   "r": 320
+  },
+  "now": {
+   "t": 537,
+   "b": 681,
+   "l": 20,
+   "r": 300
+  },
+  "credits": "Photo: Alexander Kealey. Video still: Joseph Lucak.",
+  "headerBg": "rgb(17, 17, 17)",
+  "strip": "calc(60px * 2 + 1.25rem)"
+ },
+ "home 390 200%": {
+  "screens": 12.24,
+  "h": 8076,
+  "sw": 390,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "a-era-grade [alt=\"\"]",
+   "duck-dodge-jump-fight",
+   "WZkvg5YMQ9w [alt=\"\"]",
+   "ZGlnFchIVVY [alt=\"\"]",
+   "K-OZiNvQB14 [alt=\"\"]",
+   "belt",
+   "identity-art",
+   "mark-identity [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": [],
+  "player": {
+   "t": 907,
+   "b": 1259,
+   "l": 45,
+   "r": 345
+  },
+  "card": {
+   "t": 891,
+   "b": 2167,
+   "l": 21,
+   "r": 369
+  },
+  "cover": {
+   "t": 2034,
+   "b": 2143,
+   "l": 45,
+   "r": 153
+  },
+  "bar": {
+   "t": 598,
+   "b": 660,
+   "l": 0,
+   "r": 390
+  },
+  "header": {
+   "t": 0,
+   "b": 62,
+   "l": 0,
+   "r": 390
+  },
+  "now": {
+   "t": 569,
+   "b": 665,
+   "l": 21,
+   "r": 369
+  },
+  "credits": "Photo: Alexander Kealey. Video still: Joseph Lucak.",
+  "headerBg": "rgb(17, 17, 17)",
+  "strip": "calc(60px * 2 + 1.25rem)"
+ },
+ "home 1280 200%": {
+  "screens": 9.83,
+  "h": 6486,
+  "sw": 1280,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "b-riso [alt=\"\"]",
+   "garage",
+   "duck-dodge-jump-fight",
+   "stage",
+   "WZkvg5YMQ9w [alt=\"\"]",
+   "ZGlnFchIVVY [alt=\"\"]",
+   "K-OZiNvQB14 [alt=\"\"]",
+   "belt",
+   "identity-art",
+   "mark-identity [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": [
+   "Empty photo slot: crowd shot, waiting on Gabe's OK"
+  ],
+  "player": {
+   "t": 1249,
+   "b": 1601,
+   "l": 614,
+   "r": 1210
+  },
+  "card": {
+   "t": 823,
+   "b": 1729,
+   "l": 582,
+   "r": 1242
+  },
+  "cover": {
+   "t": 1000,
+   "b": 1225,
+   "l": 614,
+   "r": 839
+  },
+  "bar": null,
+  "header": {
+   "t": 0,
+   "b": 75,
+   "l": 0,
+   "r": 1280
+  },
+  "now": {
+   "t": 633,
+   "b": 687,
+   "l": 86,
+   "r": 576
+  },
+  "credits": "Photo: Alexander Kealey. Video still: Joseph Lucak.",
+  "headerBg": "rgb(17, 17, 17)",
+  "strip": ""
+ },
+ "shows 320 100%": {
+  "screens": 2.71,
+  "h": 1786,
+  "sw": 320,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "c-poster [alt=\"\"]",
+   "WZkvg5YMQ9w [alt=\"\"]",
+   "ZGlnFchIVVY [alt=\"\"]",
+   "K-OZiNvQB14 [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "shows 390 100%": {
+  "screens": 2.66,
+  "h": 1755,
+  "sw": 390,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "c-poster [alt=\"\"]",
+   "WZkvg5YMQ9w [alt=\"\"]",
+   "ZGlnFchIVVY [alt=\"\"]",
+   "K-OZiNvQB14 [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "shows 1280 100%": {
+  "screens": 2.37,
+  "h": 1567,
+  "sw": 1280,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "c-poster [alt=\"\"]",
+   "WZkvg5YMQ9w [alt=\"\"]",
+   "ZGlnFchIVVY [alt=\"\"]",
+   "K-OZiNvQB14 [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "shows 320 200%": {
+  "screens": 5.91,
+  "h": 3902,
+  "sw": 320,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "c-poster [alt=\"\"]",
+   "WZkvg5YMQ9w [alt=\"\"]",
+   "ZGlnFchIVVY [alt=\"\"]",
+   "K-OZiNvQB14 [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "shows 390 200%": {
+  "screens": 5.68,
+  "h": 3746,
+  "sw": 390,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "c-poster [alt=\"\"]",
+   "WZkvg5YMQ9w [alt=\"\"]",
+   "ZGlnFchIVVY [alt=\"\"]",
+   "K-OZiNvQB14 [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "shows 1280 200%": {
+  "screens": 3.83,
+  "h": 2527,
+  "sw": 1280,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "c-poster [alt=\"\"]",
+   "WZkvg5YMQ9w [alt=\"\"]",
+   "ZGlnFchIVVY [alt=\"\"]",
+   "K-OZiNvQB14 [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "music 320 100%": {
+  "screens": 4.93,
+  "h": 3254,
+  "sw": 320,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "duck-dodge-jump-fight [alt=\"\"]",
+   "rapping-like-oh-yeah [alt=\"\"]",
+   "one-and-done [alt=\"\"]",
+   "earned-your-stripes-live-at-riverside [alt=\"\"]",
+   "go [alt=\"\"]",
+   "glucak-deluxe-edition [alt=\"\"]",
+   "fall-down-7-stand-up-8-a-remix-album [alt=\"\"]",
+   "time-is-at-the-essence [alt=\"\"]",
+   "mark-identity [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "music 390 100%": {
+  "screens": 4.99,
+  "h": 3292,
+  "sw": 390,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "duck-dodge-jump-fight [alt=\"\"]",
+   "rapping-like-oh-yeah [alt=\"\"]",
+   "one-and-done [alt=\"\"]",
+   "earned-your-stripes-live-at-riverside [alt=\"\"]",
+   "go [alt=\"\"]",
+   "glucak-deluxe-edition [alt=\"\"]",
+   "fall-down-7-stand-up-8-a-remix-album [alt=\"\"]",
+   "time-is-at-the-essence [alt=\"\"]",
+   "mark-identity [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "music 1280 100%": {
+  "screens": 4.37,
+  "h": 2883,
+  "sw": 1280,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "duck-dodge-jump-fight [alt=\"\"]",
+   "rapping-like-oh-yeah [alt=\"\"]",
+   "one-and-done [alt=\"\"]",
+   "earned-your-stripes-live-at-riverside [alt=\"\"]",
+   "go [alt=\"\"]",
+   "glucak-deluxe-edition [alt=\"\"]",
+   "fall-down-7-stand-up-8-a-remix-album [alt=\"\"]",
+   "time-is-at-the-essence [alt=\"\"]",
+   "mark-identity [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "music 320 200%": {
+  "screens": 9.8,
+  "h": 6467,
+  "sw": 320,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "duck-dodge-jump-fight [alt=\"\"]",
+   "rapping-like-oh-yeah [alt=\"\"]",
+   "one-and-done [alt=\"\"]",
+   "earned-your-stripes-live-at-riverside [alt=\"\"]",
+   "go [alt=\"\"]",
+   "glucak-deluxe-edition [alt=\"\"]",
+   "fall-down-7-stand-up-8-a-remix-album [alt=\"\"]",
+   "time-is-at-the-essence [alt=\"\"]",
+   "mark-identity [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "music 390 200%": {
+  "screens": 9.03,
+  "h": 5959,
+  "sw": 390,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "duck-dodge-jump-fight [alt=\"\"]",
+   "rapping-like-oh-yeah [alt=\"\"]",
+   "one-and-done [alt=\"\"]",
+   "earned-your-stripes-live-at-riverside [alt=\"\"]",
+   "go [alt=\"\"]",
+   "glucak-deluxe-edition [alt=\"\"]",
+   "fall-down-7-stand-up-8-a-remix-album [alt=\"\"]",
+   "time-is-at-the-essence [alt=\"\"]",
+   "mark-identity [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "music 1280 200%": {
+  "screens": 6.57,
+  "h": 4338,
+  "sw": 1280,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "duck-dodge-jump-fight [alt=\"\"]",
+   "rapping-like-oh-yeah [alt=\"\"]",
+   "one-and-done [alt=\"\"]",
+   "earned-your-stripes-live-at-riverside [alt=\"\"]",
+   "go [alt=\"\"]",
+   "glucak-deluxe-edition [alt=\"\"]",
+   "fall-down-7-stand-up-8-a-remix-album [alt=\"\"]",
+   "time-is-at-the-essence [alt=\"\"]",
+   "mark-identity [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png",
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "about 320 100%": {
+  "screens": 3.49,
+  "h": 2304,
+  "sw": 320,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "d-crowd [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "about 390 100%": {
+  "screens": 3.29,
+  "h": 2173,
+  "sw": 390,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "d-crowd [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "about 1280 100%": {
+  "screens": 2.91,
+  "h": 1920,
+  "sw": 1280,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "d-crowd [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "about 320 200%": {
+  "screens": 8.91,
+  "h": 5878,
+  "sw": 320,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "d-crowd [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "about 390 200%": {
+  "screens": 7.51,
+  "h": 4954,
+  "sw": 390,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "d-crowd [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "about 1280 200%": {
+  "screens": 5.57,
+  "h": 3673,
+  "sw": 1280,
+  "dup": [],
+  "noAlt": [],
+  "imgs": [
+   "mark-identity [alt=\"\"]",
+   "d-crowd [alt=\"\"]"
+  ],
+  "bgs": [
+   "http://127.0.0.1:8817/grain.png"
+  ],
+  "roleImg": []
+ },
+ "network 390": {
+  "hostsBeforeTap": [
+   "127.0.0.1:8817",
+   "open.spotify.com"
+  ],
+  "youtubeBeforeTap": [],
+  "youtubeAfterTap": [
+   "https://www.youtube-nocookie.com/embed/WZkvg5YMQ9w?autoplay=1&rel=0"
+  ],
+  "iframe": {
+   "src": "https://www.youtube-nocookie.com/embed/WZkvg5YMQ9w?autoplay=1&rel=0",
+   "title": "Hobbyist?",
+   "focused": true,
+   "w": 286,
+   "h": 160.875
+  }
+ },
+ "network 1280": {
+  "hostsBeforeTap": [
+   "127.0.0.1:8817",
+   "open.spotify.com"
+  ],
+  "youtubeBeforeTap": [],
+  "youtubeAfterTap": [
+   "https://www.youtube-nocookie.com/embed/WZkvg5YMQ9w?autoplay=1&rel=0"
+  ],
+  "iframe": {
+   "src": "https://www.youtube-nocookie.com/embed/WZkvg5YMQ9w?autoplay=1&rel=0",
+   "title": "Hobbyist?",
+   "focused": true,
+   "w": 216.28125,
+   "h": 121.65625
+  }
+ },
+ "motion reduce=true": {
+  "anims": [],
+  "videos": 0,
+  "snap": "x mandatory",
+  "sb": "auto"
+ },
+ "motion reduce=false": {
+  "anims": [],
+  "videos": 0,
+  "snap": "x mandatory",
+  "sb": "auto"
+ },
+ "keyboard 390": [
+  {
+   "el": "A.:Latest Hobbyist? (opens in a",
+   "inRow": true,
+   "scrollLeft": 0,
+   "fullyVisible": true,
+   "outline": "solid 3px"
+  },
+  {
+   "el": "A.:You're Not Alone (Official M",
+   "inRow": true,
+   "scrollLeft": 0,
+   "fullyVisible": false,
+   "outline": "solid 3px"
+  },
+  {
+   "el": "A.:Duck, Dodge, Jump, Fight! (f",
+   "inRow": true,
+   "scrollLeft": 541,
+   "fullyVisible": true,
+   "outline": "solid 3px"
+  },
+  {
+   "el": "A.btn btn-solid:Patreon (opens in a new tab)",
+   "inRow": false,
+   "scrollLeft": 541,
+   "fullyVisible": true,
+   "outline": "solid 3px"
+  },
+  {
+   "el": "A.btn btn-line:About GLucak",
+   "inRow": false,
+   "scrollLeft": 541,
+   "fullyVisible": true,
+   "outline": "solid 3px"
+  },
+  {
+   "back": true,
+   "el": "A.btn btn-solid:Patreon (opens in a new tab)",
+   "inRow": false,
+   "scrollLeft": 541,
+   "fullyVisible": true,
+   "outline": "solid 3px"
+  },
+  {
+   "back": true,
+   "el": "A.:Duck, Dodge, Jump, Fight! (f",
+   "inRow": true,
+   "scrollLeft": 541,
+   "fullyVisible": true,
+   "outline": "solid 3px"
+  },
+  {
+   "back": true,
+   "el": "A.:You're Not Alone (Official M",
+   "inRow": true,
+   "scrollLeft": 541,
+   "fullyVisible": false,
+   "outline": "solid 3px"
+  },
+  {
+   "back": true,
+   "el": "A.:Latest Hobbyist? (opens in a",
+   "inRow": true,
+   "scrollLeft": 0,
+   "fullyVisible": true,
+   "outline": "solid 3px"
+  },
+  {
+   "back": true,
+   "el": "A.text-link:All shows",
+   "inRow": false,
+   "scrollLeft": 0,
+   "fullyVisible": true,
+   "outline": "solid 3px"
+  }
+ ],
+ "keyboard 320": [
+  {
+   "el": "A.:Latest Hobbyist? (opens in a",
+   "inRow": true,
+   "scrollLeft": 0,
+   "fullyVisible": true,
+   "outline": "solid 3px"
+  },
+  {
+   "el": "A.:You're Not Alone (Official M",
+   "inRow": true,
+   "scrollLeft": 0,
+   "fullyVisible": false,
+   "outline": "solid 3px"
+  },
+  {
+   "el": "A.:Duck, Dodge, Jump, Fight! (f",
+   "inRow": true,
+   "scrollLeft": 441,
+   "fullyVisible": true,
+   "outline": "solid 3px"
+  },
+  {
+   "el": "A.btn btn-solid:Patreon (opens in a new tab)",
+   "inRow": false,
+   "scrollLeft": 441,
+   "fullyVisible": true,
+   "outline": "solid 3px"
+  },
+  {
+   "el": "A.btn btn-line:About GLucak",
+   "inRow": false,
+   "scrollLeft": 441,
+   "fullyVisible": true,
+   "outline": "solid 3px"
+  },
+  {
+   "back": true,
+   "el": "A.btn btn-solid:Patreon (opens in a new tab)",
+   "inRow": false,
+   "scrollLeft": 441,
+   "fullyVisible": true,
+   "outline": "solid 3px"
+  },
+  {
+   "back": true,
+   "el": "A.:Duck, Dodge, Jump, Fight! (f",
+   "inRow": true,
+   "scrollLeft": 441,
+   "fullyVisible": true,
+   "outline": "solid 3px"
+  },
+  {
+   "back": true,
+   "el": "A.:You're Not Alone (Official M",
+   "inRow": true,
+   "scrollLeft": 441,
+   "fullyVisible": false,
+   "outline": "solid 3px"
+  },
+  {
+   "back": true,
+   "el": "A.:Latest Hobbyist? (opens in a",
+   "inRow": true,
+   "scrollLeft": 0,
+   "fullyVisible": true,
+   "outline": "solid 3px"
+  },
+  {
+   "back": true,
+   "el": "A.text-link:All shows",
+   "inRow": false,
+   "scrollLeft": 0,
+   "fullyVisible": true,
+   "outline": "solid 3px"
+  }
+ ],
+ "contrast 390 100% solid": [
+  "brand-word:GLUCAK 28px need 3: min 17.32 p5 17.32",
+  ":Menu 17px need 4.5: min 17.32 p5 17.32",
+  "n-g:G 122px need 3: min 4.05 p5 4.42",
+  "n-rest:LUCAK 122px need 3: min 4.40 p5 5.45",
+  "sl sl-1:Rise, Live It Lo 51px need 3: min 7.19 p5 8.65",
+  "sl sl-2:Push Past Fear,  27px need 3: min 8.65 p5 9.69",
+  "btn btn-line:Shows 24px need 3: min 1.10 p5 1.15  <-- LOW",
+  "now-tag:Now 16px need 4.5: min 1.12 p5 1.14  <-- LOW",
+  ":Out Nov 13: Who  16px need 4.5: min 12.45 p5 12.68"
+ ],
+ "contrast 320 100% solid": [
+  "brand-word:GLUCAK 28px need 3: min 17.32 p5 17.32",
+  ":Menu 17px need 4.5: min 17.32 p5 17.32",
+  "n-g:G 98px need 3: min 4.05 p5 4.52",
+  "n-rest:LUCAK 98px need 3: min 4.63 p5 5.37",
+  "sl sl-1:Rise, Live It Lo 41px need 3: min 7.30 p5 8.11",
+  "sl sl-2:Push Past Fear,  22px need 3: min 8.17 p5 8.97",
+  "btn btn-line:Shows 24px need 3: min 1.11 p5 1.17  <-- LOW",
+  "now-tag:Now 16px need 4.5: min 1.14 p5 1.19  <-- LOW",
+  ":Out Nov 13: Who  16px need 4.5: min 12.11 p5 12.47"
+ ],
+ "contrast 1280 100% solid": [
+  "brand-word:GLUCAK 28px need 3: min 17.32 p5 17.32",
+  ":Music 17px need 4.5: min 17.32 p5 17.32",
+  ":Shows 17px need 4.5: min 17.32 p5 17.32",
+  ":About 17px need 4.5: min 17.32 p5 17.32",
+  "btn btn-solid btn-small header-listen:Listen 21px need 3: min 1.75 p5 5.71",
+  "n-g:G 248px need 3: min 17.02 p5 17.10",
+  "n-rest:LUCAK 248px need 3: min 16.35 p5 16.55",
+  "sl sl-1:Rise, Live It Lo 60px need 3: min 16.16 p5 16.31",
+  "sl sl-2:Push Past Fear,  60px need 3: min 16.06 p5 16.11",
+  "btn btn-line:Shows 24px need 3: min 1.07 p5 1.09  <-- LOW",
+  "now-tag:Now 16px need 4.5: min 1.08 p5 1.08  <-- LOW",
+  ":Out Nov 13: Who  18px need 4.5: min 15.70 p5 15.70"
+ ],
+ "contrast 390 200% solid": [
+  ":Menu 34px need 3: min 17.32 p5 17.32",
+  "n-g:G 122px need 3: min 3.80 p5 4.04",
+  "n-rest:LUCAK 122px need 3: min 3.90 p5 6.53",
+  "sl sl-1:Rise, Live It Lo 51px need 3: min 4.38 p5 5.04",
+  "sl sl-2:Push Past Fear,  27px need 3: min 6.89 p5 8.26",
+  "btn btn-line:Shows 48px need 3: min 1.12 p5 1.24  <-- LOW",
+  "now-tag:Now 32px need 3: min 1.00 p5 1.00  <-- LOW",
+  ":Out Nov 13: Who  32px need 3: min 1.00 p5 1.00  <-- LOW"
+ ],
+ "contrast 390 100% scrim": [
+  "brand-word:GLUCAK 28px need 3: min 11.13 p5 11.52",
+  ":Menu 17px need 4.5: min 12.73 p5 13.27",
+  "n-g:G 122px need 3: min 4.45 p5 4.76",
+  "n-rest:LUCAK 122px need 3: min 4.52 p5 5.78",
+  "sl sl-1:Rise, Live It Lo 51px need 3: min 5.79 p5 7.29",
+  "sl sl-2:Push Past Fear,  27px need 3: min 7.45 p5 8.59",
+  "btn btn-line:Shows 24px need 3: min 1.07 p5 1.11  <-- LOW",
+  "now-tag:Now 16px need 4.5: min 1.10 p5 1.12  <-- LOW",
+  ":Out Nov 13: Who  16px need 4.5: min 13.30 p5 13.47"
+ ],
+ "contrast 1280 100% scrim": [
+  "brand-word:GLUCAK 28px need 3: min 17.32 p5 17.32",
+  ":Music 17px need 4.5: min 17.32 p5 17.32",
+  ":Shows 17px need 4.5: min 17.32 p5 17.32",
+  ":About 17px need 4.5: min 17.32 p5 17.32",
+  "btn btn-solid btn-small header-listen:Listen 21px need 3: min 1.75 p5 5.71",
+  "n-g:G 248px need 3: min 17.02 p5 17.10",
+  "n-rest:LUCAK 248px need 3: min 16.35 p5 16.55",
+  "sl sl-1:Rise, Live It Lo 60px need 3: min 16.16 p5 16.31",
+  "sl sl-2:Push Past Fear,  60px need 3: min 16.06 p5 16.11",
+  "btn btn-line:Shows 24px need 3: min 1.07 p5 1.09  <-- LOW",
+  "now-tag:Now 16px need 4.5: min 1.08 p5 1.08  <-- LOW",
+  ":Out Nov 13: Who  18px need 4.5: min 15.70 p5 15.70"
+ ],
+ "scrim 390": {
+  "top": {
+   "bgImg": "linear-gradient(color(srgb 0.0666667 0.0",
+   "bg": "rgba(0, 0, 0, 0)",
+   "strip": "calc(60px + 1.75rem)",
+   "attr": "scrim"
+  },
+  "down": {
+   "solid": true,
+   "bg": "rgb(17, 17, 17)"
+  }
+ },
+ "scrim 1280": {
+  "top": {
+   "bgImg": "linear-gradient(color(srgb 0.0666667 0.0",
+   "bg": "rgba(0, 0, 0, 0)",
+   "strip": "",
+   "attr": "scrim"
+  },
+  "down": {
+   "solid": true,
+   "bg": "rgb(17, 17, 17)"
+  }
+ },
+ "nowline 320 200%": {
+  "nowTop": 537,
+  "nowBottom": 681,
+  "barTop": 598,
+  "barH": 62,
+  "heroBottom": 781,
+  "padBottom": "100px",
+  "covered": 83
+ },
+ "nowline 390 200%": {
+  "nowTop": 569,
+  "nowBottom": 665,
+  "barTop": 598,
+  "barH": 62,
+  "heroBottom": 765,
+  "padBottom": "100px",
+  "covered": 67
+ },
+ "nowline 390 100%": {
+  "nowTop": 385,
+  "nowBottom": 433,
+  "barTop": 598,
+  "barH": 62,
+  "heroBottom": 483,
+  "padBottom": "50px",
+  "covered": 0
+ },
+ "nowline 320 100%": {
+  "nowTop": 353,
+  "nowBottom": 401,
+  "barTop": 598,
+  "barH": 62,
+  "heroBottom": 451,
+  "padBottom": "50px",
+  "covered": 0
+ },
+ "watch 1280 200%": [
+  {
+   "text": "Latest Hobbyist?",
+   "clientH": 83,
+   "scrollH": 83,
+   "w": 199
+  },
+  {
+   "text": "You're Not Alone (Official Music Video)",
+   "clientH": 83,
+   "scrollH": 166,
+   "w": 199
+  },
+  {
+   "text": "Duck, Dodge, Jump, Fight! (feat. J-BOY of J-BOY CULTURE)(Official Music Video)",
+   "clientH": 83,
+   "scrollH": 291,
+   "w": 199
+  }
+ ],
+ "watch 390 200%": [
+  {
+   "text": "Latest Hobbyist?",
+   "clientH": 42,
+   "scrollH": 42
+  },
+  {
+   "text": "You're Not Alone (Official Music Video)",
+   "clientH": 83,
+   "scrollH": 125
+  },
+  {
+   "text": "Duck, Dodge, Jump, Fight! (feat. J-BOY of J-BOY CULTURE)(Official Music Video)",
+   "clientH": 83,
+   "scrollH": 208
+  }
+ ]
+}
