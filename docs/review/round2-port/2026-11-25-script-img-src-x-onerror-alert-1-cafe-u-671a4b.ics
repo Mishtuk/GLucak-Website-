@@ -1,0 +1,19 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//GLucak//glucak.com//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:2026-11-25-script-img-src-x-onerror-alert-1-cafe-u-671a4b@glucak.com
+DTSTAMP:20261106T141418Z
+DTSTART;VALUE=DATE:20261125
+DTEND;VALUE=DATE:20261126
+SUMMARY:GLucak open mic at </script><img src=x onerror=alert(1)> Café Ün
+ ïcode Lounge with a very long name to force folding past 75 octets
+LOCATION:</script><img src=x onerror=alert(1)> Café Ünïcode Lounge with 
+ a very long name to force folding past 75 octets\, Doylestown\, PA
+DESCRIPTION:GLucak at an open mic.\n</script><img src=x onerror=alert(1)> C
+ afé Ünïcode Lounge with a very long name to force folding past 75 octet
+ s\, Doylestown\, PA
+END:VEVENT
+END:VCALENDAR

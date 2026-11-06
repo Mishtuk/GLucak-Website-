@@ -211,3 +211,10 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   locality-only markup. **Why:** Google's Event rich result wants a street address and Search Console warns without it; it
   helps a fan's calendar pin the place. Showing it on the page would add a line to every row for little gain, and the
   Add to calendar button already carries it to the phone. Optional keeps Gabe's edit screen at its current length.
+- **D63** (2026-11-06, Laptop boss, review of the Desktop's round-2 port 7c0e6b5 + D61 cfab6a9, `docs/review/round2-port-review.md`):
+  **Ruling:** approved with five small fixes, none blocking: (F1) footer link cells at 900px+ are at least their word
+  (`minmax(max-content, 1fr)`; SoundCloud ran 10px into Patreon at 900-970px); (F2) Music's SoundCloud line gets its
+  `text-link` class back; (F3) About `links-lg` gap 0.4rem under 380px (the Desktop's 380-519px two-column rule is right and
+  stays); (F4) the header brand gets the pressed text swap on its word (`.brand:active .brand-word`), since 16e removed the
+  tap highlight; (F5) the address check also refuses C1 controls (`\x80-\x9f`, NEL). **Why:** each is a measured failure
+  (overlap, no tap feedback, an unchecked line break); the fixes add no new look or words.
