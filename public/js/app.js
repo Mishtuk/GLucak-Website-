@@ -75,8 +75,8 @@
   }
 
   /* ---------- Latest video: a plain link until tapped, then the privacy-enhanced player ---------- */
-  const yt = $('a.yt[data-yt]');
-  if (yt && /^[\w-]{11}$/.test(yt.dataset.yt)) {
+  document.querySelectorAll('a[data-yt]').forEach((yt) => {
+    if (!/^[\w-]{11}$/.test(yt.dataset.yt)) return;
     yt.addEventListener('click', (e) => {
       e.preventDefault();
       const f = document.createElement('iframe');
@@ -89,7 +89,7 @@
       yt.replaceWith(f);
       f.focus();
     });
-  }
+  });
 
   const year = $('#year');
   if (year) year.textContent = String(new Date().getFullYear());

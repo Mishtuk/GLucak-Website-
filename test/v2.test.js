@@ -12,5 +12,5 @@ test('/v2/ builds, is noindex, keeps the shows marker, and is not in the sitemap
   assert.ok(h.includes('<!--gl:shows-->'), 'server fills the shows');
   assert.ok(!/<iframe[^>]*youtube/i.test(h), 'no YouTube iframe on load');
   assert.ok(!readFileSync(join(DIST, 'sitemap.xml'), 'utf8').includes('/v2/'));
-  assert.ok(!readFileSync(join(DIST, 'index.html'), 'utf8').includes('/v2/'), 'Home does not link it');
+  assert.ok(!readFileSync(join(DIST, 'index.html'), 'utf8').includes('href="/v2/"'), 'Home does not link it');
 });

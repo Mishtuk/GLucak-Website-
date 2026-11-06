@@ -1,21 +1,31 @@
 ---
 import { existsSync } from 'node:fs';
-import { latestVideo, YOUTUBE } from './content.js';
-// Facade: no YouTube loads until tapped (public/js/app.js swaps in a youtube-nocookie iframe). Without JS it is a link.
-// D64: the picture is the video's own thumbnail saved on our server (tools/fetch-video-thumbs.mjs); no file = the gray box.
+import { videoRow, YOUTUBE } from './content.js';
+// "Watch": the newest upload then up to 2 featured videos (v2 port). Facade: no YouTube loads until tapped (public/js/app.js swaps in a
+// youtube-nocookie iframe). Without JS each is a link. D64: the picture is the video's own thumbnail saved on our server
+// (tools/fetch-video-thumbs.mjs); no file = the gray box. Phones: a still swipe row; from 700px three across.
 const { h1 = false } = Astro.props; // true when the page's top heading is an h1 (/shows/), so this is an h2
 const T = h1 ? 'h2' : 'h3';
-const v = latestVideo();
-const href = v ? `https://www.youtube.com/watch?v=${v.id}` : YOUTUBE;
-const title = v?.title ?? 'GLucak on YouTube';
-const thumb = v && existsSync(`public/media/videos/${v.id}-1280.webp`) && existsSync(`public/media/videos/${v.id}-640.webp`) ? `/media/videos/${v.id}` : null;
+const rows = videoRow(3);
+const items = (rows.length ? rows : [{ title: 'GLucak on YouTube' }]).map((v) => ({
+  id: v.id, title: v.title ?? 'GLucak on YouTube', href: v.id ? `https://www.youtube.com/watch?v=${v.id}` : YOUTUBE,
+  thumb: v.id && existsSync(`public/media/videos/${v.id}-1280.webp`) && existsSync(`public/media/videos/${v.id}-640.webp`) ? `/media/videos/${v.id}` : null,
+}));
 ---
-<div class="video-block" id="shows-video">
-  <T>Latest video</T>
-  <a class="yt" href={href} rel="noopener" data-yt={v?.id} data-title={title}>
-    {thumb && <img class="yt-img" src={`${thumb}-640.webp`} srcset={`${thumb}-640.webp 640w, ${thumb}-1280.webp 1280w`} sizes="(min-width: 900px) 640px, 100vw" width="1280" height="720" loading="lazy" decoding="async" alt="" />}
-    <span class="yt-play" aria-hidden="true"></span>
-    <span class="yt-title">{title}</span>
-  </a>
-  {!v && <p class="ph-chip inline">Placeholder video</p>}
+<div class="video-block v2-videos" id="shows-video">
+  <T>Watch</T>
+  <ul class="v2-vrow">
+    {items.map((v, i) => (
+      <li class="v2-vid">
+        <a href={v.href} rel="noopener" data-yt={v.id} data-title={v.title}>
+          <span class="v2-thumb">
+            {v.thumb && <img class="yt-img" src={`${v.thumb}-640.webp`} srcset={`${v.thumb}-640.webp 640w, ${v.thumb}-1280.webp 1280w`} sizes="(min-width: 900px) 22vw, 82vw" width="1280" height="720" alt="" loading="lazy" decoding="async" />}
+            <span class="yt-play" aria-hidden="true"></span>
+          </span>
+          <span class="v2-vtitle">{i === 0 && rows.length > 0 && <span class="v2-tag">Latest</span>} {v.title}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+  {!rows.length && <p class="ph-chip inline">Placeholder video</p>}
 </div>

@@ -3,6 +3,8 @@ import { etDay } from '../lib/shows.js';
 import era from '../eras/placeholder.json';
 
 export { era };
+// Header look, one place: 'solid' = a solid dark band from the first paint (v2, follows D25); 'scrim' = the gradient scrim over the Home hero until you scroll.
+export const HEADER_STYLE = 'solid';
 // D21/D23: a "From Gabe" quote ships only after Gabe OKs it. Flip this when he does; until then no quote is in the page.
 export const QUOTES_APPROVED = false;
 const QUOTES = {
@@ -63,6 +65,14 @@ export function latestVideo() {
     return { ...v, id };
   }).filter((v) => /^[\w-]{11}$/.test(v.id ?? ''));
   return rows.length ? newest(rows)[0] : null;
+}
+
+/** The Watch row: the newest video, then up to n-1 newest featured ones (unique, valid ids). */
+export function videoRow(n = 3) {
+  const latest = latestVideo();
+  if (!latest) return [];
+  const feat = newest((load('videos') ?? []).filter((v) => v.featured && /^[\w-]{11}$/.test(v.id ?? '') && v.id !== latest.id));
+  return [latest, ...feat.slice(0, n - 1)];
 }
 
 /** Every release for the Music crate (DESIGN 16a): valid rows minus IDENTITY (its own block), newest date first, undated last. `coming` = after the New York day. */

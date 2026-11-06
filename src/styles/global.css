@@ -968,3 +968,101 @@ html[data-motion='off']::view-transition-new(*) { animation: none !important; }
 /* Poster text column (found on the build's real data, at 100% too): a long place word ("Philadelphia,") is wider than
    the 1fr column beside the art at 320 and ran under the picture. It hyphenates (lang="en"), and breaks only if it must. */
 .poster-place, .poster-meta { overflow-wrap: break-word; hyphens: auto; }
+
+/* ======================================================================================================================
+   v2 port (2026-11-06, owner picked v2 item by item; docs/review/v2-compare/README.md). Moved here from v2.css, which /v2/
+   still loads (unlinked, noindex). No new animation, no new colour roles: everything comes from the era tokens.
+   ====================================================================================================================== */
+
+/* (5) Header. HEADER_STYLE in src/components/content.js sets <html data-header>. 'solid' = a solid bg band from the first
+   paint; 'scrim' = the gradient above until you scroll. On phones the hero photo moves down one header height under 'solid',
+   so his face sits between the band and the name. */
+html[data-header='solid'] .site-header { background: var(--bg) !important; border-color: var(--line) !important; }
+@media (max-width: 899px) { html[data-header='solid']:root { --strip: calc(var(--header-h) * 2 + 1.25rem); } }
+@media (min-width: 700px) and (max-width: 899px) { html[data-header='solid']:root { --strip: calc(var(--header-h) * 2 + 11vw); } }
+
+/* (4) Each phrase beside its content from 900px (5 : 7). Phones keep the stacked order. */
+.v2-split { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-m); } /* a fixed track: the swipe row must not widen the page */
+.v2-split > *, .v2-main > * { min-width: 0; }
+.v2-photo { display: block; width: 100%; height: auto; background: var(--bg-2); }
+.v2-wide-only { display: none; }
+.band-push.v2-push { padding-top: var(--space-l); background-image: var(--texture); }
+.v2-main.now-grid { margin-top: 0; }
+
+/* (1) Release card: cover, title, Listen and the player in one panel. Panels allowed (2px corners), no shadow.
+   Phones: the PLAYER comes first (owner pick), so its top stays on the first phone screen; from 900px the cover row leads. */
+.v2-card { display: grid; gap: var(--space-s); padding: var(--space-s); background: var(--bg-2); border-radius: var(--radius-s); align-content: start; }
+@media (max-width: 899px) { .v2-card > .rise-play { order: -1; } }
+.rise-play { display: grid; gap: var(--space-s); }
+.rise-play .under-player { margin-top: 0; }
+.v2-rel { display: grid; grid-template-columns: 36% minmax(0, 1fr); gap: var(--space-m); align-items: end; }
+.v2-cover { width: 100%; height: auto; aspect-ratio: 1; }
+.v2-rel-text { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.35rem; justify-items: start; }
+.v2-rel-text > * { max-width: 100%; overflow-wrap: anywhere; }
+.v2-kicker { color: var(--muted); font-size: var(--step--1); font-weight: 700; line-height: 1.25; }
+.v2-rel h3, .v2-rel h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; text-wrap: balance; overflow-wrap: anywhere; }
+.v2-rel .btn { margin-top: 0.35rem; }
+
+/* Shows: the poster's art is the hero's photo again (Kealey), so on Home it is dropped: one photo per slot. */
+.v2-main .poster-art { display: none; }
+.v2-main .poster { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: 'date' 'place' 'meta' 'btn'; }
+@container (min-width: 37rem) { .v2-main .poster { grid-template-areas: 'date' 'cal' 'place' 'meta' 'btn'; } }
+.v2-main .played { display: none; } /* the server prints Played on every page but '/'; Home never shows it */
+
+/* (2) Video row: latest + 2 featured, real thumbnails, click-to-load facade (app.js). Phones: a still swipe row (scroll-snap,
+   nothing moves by itself, the next card peeks), so no extra height. From 700px: three across. position: relative on the
+   row keeps the new-tab hint (.vh, absolute) inside the scroller. */
+.v2-videos { margin-top: var(--space-l); }
+.v2-vrow { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 82%; gap: var(--space-m); overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; padding-bottom: var(--space-xs); }
+.v2-vid { min-width: 0; scroll-snap-align: start; }
+.v2-vid a { display: grid; gap: 0.4rem; text-decoration: none; }
+.v2-vid iframe.yt { display: block; }
+.v2-thumb { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--bg-2); border: 2px solid var(--line); }
+.v2-thumb .yt-play { top: 50%; width: 56px; height: 56px; }
+.v2-vtitle { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-weight: 700; font-size: var(--step--1); line-height: 1.3; }
+.v2-tag { padding: 0 0.4rem; background: var(--text); color: var(--bg); }
+@media (hover: hover) { .v2-vid a:hover .v2-vtitle { text-decoration: underline; text-underline-offset: 3px; } }
+.v2-vid a:active .v2-thumb { border-color: var(--text); }
+.v2-vid a:active .v2-vtitle { background: var(--text); color: var(--bg); }
+.v2-videos h3, .v2-videos h2 { margin-bottom: var(--space-xs); }
+@media (min-width: 700px) { .v2-vrow { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; } }
+/* /shows/ puts the row in the narrow 5fr column from 72rem: back to the swipe row there. */
+@media (min-width: 72rem) { .shows-grid .v2-vrow { grid-auto-flow: column; grid-auto-columns: 82%; grid-template-columns: none; overflow-x: auto; } }
+
+/* (3) Push Past Fear: a live still beside the bio (phones), then the actions full width. */
+.v2-push-body { display: grid; grid-template-columns: 30% minmax(0, 1fr); grid-template-areas: 'p1 bio' 'act act'; gap: var(--space-m); align-items: start; }
+.v2-belt { grid-area: p1; }
+.v2-slot { grid-area: p2; }
+.v2-bio { grid-area: bio; }
+.v2-push-body .push-actions { grid-area: act; }
+/* An empty, labelled slot where a MAYBE picture (needs Gabe's OK) would go. Never filled with the MAYBE file itself. */
+.v2-slot {
+  place-items: center; padding: var(--space-m); aspect-ratio: 4 / 5;
+  background-color: var(--bg-2); background-image: var(--hatch); border: 2px dashed var(--muted);
+}
+.v2-slot span { padding: 0.2rem 0.5rem; background: var(--bg); font-size: var(--step--1); font-weight: 700; line-height: 1.35; text-align: center; }
+
+/* IDENTITY art beside the countdown. */
+.v2-identity { display: grid; container-type: inline-size; grid-template-columns: 26% minmax(0, 1fr); gap: var(--space-m); align-items: center; }
+.v2-identity > * { min-width: 0; }
+/* Big text: under 20rem the art goes above the countdown (at 200% the IDENTITY word was wider than its 74% column). */
+@container (width < 20rem) { .v2-identity { grid-template-columns: minmax(0, 1fr); } .v2-identity .v2-photo { max-width: 50%; } .v2-identity .identity { overflow-wrap: anywhere; } .v2-identity .btn { max-width: 100%; white-space: normal; text-align: center; } }
+@media (min-width: 900px) { @container (width < 26rem) { .v2-identity { grid-template-columns: minmax(0, 1fr); } .v2-identity .v2-photo { max-width: 50%; } .v2-identity .identity { overflow-wrap: anywhere; } .v2-identity .btn { max-width: 100%; white-space: normal; text-align: center; } } } /* beside a 12rem art the column is tighter */
+
+@media (min-width: 900px) {
+  .band > .wrap.v2-split { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-xl); align-items: start; }
+  .v2-wide-only { display: block; }
+  .v2-slot.v2-wide-only { display: grid; }
+  .v2-side { display: grid; gap: var(--space-l); align-content: start; }
+  .v2-land { aspect-ratio: 874 / 492; }
+  .v2-tall { aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 30%; }
+  .v2-card { padding: var(--space-m); }
+  .v2-rel { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+  .v2-push-body { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: 'bio bio' 'act act' 'p1 p2'; gap: var(--space-l); }
+  .v2-belt { aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 25%; }
+  .v2-identity { grid-template-columns: 12rem minmax(0, 1fr); }
+}
+/* Phones: the Rise panel sits tight under the word so the Spotify top stays on the first screen (<= ~560px at 390). */
+@media (max-width: 899px) { .band-rise .v2-split { gap: 0; } .v2-card { padding-top: var(--space-xs); } }
+/* The row's 48px calendar button pokes 4px below its 60px row at desktop widths; keep "All shows" clear of it. */
+@media (min-width: 900px) { .v2-main .shows + .text-link { margin-top: 4px; } }
