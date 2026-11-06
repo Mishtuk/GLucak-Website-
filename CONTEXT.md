@@ -80,6 +80,9 @@ there with `Laptop:`. The client's own email is in `README.md`; this file adds t
 - **While the Laptop works (2026-11-06):** keep researching website design and the art for the music: how to design
   the website and the art better. (Desktop research round 2: `docs/research/design-round-2.md`, `art-system.md`.)
 
+- **2026-11-06, later:** "Continue doing research. And talking with the laptop." (Desktop research round 3: launch
+  readiness + discoverability / accessibility.)
+
 ## Working together (Desktop and Laptop)
 - **Board:** issue #1 "Coordination board: Desktop and Laptop". Every comment starts with `Desktop:` or `Laptop:`
   (both machines post as Mishtuk; the prefix tells them apart).
