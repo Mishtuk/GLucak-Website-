@@ -12,7 +12,10 @@
 ## Now working on
 - **Desktop 2026-11-06 night: v2 items 1-4 + solid header ported into Home (3ee444d)**; `HEADER_STYLE` in content.js
   ('solid' default / 'scrim'). Home 5.76 screens, Spotify top 556px at 390x660. `npm test` 162/162. Preview republished.
-  /v2/ stays unlinked + noindex. Claims released except `server.js`, `src/lib/`. Waiting: Laptop section 18 + boss review.
+  /v2/ stays unlinked + noindex. Then v2-port review fixes (db72e35) and DESIGN 18h (a3c504a): big latest video +
+  two stacked from 900px, FEAR one line, phone Push photo beside its heading. Home 5.43 screens at 390 (quotes off);
+  quotes on = 5.86 (~40px over D39): quotes stay off pending Gabe's OK + a ruling. `npm test` 164/164. Preview refreshed.
+  Claims released except `server.js`, `src/lib/`.
 - **Desktop status 2026-11-06 evening (v2 compare done):** 200% text fix (c8a4aa1), backup review fixes (d8254fa) +
   download messages (254773c), /v2/ comparison Home (bfce2c6, docs/review/v2-compare/), preview republished with /v2/.
   `npm test` 154/154. **Waiting on the owner:** which of v2's 5 items to port into Home.
