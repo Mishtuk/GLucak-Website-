@@ -154,3 +154,42 @@ Optional field, `/edit/` Shows card, after City. Not shown on the public site; i
 | Error, line break | **Put the address on one line.** | 29 |
 
 Notes for the coder: trim; empty means "not set"; 120 characters max; plain text, no line breaks; escape on output (JSON-LD, `.ics`); never rendered in the page.
+
+---
+
+## 5. Admin: Download a backup (Boss, D65)
+
+`src/pages/edit/index.astro` lines 64-65 (`<!-- COPY: Laptop -->`), under both tabs. For Gabe: plain, no file-format words.
+
+| String | Words | Chars |
+|---|---|---|
+| Link | **Download a backup** (keep) | 17 |
+| Hint | **One file with your shows, products and photos. Keep it somewhere safe. If anything is ever lost, the person who runs the site can put it back from this file.** | 157 |
+
+Why the hint changes: "Saves" reads as if pressing it saves the edits; it doesn't. The new last line says what the file is for
+and who uses it (Gabe never restores; the owner does, from the server), in the same words as "Tell the person who runs the site."
+
+### Messages (new `<p id="backup-msg" class="ed-msg" role="status">` after the hint)
+
+| Situation | Words | Chars |
+|---|---|---|
+| Working | **Making your backup…** | 19 |
+| Done | **Done. Look for it in your downloads.** | 36 |
+| Signed out (401) | **You were signed out. Sign in above, then download again.** | 56 |
+| Too many (429, Server, keep) | **Too many backups. Wait an hour, then try again.** | 47 |
+| Too big (413, Server, new: review F1) | **This backup is too big for one file. Tell the person who runs the site.** | 71 |
+| No connection | **That didn't download. Check your connection and try again.** | 58 |
+| Anything else | **That didn't download. Try again.** | 32 |
+
+### Mechanism (for the coder, `public/js/edit.js`)
+
+Keep the link's `href` and `download` (the fallback). On click: `preventDefault()`, say Working, then
+`fetch('/edit/api/backup', { credentials: 'same-origin' })`.
+- Network error: No connection.
+- 401: `login.hidden = false`, focus `#username`, say Signed out (the same pattern as the upload's 401).
+- Not ok: the server's `message`, else Anything else.
+- Ok: `blob()`, `URL.createObjectURL`, a temporary `<a download>` with the name from `Content-Disposition`
+  (fallback `glucak-backup.json`), `click()`, revoke the URL after a minute (revoking at once breaks some browsers'
+  downloads), say Done.
+- Disable the link (`aria-disabled="true"`) while it works, so a double tap is one download, not two of the ten.
+One request, so it costs one of the ten an hour and covers every failure; no new server route.

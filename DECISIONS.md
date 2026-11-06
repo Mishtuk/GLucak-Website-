@@ -218,3 +218,13 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   stays); (F4) the header brand gets the pressed text swap on its word (`.brand:active .brand-word`), since 16e removed the
   tap highlight; (F5) the address check also refuses C1 controls (`\x80-\x9f`, NEL). **Why:** each is a measured failure
   (overlap, no tap feedback, an unchecked line break); the fixes add no new look or words.
+- **D65** (2026-11-06, Laptop boss, review of the Desktop's backup + restore 9e3a633, `docs/review/backup-review.md`):
+  **Ruling:** approved, no security defect; four fixes before Gabe is told about it: (F1) the backup holds only the photos
+  the products use and a backup over the 50 MB restore cap is refused at download with a message (measured: 160 uploads
+  gave a 52.1 MB file that restore refuses); (F2) a product photo missing from the file but already on disk is fine, and one
+  missing from both is a warning, not a refusal; (F3) no brotli on the download (it held the public site 1.46 s); (F4) a
+  failed download gets a page message: the link fetches the file itself and shows the sign-in card on 401, the server's
+  message on 429 / 413, and plain words otherwise (`docs/copy/round2.md` section 5). Words: link **Download a backup**
+  (kept); hint **One file with your shows, products and photos. Keep it somewhere safe. If anything is ever lost, the
+  person who runs the site can put it back from this file.** **Why:** a backup is only worth something if it restores, and
+  a silent failed download on a phone looks like a success; one fetch covers every failure with no new route.
