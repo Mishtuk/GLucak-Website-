@@ -9,7 +9,7 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
-- **Laptop (2026-11-06, claimed):** round-2 Laptop tasks from `docs/review/round2-verdict.md`: copywriter Now-line words (D45) + 404 + calendar text -> `docs/copy/`; designer Music cover grid, footer/About link grid, Add to calendar, 404 -> `DESIGN.md` + `prototype/`; boss merges the Gabe questions into one list. Done: L4 review (`docs/review/l2-port-review.md`) + round-2 verdict.
+- **Laptop:** nothing claimed (round 2 done: copy 59bb221, design 07f130e, boss review e8331c0). Open for the Laptop: merge all Gabe questions into one list; next round on request.
   **Done 2026-11-06:** copy `docs/copy/round2.md` (D57) and designer DESIGN.md 16 + `prototype/music.html`, `404.html` (D55), boss
   review `docs/review/round2-boss.md` (also approves the Desktop's bf6704b, D59). **Desktop next:** port DESIGN 16h items 1-11 +
   the 3 bf6704b follow-ups in round2-boss.md section 3 (release day before a coming release; "Show Nov 20: ..." Now line, no
