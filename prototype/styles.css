@@ -114,6 +114,8 @@ p { text-wrap: pretty; }
   padding: 0.75rem 1.25rem; background: var(--text); color: var(--bg); font-weight: 700;
 }
 .skip:focus { top: 0.5rem; }
+.skip-inline:not(:focus) { top: auto; left: auto; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.skip-inline:focus { position: static; display: inline-block; margin-bottom: var(--space-s); }
 :focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
 
 /* ---------- Layout ---------- */
