@@ -153,3 +153,17 @@ test('shop: /shop/ has the marker; every page carries the empty Shop markers and
     assert.ok(!h.includes('href="/shop/"'), `${p}: no static Shop link`);
   }
 });
+
+test('D47: no phrase hidden by default (only .fade-wait, added by app.js), print shows all, :active has no transition', () => {
+  const css = [...html('/').matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1]).join('\n');
+  for (const m of css.matchAll(/([^{}]+)\{([^{}]*opacity:\s*0[;}][^{}]*)\}/g)) if (/\.phrase/.test(m[1])) assert.match(m[1], /\.fade-wait/, `hidden phrase needs the JS class: ${m[1]}`);
+  assert.match(css, /@media print\s*\{[^}]*\.fade \.phrase\s*\{[^}]*opacity:\s*1/);
+  for (const sel of ['.btn-solid:active', '.btn-line:active', '.product-card:active', '.sheet a:active', '.phone-bar a:active']) {
+    const rules = [...css.matchAll(/([^{}]*)\{([^{}]*)\}/g)].filter((m) => m[1].includes(sel));
+    assert.ok(rules.length, `${sel} rule`);
+    assert.ok(rules.every((m) => !/transition|animation/.test(m[2])), `${sel} has no transition`);
+  }
+  const app = readFileSync(join(import.meta.dirname, '../public/js/app.js'), 'utf8');
+  assert.ok(app.includes("classList.add('fade-wait')") && app.includes('>= innerHeight'));
+  assert.match(css, /prefers-reduced-motion:\s*no-preference\)\s*\{[^}]*\.fade\.fade-wait/);
+});

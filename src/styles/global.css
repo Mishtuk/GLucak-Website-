@@ -135,6 +135,9 @@ p { text-wrap: pretty; }
 .btn-line { background: color-mix(in srgb, var(--bg) 62%, transparent); color: var(--text); }
 .btn-small { min-height: 48px; padding-inline: 1.1rem; font-size: 1.3rem; }
 .btn-show { background: var(--text); color: var(--bg); min-height: 48px; font-size: 1.25rem; padding-inline: 1rem; }
+/* Instant press feedback, no transition (D47). */
+.btn-solid:active { background: var(--text); border-color: var(--text); color: var(--bg); }
+.btn-line:active, .btn-show:active { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
 @media (hover: hover) {
   .btn-solid:hover { background: var(--text); border-color: var(--text); color: var(--bg); }
   .btn-line:hover { background: var(--text); color: var(--bg); }
@@ -187,6 +190,7 @@ html[data-home][data-motion] .site-header:not(.is-solid):not(:has(details[open])
   display: flex; align-items: center; min-height: 56px;
   font-family: var(--font-display); font-weight: 900; font-size: 2.25rem; text-transform: uppercase; text-decoration: none;
 }
+.sheet a:active { background: var(--accent); color: var(--accent-text); }
 @media (min-width: 900px) {
   :root { --header-h: 72px; }
   .nav-desktop { display: flex; }
@@ -314,9 +318,11 @@ html[data-hero='b'] .slot img { width: 100%; height: 100%; object-fit: cover; ob
 .ln-now2 { font-size: calc(100cqi / var(--w-now2)); margin-top: 0.06em; }
 
 @media (prefers-reduced-motion: no-preference) {
-  html[data-motion='on'] .fade .phrase { opacity: 0; transition: opacity 0.6s ease-out; }
-  html[data-motion='on'] .fade.seen .phrase { opacity: 1; }
+  /* app.js adds .fade-wait, and only to headings below the first screen at load: no JS, no blank phrases (D47). */
+  html[data-motion='on'] .fade.fade-wait .phrase { opacity: 0; transition: opacity 0.6s ease-out; }
+  html[data-motion='on'] .fade.fade-wait.seen .phrase { opacity: 1; }
 }
+@media print { .fade .phrase { opacity: 1 !important; transition: none !important; } }
 
 /* ---------- Rise ---------- */
 .rise-player { margin-top: var(--space-s); }
@@ -577,6 +583,8 @@ iframe.yt { width: 100%; border: 0; }
 /* The whole card is one link to its detail (#product-<id>). No hover animation (section 8): only the name underlines. */
 .product-link { position: relative; display: grid; gap: 0.35rem; align-content: start; height: 100%; text-decoration: none; }
 .product-link:focus-visible { outline-offset: 4px; }
+.product-card:active .product-media { filter: brightness(0.85); }
+.product-card:active .product-name { text-decoration: underline; text-decoration-thickness: 0.06em; text-underline-offset: 0.1em; }
 @media (hover: hover) { .product-link:hover .product-name { text-decoration: underline; text-decoration-thickness: 0.06em; text-underline-offset: 0.1em; } }
 .product-media {
   display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover;

@@ -17,6 +17,7 @@ writeFileSync(join(dir, 'shows.json'), JSON.stringify([
 ]));
 process.env.DIST_DIR = dir;
 process.env.SHOWS_FILE = join(dir, 'shows.json');
+process.env.RELEASES_FILE = join(dir, 'none.json'); // no releases: the show/static lines are tested here, D45 in shows.test.js
 process.env.DATA_DIR = join(dir, 'data'); // no saved list: the shipped file is used
 const { server, clientIp } = await import('../server.js');
 let base;
@@ -89,8 +90,8 @@ test('Now marker: a show within 14 days replaces the release line; none leaves i
   const fs = await import('node:fs');
   fs.writeFileSync(join(dir, 'index.html'), '<p><!--gl:now--><a>Out now: X</a><!--/gl:now--></p>');
   const near = await (await fetch(`${base}/`)).text(); // shows.json has a show in 5 days
-  assert.ok(near.includes('Next show:') && !near.includes('Out now: X'));
+  assert.ok(near.includes('#shows') && near.includes('&lt;script&gt;') && !near.includes('Out now: X'));
   fs.writeFileSync(join(dir, 'shows.json'), JSON.stringify([{ date: d(20), type: 'show', venue: 'V', city: 'C' }]));
   const far = await (await fetch(`${base}/`)).text();
-  assert.ok(far.includes('Out now: X') && !far.includes('Next show:'));
+  assert.ok(far.includes('Out now: X') && !far.includes('#shows'));
 });

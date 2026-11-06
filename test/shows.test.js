@@ -101,15 +101,40 @@ test('empty state: never blank, Played rows if any, no Request button without a 
   assert.ok(showsHtml([row({ venue: 'Old' })], now, { past: true }).includes('Played'));
 });
 
-test('Now line: next show within 14 days, else empty so the release line stays; escaped', () => {
-  const now = noon('2026-12-01');
-  assert.equal(nowHtml([row({ date: '2026-12-04', venue: 'Pub', city: 'Philly' })], now), '<a href="#shows">Next show: Pub, Philly</a>');
-  assert.equal(nowHtml([row({ date: '2026-12-04', type: 'open-mic', venue: 'Cafe', city: 'Horsham' })], now), '<a href="#shows">Next open mic: Cafe, Horsham</a>');
-  assert.equal(nowHtml([row({ date: '2026-12-21' })], now), ''); // 20 days
-  assert.equal(nowHtml([row({ date: '2026-12-15' })], now).startsWith('<a'), true); // day 14 counts
-  assert.equal(nowHtml([row({ date: '2026-11-20' })], now), ''); // past
-  const bad = nowHtml([row({ date: '2026-12-04', venue: '<script>x</script>', city: "' OR 1=1 --" })], now);
-  assert.ok(!bad.includes('<script>') && bad.includes('&lt;script&gt;'));
+const WIA = { title: 'Who I Am', date: '2026-11-13', link: 'https://wingsmusic.lnk.to/WhoIAm' };
+const GO = { title: 'Go', date: '2026-03-20', link: 'https://wingsmusic.lnk.to/370407-Go' };
+const link = (href, text, label, rel = ' rel="noopener"') => `<a href="${href}" aria-label="${label}"${rel}>${text}</a>`;
+const OUT13 = link(WIA.link, 'Out Nov 13: Who I Am', 'Who I Am, out Nov 13. Opens the release link');
+
+test('Now line D45: Nov 6 / 13 / 20 / 21 pick Out Nov 13, Out today, Out now, then a show or the newest release', () => {
+  const rels = [GO, WIA];
+  assert.equal(nowHtml([], noon('2026-11-06'), rels), OUT13);
+  assert.equal(nowHtml([], noon('2026-10-30'), rels), OUT13, '14 days ahead');
+  assert.ok(!nowHtml([], noon('2026-10-29'), rels).includes('Out Nov 13'), '15 days ahead: not yet');
+  assert.equal(nowHtml([], noon('2026-11-13'), rels), link(WIA.link, 'Out today: Who I Am', 'Listen to Who I Am'));
+  assert.equal(nowHtml([], noon('2026-11-20'), rels), link(WIA.link, 'Out now: Who I Am', 'Listen to Who I Am'));
+  const show = row({ date: '2026-11-28', venue: 'The Rail', city: 'Doylestown' });
+  assert.equal(nowHtml([show], noon('2026-11-21'), rels), link('#shows', 'Nov 28: The Rail, Doylestown', 'The Rail, Doylestown, Nov 28. Details', ''));
+  assert.equal(nowHtml([], noon('2026-11-21'), rels), link(WIA.link, 'Out now: Who I Am', 'Listen to Who I Am'), 'newest release');
+  assert.equal(nowHtml([row({ date: '2026-12-21' })], noon('2026-11-21'), [GO]), link(GO.link, 'Out now: Go', 'Listen to Go'), 'show too far: newest');
+  assert.equal(nowHtml([], noon('2026-11-21'), []), '', 'nothing at all');
+});
+
+test('Now line D45: a show on the day says Today; a coming release beats a show; day 14 counts, 15 does not', () => {
+  assert.equal(nowHtml([row({ date: '2026-12-01', venue: 'Pub', city: 'Philly' })], noon('2026-12-01'), []), link('#shows', 'Today: Pub, Philly', 'Pub, Philly, Dec 1. Details', ''));
+  assert.equal(nowHtml([row({ date: '2026-11-08' })], noon('2026-11-06'), [GO, WIA]), OUT13);
+  assert.ok(nowHtml([row({ date: '2026-12-15' })], noon('2026-12-01'), []).includes('#shows'));
+  assert.equal(nowHtml([row({ date: '2026-12-16' })], noon('2026-12-01'), []), '');
+  assert.equal(nowHtml([row({ date: '2026-11-20' })], noon('2026-12-01'), []), ''); // past
+  assert.ok(!nowHtml([], noon('2026-11-06'), [WIA]).includes('Pre-save'));
+});
+
+test('Now line D45: everything escaped, release links http(s) only', () => {
+  const bad = nowHtml([row({ date: '2026-12-04', venue: '<script>x</script>', city: "' OR 1=1 --" })], noon('2026-12-01'), []);
+  assert.ok(!bad.includes('<script>') && bad.includes('&lt;script&gt;') && bad.includes('&#39; OR 1=1 --'));
+  const rel = nowHtml([], noon('2026-11-06'), [{ ...WIA, title: '<img src=x onerror=1>"', link: 'https://x.example/?a="b"&c=<' }]);
+  assert.ok(!rel.includes('<img') && rel.includes('&lt;img') && !rel.includes('"b"'));
+  assert.equal(nowHtml([], noon('2026-11-06'), [{ ...WIA, link: 'javascript:alert(1)' }]), '');
 });
 
 test('poster art: only the poster li has it, rows never', async () => {

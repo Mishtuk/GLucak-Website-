@@ -48,7 +48,11 @@
   const fades = new IntersectionObserver((list) => {
     for (const e of list) if (e.isIntersecting) { e.target.classList.add('seen'); fades.unobserve(e.target); }
   }, { threshold: 0.2 });
-  document.querySelectorAll('.fade').forEach((n) => fades.observe(n));
+  // Only headings below the first screen at load wait (D47): with no JS, a failed script or print, every phrase shows.
+  document.querySelectorAll('.fade').forEach((n) => {
+    if (n.getBoundingClientRect().top >= innerHeight) n.classList.add('fade-wait');
+    fades.observe(n);
+  });
 
   /* ---------- Sign-up: posts to our own server. Without JS the form posts normally. ---------- */
   const form = $('#signup');

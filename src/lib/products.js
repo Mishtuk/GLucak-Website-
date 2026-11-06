@@ -73,7 +73,7 @@ export function checkProducts(list) {
 }
 
 const valid = (rows) => rows.filter((r) => { try { return validateProduct(r); } catch { return false; } });
-const sorted = (rows) => valid(rows).sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
+const sorted = (rows) => valid(rows).sort((a, b) => (a.status === 'sold-out') - (b.status === 'sold-out') || a.order - b.order || a.name.localeCompare(b.name));
 export const price = (cents) => (cents === 0 ? 'Free' : `$${(cents / 100).toFixed(2)}`);
 const buyable = (p) => p.status === 'available' && Boolean(p.link);
 /** The label a fan sees: Buy (a link) only when it's for sale and has the provider's page. */
@@ -111,7 +111,7 @@ const BAG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 12H
  *  something is buyable (D42); `rows` are the products. Off: markers emptied, Watch stays. */
 export function shopLinks(html, { enabled, path, rows = [] }) {
   const cur = path.startsWith('/shop/') ? ' aria-current="page"' : '';
-  const bar = enabled && valid(rows).some((p) => p.status === 'available');
+  const bar = enabled && valid(rows).some(buyable);
   return html
     .replaceAll('<!--gl:nav-shop-->', enabled ? `<a href="/shop/"${cur}>Shop</a>` : '')
     .replace(/<!--gl:watch-->([\s\S]*?)<!--\/gl:watch-->/, (_, watch) => (bar ? `<a href="/shop/"${cur}>${BAG}<span>Shop</span></a>` : watch))

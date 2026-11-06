@@ -19,6 +19,7 @@ const ROOT = import.meta.dirname;
 const env = process.env;
 const DIST = normalize(env.DIST_DIR || join(ROOT, 'dist')); // normalized, so forward slashes on Windows still match
 const SHOWS = env.SHOWS_FILE || join(ROOT, 'src/data/shows.json'); // the shipped list
+const RELEASES = env.RELEASES_FILE || join(ROOT, 'src/data/releases.json');
 const PRODUCTS = env.PRODUCTS_FILE || join(ROOT, 'src/data/products.json'); // the shipped SAMPLE products
 const PORT = Number(env.PORT) || 8080;
 const PROD = env.NODE_ENV === 'production' || Boolean(env.WEBSITE_SITE_NAME); // App Service sets WEBSITE_SITE_NAME
@@ -71,8 +72,10 @@ function inject(html, path) {
   const shows = html.includes('<!--gl:shows-->'), now = html.includes('<!--gl:now-->');
   if (!shows && !now) return html;
   const rows = readShows(DATA, SHOWS);
-  if (now) { // a show within 14 days replaces the static release line between the markers; otherwise the release line stays
-    const line = nowHtml(rows, new Date());
+  if (now) { // D45: the dated line replaces the static one between the markers; '' leaves the static one
+    let rel = [];
+    try { rel = JSON.parse(readFileSync(RELEASES, 'utf8')); } catch { /* no releases file: shows only */ }
+    const line = nowHtml(rows, new Date(), Array.isArray(rel) ? rel : []);
     if (line) html = html.replace(/<!--gl:now-->[\s\S]*?<!--\/gl:now-->/, () => line);
   }
   return shows ? html.replace('<!--gl:shows-->', () => showsHtml(rows, new Date(), path === '/' ? { limit: 3, allLink: '/shows/' } : { past: true })) : html;

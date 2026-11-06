@@ -76,14 +76,34 @@ export function showsHtml(rows, now = new Date(), { limit = Infinity, past = fal
   return out;
 }
 
+const dayDiff = (a, b) => Math.round((Date.parse(a) - Date.parse(b)) / 864e5);
+const link = (href, text, label) => `<a href="${esc(href)}"${label ? ` aria-label="${esc(label)}"` : ''}${href === '#shows' ? '' : ' rel="noopener"'}>${esc(text)}</a>`;
+
 /**
- * The Now line's show variant (DESIGN.md section 7, D18): "Next show: Venue, City" ("Next open mic:" for open mics) linked to #shows when the next upcoming
- * row is within 14 days (New York days), else '' so the static release line stays. Escaped like the list.
+ * The Now line (D45, copy in docs/copy/round2.md), picked per visit by New York day. In order:
+ * A release 1-14 days ahead "Out Nov 13: Title"; B release day "Out today: Title"; C 1-7 days after "Out now: Title";
+ * D next show or open mic within 14 days "Nov 20: Venue, City" ("Today: ..." on the day, linking #shows); E newest release "Out now: Title".
+ * '' if nothing applies (the static release line then stays). Escaped; release links http(s) only; never "Pre-save".
+ * Shows are validated rows; `releases` is the raw releases.json list.
  */
-export function nowHtml(rows, now = new Date()) {
+export function nowHtml(rows, now = new Date(), releases = []) {
+  const today = etDay(now);
+  const rel = releases.filter((r) => r && typeof r.title === 'string' && r.title.trim() && typeof r.date === 'string' && validDate(r.date) && httpUrl(r.link))
+    .map((r) => ({ ...r, d: dayDiff(r.date, today) })).sort((a, b) => a.d - b.d);
+  const out = (r, text, label) => link(r.link, text, label);
+  const a = rel.find((r) => r.d >= 1 && r.d <= 14), b = rel.find((r) => r.d === 0);
+  const c = rel.filter((r) => r.d < 0 && r.d >= -7).pop();
+  const pretty = (d) => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+  const listen = (r, text) => out(r, text, `Listen to ${r.title}`);
+  if (a) return out(a, `Out ${pretty(a.date)}: ${a.title}`, `${a.title}, out ${pretty(a.date)}. Opens the release link`);
+  if (b) return listen(b, `Out today: ${b.title}`);
+  if (c) return listen(c, `Out now: ${c.title}`);
   const ok = rows.filter((r) => { try { return validateShow(r); } catch { return false; } });
   const next = splitShows(ok, now).upcoming[0];
-  if (!next) return '';
-  const days = (Date.parse(next.date) - Date.parse(etDay(now))) / 864e5;
-  return days <= 14 ? `<a href="#shows">${next.type === 'open-mic' ? 'Next open mic' : 'Next show'}: ${place(next)}</a>` : '';
+  if (next && dayDiff(next.date, today) <= 14) {
+    const when = next.date === today ? 'Today' : pretty(next.date);
+    return link('#shows', `${when}: ${next.venue}, ${next.city}`, `${next.venue}, ${next.city}, ${pretty(next.date)}. Details`);
+  }
+  const latest = rel.filter((r) => r.d < 0).pop();
+  return latest ? listen(latest, `Out now: ${latest.title}`) : '';
 }

@@ -223,3 +223,14 @@ test('/edit/ L2: collapsed rows, radio statuses, Stay plain, no innerHTML / XHR 
   assert.ok(js.includes('r.up.disabled = i === 0') && js.includes('r.down.disabled = i === list.length - 1'), 'ends disabled');
   assert.ok(js.includes("btn.setAttribute('aria-disabled', 'true')") && js.includes('if (saving[kind]) return'), 'Save guarded while saving');
 });
+
+test('F2 (D43): Save makes the rows inert and disables Add until the reply; Save waits for a busy upload', async () => {
+  const js = await (await get('/js/edit.js')).text();
+  const fn = js.slice(js.indexOf('async function save(kind)'), js.indexOf('async function send('));
+  const fin = fn.slice(fn.indexOf('finally'));
+  assert.ok(fn.includes('t.list.inert = true') && fn.includes('add.disabled = true'), 'locked while saving');
+  assert.ok(fin.includes('t.list.inert = false') && fin.includes('add.disabled = false'), 'cleared in finally');
+  assert.ok(fn.indexOf('t.list.inert = true') < fn.indexOf('await send('), 'set before the POST');
+  assert.ok(fn.includes("uploads) return say(t.msg, 'Uploading…', 'busy')"), 'upload guard');
+  assert.ok(js.includes('uploads++') && js.includes('finally { uploads--; }'), 'upload counter balanced even on a throw');
+});

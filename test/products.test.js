@@ -110,7 +110,7 @@ test('shopLinks: nav + footer follow enabled; the bar swaps Watch for Shop only 
     + '<nav class="phone-bar"><a href="/shows/">Shows</a><!--gl:watch--><a href="/#shows-video"><span>Watch</span></a><!--/gl:watch--></nav>'
     + '<p class="closing"><a href="/shows/">Shows.</a><!--gl:footer-shop--> <a href="#join">Join.</a></p>';
   const samples = [good({ status: 'sample' }), good({ id: 'b', status: 'coming-soon' }), good({ id: 'c', status: 'sold-out' })];
-  const one = [...samples, good({ id: 'd', status: 'available' })];
+  const one = [...samples, good({ id: 'd', status: 'available', link: 'https://shop.example/d' })];
   const off = shopLinks(page, { enabled: false, path: '/', rows: one });
   assert.ok(!off.includes('/shop/') && off.includes('<span>Watch</span>') && !off.includes('gl:nav-shop'), 'off: nothing, even with an available product');
   const only = shopLinks(page, { enabled: true, path: '/shop/', rows: samples });
@@ -141,4 +141,16 @@ test('L2 markup: status classes + words, tape only for sample / sold-out, card i
   const h = html('coming-soon');
   assert.match(h, /<li class="product-card"[^>]*><a class="product-link" href="#product-glucak-tee"><img class="product-media" src="[^"]+" alt=""/);
   assert.match(h, /<article class="product-detail"[^>]*><img class="product-media" src="[^"]+" alt="Tee &quot;x&quot;"/);
+});
+
+test('F1 (D43): an Available product with no link keeps Watch in the bar; one with a link swaps it', () => {
+  const page = '<nav><!--gl:watch--><a href="/watch/"><span>Watch</span></a><!--/gl:watch--></nav>';
+  assert.ok(shopLinks(page, { enabled: true, path: '/', rows: [good({ link: undefined })] }).includes('<span>Watch</span>'));
+  assert.ok(shopLinks(page, { enabled: true, path: '/', rows: [good({ link: 'https://shop.example/t' })] }).includes('<span>Shop</span>'));
+});
+
+test('D49: sold-out products sort last on /shop/, the rest keep their order', () => {
+  const html = productsHtml([good({ id: 'a', name: 'A', status: 'sold-out', order: 0 }), good({ id: 'b', name: 'B', order: 1 }), good({ id: 'c', name: 'C', order: 2 })]);
+  const ids = [...html.match(/<ul class="shop-grid">[\s\S]*?<\/ul>/)[0].matchAll(/href="#product-(\w+)"/g)].map((m) => m[1]);
+  assert.deepEqual(ids, ['b', 'c', 'a']);
 });
