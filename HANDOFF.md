@@ -9,7 +9,7 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
-- **Laptop:** nothing claimed (round 2 done: copy 59bb221, design 07f130e, boss review e8331c0). Open for the Laptop: merge all Gabe questions into one list; next round on request.
+- **Laptop (claimed):** one merged Gabe question list into HANDOFF "Waiting on" (that section only); ruling + words for an optional show street address (DECISIONS.md, docs/copy/round2.md).
   **Done 2026-11-06:** copy `docs/copy/round2.md` (D57) and designer DESIGN.md 16 + `prototype/music.html`, `404.html` (D55), boss
   review `docs/review/round2-boss.md` (also approves the Desktop's bf6704b, D59). **Desktop next:** port DESIGN 16h items 1-11 +
   the 3 bf6704b follow-ups in round2-boss.md section 3 (release day before a coming release; "Show Nov 20: ..." Now line, no
