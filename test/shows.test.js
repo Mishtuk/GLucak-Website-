@@ -181,3 +181,8 @@ test('edit.js has the address label, hint and placeholder', () => {
   const js = readFileSync(new URL('../public/js/edit.js', import.meta.url), 'utf8');
   for (const t of ['Street address (optional)', 'Helps maps and Google find the place. Not shown on the site; it goes in the calendar file.', '12 Main St']) assert.ok(js.includes(t), t);
 });
+
+test('D63 F5: a C1 control (NEL) in the address is refused like a line break', () => {
+  assert.throws(() => validateShow(row({ address: '12 Main\u0085St' })), /Put the address on one line\./);
+  assert.throws(() => validateShow(row({ address: '12 Main\u009fSt' })), /Put the address on one line\./);
+});

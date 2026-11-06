@@ -733,7 +733,7 @@ html[data-hero='ab'] .slot { display: none; }
 /* Boss fix (D55): columns never narrower than their word, so SoundCloud ends inside its rule (it ran 11px past it at 390). */
 @media (min-width: 380px) { .links { grid-template-columns: repeat(3, minmax(max-content, 1fr)); } }
 @media (min-width: 900px) {
-  .site-footer .links { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+  .site-footer .links { grid-template-columns: repeat(7, minmax(max-content, 1fr)); } /* D63 F1: a cell is at least its word */
   .site-footer .links-wide { grid-column: auto; }
 }
 /* About: the same list, one step bigger (it is the page's content there, not its footer). */
@@ -823,3 +823,7 @@ a, button, summary, label { -webkit-tap-highlight-color: transparent; }
 @media (max-width: 699px) { .rise-player:has(~ .release) .under-link { display: none; } }
 /* About's larger list (not prototyped): three max-content columns at the bigger size overflow a phone (423px at 390), so keep two until 520px. */
 @media (min-width: 380px) and (max-width: 519px) { .links-lg { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* D63 F3: About's big link grid at 320px: SoundCloud ran past its rule. */
+@media (max-width: 379px) { .links-lg a { gap: 0.4rem; } }
+/* D63 F4: the header brand's pressed state (16e removed the tap highlight). */
+.brand:active .brand-word { background: var(--text); color: var(--bg); }

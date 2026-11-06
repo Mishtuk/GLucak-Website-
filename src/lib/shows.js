@@ -21,7 +21,7 @@ export function validateShow(r) {
   if (r.address != null) {
     if (typeof r.address !== 'string') throw new Error('bad address');
     const a = r.address.trim();
-    if (/[\x00-\x1f\x7f\u2028\u2029]/.test(a)) throw new Error(ADDR_LINE);
+    if (/[\x00-\x1f\x7f-\x9f\u2028\u2029]/.test(a)) throw new Error(ADDR_LINE); // C0, DEL, C1 (NEL), LS, PS (D63 F5)
     if (a.length > 120) throw new Error(ADDR_LONG);
   }
   return r;
