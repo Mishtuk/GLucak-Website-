@@ -10,6 +10,9 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
+- **Desktop status 2026-11-06 evening (v2 compare done):** 200% text fix (c8a4aa1), backup review fixes (d8254fa) +
+  download messages (254773c), /v2/ comparison Home (bfce2c6, docs/review/v2-compare/), preview republished with /v2/.
+  `npm test` 154/154. **Waiting on the owner:** which of v2's 5 items to port into Home.
 - **Laptop out of tokens (owner, 2026-11-06 ~16:45).** Desktop is covering its queue WITHOUT touching its claimed
   `prototype/` + `DESIGN.md`: (1) 1.4.4 / 1.4.10 200% text fix built straight in `src/` (Laptop mirrors / restyles in the
   prototype later); (2) home-v2 built as an unlinked, noindex `/v2/` page in the real build (`src/pages/v2/`,
