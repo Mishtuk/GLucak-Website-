@@ -116,7 +116,7 @@ First line is **GLucak live.** for shows and **GLucak at an open mic.** for open
 price, no time claims: only facts that come from the show data.
 
 ### For the boss / Gabe
-- [ASK GABE: do his shows have a start time?] The data has a date only (the Shows copy never mentions times). Until he gives
+- [ASK GABE: do his shows have a start time? Now item 13 in HANDOFF] The data has a date only (the Shows copy never mentions times). Until he gives
   times, the event is all-day on the date. A start time later lets it say "Doors/Start" with no copy change.
 - Link label in the Now line: states A and B link the same smart link. We have not verified what `wingsmusic.lnk.to/WhoIAm`
   offers (a pre-save vs a plain listen page), so the line avoids "Pre-save" and says only "Out Nov 13". The boss should open
@@ -138,3 +138,19 @@ upload ends and never says what to do):
 | **Wait for the photo to finish uploading, then press Save.** | 57 |
 
 When the upload ends, the Save message clears (the photo's own line already says "Uploaded. Press Save to keep it.").
+
+---
+
+## 4. Street address on shows (D61): admin words only
+
+Optional field, `/edit/` Shows card, after City. Not shown on the public site; it goes only into the calendar file and the search-engine markup.
+
+| String | Words | Chars |
+|---|---|---|
+| Label | **Street address (optional)** | 24 |
+| Hint | **Helps maps and Google find the place. Not shown on the site; it goes in the calendar file.** | 91 |
+| Placeholder | **12 Main St** | 12 |
+| Error, too long | **That address is too long. 120 letters at most.** | 47 |
+| Error, line break | **Put the address on one line.** | 29 |
+
+Notes for the coder: trim; empty means "not set"; 120 characters max; plain text, no line breaks; escape on output (JSON-LD, `.ics`); never rendered in the page.

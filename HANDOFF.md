@@ -116,9 +116,40 @@ Later (not before the owner says go): DESIGN.md -> Astro scaffold from Riverside
   the width, no overflow; 2) duotone photo renders; 3) bottom bar sits above the iPhone home indicator; 4) GLUCAK
   doesn't reflow as the font loads; 5) Add to calendar opens the calendar on iPhone and Android. Note Android vs
   iPhone (Safari is the big unknown).
-- For Gabe: "Epilepsy survivor" wording (Instagram adds "Healed by Christ since 2009"); booking email; the current show
-  list with cities (he re-posts schedules often; his 11-05 update wasn't readable); the 10 questions in social-content.md.
-  IDENTITY date is settled: his own post says Aug 13, 2027.
+- **Questions for Gabe (merged 2026-11-06).** 26 questions; **13 block the Jan 11 launch** (marked **[LAUNCH]**). Already
+  answered and dropped: playlist, logos, photos (`assets/from-gabe/`); IDENTITY date (Aug 13, 2027, his own post). Merged
+  from CONTEXT.md, home.md, social-content.md, round2.md, round2-boss.md, shop / admin copy and D49. Paste a group at a time.
+  *Launch blockers (send first)*
+  1. **[LAUNCH]** What email should fans and venues use to book you?
+  2. **[LAUNCH]** What is your current show list? For each: date, venue, city, ticket or details link, and is it a show or an open mic?
+  3. **[LAUNCH]** Is Riverside (Horsham) on Jan 16 confirmed, and is it ticketed or free?
+  4. **[LAUNCH]** Which of your logos did you make, and which did Dave Bahm make? (The credits need it.)
+  5. **[LAUNCH]** Do you already have an email list or newsletter we should move over?
+  6. **[LAUNCH]** Do you want glucak.com (and the long slogan domain too)? The owner will register it in your name.
+  *Music and releases*
+  7. **[LAUNCH]** What are the release date and pre-save link for Welcome Home (December)?
+  8. **[LAUNCH]** Is Scenic Route still out Jan 15, 2027?
+  9. **[LAUNCH]** Your bio says "two albums" but Spotify shows more. Which should the site call albums, and should "Anomaly" and the "You're Not Alone" EP be listed? Is "GLucak" (Deluxe) the Dec 19, 2025 release?
+  10. **[LAUNCH]** Is "feat. Emily Mae" on Go correct, and are the other features credited right?
+  11. Can we show the IDENTITY tracklist you posted Oct 24? If yes, please check the spelling of every title.
+  12. Can we quote the Who I Am and Scenic Route lyric lines on the site?
+  *Shows*
+  13. Do your shows have a start time? (Until then calendar events are all-day.) Can you also give a street address for each venue? (Optional; D61.)
+  14. Is "GLucak at an open mic." fine as the calendar line for open mics?
+  *Words and bio*
+  15. **[LAUNCH]** Keep "Epilepsy survivor" on the home page, only on About, and do you also want "Healed by Christ since 2009"?
+  16. **[LAUNCH]** Do the Duck Dodge, Scenic Route live and Riverside videos have flashing lights or strobes? (We only show safe ones.)
+  17. **[LAUNCH]** The sign-up says "Get the next show and every new song first." Will your list really hear first? If not, we say "right away".
+  18. Can we quote two of your posts word for word, with credit and a link: "God will always be with you, and will never leave you in the valley. Trust me, I know." and "Hope to see you there!"?
+  19. Is the 404 line "That page isn't here. The music is." OK in your voice? (Owner may decide instead.)
+  20. Do you have other live videos, and is Fran Carroll in any of them?
+  21. What is Patreon for, and do you want a short line next to the link?
+  22. Your new bio in January: when can we have it? (A swap after launch; does not hold it.)
+  *Shop (hidden until you say so; none of it blocks launch; held by D49 until real products exist)*
+  23. What will you sell and when should the shop open? (Shirts, hoodies, stickers, CD, vinyl: only real items, with your prices; sizes and ship times when they exist.)
+  24. Will there be an IDENTITY CD or vinyl? Who makes it, and do you pack and post it yourself?
+  25. Do you already sell on Bandcamp or another store? If not, can we set up Fourthwall's free plan in your name?
+  26. Once real merch is in, do you want a short line in your own words on the shop page?
 
 ## Status
 - 2026-11-02 Desktop: **foundation (D16)**: Astro ^7 scaffold, placeholder pages / music / shows / about / privacy,

@@ -199,3 +199,15 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   state must beat a coming release (today B is checked after A); the D57 copy changes; F2's guard message goes stale
   ("Uploading…" stays after the upload ends), so use the D57 string and clear it when the upload ends. **Why:** these are
   real, small defects; none shows with today's data (the next two releases are 63 days apart).
+- **D61** (2026-11-06, Laptop boss, optional street address on shows; Desktop research `discoverability-a11y.md` row 5): **Ruling:**
+  add it. One optional plain-text field `address` per show, filled only in the `/edit/` Shows card. It is **not shown on the
+  site** (rows and the poster stay "{venue}, {city}"); it appears only where a machine or a calendar needs it: JSON-LD
+  `location.address.streetAddress` and the `.ics` `LOCATION` ("{venue}, {address}, {city}", else "{venue}, {city}"). If empty,
+  nothing changes (no guessing, never invented). Validation in `validateShow`: string, trimmed, 1-120 characters when present,
+  no line breaks or control characters (reject, do not strip), empty string stored as absent; no HTML ever goes out raw:
+  JSON-LD through `JSON.stringify` with `<` escaped (as now), `.ics` through the existing text escape (backslash, comma,
+  semicolon, newline), and it is never put in a visible row, so no escaping path is added to the page. Admin words are in
+  `docs/copy/round2.md` section 4. Ask Gabe once for the addresses (HANDOFF question 13); venues without one keep the
+  locality-only markup. **Why:** Google's Event rich result wants a street address and Search Console warns without it; it
+  helps a fan's calendar pin the place. Showing it on the page would add a line to every row for little gain, and the
+  Add to calendar button already carries it to the phone. Optional keeps Gabe's edit screen at its current length.
