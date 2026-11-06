@@ -56,17 +56,18 @@
       <div class="glow" aria-hidden="true"></div>
 
       <section class="hero" aria-label="GLucak">
-        <!-- Hero A photo. Under 700px a portrait crop (his face in the open strip above GLUCAK); wider, the whole frame.
-             The build prints only the chosen hero's image. -->
+        <!-- D34 default (?hero=ab): hero A with treatment (a) under 900px, hero B with (b) riso from 900px. Each <picture>
+             serves a 1x1 data GIF where it is hidden, so exactly one hero photo downloads. Treatments are already graded
+             (class "graded": no duotone on top). ?hero=a / ?hero=b are test switches; app.js swaps their images in. -->
         <div class="hero-photo"><picture>
-          <source media="(max-width: 699px)" srcset="assets/live-kealey-phone-800.webp 800w, assets/live-kealey-phone-1200.webp 1200w" sizes="100vw" width="1200" height="1329">
-          <img class="duo" src="assets/live-kealey-1600.webp" srcset="assets/live-kealey-800.webp 800w, assets/live-kealey-1600.webp 1600w" sizes="100vw" alt="" width="1600" height="1067" fetchpriority="high">
+          <source data-ab media="(min-width: 900px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACw=">
+          <img class="graded" src="assets/a-era-grade-phone-800.webp" alt="" width="800" height="1000" fetchpriority="high">
         </picture></div>
         <div class="wrap hero-inner">
           <h1 class="name" aria-label="GLucak">
-            <!-- Hero B slot: on phones the MCCC video still at or below its native 478px (Gabe fills it); from 900px a crop
-                 around Gabe from the Kealey photo (the full frame leaves him too small for the slot). -->
-            <span class="name-row" aria-hidden="true"><span class="n-g">G</span><span class="slot"><picture><source media="(min-width: 900px)" srcset="assets/live-kealey-gabe-1200.webp 1200w" sizes="37vw"><img class="duo" src="assets/live-mccc-478.webp" alt="" width="478" height="477" fetchpriority="high"></picture></span><span class="n-rest">LUCAK</span></span>
+            <!-- Hero B slot: (b) riso from 900px, screened at 600 and 1000px so the browser picks the file nearest the
+                 ~470px slot (halftones shrunk far below their size moire). Under 900px only ?hero=b shows it (app.js). -->
+            <span class="name-row" aria-hidden="true"><span class="n-g">G</span><span class="slot"><picture><source media="(min-width: 900px)" srcset="assets/b-riso-600.webp 600w, assets/b-riso-1000.webp 1000w" sizes="37vw"><img class="graded" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="" width="1000" height="706" fetchpriority="high"></picture></span><span class="n-rest">LUCAK</span></span>
           </h1>
           <p class="slogan fit"><span class="sl sl-1">Rise, Live It Loud,</span> <span class="sl sl-2">Push Past Fear, The Time Is Now.</span></p>
           <div class="hero-actions">
@@ -149,11 +150,10 @@
 
     <section class="band band-push" id="about" aria-labelledby="h-push">
       <div class="push-head">
-        <!-- Phones: the Paslier video still, never wider than its native 753px. Wider: the Kealey frame, cropped to the
-             crowd's raised hands (hero A already shows Gabe). -->
+        <!-- Treatment (d), the crowd tritone: Gabe, the pallet cross, the crowd as backs of heads only. Already graded. -->
         <picture>
-          <source media="(min-width: 753px)" srcset="assets/live-kealey-800.webp 800w, assets/live-kealey-1600.webp 1600w" sizes="100vw">
-          <img class="duo push-photo" src="assets/live-paslier-753.webp" alt="" width="753" height="420" loading="lazy">
+          <source media="(min-width: 753px)" srcset="assets/d-crowd-800.webp 800w, assets/d-crowd-1600.webp 1600w" sizes="100vw">
+          <img class="graded push-photo" src="assets/d-crowd-phone-800.webp" alt="" width="800" height="371" loading="lazy">
         </picture>
         <div class="wrap push-title">
           <h2 class="spine fade" id="h-push"><span class="tab">About</span> <span class="phrase fit lock-push"><span class="ln ln-push1">Push Past</span> <span class="ln ln-push2">Fear</span></span></h2>
@@ -211,7 +211,7 @@
       </ul>
       <p class="footer-slogan">Rise, Live It Loud, Push Past Fear, The Time Is Now.</p>
       <!-- Credits for the photos on this page, in CREDITS.md wording. Each page lists only what it shows. -->
-      <p class="credits" id="credits">Photo: Alexander Kealey. <span class="credit-b">Video: Montgomery County Community College, MSP program group. </span>Video: Sylvain Paslier.</p>
+      <p class="credits" id="credits">Photo: Alexander Kealey.<span class="credit-b"> Video: Montgomery County Community College, MSP program group.</span></p>
       <div class="footer-row">
         <button class="motion-btn" id="motion" type="button" aria-pressed="true">Motion: on</button>
         <p class="legal">&copy; <span id="year">2026</span> GLucak. <a class="pending" href="#footer" title="Privacy page comes with the build">Privacy</a></p>

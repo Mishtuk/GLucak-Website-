@@ -113,6 +113,11 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   reloading clears your changes; copy only, no merge, no saved draft, no "save mine anyway". **Why:** D36 says samples
   must be obvious and a price reads as real; every message has to be true for Gabe; two editors rarely collide, and
   overwriting the other save is what the version check prevents.
+- **D39** (2026-11-05, Laptop boss): Home height after L1. **Ruling:** the Home cap is 5.8 phone screens at 390x660
+  (amends D27's 5.6), measured by CHECK 4 "without the note", hero `ab`, both quotes in, one poster show. The poster art
+  (c) stays at every width. Any later addition trims the same height first; raising the cap again needs a logged
+  decision. **Why:** the 114px is the poster art the owner approved in D34; it serves main action 2 (shows) on phones,
+  where most fans arrive. Dropping it under 700px still missed the cap (5.63) and removed it where it matters most.
 - **D34** (2026-11-05, Desktop, owner delegated the call): Which hero? **Ruling:** both, by width: **A** (GLUCAK over
   the full photo) on phones and small screens, **B** (G[photo]LUCAK) from 900px up. A uses photo treatment (a) era grade,
   B uses (b) riso (or (f) MCCC still where B's slot is small). **Why:** both boss reviews found A stronger on phones and B

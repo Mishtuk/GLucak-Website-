@@ -43,6 +43,21 @@
     $('#era-line').textContent = label.note;
   }
 
+  /* ---------- Hero test switches. The markup is the D34 default (ab); ?hero=a / ?hero=b put their own images back. ---------- */
+  if (root.dataset.hero === 'a') { // A at every width: from 900px the landscape (a) file instead of the GIF
+    const src = $('.hero-photo source[data-ab]');
+    src.setAttribute('sizes', '100vw');
+    src.setAttribute('width', '1600');
+    src.setAttribute('height', '1067');
+    src.setAttribute('srcset', 'assets/a-era-grade-800.webp 800w, assets/a-era-grade-1600.webp 1600w');
+  }
+  if (root.dataset.hero === 'b') { // B at every width: under 900px the slot gets (f), the MCCC still printed in two inks
+    const img = $('.slot img');
+    img.setAttribute('sizes', '34vw'); // the slot is about 132px square at 390: pick the file nearest it (halftone, no moire)
+    img.setAttribute('srcset', 'assets/f-mccc-240.webp 240w, assets/f-mccc-478.webp 478w');
+    img.setAttribute('src', 'assets/f-mccc-478.webp');
+  }
+
   /* ---------- Shows ---------- */
   const action = (s) => {
     if (!s.link) return null; // no link, no button
@@ -53,8 +68,24 @@
   };
   const place = (s) => `${s.venue}, ${s.city}`;
 
+  // The poster's art: treatment (c), the gig-poster cut (one ink, coarse screen, torn bottom edge). Halftone, so it is
+  // screened at 600 and 1000px and `sizes` matches the slot: about half the width on phones, 23rem when the card is wide.
+  function posterArt() {
+    const pic = el('picture');
+    const img = el('img', 'poster-art graded');
+    img.setAttribute('src', 'assets/c-poster-600.webp');
+    img.setAttribute('srcset', 'assets/c-poster-600.webp 600w, assets/c-poster-1000.webp 1000w');
+    img.setAttribute('sizes', '(min-width: 640px) 23rem, 50vw');
+    img.setAttribute('width', '600');
+    img.setAttribute('height', '750');
+    img.setAttribute('alt', '');
+    img.setAttribute('loading', 'lazy');
+    pic.append(img);
+    return pic;
+  }
   function poster(s) {
     const li = el('li', 'poster');
+    li.append(posterArt());
     const date = el('p', 'poster-date fit');
     date.append(el('span', 'ln ln-date', s.date));
     li.append(date, el('p', 'poster-place', place(s)));

@@ -18,19 +18,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // src: file under assets/from-gabe. out: file under prototype/assets.
 // width/height: output size. crop: source rectangle [x, y, w, h] (default: whole image).
 // pad: fit the crop inside the output with transparent (or `bg`) padding instead of stretching.
+// Live photos are NOT made here any more (privacy, 2026-11-05): the whole Kealey frame and the Paslier still show audience
+// faces. The prototype uses the Desktop's treatments (tools/photo/run.mjs -> docs/review/photo-treatments/, copied as they
+// are into prototype/assets/), whose crops keep only Gabe, the stage and backs of heads. Never add a whole-frame job back.
 const JOBS = [
-  // Live photo, 3:2, whole frame (the page crops with object-position, so one file serves every slot).
-  { src: 'live-alexander-kealey.jpg', out: 'live-kealey-800.webp', width: 800, height: 533, type: 'image/webp', maxKB: 120 },
-  { src: 'live-alexander-kealey.jpg', out: 'live-kealey-1600.webp', width: 1600, height: 1067, type: 'image/webp', maxKB: 300 },
-  // Hero A on phones (under 700px): a portrait crop with his head at the very top, so his face sits in the open strip
-  // above GLUCAK and his body stands behind the name. The full frame would make him 50px tall behind the slogan.
-  { src: 'live-alexander-kealey.jpg', out: 'live-kealey-phone-800.webp', width: 800, height: 886, type: 'image/webp', maxKB: 120, crop: [1050, 1500, 1400, 1550] },
-  { src: 'live-alexander-kealey.jpg', out: 'live-kealey-phone-1200.webp', width: 1200, height: 1329, type: 'image/webp', maxKB: 200, crop: [1050, 1500, 1400, 1550] },
-  // Hero B's slot from 900px: a crop around Gabe (his figure is about 13% of the full frame, too small for the slot).
-  { src: 'live-alexander-kealey.jpg', out: 'live-kealey-gabe-1200.webp', width: 1200, height: 847, type: 'image/webp', maxKB: 150, crop: [950, 1250, 1700, 1200] },
-  // The two video stills: re-encoded at native size only (they are never shown larger than this, CREDITS.md).
-  { src: 'live-mccc-msp.png', out: 'live-mccc-478.webp', width: 478, height: 477, type: 'image/webp', maxKB: 60 },
-  { src: 'live-sylvain-paslier.png', out: 'live-paslier-753.webp', width: 753, height: 420, type: 'image/webp', maxKB: 70 },
   // Logo D (IDENTITY's mark): the whole mark, transparent, scaled only. Header shows it at 30px tall = 94px wide.
   { src: 'logo-d-identity.png', out: 'mark-identity-300.webp', width: 300, height: 96, type: 'image/webp', maxKB: 20, crop: [0, 0, 1554, 495] },
   // Favicon: the cross only, a plain square crop of the original (no redrawing). Wing tips that fall inside the

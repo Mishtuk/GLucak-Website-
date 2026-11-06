@@ -1,8 +1,8 @@
-// One side-by-side image of hero A and hero B for the owner's pick (D14).
-//   node prototype/tools/hero-pick.mjs                     -> prototype/shots/hero-pick.png, laid out from the four
+// One image of the heroes: the live default (D34: A under 900px, B from 900px), then A and B on their own (D14).
+//   node prototype/tools/hero-pick.mjs                     -> prototype/shots/hero-pick.png, laid out from the six
 //                                                            screenshots `node prototype/check.mjs` (or `--shots`) makes
 //   node prototype/tools/hero-pick.mjs --era identity-guess -> prototype/shots/hero-pick-identity-guess.png; takes its own
-//                                                            four screenshots in that era (kept in a temp folder)
+//                                                            six screenshots in that era (kept in a temp folder)
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:http';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -14,7 +14,7 @@ const PROTO = resolve(import.meta.dirname, '..');
 const SHOTS = join(PROTO, 'shots');
 const CHROME = process.env.CHROME || 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const W = 1360, H = 1520;
+const W = 1360, H = 2290;
 const eraArg = process.argv.indexOf('--era');
 const era = eraArg > -1 ? process.argv[eraArg + 1] : null;
 if (era != null && !/^[a-z0-9-]+$/.test(era)) throw new Error('--era takes an era slug, like identity-guess');
@@ -27,7 +27,7 @@ let id = 0; const pending = new Map();
 ws.onmessage = (e) => { const m = JSON.parse(e.data); if (m.id && pending.has(m.id)) { pending.get(m.id)(m.result); pending.delete(m.id); } };
 const send = (method, params = {}, sessionId) => new Promise((res) => { const i = ++id; pending.set(i, res); ws.send(JSON.stringify({ id: i, method, params, sessionId })); });
 
-// With --era: serve prototype/ the same way check.mjs does, and take the four first-screen shots in that era.
+// With --era: serve prototype/ the same way check.mjs does, and take the six first-screen shots in that era.
 let server = null;
 async function eraShots(sessionId) {
   const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.woff2': 'font/woff2' };
@@ -39,7 +39,7 @@ async function eraShots(sessionId) {
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
   const base = `http://127.0.0.1:${server.address().port}/index.html`;
   const ev = async (expression) => (await send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true }, sessionId)).result?.value;
-  for (const k of ['a', 'b']) for (const [w, h, tag] of [[390, 660, '390x660'], [1280, 800, '1280']]) {
+  for (const k of ['ab', 'a', 'b']) for (const [w, h, tag] of [[390, 660, '390x660'], [1280, 800, '1280']]) {
     await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: w < 700 }, sessionId);
     await send('Page.navigate', { url: `${base}?hero=${k}&era=${era}` }, sessionId);
     for (let i = 0; i < 100; i++) { await sleep(50); if ((await ev('document.readyState')) === 'complete') break; }
@@ -70,10 +70,11 @@ try {
   .row{display:flex;gap:24px;align-items:flex-start} figure{margin:0} img{display:block;border:1px solid #111}
   figcaption{font-size:14px;color:#444;margin-top:4px}
 </style>
-<h1>GLucak Home: pick a hero (D14)${era === 'identity-guess' ? ', in the IDENTITY guess colors' : ''}</h1>
-<p>Same page, same photos (Alexander Kealey; hero B's phone slot is the MCCC MSP video still). ${colors}</p>
-${row('a', 'A: GLUCAK over the full photo', 'on phones his face is small and dark at the top; on a laptop it sits between G and L')}
-${row('b', 'B: the photo set into the name, G[photo]LUCAK', 'photo at full strength, no text over it; thumbnail-sized on phones')}`;
+<h1>GLucak Home: the hero (D34)${era === 'identity-guess' ? ', in the IDENTITY guess colors' : ''}</h1>
+<p>Photos are the Desktop's treatments of Alexander Kealey's photo: (a) era grade for A, (b) riso for B (hero B's phone slot, ?hero=b only, is (f), the MCCC MSP still). No audience face is in any crop. ${colors}</p>
+${row('ab', 'Live default (D34, ?hero=ab): A on phones, B from 900px', 'phones: his face in the open strip above the name; 900px and up: the riso set into the name')}
+${row('a', 'A only (?hero=a): GLUCAK over the photo', 'treatment (a); on a laptop the name covers him')}
+${row('b', 'B only (?hero=b): the photo set into the name, G[photo]LUCAK', 'no text over it; thumbnail-sized on phones')}`;
   writeFileSync(join(dir, 'pick.html'), html);
   await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: false }, sessionId);
   await send('Page.navigate', { url: pathToFileURL(join(dir, 'pick.html')).href }, sessionId);

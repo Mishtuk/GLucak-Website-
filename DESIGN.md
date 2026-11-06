@@ -81,8 +81,13 @@ Era colors load as `--bg --text --accent --accent-text --muted`. Everything else
   `prototype/app.js`) and print the filter into the layout. No extra color role needed.
 - **Scrims:** only where small text sits (2026-11-05: the old full-width top band dimmed his face). Hero: a top-right ellipse,
   `bg` at 55% strength, 62% of the width by 130px, behind Menu and the nav (4.5:1); plus the bottom ramp, clear until 42% of
-  the height, `bg` at 80% strength at 70%, solid `bg` at the bottom (Now line). Name and slogan need no scrim: the ceiling keeps
-  them at 3:1 or better. Push Past Fear uses a lighter one. Exact values in `styles.css`.
+  the height, `bg` at 80% strength at 70%, solid `bg` at the bottom (Now line). **Hero A under 900px (2026-11-05, with the lifted
+  (a) photo):** two more layers: a top-left ellipse (`bg` 45%, 40% of the width by 110px) over the brand's spot (it is hidden
+  until the header goes solid, but shows there with no JS), and a light veil from 1.5rem above the strip's end to 2.5rem below
+  it, then `bg` at 30% under name and slogan (the lift puts his white shirt behind the name: 3.07:1 with no veil). His face in the
+  strip stays clear. Push Past Fear uses a lighter one. Exact values in `styles.css` and section 11.
+- **Treatments replace the duotone on photos (D34, section 3b):** the photos are graded in the file (`class="graded"`); the
+  ceiling below still applies to any untreated photo with `.duo`.
 - **Real photos through the duotone (2026-11-05), the ROADMAP risk 9 verdict: no muddiness, keep the derived ceiling and the
   filter as they are.** Tested all three photos against a darker curve (gamma 1.8), a lighter one (gamma 0.7) and two
   contrast stretches. Kealey's photo is not low-light, it is high-key (a bright, blue-lit wall), so his white shirt and the wall
@@ -120,28 +125,50 @@ era (D12 amended by the boss, 2026-11-05: era file field `mark`, section 4), so 
   exception), or set type in chrome to match it.
 - **Credit:** CREDITS.md says the logo is Gabe's or Dave Bahm's. Ask Gabe which, for the About page credits.
 
-### 3b. Photos (Gabe's, 2026-11-05)
-Web copies come from `prototype/tools/resize.mjs` (headless Chrome over DevTools, canvas re-encode to WebP, so EXIF and GPS
-are gone; checked: only the sRGB ICC chunk remains). The originals in `assets/from-gabe/` are never modified or shipped. Every
-photo is a live photo, so every photo goes through the duotone. `alt=""`: they sit behind or beside his name.
+### 3b. Photos (Gabe's; treatments per slot, 2026-11-05, D34)
+**Privacy rule (hard): No identifiable audience member on the site, ever; crops keep only Gabe, the stage and backs of heads
+(privacy, 2026-11-05).** Above all no minors: the child in Kealey's frame sits under the cross (source x 3060-3300, y 2780-3120).
+So the whole Kealey frame and the Paslier still (two fans' faces) are **never used**, in any size, on any page; the prototype's
+`live-kealey-*` and `live-paslier-753` files are deleted and `prototype/tools/resize.mjs` no longer makes them. A new photo gets
+a crop rectangle in the Desktop's `tools/photo/run.mjs` that leaves out every face but Gabe's (or a bandmate's) before it ships.
 
-| File | From | Size | Used for | Crop |
+Every photo is one of the owner-approved **treatments** (`docs/research/photo-art-direction.md`), made by the Desktop's
+`tools/photo/run.mjs` from Gabe's originals (sharp, no metadata, seeded, no AI) into `docs/review/photo-treatments/`, and
+copied as they are. The treatment is the grade, so **no CSS duotone on top**: the `<img>` carries `class="graded"` (`filter:
+none`), not `duo`. The SVG duotone (`.duo`, section 3) stays only for a future untreated live photo; none is on Home. One
+process per slot, so the page isn't a filter sampler. `alt=""`: they sit behind or beside his name. Era swap = one re-run of
+`run.mjs --era` (the files bake in the era colors; the prototype's other two eras still show the placeholder renders).
+
+| Slot | Treatment | Files (served by width) | Crop / CSS | Faces in frame |
 |---|---|---|---|---|
-| `live-kealey-800.webp` / `-1600.webp` | Kealey, whole frame | 33 / 81 KB | Hero A from 700px; Push Past Fear from 753px | A: `object-position: 20% 40%`, his face in the gap between G and L (the gap and the photo both scale with the width, so it holds). Push: `40% 82%`, the crowd's raised hands |
-| `live-kealey-phone-800.webp` / `-1200.webp` | Kealey, portrait crop around him (source x 1050, y 1500, 1400x1550) | 40 / 79 KB | Hero A under 700px | `50% 0%`: his face and mic in the open strip above GLUCAK, his body behind the name. In the full frame he is 13% of the width, about 50px tall behind the slogan |
-| `live-kealey-gabe-1200.webp` | Kealey, landscape crop (x 950, y 1250, 1700x1200) | 42 KB | Hero B's slot from 900px | `44% 20%` |
-| `live-mccc-478.webp` | MCCC MSP video still, native size | 24 KB | Hero B's slot under 900px only | `44% 20%`. Shown at 100x132 CSS px, far below native |
-| `live-paslier-753.webp` | Sylvain Paslier video still, native size | 23 KB | Push Past Fear under 753px only | `46% 30%`. Never wider than its native 753px |
+| **Hero A** (default under 900px, D34; `?hero=a` everywhere) | **(a) era grade** | `a-era-grade-phone-800` (800x1000) under 900px; `a-era-grade-800` / `-1600` (3:2) only for `?hero=a` from 900px | Under 900px pinned by width and lifted so his eyes sit in the open strip above the name (section 5, the exact CSS in section 11) | Gabe; one back of a head at the bottom edge |
+| **Hero B** (default from 900px, D34; `?hero=b` everywhere) | **(b) two-colour riso** | `b-riso-600` / `-1000` (`sizes="37vw"`, the slot is ~470px at 1280, so the 600 file at 0.78x) | `object-fit: cover; object-position: 50% 30%` (same 1.42 aspect as the slot) | Gabe; the same back of a head |
+| Hero B's slot under 900px (`?hero=b` only) | **(f)** MCCC still, two inks on black | `f-mccc-240` / `-478` (`sizes="34vw"`, slot ~132px square at 390) | `44% 20%` | Gabe only (stage) |
+| **Live It Loud poster** (the first booked `show`) | **(c) gig-poster cut**, torn foot | `c-poster-600` / `-1000` (600x750 alpha; `sizes="(min-width: 640px) 23rem, 50vw"`) | Square, `object-position: 50% 63%` (source rows ~95-695: above his head to under the tear), `mix-blend-mode: darken` (section 5) | Gabe; a back of a head as a solid silhouette |
+| **Push Past Fear** (Home and About) | **(d) crowd tritone** | `d-crowd-phone-800` (800x371) under 753px; `d-crowd-800` / `-1600` from 753px | Under 753px `object-position: 8% 50%` (the box is taller than the file, so it loses the sides: keep Gabe, left); from 753px `50% 50%` | Gabe, the pallet cross, backs of heads only (crop stops at source y 2440) |
+| **About, contact strip** (spec, section 6) | **(e) contact strip, B&W** | `e-contact-1600` (1600x339), `-phone-800` (two strips of two). **Must be regenerated first** (below); don't use the current files anywhere | As made, full column width | After the swap: Gabe, the cross, the mic stand or his shirt cross, the kit |
 
-The two video stills are **never shown wider than their native size** and never full-bleed beyond it (CREDITS.md). The Kealey
-original is soft at 100% around Gabe (motion), so the tight crops are the limit. Don't crop tighter than `live-kealey-gabe`.
-Markup: `<picture>` with `media` sources for the crops, `srcset` with `w` descriptors, `width`/`height` set, the hero image
-`fetchpriority="high"`, the rest `loading="lazy"`. **The build prints only the chosen hero's image.** The prototype carries both,
-so it downloads one extra.
+**Halftones (b, c, f) and moire:** each file is screened at its own size; never show one below ~0.6x of its file on a 2x+ screen.
+`sizes` matches the slot, so the browser picks the file nearest it (riso 0.78x at 1280; poster 0.63x on a 2x phone at 390,
+0.95x at 3x, 0.64x at 1280). Never stretch them full-bleed beyond their file.
+
+**Exception to "one color world" (owner-approved treatments, 2026-11-05):** About's contact strip (e) is **black and white**, not
+duotone and not era-graded; only its grease-pencil loop on frame 1 takes the era accent. It reads as the photographer's contact
+sheet, so it stays B&W in every era.
+
+**The video stills are never shown wider than their native size** (CREDITS.md); (f) files are at or below native.
+Markup: `<picture>` with `media` sources, `srcset` with `w` descriptors, `width`/`height` set, the hero image
+`fetchpriority="high"`, the rest `loading="lazy"`. **Hero by width (D34, `HERO = 'ab'`):** both heroes are in the page; each
+`<picture>` serves a 1x1 data GIF (`data:image/gif;base64,R0lGODlhAQABAAAAACw=`, CSP `img-src data:` allows it) at the widths
+where it is hidden, so **exactly one hero photo downloads** (measured, CHECK 2b: 320, 390, 800, 899 fetch only
+`a-era-grade-phone-800`; 900 and 1280 only `b-riso-600`). Hero A's `<img>` fallback is the phone file itself, not the 3:2 one: in
+Chrome's device emulation the preload scanner once fetched the `<img>` fallback (`a-era-grade-1600`) at 320 as well, and with the
+phone file as fallback a slip like that can only fetch the file the phone needs anyway.
 
 **Photo credits** go in the footer of every page, under the slogan, muted 16px, listing only the photos that page shows, in
-CREDITS.md's wording: "Photo: Alexander Kealey." (and "Video: Sylvain Paslier." / "Video: Montgomery County Community College,
-MSP program group." where their stills appear). The About page repeats the full list with the photos.
+CREDITS.md's wording: "Photo: Alexander Kealey." (every treatment above but (f) is his photo) and "Video: Montgomery County
+Community College, MSP program group." only where (f) appears (`?hero=b` under 900px; never in the D34 default). Paslier's
+credit goes with his still, which is no longer used. The About page repeats the full list with the photos.
 - **Grain:** `era.texture` tiled on bands, footer and poster; still, never animated. If `texture` is null, use the site default
   `grain.png` (128px tile, 15 KB).
 
@@ -247,14 +274,18 @@ and the mark never sits on the photo; it shows once the header is solid, and on 
 900px: nav **Music, Shows, About**, then a **Listen** button. Under 900px: **Menu** only; the bar carries Listen. `<details>` sheet
 with focus moved in, Escape and link tap close it. Shop slot: one nav entry, off by a switch.
 
-**0. Hero (A or B, owner picks).** Not full height. Holds, in order:
+**0. Hero: A under 900px, B from 900px (D34; `html[data-hero='ab']`, the default).** Not full height. `?hero=a` / `?hero=b`
+force one layout at every width (prototype test switches; the build's `HERO` constant). Holds, in order:
 - `<h1 aria-label="GLucak">`, letters aria-hidden.
-- **A:** GLUCAK fitted to full width over a full-bleed duotone photo. **B:** G[photo]LUCAK: flex row,
+- **A:** GLUCAK fitted to full width over a full-bleed photo, treatment (a). **B:** G[photo]LUCAK: flex row,
   `--fs: calc(100cqi / (w-name + k + .1))`; slot width `fs × k`, height `fs × 1.56`, standing above the letters. `k` is 1.18 on phones,
-  1.9 from 900px (slot height 1.34). No photo behind B.
-- **Photos (section 3b):** A under 700px uses the portrait crop with his face in the strip above the name, and gets 24px more
-  top padding there (`padding-top: calc(var(--header-h) + 1.75rem)`, A only); from 700px the whole frame. B's slot uses the MCCC
-  still under 900px and the Kealey crop from 900px. Scrim as in section 3.
+  1.9 from 900px (slot height 1.34). No photo behind B. In `ab`, the slot is `display: none` under 900px and `.hero-photo` is
+  `display: none` from 900px.
+- **Photos (section 3b):** A uses (a)'s portrait file under 900px, **his face in the open strip above the name** (tuned
+  2026-11-05; a plain cover crop hid it behind GLUCAK): the strip is `--strip` = header + 1.75rem (88px) on phones, header + 11vw
+  from 700 to 899px; A gets `padding-top: var(--strip)`; the photo is pinned by width and lifted so his eyes land 2.625rem above
+  the strip's end (46px on every phone, 106px at 800). Hair, glasses and eyes show; mouth and mic meet the top of the letters.
+  B's slot uses (b) riso from 900px ((f) under 900px with `?hero=b`). Scrim as in section 3.
 - Slogan, exact text. Phones: two fitted lines, "Rise, Live It Loud," / "Push Past Fear, The Time Is Now." From 900px: one fitted line.
 - **Listen** (solid) and **Shows** (outline), 52px tall. Listen goes to the player, Shows to `#shows`.
 - **Now line:** "Now" tag + one link. See section 7. No ticker: it never moves. Release wording (copy, `docs/copy/home.md`):
@@ -287,14 +318,24 @@ second, 76px. At 320: 163px and 107px. LIVE IT LOUD's quote is not shown when no
 would point at nothing).
 
 **2. LIVE IT LOUD, tab Shows.** One fitted line. Then next shows: **first show as the poster** + up to two rows. Poster: fitted date,
-place, time and `with`, button. Rows: date, place, kind, button or nothing; 60px minimum. Poster rule: the first upcoming row with
+place, time and `with`, button, and **the art, treatment (c)** (2026-11-05): `<picture><img class="poster-art graded" alt=""
+loading="lazy" width="600" height="750"></picture>`, first in the `li`, `picture { display: contents }`. Grid areas: phones (card
+under 37rem) `'date date' 'place art' 'meta art' 'btn art'`, columns `minmax(0, 1fr) 55%`, rows `auto auto auto 1fr`: the date
+across the top as before, the art a square on the right bled to the card's right and bottom edges (`margin: 0 -1rem -1rem 0`,
+`width: calc(100% + 1rem)`, `aspect-ratio: 1`, `align-self: end`), so the torn edge is the poster's foot; Tickets bottom-left.
+Card 37rem and up (container query on `ul.shows`): `'date art' 'place art' 'meta art' 'btn art'`, columns `minmax(0, 1fr) 23rem`,
+art also bled to the top (`margin-top: -1rem`), place aligned to the bottom of its row. Art: `object-fit: cover; object-position:
+50% 63%; mix-blend-mode: darken` (its paper, #f5f5f5, takes the card's paper and grain in every era; only ink and the tear
+show). At 390 the art is 190px and the poster 291px tall (the text-only layout measures 177px, so +114px; a full-width art band cost 360px,
+so it was rejected for phones). **Shows beside the video only from 72rem (1152px)** (was 900px): below that the shows column is
+under 37rem and the art would stack 500px tall. Rows: date, place, kind, button or nothing; 60px minimum. Poster rule: the first upcoming row with
 `type: show` is the poster; if none in the three is a show, all rows, no poster. Then **All shows**, then the From Gabe quote
 (L2, if approved), in the same column. Then **Latest video**, a 16:9
 facade: no YouTube loads until tapped; the iframe uses `youtube-nocookie.com` (allowed by CSP); no JS means a plain link. From
-900px: shows left 7 columns, video right 5.
+1152px: shows left 7 columns, video right 5.
 
-**3. PUSH PAST FEAR, tab About.** Lockup on two fitted lines (FEAR is the biggest word on the phone) over a full-bleed duotone
-photo (the Paslier still under 753px, the Kealey crowd crop wider, section 3b); one line from 900px. Under it, **bio sentence 1
+**3. PUSH PAST FEAR, tab About.** Lockup on two fitted lines (FEAR is the biggest word on the phone) over a full-bleed photo,
+treatment (d), the crowd tritone (section 3b: Gabe, the cross, backs of heads); one line from 900px. Under it, **bio sentence 1
 only, exact** (241 characters: "Despite facing various difficulties ... bring others to Christ."). **D23: his words go on the site
 exact or not at all**, so there is no shortened or stitched second line on Home; the full bio, word for word, is on About. No
 invented testimony; epilepsy appears only because his bio says it, and whether that sentence stays on Home is open for Gabe (D18).
@@ -337,6 +378,30 @@ Same header, footer, bar, tokens and tabs. Each page opens with its one fitted p
   Booking email. Empty state as in section 7.
 - **About** (tab About, PUSH PAST FEAR): full bio word for word (D23: exact or not at all), photos, Patreon, socials, booking
   email, and the photo credits list (every photographer and video source on the site, plus the logo credit once Gabe says whose it is).
+  Not prototyped (Home only); the build follows this:
+  - **Top:** the PUSH PAST FEAR band with treatment (d), exactly as on Home (`PushPhoto`, section 3b).
+  - **The photos: treatment (e), the contact strip (D34),** after the full bio, before Patreon and socials. Full column width
+    (max `--container`), `alt="Four frames from one photo by Alexander Kealey: Gabe singing, the cross of pallets, the mic stand,
+    the drum kit"`, `loading="lazy"`, `class="graded"` (no duotone). From 700px `e-contact-1600` (one strip of four, 1600x339,
+    `sizes="(min-width: 90rem) 90rem, 100vw"`); under 700px `e-contact-phone-800` (two strips of two, 800x674). Frames are about
+    190 CSS px wide on a phone: fine for a contact sheet, so no tap-to-zoom. Static: no hover, no motion.
+  - **The HANDS frame (frame 3) is REPLACED before this ships.** It is an audience close-up (raised hands, right beside the
+    child under the cross), which breaks the privacy rule (section 3b). **The Desktop's `tools/photo/run.mjs` must regenerate
+    `e-contact-1600` and `e-contact-phone-800` with frame 3 swapped:** replace
+    `['HANDS', { left: 1820, top: 2600, width: 1200, height: 800 }]` with
+    `['MIC', { left: 2050, top: 1750, width: 1050, height: 700 }]` (source pixels of `live-alexander-kealey.jpg`, 6000x4000;
+    3:2 like the others): the empty mic stand against the white panel, the pallets to its right, a sliver of Gabe's elbow at the
+    left edge, **no audience** (checked on the original: the nearest back of a head ends at x 1977; the child is at y 2780+). If
+    the owner prefers his shirt cross: `['SHIRT', { left: 1560, top: 1880, width: 450, height: 300 }]` (checked: only his shirt,
+    the cross and his hand; it stops above the back of a head at y 2240), but it is soft (450px of source for a ~380px frame)
+    and repeats frame 1, so MIC is the pick. The edge print keeps
+    "DSC 0832 · PHOTO ALEXANDER KEALEY", the frame label reads MIC. **Don't use the current `e-contact-*` files anywhere**, not
+    in a preview either.
+  - **B&W, the one exception to the era colors (owner-approved treatments, 2026-11-05; section 3b):** the strip is black and
+    white in every era; only the grease-pencil loop on frame 1 takes the era accent. It sits on `bg` with no scrim and no text
+    over it.
+  - Under it, `a-era-grade-clear-1200` (the unprinted (a), no text over it) may follow as the big photo once the Desktop
+    confirms its crop: same frame as hero A, Gabe plus one back of a head, so it passes the rule.
 - **From Gabe on other pages:** the same style and rules as Home (section 5), at most one per band, after the band's main content.
 - **Privacy:** plain text page, footer link only. Covers email sign-up and the Spotify embed.
 - **Hidden shop slot:** one nav entry and a link to the Fourthwall store, off by a switch. No shop page in phase 3.
@@ -397,13 +462,50 @@ output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
 - **Not on this screen** (a reviewed change): era file, fonts, layout.
 
 ## 11. Speed and porting notes for the coder
-- Prototype first load (2026-11-05, uncompressed): HTML 15 KB, CSS 28 KB, JS 10 KB (app 8, boot 1, data 1), fonts 48 KB, grain 15 KB,
-  mark 5 KB, favicon 2 KB = **121 KB before photos**. **Photos, one hero printed (the build):** hero A on a phone 41 KB (1-2x) or
-  79 KB (3x); hero A on a laptop 33 KB (1x) or 81 KB (2x); hero B 24 KB on a phone, 42 KB from 900px. Lazy, below the fold:
-  Push Past Fear 23 KB on a phone, 33/81 KB wider. **So a 3x phone on hero A loads about 200 KB before Spotify; hero B about
-  145 KB.** (The prototype prints both heroes, so it fetches one extra hero image.) One live iframe (Spotify); YouTube behind
-  the facade. Photos are WebP from `tools/resize.mjs` (Chrome's canvas can't encode AVIF; if the build gets an image step, AVIF
-  is an option, not a need: these sizes are already small). Copy the WebP files as they are, or re-run the tool.
+- **Copy into `public/media` (L1):** `c-poster-600`, `f-mccc-240` and `f-mccc-478` (only `c-poster-1000` is there now). Copy the
+  poster block (`.shows` container, `.poster*`, `@container (min-width: 37rem)`) from `prototype/styles.css` word for word;
+  don't rebuild it from the prose in section 5.
+- Prototype first load (2026-11-05, uncompressed): HTML 15 KB, CSS 32 KB, JS 13 KB (app 10, boot 1, data 2), fonts 48 KB, grain 15 KB,
+  mark 5 KB, favicon 2 KB = **130 KB before photos**. **Photos (D34 default, exactly one hero photo per width, the prototype
+  too):** under 900px `a-era-grade-phone-800` 29 KB (one file at every density); from 900px `b-riso-600` 25 KB (1x) or
+  `b-riso-1000` 64 KB (2x). Lazy, below the fold: poster art `c-poster-600` 16 KB / `-1000` 38 KB; Push Past Fear
+  `d-crowd-phone-800` 19 KB on a phone, `d-crowd-800` 12 KB / `-1600` 42 KB wider. **A phone loads about 160 KB before Spotify
+  (was about 200 KB on 3x).** One live iframe (Spotify); YouTube behind the facade. Photos are the Desktop's treatment files
+  (`tools/photo/run.mjs`, sharp, no metadata), copied as they are; `prototype/tools/resize.mjs` now makes only Logo D and icons.
+- **Port of L1 for D4 (2026-11-05), exact values from `prototype/styles.css`:**
+  - Hero A under 900px (replaces the src rule `@media (max-width: 699px) { html[data-hero='a'] .hero-inner, html[data-hero='ab']
+    .hero-inner { padding-top: calc(var(--header-h) + 1.75rem); } }`, which now runs to 899px with a width-scaled strip):
+    ```css
+    @media (max-width: 899px) {
+      :root { --strip: calc(var(--header-h) + 1.75rem); }
+      html:not([data-hero='b']) .hero-inner { padding-top: var(--strip); }
+      .hero-photo img {
+        position: absolute; left: 0; top: 0; height: auto; margin-top: calc(var(--strip) - 2.625rem - 41.875%);
+        -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent); mask-image: linear-gradient(to bottom, #000 78%, transparent);
+      }
+      .hero-photo::after {
+        background:
+          radial-gradient(ellipse 62% 130px at 100% 0, color-mix(in srgb, var(--bg) 55%, transparent), transparent),
+          radial-gradient(ellipse 40% 110px at 0 0, color-mix(in srgb, var(--bg) 45%, transparent), transparent),
+          linear-gradient(to bottom, transparent calc(var(--strip) - 1.5rem), color-mix(in srgb, var(--bg) 30%, transparent) calc(var(--strip) + 2.5rem)),
+          linear-gradient(to bottom, transparent 42%, color-mix(in srgb, var(--bg) 80%, transparent) 70%, var(--bg));
+      }
+    }
+    @media (min-width: 700px) and (max-width: 899px) { :root { --strip: calc(var(--header-h) + 11vw); } }
+    ```
+    The `.hero-photo::after` override must come after the base `::after` rule. `41.875%` = his glasses at y 335 of the 800px-wide
+    file; margin-top % resolves against the width, so it holds at every width. If `run.mjs` re-crops (a)'s phone file, re-measure
+    that one number.
+  - Hero A markup in `ab`: the phone file serves every width under 900px and is the `<img>` fallback itself:
+    `<source media="(min-width: 900px)" srcset="{GIF}"><img class="graded" src="/media/a-era-grade-phone-800.webp" width="800"
+    height="1000" alt="" fetchpriority="high">` (drop the `(max-width: 699px)` source and the 3:2 `srcset` in `ab`; keep them for
+    `HERO = 'a'`, where from 900px the 3:2 file takes `object-position: 50% 30%`).
+  - Push Past Fear: `.push-photo { object-position: 8% 50%; } @media (min-width: 753px) { .push-photo { object-position: 50% 50%; } }`
+    (src has `50% 50%` at every width, which cuts Gabe off the left on phones).
+  - Poster art: section 5, item 2 (markup, grid areas, `.shows { container-type: inline-size }`, `@container (min-width: 37rem)`),
+    `sizes="(min-width: 640px) 23rem, 50vw"`, and the shows/video split moving from 900px to 72rem. `src/lib/shows.js` prints the art
+    in the poster `li` only (rows never get it).
+  - Credits: the MCCC credit only with `HERO = 'b'` under 900px; Paslier's credit goes (his still isn't used).
 - **CSP:** the prototype ran clean under the exact `server.js` CSP. **No inline scripts:** Riverside's `is:inline` scripts in `Header` and
   `MobileBar` won't run under `script-src 'self'`; move them to external files. `boot.js` must load blocking in `<head>`.
 - **`filter: url(#duo)`** needs the SVG in the same document: print it in `Base` layout.
@@ -417,10 +519,11 @@ output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
 ## 12. Measured (2026-11-05, Gabe's real photos; Chrome headless over DevTools, `Emulation.setDeviceMetricsOverride`, so 320 and 390 are true widths)
 | Check | Result |
 |---|---|
-| Player top at 390x660, clear of the bar | A: top 508, bar 598, **90px visible** (was 114; A gave 24px to the strip for his face). B: top 518, **80px visible** (unchanged). Holds with the real Now line "Out now: Duck, Dodge, Jump, Fight (feat. J-BOY)", which wraps to two lines inside its 48px. Box 352px, the real embed |
+| **L1, treatments + hero by width (D34), re-run 2026-11-05 with `?hero=ab` added to every loop** | Player at 390x660: ab / a **90px visible**, b 80 (unchanged). No sideways scroll at 320, 390, 1280 for ab, a, b. **One hero photo per width (CHECK 2b):** 320, 390, 800, 899 fetch only `a-era-grade-phone-800`; 900 and 1280 only `b-riso-600`. **His face in the strip (A):** eyes at y 46 on phones (name starts at 88; hair top -4 at 390, chin 102), y 106 at 800 (name at 148). **Text over (a), lifted, with the phone veil:** at 390: name **4.65**, slogan **6.18**, brand 3.93 (need 3); Menu **6.82**, Now **14.18** (need 4.5). Second era 4.60 / 5.93 / 3.90 / 6.69 / 11.80; IDENTITY guess 4.76 / 6.43 / 3.95 / 6.94 / 13.86. At 320: 4.72 / 6.02 / 3.94 / 6.35 / 14.29 (second era 4.65 / 5.86, guess 4.83 / 5.81, Menu 6.26-6.48, Now 11.82-14.29). At 800x1024: 3.97 / 8.65 / 4.26 / 7.80 / 13.50. Without the veil the name was 3.07. PUSH PAST FEAR over (d): **5.39:1**. Tap targets 36, none under 48px (Tickets beside the art included). Solid pairs unchanged (lowest 5.33, IDENTITY guess). Reduced motion: no animations. Flash: 86 / 87 / 94 frames, largest change 0.0001. CSP and errors: none; opens from disk. **Home height at 390x660: ab 3938px = 5.80 screens without the note** (was 5.61): the poster art adds 114px (poster 177 to 291px). Cap 5.8 (D39) |
+| Player top at 390x660, clear of the bar (before L1) | A: top 508, bar 598, **90px visible** (was 114; A gave 24px to the strip for his face). B: top 518, **80px visible** (unchanged). Holds with the real Now line "Out now: Duck, Dodge, Jump, Fight (feat. J-BOY)", which wraps to two lines inside its 48px. Box 352px, the real embed |
 | Slogan and GLUCAK, no horizontal scroll | scrollWidth equals viewport at 320, 390, 1280 on both heroes. Slogan is two forced lines at 320: 41px and 21.6px |
 | D6 labels at 390 | 17px, weight 700, 17.3:1, exact nav word. All four tabs show (About was clipped by `.push-head` before; fixed) |
-| Text over the **real** photos, from pixels (99.5th percentile background, text hidden) | A: name **5.39:1**, slogan **6.19:1** (need 3), Menu **10.84:1**, Now **13.63:1** (need 4.5; the real two-line Now line). B: name 16.85, slogan 15.90, Menu 17.32, Now 14.06. A on the second era: name 5.34, slogan 5.95, Menu 10.35, Now 11.37. PUSH PAST FEAR heading over the Paslier still: 7.68:1 |
+| Text over the **real** photos, from pixels (99.5th percentile background, text hidden) (before L1) | A: name **5.39:1**, slogan **6.19:1** (need 3), Menu **10.84:1**, Now **13.63:1** (need 4.5; the real two-line Now line). B: name 16.85, slogan 15.90, Menu 17.32, Now 14.06. A on the second era: name 5.34, slogan 5.95, Menu 10.35, Now 11.37. PUSH PAST FEAR heading over the Paslier still: 7.68:1 |
 | Tap targets, text size | 36 targets, none under 48px (Spotify button 48px, both quote credits 48px). Smallest text 16px. No sideways scroll at 320, 390, 1280 with the long title and quotes |
 | Solid pairs, both eras | Lowest 5.71:1 |
 | **IDENTITY guess era** (`?era=identity-guess`, section 3c; **a guess, not Gabe's colors**) | Text over the real photo, hero A at 390x660: name **5.33:1**, slogan **6.10**, brand 6.23 (need 3); Menu **10.53**, Now **13.43** (need 4.5). Solid pairs (CHECK 3e): lowest solid button (Listen) 5.33, Tickets on poster 5.33, muted on footer 8.49. Tabs and Now tag 17.24. Logo D wings on bg 5.48:1, on bg-2 5.19:1. Duotone peak `#9359e7`, 4.01:1 against text. All other checks unchanged (same layout). Sheet: `prototype/shots/hero-pick-identity-guess.png` (`node prototype/tools/hero-pick.mjs --era identity-guess`) |
@@ -429,10 +532,21 @@ output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
 | Flash | **By construction:** the only loop is one 24s opacity and transform drift (opacity .68 to .88), so it cannot reach 3 flashes a second. Supporting sample only, too slow to detect a 3 Hz flash on its own: 87 and 95 frames over 26s, largest change in mean luminance 0.0001 against WCAG's 0.10, on both heroes with the real photos. Most moving things on screen at once, brisk scroll: 1 |
 | CSP and errors | None under the real CSP (WebP served as `image/webp`). Also opens from disk |
 | Real Spotify embed (CHECK 1b) | Loads logged out under the real CSP at 390 and 1280, no errors, 137 and 107 colors painted. Spotify's "Preview" badge shows (30-second previews). Title marquee stops under the device reduce-motion setting |
-| Photo files | No EXIF or GPS in any WebP (chunks: VP8X, ICCP, VP8 only). 800 = 33 KB (budget 120), 1600 = 81 KB (budget 300) |
+| Photo files | The treatment files carry no EXIF, ICC or XMP (sharp writes none; `photo-art-direction.md`). Rows above marked "before L1" were measured on the old whole-frame and Paslier files, now deleted |
+| **Faces, slot by slot (2026-11-05, every image the prototype uses, at 390 and 1280 in placeholder, placeholder-b and identity-guess; the files are the same in every era, only the page colors change)** | Hero A (a) phone file: Gabe, one back of a head at the bottom (masked into bg). Hero A (a) 3:2, `?hero=a` from 900px: Gabe, the same back of a head. Hero B (b) riso: Gabe, the same back of a head as a dot silhouette. (f) MCCC, `?hero=b` phones: Gabe on stage only. Poster (c): Gabe, the back of a head as a solid ink shape. Push Past Fear (d), all three sizes: Gabe, the pallet cross, three backs of heads, no profile. Spotify embed cover: Gabe only. **No identifiable audience face anywhere.** Not on the page: (e) contact strip (its HANDS frame fails; regenerate first, section 6) |
 
 ## 13. Not verified
-- **The hero pick.** Both heroes run on the real photo; the owner picks from `prototype/shots/hero-pick.png` (D14).
+- **The hero is decided (D34):** A under 900px, B from 900px; `prototype/shots/hero-pick.png` and `-identity-guess.png` now show the
+  live default first, then A and B alone.
+- **The treatments in other eras.** The files are the placeholder era's renders; `?era=placeholder-b` and `?era=identity-guess`
+  show them unchanged (the riso stays red-orange on the violet page, (d) stays red). Real look per era needs `run.mjs --era` on
+  Gabe's era file. Contrast over (a) was measured in all three eras, but on the same pixels.
+- **The (e) contact strip** is spec only, and its files must be regenerated with the MIC frame (section 6) before anyone looks at
+  it on a page.
+- **Halftone moire on 1x screens.** On a 1x phone-sized window the poster art shows at 0.32x of its 600 file (190px); real phones
+  are 2x+ (0.63x at 2x, 0.95x at 3x), and 320px 2x phones get 0.51x. A 400px poster file from `run.mjs` would cover those.
+- **Hero A at 700-899px** uses the 800px phone file, so a 2x tablet (iPad portrait) upsamples it about 2x: soft. A
+  `a-era-grade-phone-1600` from `run.mjs` (same crop) would fix it; add it as `1600w` in a `srcset` on the `<img>` fallback.
 - **The duotone on IDENTITY's real colors.** All photo tests ran on the placeholder era (and the second one). The ceiling holds by
   construction in any era, but how dark the photos look depends on the real accent. **Partly tried on the IDENTITY guess era**
   (section 3c, blue-violet from the smart-link art): it passes, but it flattens hero A. Re-run on Gabe's real colors.
@@ -444,7 +558,9 @@ output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
   never ships). Real wrap measured (section 5): R1, 86 characters, 3 lines plus credit at 390 (132px), 4 at 320 (163px); L2, 22
   characters, 2 lines with the credit inline at 390 (76px). Credits "GLucak, Instagram, Sep 2026" and "GLucak, YouTube, Sep 2026"
   link to the posts. Not checked in Safari (the floated tag and inline credit).
-- **Safari and the Instagram in-app browser were not tested.** Only Chrome ran. Check `filter: url()`, `cqi`, `text-box`, `color-mix` and the safe areas on a real iPhone.
+- **Safari and the Instagram in-app browser were not tested.** Only Chrome ran. Check `filter: url()`, `cqi`, `text-box`, `color-mix`,
+  `mask-image` (hero A's fade; `-webkit-` prefixed too), `mix-blend-mode: darken` (poster art), container queries and the safe
+  areas on a real iPhone.
 - The Spotify embed ran only in headless Chrome, logged out. Logged-in playback, Safari, and Instagram's in-app browser (previews? does
   the playlist link open the app?) are part of the real-phone test.
 - No PEAT run. The flash result rests on the code having one 24s loop, not on the 3.4 fps sample.

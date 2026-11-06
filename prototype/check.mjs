@@ -127,7 +127,7 @@ try {
     console.log(out);
   } else {
     const shotsOnly = mode === '--shots';
-    for (const [name, q] of [['hero-a', '?hero=a'], ['hero-b', '?hero=b']]) {
+    for (const [name, q] of [['hero-ab', '?hero=ab'], ['hero-a', '?hero=a'], ['hero-b', '?hero=b']]) {
       await load(BASE + q, 390, 844); await firstScreen(`${name}-390-first.png`); await fullShot(`${name}-390-full.png`);
       await load(BASE + q, 1280, 800); await firstScreen(`${name}-1280-first.png`); await fullShot(`${name}-1280-full.png`);
     }
@@ -135,11 +135,11 @@ try {
     await load(BASE + '?shows=none', 390, 844); await evaluate(`document.querySelector('#shows').scrollIntoView();document.querySelectorAll('.fade').forEach(n=>n.classList.add('seen'))`); await sleep(800); await firstScreen('empty-shows-390.png');
     await load(BASE, 390, 844); await evaluate(`document.querySelector('.nav-mobile').open=true`); await sleep(100); await firstScreen('menu-open-390.png');
     await load(BASE + '?era=placeholder-b', 390, 844); await firstScreen('era-swap-390-first.png');
-    for (const q of ['?hero=a', '?hero=b']) { await load(BASE + q, 390, 660); await firstScreen(`${q.slice(1).replace('=', '-')}-390x660-first.png`); }
+    for (const q of ['?hero=ab', '?hero=a', '?hero=b']) { await load(BASE + q, 390, 660); await firstScreen(`${q.slice(1).replace('=', '-')}-390x660-first.png`); }
 
     if (!shotsOnly) {
       line('CHECK 1: player top on the first phone screen (390x660), clear of the bar');
-      for (const q of ['?hero=a', '?hero=b']) {
+      for (const q of ['?hero=ab', '?hero=a', '?hero=b']) {
         await load(BASE + q, 390, 660);
         const r = await evaluate(`(()=>{const p=document.querySelector('.player').getBoundingClientRect(),b=document.querySelector('.phone-bar').getBoundingClientRect();return {top:p.top,bar:b.top,h:p.height}})()`);
         line(`  ${q}: player top ${r.top.toFixed(0)}px, bar top ${r.bar.toFixed(0)}px, ${(r.bar - r.top).toFixed(0)}px of player visible, player height ${r.h}px`);
@@ -163,7 +163,7 @@ try {
       }
 
       line('CHECK 2: slogan wrap and no horizontal scroll');
-      for (const w of [320, 390, 1280]) for (const q of ['?hero=a', '?hero=b']) {
+      for (const w of [320, 390, 1280]) for (const q of ['?hero=ab', '?hero=a', '?hero=b']) {
         await load(BASE + q, w, 660);
         const r = await evaluate(`(()=>{const de=document.documentElement,box=document.querySelector('.hero-inner').getBoundingClientRect();
           const name=document.querySelector('.name-row'),nr=[...name.children].filter(c=>getComputedStyle(c).display!=='none').map(c=>c.getBoundingClientRect());
@@ -173,6 +173,15 @@ try {
         line(`  ${w}px ${q}: scrollWidth ${r.scrollW}/${r.inner}, GLUCAK x ${r.nameL} to ${r.nameR}, slogan ${r.lines.map((l) => `${l.w}px wide at ${l.fs}px`).join(' + ')}${r.over.length ? ', OVERFLOW: ' + r.over.join(' ') : ''}`);
       }
 
+      line('CHECK 2b: D34 default (?hero=ab) downloads exactly one hero photo; his face sits in the open strip above the name (A)');
+      for (const [w, h] of [[320, 660], [390, 660], [800, 1024], [899, 1024], [900, 800], [1280, 800]]) {
+        await load(BASE, w, h);
+        const r = await evaluate(`(()=>{const got=performance.getEntriesByType('resource').map(e=>e.name.split('/').pop()).filter(n=>/^(a-era-grade|b-riso|f-mccc)/.test(n));
+          const ph=document.querySelector('.hero-photo'),img=ph.querySelector('img'),shown=getComputedStyle(ph).display!=='none';const i=img.getBoundingClientRect(),n=document.querySelector('.name-row').getBoundingClientRect();
+          return {got:[...new Set(got)],shown,eyes:shown?Math.round(i.top+i.width*335/800):null,strip:Math.round(n.top)}})()`);
+        line(`  ${w}x${h}: hero photos downloaded: ${r.got.join(', ') || 'none'} (${r.got.length === 1 ? 'one' : 'NOT ONE'})${r.shown ? `; A: his eyes at y ${r.eyes}, name starts at y ${r.strip} (${r.eyes < r.strip - 20 ? 'face in the strip' : 'FACE BEHIND THE NAME'})` : '; B'}`);
+      }
+
       line('CHECK 3: D6 labels at 390');
       await load(BASE, 390, 660);
       const labels = await evaluate(`[...document.querySelectorAll('.tab')].map(t=>{const c=getComputedStyle(t),h=t.closest('.spine').querySelector('.phrase'),b=t.getBoundingClientRect();return {t:t.textContent,size:c.fontSize,weight:c.fontWeight,fg:c.color,bg:c.backgroundColor,h:b.height,phrase:h.textContent.replace(/\\s+/g,' ').trim(),phraseSize:getComputedStyle(h.querySelector('.ln')||h).fontSize}})`);
@@ -180,9 +189,10 @@ try {
       for (const l of labels) { const f = parse(l.fg), b = parse(l.bg); line(`  ${l.t}: ${l.size} weight ${l.weight}, ${ratio(lum(...f), lum(...b)).toFixed(1)}:1, tab ${l.h}px tall, above "${l.phrase}" at ${parseFloat(l.phraseSize).toFixed(0)}px; nav word ${await evaluate(`[...document.querySelectorAll('.sheet a')].some(a=>a.textContent===${JSON.stringify(l.t)})||[...document.querySelectorAll('.phone-bar span')].some(a=>a.textContent===${JSON.stringify(l.t)})`) ? 'matches' : 'NOT in nav'}`); }
 
       line('CHECK 3b: text over photos, measured from pixels with the text hidden (99.5th percentile background)');
-      for (const q of ['?hero=a', '?hero=b', '?hero=a&era=placeholder-b', '?hero=a&era=identity-guess']) {
-        line('  ' + q);
-        await load(BASE + q, 390, 660);
+      for (const [q, w = 390, h = 660] of [['?hero=a'], ['?hero=b'], ['?hero=a&era=placeholder-b'], ['?hero=a&era=identity-guess'],
+        ['?hero=ab'], ['?hero=ab&era=placeholder-b'], ['?hero=ab&era=identity-guess'], ['?hero=ab', 320], ['?hero=ab&era=placeholder-b', 320], ['?hero=ab&era=identity-guess', 320], ['?hero=ab', 800, 1024]]) {
+        line(`  ${q}${w !== 390 ? ` at ${w}x${h}` : ''}`);
+        await load(BASE + q, w, h);
         const rects = await evaluate(`(()=>{const out={};for(const [k,s] of [['brand','.brand'],['menu','.nav-mobile summary'],['name','.name-row'],['slogan','.slogan'],['now','.now a']]){const b=document.querySelector(s).getBoundingClientRect();out[k]={x:b.x,y:b.y,w:b.width,h:b.height}}return out})()`);
         await evaluate(`(()=>{const s=document.createElement('style');s.id='hide';s.textContent='.brand,.nav-mobile summary,.name-row,.slogan,.now a{visibility:hidden}';document.head.append(s)})()`);
         const png = readPng(await shot());
@@ -195,7 +205,7 @@ try {
       { const png = readPng(await shot()); const tl = await evaluate(`getComputedStyle(document.body).color.match(/\\d+/g).map(Number)`); line(`  PUSH PAST FEAR heading: ${ratio(lum(...tl), brightest(png, pr)).toFixed(2)}:1 (need 3:1)`); }
 
       line('CHECK 3c: tap targets at 390 (every link, button and field)');
-      for (const q of ['?hero=a', '?shows=none']) {
+      for (const q of ['?hero=ab', '?hero=a', '?shows=none']) {
         await load(BASE + q, 390, 660);
         const small = await evaluate(`[...document.querySelectorAll('a,button,input,summary')].filter(e=>e.offsetParent!==null||getComputedStyle(e).position==='fixed').filter(e=>!e.closest('.skip')&&!e.classList.contains('skip')&&!e.closest('.sheet')).map(e=>{const b=e.getBoundingClientRect();return {t:e.textContent.trim().slice(0,18)||e.placeholder,h:Math.round(b.height),w:Math.round(b.width)}})`);
         const bad = small.filter((s) => s.h < 48 || s.w < 48);
@@ -216,7 +226,7 @@ try {
       }
 
       line('CHECK 4: Home height in phone screens at 390x660');
-      for (const q of ['?hero=a', '?hero=b', '?shows=none']) {
+      for (const q of ['?hero=ab', '?hero=a', '?hero=b', '?shows=none']) {
         await load(BASE + q, 390, 660);
         const h = await evaluate(`(()=>{const s=['.top','#shows','#about','#join','.site-footer'].map(x=>Math.round(document.querySelector(x).getBoundingClientRect().height));return {total:document.documentElement.scrollHeight,s,note:document.querySelector('.ph-note').getBoundingClientRect().height+16}})()`);
         line(`  ${q}: ${h.total}px = ${(h.total / 660).toFixed(2)} screens, ${((h.total - h.note) / 660).toFixed(2)} without the prototype-only note (top ${h.s[0]}, shows ${h.s[1]}, about ${h.s[2]}, join ${h.s[3]}, footer ${h.s[4]})`);
@@ -234,7 +244,7 @@ try {
       await evaluate(`document.querySelector('#motion').click(); localStorage.clear()`);
 
       line('CHECK 6: flash');
-      for (const [label, q] of [['hero a', '?hero=a'], ['hero b', '?hero=b']]) {
+      for (const [label, q] of [['hero ab', '?hero=ab'], ['hero a', '?hero=a'], ['hero b', '?hero=b']]) {
         await load(BASE + q, 390, 660);
         const frames = []; const t0 = Date.now();
         while (Date.now() - t0 < 26000) { frames.push({ t: Date.now() - t0, l: meanLum(readPng(await shot())) }); await sleep(120); }
