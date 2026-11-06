@@ -17,5 +17,6 @@ Rules:
 - Embeds (Spotify, YouTube) go in iframes allowed by a strict CSP `frame-src`; load them lazily.
 - No flashing over 3 times a second; every animation off under `prefers-reduced-motion` (hard rule, see CONTEXT.md).
 - Logic with branches (past shows hiding, release-era theme, form validation) gets a small test.
-- Claim files in HANDOFF.md "Now working on" before editing; `git pull --rebase` before every push; post every push
+- Commit as Alex Mishtuk with no Claude / AI attribution line (owner rule). Claim files in HANDOFF.md "Now working on"
+  before editing; `git pull --rebase` before every push; post every push
   on the board (`node tools/board.mjs say "Desktop: pushed <hash>: ..."`).

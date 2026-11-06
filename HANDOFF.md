@@ -4,7 +4,8 @@
 (`node tools/board.mjs read 10`) -> `DECISIONS.md`. Client email: `README.md`.
 
 - Repo: https://github.com/Mishtuk/GLucak-Website- (local `V:\GLucakWebsite` on the Desktop)
-- Commits authored as `Mish <113945444+Mishtuk@users.noreply.github.com>`.
+- Commits authored as `Alex Mishtuk <113945444+Mishtuk@users.noreply.github.com>`, **no Claude / AI attribution line**
+  (owner, 2026-11-06). Set it once per clone: `git config user.name "Alex Mishtuk"`.
 - Team agents: `.claude/agents/` (boss, designer, coder, mediator, researcher, copywriter). Research: `docs/research/`.
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 

@@ -19,7 +19,9 @@ there with `Laptop:`. The client's own email is in `README.md`; this file adds t
 - **Launch window:** December 2026 to February 2027, as promo for IDENTITY ramps up.
 
 ## Owner's instructions (2026-11-02)
-- Repo: `Mishtuk/GLucak-Website-` (local `V:\GLucakWebsite`). Commits authored as `Mish`.
+- Repo: `Mishtuk/GLucak-Website-` (local `V:\GLucakWebsite`). **Commits authored as `Alex Mishtuk
+  <113945444+Mishtuk@users.noreply.github.com>`, with NO Claude / AI attribution (no Co-Authored-By line)** (owner,
+  2026-11-06: "Don't put in GitHub as Claude. Put everything as Alex Mishtuk.").
 - `HANDOFF.md` is always current with the latest context so no session runs out of context mid-task. Update it
   after every milestone, not only at the end. Sessions can end without warning.
 - `CONTEXT.md` (this file) carries everything the owner says, so the Laptop can catch up by reading it. Add new
