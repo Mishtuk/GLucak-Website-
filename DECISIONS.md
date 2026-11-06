@@ -136,3 +136,7 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   admin console and render per visit, like shows. The store stays hidden from the nav behind `SHOP_ENABLED` until the
   owner switches it on. **Why:** owner, 2026-11-05: "continue working on the website with the store aspect. Make a
   temporary store with some templates and work on the admin console."
+- **D42** (2026-11-06, Desktop, Laptop's idea): When does Shop take Watch's place in the phone bar (D8)? **Ruling:**
+  only when `SHOP_ENABLED=1` AND at least one product is `available`. The nav and footer Shop links follow
+  `SHOP_ENABLED` alone. **Why:** samples can't be bought, so a bar slot fans tap most should never lead to nothing
+  buyable; the nav link is fine for the owner's preview.

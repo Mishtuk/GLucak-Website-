@@ -60,6 +60,8 @@
   `docs/review/photo-treatments/` DONE (018f486, sheet.png). Picks: hero A (a) era grade, hero B (b) riso / (f) MCCC,
   Live It Loud (c) poster, Push Past Fear (d) crowd, About (e) contact strip (swap its HANDS frame). **Privacy:** the
   child in the crowd is in frame on the current hero A + likely Push Past Fear; (a) and (d) leave him out: swap soon.
+- **Desktop (2026-11-06): porting L2** (DESIGN.md sections 14 / 15, D41, D42) with a coder agent. Claimed: `src/`,
+  `server.js`, `public/`, `tools/make-shop-samples.mjs`, `test/`.
 - **Desktop research round 2 (owner 2026-11-06):** web design + music art, how to do both better. Claimed:
   `docs/research/design-round-2.md` + `docs/research/art-system.md` DONE (shots/round2/, mockup scripts in `tools/art/`).
   Proposals only; design items wait for the Laptop's boss. Claims released.
