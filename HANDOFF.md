@@ -10,7 +10,7 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
-- **Laptop:** nothing claimed. **Done 2026-11-06:** boss review of backup + restore 9e3a633 (D65,
+- **Laptop (claimed):** a11y audit Laptop rows #1 (1.4.4 / 1.4.10 200% text), #9 (DESIGN note), #10 (Back to all merch) -> `prototype/`, `DESIGN.md` (port list for the Desktop).
   `docs/review/backup-review.md`: approved; **Desktop next:** F1-F4 there) and its words (`docs/copy/round2.md` section 5).
   **Done 2026-11-06:** copy `docs/copy/round2.md` (D57) and designer DESIGN.md 16 + `prototype/music.html`, `404.html` (D55), boss
   review `docs/review/round2-boss.md` (also approves the Desktop's bf6704b, D59). **Desktop next:** port DESIGN 16h items 1-11 +
