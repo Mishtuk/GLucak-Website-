@@ -155,7 +155,9 @@ p { text-wrap: pretty; }
   background: transparent; border-bottom: 2px solid transparent;
 }
 .site-header.is-solid, .site-header:has(details[open]) { background: var(--bg); border-color: var(--line); }
-.header-bar { display: flex; align-items: center; gap: var(--space-m); min-height: var(--header-h); }
+.header-bar { display: flex; align-items: center; gap: var(--space-m); min-height: var(--header-h); container-type: inline-size; }
+/* 1.4.4: when big text leaves no room, the word goes and the mark stays (the brand link keeps its aria-label). */
+@container (max-width: 19rem) { .mark + .brand-word { display: none; } }
 .brand {
   margin-right: auto; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 48px;
   font-family: var(--font-display); font-weight: 900; font-size: 1.75rem; letter-spacing: 0.01em; text-decoration: none;
@@ -275,8 +277,8 @@ img.duo { filter: url('#duo'); }
 .sl-1 { font-size: calc(100cqi / var(--w-sl1)); }
 .sl-2 { font-size: calc(100cqi / var(--w-sl2)); margin-top: 0.3rem; }
 
-.hero-actions { display: flex; gap: var(--space-s); margin-top: var(--space-m); }
-.hero-actions .btn { flex: 1; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-s); margin-top: var(--space-m); } /* WCAG 1.4.4: wraps when big text leaves no room */
+.hero-actions .btn { flex: 1 1 auto; }
 .now { display: flex; align-items: center; gap: var(--space-s); min-height: 48px; margin-top: 0.25rem; font-weight: 700; font-size: var(--step--1); }
 .now a { display: inline-flex; align-items: center; min-height: 48px; text-underline-offset: 3px; }
 .now-tag { padding: 0 0.45rem; background: var(--text); color: var(--bg); font-size: var(--step--1); line-height: 1.5; font-weight: 700; flex: none; }
@@ -362,7 +364,7 @@ html[data-shows='none'] .quote-live { display: none; }
 /* ---------- Live It Loud ---------- */
 .band-live { padding-top: var(--space-l); }
 .shows-grid { display: grid; gap: var(--space-s); margin-top: var(--space-l); }
-.shows { container-type: inline-size; }
+.shows, .rows { container-type: inline-size; }
 /* Poster with art (treatment (c), the gig-poster cut). Phones: the fitted date across the top as before, then place, time
    and Tickets on the left and the art on the right, a square bled to the card's right and bottom edges, so the torn edge
    is the poster's foot. Costs 114px at 390 over the text-only poster (a full-width art band cost 360). */
@@ -482,7 +484,7 @@ html:not([data-hero='b']) .credit-b { display: none; }
 /* ---------- Phone bar: always on, never hides ---------- */
 .phone-bar {
   position: fixed; inset: auto 0 0; z-index: 60;
-  display: grid; grid-template-columns: repeat(4, 1fr);
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
   padding-bottom: env(safe-area-inset-bottom);
   background: var(--bg); border-top: 2px solid var(--text);
 }
@@ -722,7 +724,7 @@ html[data-hero='ab'] .slot { display: none; }
    the show rows, so the grid reads as a list, not as buttons. Two columns under 380px, three from 380px (the six socials
    in two rows), Patreon on its own full row (support, not a social). Footer from 900px: all seven in one row.
    SoundCloud, the widest word, goes last in its row, so at 380-400px its last few px run into the page gutter, never into Spotify. */
-.links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-m); margin-top: var(--space-xs); border-bottom: 2px solid var(--line); }
+.links { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); column-gap: var(--space-m); margin-top: var(--space-xs); border-bottom: 2px solid var(--line); }
 .links li { min-width: 0; border-top: 2px solid var(--line); }
 .links a {
   display: flex; align-items: center; gap: 0.4rem; min-height: 48px; margin-inline: -0.5rem; padding-inline: 0.5rem;
@@ -732,9 +734,9 @@ html[data-hero='ab'] .slot { display: none; }
 .links-wide { grid-column: 1 / -1; }
 @media (hover: hover) { .links a:hover span { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; } }
 /* Boss fix (D55): columns never narrower than their word, so SoundCloud ends inside its rule (it ran 11px past it at 390). */
-@media (min-width: 380px) { .links { grid-template-columns: repeat(3, minmax(max-content, 1fr)); } }
+@media (min-width: 380px) { .links { grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr)); } } /* 1.4.4: rem, so big text drops to fewer columns */
 @media (min-width: 900px) {
-  .site-footer .links { grid-template-columns: repeat(7, minmax(max-content, 1fr)); } /* D63 F1: a cell is at least its word */
+  .site-footer .links { grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); } /* D63 F1: a cell is at least its word */
   .site-footer .links-wide { grid-column: auto; }
 }
 /* About: the same list, one step bigger (it is the page's content there, not its footer). */
@@ -823,7 +825,7 @@ a, button, summary, label { -webkit-tap-highlight-color: transparent; }
 /* Boss ruling (D55): Home only (the release block follows the player there). Music has no release block, so it keeps the link. */
 @media (max-width: 699px) { .rise-player:has(~ .release) .under-link { display: none; } }
 /* About's larger list (not prototyped): three max-content columns at the bigger size overflow a phone (423px at 390), so keep two until 520px. */
-@media (min-width: 380px) and (max-width: 519px) { .links-lg { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.links-lg { grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); } /* rem: two columns on a phone, three from ~520px, one when text is big */
 /* D63 F3: About's big link grid at 320px: SoundCloud ran past its rule. */
 @media (max-width: 379px) { .links-lg a { gap: 0.4rem; } }
 /* D63 F4: the header brand's pressed state (16e removed the tap highlight). */
@@ -851,3 +853,14 @@ a, button, summary, label { -webkit-tap-highlight-color: transparent; }
 html[data-motion='off']::view-transition-group(*),
 html[data-motion='off']::view-transition-old(*),
 html[data-motion='off']::view-transition-new(*) { animation: none !important; }
+
+/* ---------- WCAG 1.4.4 / 1.4.10: big text in a narrow card ----------
+   Under 17rem of card (a phone at 200% text) the show rows and the poster stack instead of running past the edge. */
+@container (max-width: 17rem) {
+  .row { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'date' 'cal' 'text' 'btn'; row-gap: 0.25rem; padding-block: 0.6rem; }
+  .row > .btn-show { justify-self: start; }
+  .row:not(:has(.cal-btn)) .row-date { grid-row: auto; }
+  .poster { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; grid-template-areas: 'date' 'place' 'meta' 'btn' 'art'; }
+  .poster .btn-show { margin-bottom: var(--space-s); }
+  .poster-art { width: calc(100% + 2 * var(--space-m)); margin: 0 calc(-1 * var(--space-m)) calc(-1 * var(--space-m)); }
+}
