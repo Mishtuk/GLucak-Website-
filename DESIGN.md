@@ -924,7 +924,7 @@ row at every width, then Duck, Dodge, Jump, Fight and so on back to Time is at t
 - **Meta line:** released "Sep 4, 2026" (16px `muted`, tabular figures); coming "Out Nov 13, 2026" (16px 700 `text`). Copy:
   music.md section 2. **Type tag only for Album and EP**, in the Now tag's look (`text` ground, `bg` letters): singles are most of
   the grid, so the tag marks the exception instead of saying "Single" nine times. (Changes music.md's "Single · Sep 4, 2026" meta;
-  copywriter / boss to OK; no new words.)
+  boss-approved, D55; no new words.)
 - **Action word** "Listen" (released) or "Pre-save" (coming), 16px 700 underlined: it says what a tap does. Copy: music.md.
 - **Cover `alt=""`:** the title is already the link's text (D41 F4's rule). This replaces music.md's "{title} cover art" alt in
   the grid only; Home's release block keeps its alt.
@@ -955,22 +955,26 @@ is retired from the grid).
 - **Cell:** `<li><a href rel="noopener"><svg aria-hidden="true"><use href="#i-x"/></svg><span>X</span></a></li>`: 48px tall, 16px
   700, gap 0.4rem, no underline (the rules and glyphs say "list of links"; hover underlines the word). Rows ruled with 2px `--line`
   (top of each cell, bottom of the list), like the show rows.
-- **Columns:** 2 under 380px; **3 from 380px** (the six socials in two rows); **Patreon on its own full row** (`li.links-wide`,
+- **Columns:** 2 under 380px; **3 from 380px** (the six socials in two rows), each column at least its widest word
+  (`minmax(max-content, 1fr)`, boss fix D55: with equal columns SoundCloud ran 11px past its rule at 390); **Patreon on its own full row** (`li.links-wide`,
   `grid-column: 1 / -1`): it is support, not a social, so the odd seventh item is a deliberate row, not an orphan. Footer from
   900px: all seven in one row. Footer order: Instagram, Threads, X, YouTube, Spotify, **SoundCloud**, Patreon (Spotify and
   SoundCloud swap): SoundCloud is the widest word (glyph + gap + word = 116px) and at 380-399px it runs 3-6px past its cell, so it
-  goes last in its row, where the overrun lands in the page gutter, never on Spotify's glyph. Under 380px two columns.
+  goes last in its row. Under 380px two columns.
 - **About ("Find GLucak"):** the same list with `links-lg` (56px rows, `--step-0`, 24px glyphs), in About's order with Patreon
   moved last (Spotify, YouTube, Instagram, SoundCloud, Threads, X, then Patreon wide). Not prototyped (About isn't); same CSS.
 
 ### 16c. Add to calendar (D53)
 **Where:** the poster card and every upcoming row (shows and open mics), on Home and the Shows page. **Not** on Played rows (past
 shows have no `.ics`; the server answers 404). **What:** a link to the server-made `.ics` for that show (verdict task 7).
+- **Boss ruling D55:** glyph only on the rows and on the phone poster (below); **a poster card 37rem and wider shows the words
+  too** (`span.cal-word` "Add to calendar" beside the glyph, the link on its own line under the date, `.poster-date` back to full
+  width), at no height cost. Accessible name everywhere: `aria-label="Add to calendar: {venue}, {Mon D}"` (starts with the
+  visible words, WCAG 2.5.3).
 - **The glyph, always beside the date it saves:** calendar-plus (`#i-cal` in the sprite: rect 3/5/18x16, line at y 10, two rings,
   a + in the page), stroke 2, round caps, like the phone bar's icons. **No visible words.** Why: "Add to calendar" in words cost
   the poster a line (+31px at 390: Home 5.84, over the D39 cap), and in a row it either doubles the row or squeezes the venue to
-  33px at 320. A calendar-with-a-plus next to a date is the common sign for "save this date". **Accessible name** (round2.md):
-  `aria-label="Add {venue} on {Mon D} to your calendar"` (contains no visible text, so 2.5.3 has nothing to mismatch).
+  33px at 320. A calendar-with-a-plus next to a date is the common sign for "save this date". **Accessible name:** as D55 above.
 - **Poster:** `a.cal-link`, a 48px square stamped at the right end of the date line: 3px `bg` border, transparent, the glyph 24px in
   `bg` ink. It shares the date's grid area (`grid-area: date; justify-self: end; align-self: start`) and `.poster-date` gets
   `padding-right: 3.5rem`, so the fitted date shrinks about 16% and the **poster is 13px shorter than before** (278px at 390).
@@ -1021,7 +1025,7 @@ true })` (one line, no work done). Hover rules stay inside `@media (hover: hover
 
 ### 16f. Home height (D39) and the trim that pays for it
 The link grid costs the footer 56px at 390 (7 links in 48px rows need 3 rows where wrapped words took 2). D39: additions trim
-first. **Proposed trim (boss to approve): under 700px "Listen everywhere" is hidden**: it is the same smart link as the release
+first. **Trim (boss-approved, D55, Home only): under 700px Home's "Listen everywhere" is hidden** (Music keeps it, having no release block): it is the same smart link as the release
 block's "every platform" 150px below it, and the full-width Spotify button already sits there. From 700px it stays beside the
 button at no height. The calendar costs nothing (poster 13px shorter, rows unchanged). **Result: Home 5.78 screens at 390x660
 without the note** (was 5.80; top 1260 (-56), shows 931 (-13), footer 520 (+56)). No shows booked: 5.46. If the boss rejects the
@@ -1058,9 +1062,9 @@ Copy the "Round 2" CSS block from `prototype/styles.css` (16a to 16f) to the end
    `releases coming` list, `release-row`, the `Single ·` meta and the "Placeholder cover" chip. IDENTITY block and the SoundCloud
    line stay after the crate (`.releases-band .identity-state` sets the gap).
 5. **`src/lib/shows.js`:** `posterHtml` and `rowHtml` print the calendar link for **upcoming rows only** (a `past` flag from
-   `playedHtml`): poster `<a class="cal-link" href="/shows/{key}.ics" aria-label="Add {venue} on {Mon D} to your calendar"><svg
-   class="cal-icon" aria-hidden="true"><use href="#i-cal"/></svg></a>` right after the `.poster-date`; rows `<a class="cal-btn" …>`
-   (same inside) right after `.row-date`. `{venue}` escaped; `{key}` = the same date + venue slug the `.ics` route derives. Tests: the
+   `playedHtml`): poster `<a class="cal-link" href="/shows/{key}.ics" aria-label="Add to calendar: {venue}, {Mon D}"><svg
+   class="cal-icon" aria-hidden="true"><use href="#i-cal"/></svg><span class="cal-word">Add to calendar</span></a>` right after the `.poster-date`; rows
+   `<a class="cal-btn" …>` (same, without the `cal-word` span) right after `.row-date`. `{venue}` escaped; `{key}` = the same date + venue slug the `.ics` route derives. Tests: the
    link is absent on Played rows; a venue with `<script>` / quotes stays escaped in the `aria-label`.
 6. **The `.ics` route and `404.astro`:** as verdict task 7. 404 markup: copy `prototype/404.html`'s `<main>` (links `/music/`,
    `/shows/`, `/`), add `--w-lost*` to `:root`. Served with status 404 for unknown paths.
@@ -1068,5 +1072,9 @@ Copy the "Round 2" CSS block from `prototype/styles.css` (16a to 16f) to the end
 8. **Covers:** `fetch-covers.mjs` saves a 640px file next to the 300px one where Spotify has it, and the tile gets `srcset="… 300w,
    … 640w" sizes="(min-width: 900px) 18rem, (min-width: 700px) 30vw, 45vw"` (at 1280 the 300px file shows at 283px, soft on 2x).
    Nice to have, not blocking.
-9. **Home trim (16f), only after the boss approves it:** the `@media (max-width: 699px) { .under-player .under-link { display:
-   none; } }` line. Without it the build's Home grows by the link grid's 56px.
+9. **Home trim (16f, approved D55):** the `@media (max-width: 699px) { .rise-player:has(~ .release) .under-link { display: none; } }`
+   line (Home only; it is in the copied block). Without it the build's Home grows by the link grid's 56px.
+10. **Remove the interim `:active` rules** bf6704b added to `global.css` (`.btn-line:active, .btn-show:active` in accent,
+   `.product-card:active` brightness filter, `.sheet a:active`): 16e replaces them, so one pressed rule set exists and pictures are
+   never changed.
+11. **Copy changes from D57** (Now line show state, no aria-label on the Now link): `docs/copy/round2.md` section 1, as amended.

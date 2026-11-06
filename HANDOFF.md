@@ -10,6 +10,11 @@
 
 ## Now working on
 - **Laptop (2026-11-06, claimed):** round-2 Laptop tasks from `docs/review/round2-verdict.md`: copywriter Now-line words (D45) + 404 + calendar text -> `docs/copy/`; designer Music cover grid, footer/About link grid, Add to calendar, 404 -> `DESIGN.md` + `prototype/`; boss merges the Gabe questions into one list. Done: L4 review (`docs/review/l2-port-review.md`) + round-2 verdict.
+  **Done 2026-11-06:** copy `docs/copy/round2.md` (D57) and designer DESIGN.md 16 + `prototype/music.html`, `404.html` (D55), boss
+  review `docs/review/round2-boss.md` (also approves the Desktop's bf6704b, D59). **Desktop next:** port DESIGN 16h items 1-11 +
+  the 3 bf6704b follow-ups in round2-boss.md section 3 (release day before a coming release; "Show Nov 20: ..." Now line, no
+  aria-label; F2 upload message). Owner's real-phone test: add "tap Add to calendar on iPhone and Android". Laptop still open:
+  task 8 (one Gabe question list).
 - **Round 2026-11-05 (owner: store + admin console, then visuals, split evenly). Split posted on #1:**
   - **Laptop:** L1 photo treatments into the prototype per D34 (hero A phones / B 900px+, (d) Push Past Fear, (c) Live It
     Loud poster, (e) About with the HANDS frame swapped); L2 DESIGN.md + prototype for the Shop (grid, product card,

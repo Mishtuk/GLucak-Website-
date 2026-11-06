@@ -177,3 +177,25 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   the grid. No new layout for a single's "drop moment": the release block already flips by date, and a note from Gabe
   goes in the existing quote slot only if he wrote it (D23/D29). **Why:** each adopted item serves listen or shows on a
   phone at small cost; the rest adds buttons or pipelines nobody asked for.
+- **D55** (2026-11-06, Laptop boss, review of the round-2 design, DESIGN.md 16, `docs/review/round2-boss.md`): **Ruling:**
+  approved with three small fixes, made in the prototype. (a) Hiding "Listen everywhere" under 700px is approved **on Home
+  only** (`.rise-player:has(~ .release) .under-link`): Home's release block repeats the same smart link 150px lower; Music has
+  no release block, so it keeps the link. Home stays 5.78 screens (D39 cap 5.8). (b) The glyph-only Add to calendar is
+  approved on rows and on the phone poster; a poster card 37rem and wider also shows the words "Add to calendar" (free
+  there); the accessible name is "Add to calendar: {venue}, {Mon D}" everywhere. (c) Link-grid columns are at least their
+  widest word (SoundCloud ran 11px past its rule at 390). No "Single" tag (Album / EP only) and `alt=""` on grid covers
+  are approved. **Why:** a calendar with a plus beside the date it saves is a common sign, and it is a convenience, not a
+  main path: Tickets and every main action keep words, so nothing a fan needs depends on reading an icon. Words on the
+  phone poster cost 44px (measured), over the cap, for a secondary action; where they are free we show them.
+- **D57** (2026-11-06, Laptop boss, check of `docs/copy/round2.md`): **Ruling:** approved with changes. The show state keeps
+  a kind word: "Show Nov 20: {venue}, {city}" / "Open mic Nov 20: ...", "Show today: ..." on the day, linking #shows (D18).
+  No `aria-label` on the Now link (the labels reordered the visible words, failing WCAG 2.5.3). The 404 copy, the .ics
+  wording and "Pre-save" on the coming tiles are approved (both smart links checked: real pre-save pages). New admin
+  string: "Wait for the photo to finish uploading, then press Save." **Why:** "Intuitive": a bare date and a venue makes
+  a fan guess what it is, and open mics look like shows; "Show" mirrors "Out Nov 13: ...", one pattern for every state.
+- **D59** (2026-11-06, Laptop boss, review of the Desktop's bf6704b): **Ruling:** approved; it can stay live for Nov 13.
+  `npm test` 105/105 with the build; the Now line is right on every fixed date checked (Oct 29 to Aug 13 2027, including
+  the New York midnight edges), escaped, http(s) only; F1 and D49 are right. Follow-ups, none blocking: the release-day
+  state must beat a coming release (today B is checked after A); the D57 copy changes; F2's guard message goes stale
+  ("Uploading…" stays after the upload ends), so use the D57 string and clear it when the upload ends. **Why:** these are
+  real, small defects; none shows with today's data (the next two releases are 63 days apart).

@@ -885,7 +885,8 @@ html:has(.ed-body) { scroll-padding: 1rem 0 10rem; } /* a focused field never hi
 .links svg { width: 20px; height: 20px; flex: none; fill: currentColor; }
 .links-wide { grid-column: 1 / -1; }
 @media (hover: hover) { .links a:hover span { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; } }
-@media (min-width: 380px) { .links { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* Boss fix (D55): columns never narrower than their word, so SoundCloud ends inside its rule (it ran 11px past it at 390). */
+@media (min-width: 380px) { .links { grid-template-columns: repeat(3, minmax(max-content, 1fr)); } }
 @media (min-width: 900px) {
   .site-footer .links { grid-template-columns: repeat(7, minmax(0, 1fr)); }
   .site-footer .links-wide { grid-column: auto; }
@@ -911,6 +912,15 @@ html:has(.ed-body) { scroll-padding: 1rem 0 10rem; } /* a focused field never hi
 .row-date { grid-area: date; align-self: end; }
 .row-text { grid-area: text; }
 .row > .btn-show { grid-area: btn; }
+/* Boss ruling (D55): where the card is 37rem+ (tablet, desktop) the poster has room, so the words show beside the glyph,
+   on their own line under the date, at no height cost. Phones keep the glyph-only stamp. */
+.cal-word { display: none; }
+@container (min-width: 37rem) {
+  .poster { grid-template-rows: auto auto 1fr auto auto; grid-template-areas: 'date art' 'cal art' 'place art' 'meta art' 'btn art'; }
+  .poster-date { padding-right: 0; }
+  .cal-link { grid-area: cal; justify-self: start; display: flex; align-items: center; gap: 0.5rem; width: auto; padding: 0 0.9rem 0 0.7rem; font-weight: 700; text-decoration: none; }
+  .cal-word { display: inline; }
+}
 .cal-btn { grid-area: cal; justify-self: start; align-self: start; display: grid; place-items: center; width: 48px; height: 48px; margin: -12px; padding: 12px; color: inherit; }
 .row:not(:has(.cal-btn)) .row-date { grid-row: 1 / span 2; align-self: center; } /* Played rows: no glyph, the date centres as before */
 
@@ -964,4 +974,5 @@ a, button, summary, label { -webkit-tap-highlight-color: transparent; }
 /* ---------- 16f. Home height (D39): the proposed trim that pays for the link grid ---------- */
 /* Under 700px "Listen everywhere" goes: it is the same smart link as the release's "every platform" 150px below it. From
    700px it sits beside the Spotify button at no height and stays. */
-@media (max-width: 699px) { .under-player .under-link { display: none; } }
+/* Boss ruling (D55): Home only (the release block follows the player there). Music has no release block, so it keeps the link. */
+@media (max-width: 699px) { .rise-player:has(~ .release) .under-link { display: none; } }

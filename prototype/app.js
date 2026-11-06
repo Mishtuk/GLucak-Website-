@@ -74,8 +74,9 @@
   function cal(s, words) {
     const a = el('a', words ? 'cal-link' : 'cal-btn');
     a.href = 'assets/sample-show.ics';
-    a.setAttribute('aria-label', `Add ${s.venue} on ${s.date} to your calendar`);
+    a.setAttribute('aria-label', `Add to calendar: ${s.venue}, ${s.date}`); // starts with the visible words (WCAG 2.5.3, D55)
     a.append(calIcon());
+    if (words) a.append(el('span', 'cal-word', 'Add to calendar')); // shown only on a 37rem+ poster (D55)
     return a;
   }
 
