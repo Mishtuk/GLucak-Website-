@@ -140,3 +140,40 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   only when `SHOP_ENABLED=1` AND at least one product is `available`. The nav and footer Shop links follow
   `SHOP_ENABLED` alone. **Why:** samples can't be bought, so a bar slot fans tap most should never lead to nothing
   buyable; the nav link is fine for the owner's preview.
+- **D43** (2026-11-06, Laptop boss, L4 review of the L2 port, `docs/review/l2-port-review.md`): What counts as
+  "available" in D42? **Ruling:** buyable: status `available` **and** a Link (the same `buyable()` that shows Buy). A
+  product set to Available without a Link shows "Coming soon" and keeps Watch in the phone bar. The L2 port is approved
+  with two fixes: F1 (this rule) and F2 (rows inert while saving, Save waits for an upload). **Why:** Gabe will set
+  Available before he pastes the store link; the bar must never lead to nothing buyable, and edits made during a save
+  were silently thrown away.
+- **D45** (2026-11-06, Laptop boss, round-2 verdict, amends D18's Now line): **Ruling:** the Now line picks, in order:
+  a release dated from today to 14 days ahead ("Out Nov 13: Who I Am", linking its smart link); a release from its day
+  to 7 days after ("Out now: {title}"); the next show or open mic within 14 days; otherwise the newest release. It must
+  ship before Nov 13. **Why:** listen is main action 1, and campaigns live in dated states of one layout (Sleep Token,
+  Lorde). Who I Am is a week out and Home is silent; shows still lead the Shows band right below.
+- **D47** (2026-11-06, Laptop boss, round-2 verdict): Motion after round 2. **Ruling:** DESIGN 8 stands: exactly two
+  motions, no page transitions (View Transitions dropped), no scroll-linked CSS animation. The heading fade keeps its
+  IntersectionObserver, but `app.js` itself adds the waiting state, and only to headings below the first screen at
+  load, so with no JS (or a failed `app.js`) and in print every phrase is visible. Instant `:active` colour swaps (no
+  transition) are allowed on every button and card. **Why:** the slogan must never be a blank band; for Gabe the test
+  for motion is "is it needed", and a full-screen fade on every tap isn't.
+- **D49** (2026-11-06, Laptop boss, round-2 verdict): Shop work until real products exist. **Ruling:** no new shop
+  statuses, fields or policy lines (pre-order / `shipsBy`, ship time, print guarantee, size chart, swatches, "Listen
+  first") until Gabe has real products and a provider account; they are parked in `docs/research/design-round-2.md`
+  section 2. Only change now: sold-out products sort last. **Why:** merch is third; with samples only, any ship time
+  or guarantee would be untrue (D37), and a schema change without a product to use it is guesswork.
+- **D51** (2026-11-06, Laptop boss, round-2 verdict on `docs/research/art-system.md`): **Ruling:** for any art the team
+  makes (site, share cards, posters), use the IDENTITY colour roles (still a guess per D35 until Gabe's colours), our
+  two fonts only, and Logo D only on dark solid ground; violet on paper only for large type. The single-cover template
+  is an offer the owner may show Dave and Gabe, never a task; we never repaint or tint their covers, and the
+  "homemade vs designed" notes stay internal. The Music sleeve waits for Gabe's confirmed tracklist and his OK. Posters,
+  social templates and merch files are not scheduled (owner's call; printing costs money). The two-ink poster is the
+  reference for the site's poster card in the identity-guess era. **Why:** covers are Dave's and Gabe's work; our job
+  is the website, and rules that keep our own art in one world.
+- **D53** (2026-11-06, Laptop boss, round-2 verdict): The other round-2 web items. **Ruling:** adopt Music as a cover
+  grid (DESIGN 6's "cover strip"; coming singles show their art as made, or the placeholder, with the date), footer
+  and About link lists as a 2-column grid of 48px rows, Add to calendar (a server-made `.ics` per show), and a 404 page
+  with Listen / Shows. Drop Share buttons on shows and per-show share cards for now; per-release share cards come after
+  the grid. No new layout for a single's "drop moment": the release block already flips by date, and a note from Gabe
+  goes in the existing quote slot only if he wrote it (D23/D29). **Why:** each adopted item serves listen or shows on a
+  phone at small cost; the rest adds buttons or pipelines nobody asked for.
