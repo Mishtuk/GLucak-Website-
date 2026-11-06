@@ -164,8 +164,9 @@ p { text-wrap: pretty; }
    its wings are 65% grey, so they need bg or bg-2 under them. Never on a photo, the accent or the poster paper. */
 .mark { display: block; width: auto; flex: none; }
 .mark-head { height: 30px; }
-/* The hero already says the name: no second wordmark above it. Needs JS, because only JS sets is-solid. */
-html[data-home][data-motion] .site-header:not(.is-solid):not(:has(details[open])) .brand { visibility: hidden; }
+/* D64: the brand is always visible, also over the Home hero. Over the photo (before the header turns solid) a bg scrim
+   behind the bar keeps GLUCAK readable (>= 4.5:1, measured). */
+.site-header:not(.is-solid):not(:has(details[open])) { background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 88%, transparent), color-mix(in srgb, var(--bg) 55%, transparent)); }
 .nav-desktop { display: none; gap: 0.25rem; }
 .nav-desktop a {
   display: inline-flex; align-items: center; min-height: 48px; padding-inline: 0.85rem;
@@ -831,3 +832,22 @@ a, button, summary, label { -webkit-tap-highlight-color: transparent; }
    above the page; inside a band that trick lands it in the band above, so this one uses the visually-hidden pattern. */
 .skip-inline:not(:focus) { top: auto; left: auto; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .skip-inline:focus { position: static; display: inline-block; margin-bottom: var(--space-s); }
+
+/* ---------- D64: thumbnail in the video facade ---------- */
+.yt-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.yt-title { background: color-mix(in srgb, var(--bg) 82%, transparent); padding: 0.1rem 0.4rem; } /* readable over the picture */
+.yt-play { z-index: 1; }
+
+/* ---------- D64: seamless page changes (cross-document View Transition) ----------
+   A short opacity fade of the page; the header has its own name so it stays still. Opacity only, no movement.
+   Off under reduced motion (the @media switch) and under the Motion switch (data-motion='off', set by boot.js
+   before first paint, so the next page's transition is also cut). The dark ground is on html, so no white frame. */
+@view-transition { navigation: auto; }
+.site-header { view-transition-name: site-header; }
+::view-transition-group(root) { animation-duration: 0.2s; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.2s; animation-timing-function: ease-out; }
+::view-transition-group(site-header), ::view-transition-old(site-header), ::view-transition-new(site-header) { animation: none; }
+@media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
+html[data-motion='off']::view-transition-group(*),
+html[data-motion='off']::view-transition-old(*),
+html[data-motion='off']::view-transition-new(*) { animation: none !important; }

@@ -1,15 +1,19 @@
 ---
+import { existsSync } from 'node:fs';
 import { latestVideo, YOUTUBE } from './content.js';
 // Facade: no YouTube loads until tapped (public/js/app.js swaps in a youtube-nocookie iframe). Without JS it is a link.
+// D64: the picture is the video's own thumbnail saved on our server (tools/fetch-video-thumbs.mjs); no file = the gray box.
 const { h1 = false } = Astro.props; // true when the page's top heading is an h1 (/shows/), so this is an h2
 const T = h1 ? 'h2' : 'h3';
 const v = latestVideo();
 const href = v ? `https://www.youtube.com/watch?v=${v.id}` : YOUTUBE;
 const title = v?.title ?? 'GLucak on YouTube';
+const thumb = v && existsSync(`public/media/videos/${v.id}-1280.webp`) && existsSync(`public/media/videos/${v.id}-640.webp`) ? `/media/videos/${v.id}` : null;
 ---
 <div class="video-block" id="shows-video">
   <T>Latest video</T>
   <a class="yt" href={href} rel="noopener" data-yt={v?.id} data-title={title}>
+    {thumb && <img class="yt-img" src={`${thumb}-640.webp`} srcset={`${thumb}-640.webp 640w, ${thumb}-1280.webp 1280w`} sizes="(min-width: 900px) 640px, 100vw" width="1280" height="720" loading="lazy" decoding="async" alt="" />}
     <span class="yt-play" aria-hidden="true"></span>
     <span class="yt-title">{title}</span>
   </a>

@@ -77,7 +77,7 @@ test('products save: on /shop/ at the next visit, Buy for available + link, prev
   assert.equal(r.status, 200);
   const html = await shop();
   assert.ok(html.includes('Real tee') && !html.includes('Sample: GLucak tee'));
-  assert.match(html, /<a class="btn btn-solid product-buy" href="https:\/\/shop\.example\/tee" rel="noopener">Buy<\/a>/);
+  assert.match(html, /<a class="btn btn-solid product-buy" href="https:\/\/shop\.example\/tee" rel="noopener" target="_blank">Buy<span class="vh"> \(opens in a new tab\)<\/span><\/a>/);
   assert.ok(html.includes('Sold out') && !html.includes('This shop is a preview.'), 'no samples, no banner');
   assert.equal(JSON.parse(readFileSync(join(data, 'products.prev.json'), 'utf8'))[0].status, 'sample', 'prev = the shipped samples');
   const bad = await save([product(), product({ link: 'javascript:alert(1)' }), product({ id: 'x', image: '/media/uploads/../products.json' })]);

@@ -84,7 +84,7 @@ test('footer and About: link grid with inline icons, Patreon wide, no loose soci
     const h = await (await fetch(`${base}${p}`)).text();
     assert.ok(!h.includes('class="socials"'), p);
     assert.ok(h.includes('<symbol id="i-instagram"') && h.includes('<symbol id="i-cal"'), `${p}: sprite`);
-    assert.match(h, /<li class="links-wide"><a href="https:\/\/patreon\.com\/GLucakMusic" rel="noopener"><svg aria-hidden="true"><use href="#i-patreon"><\/use><\/svg><span>Patreon<\/span>/);
+    assert.match(h, /<li class="links-wide"><a href="https:\/\/patreon\.com\/GLucakMusic" rel="noopener" target="_blank"><svg aria-hidden="true"><use href="#i-patreon"><\/use><\/svg><span>Patreon<\/span>/);
   }
   const about = await (await fetch(`${base}/about/`)).text();
   assert.match(about, /<ul class="links links-lg">/);

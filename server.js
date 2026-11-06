@@ -14,6 +14,7 @@ import { signup } from './src/lib/signup.js';
 import { allow, checkLogin, clearFailures, cookieHeader, locked, parseEditors, readCookie, recordFailure, sameOrigin, signSession, verifySession, SESSION_DAYS, USER_LOCK } from './src/lib/auth.js';
 import { checkShows, listVersion, readList, readShows, saveList } from './src/lib/store.js';
 import { checkProducts, productsHtml, shopLinks } from './src/lib/products.js';
+import { externalize } from './src/lib/ext.js';
 import { MAX_BYTES, TYPES as IMAGE_TYPES, UPLOAD_NAME, toWebp } from './src/lib/upload.js';
 
 const ROOT = import.meta.dirname;
@@ -71,7 +72,7 @@ function inject(html, path) {
     html = html.replace('<!--gl:shop-->', () => shop);
   }
   const shows = html.includes('<!--gl:shows-->'), ld = html.includes('<!--gl:shows-ld-->'), now = html.includes('<!--gl:now-->');
-  if (!shows && !now && !ld) return html;
+  if (!shows && !now && !ld) return externalize(html);
   const rows = readShows(DATA, SHOWS);
   if (now) { // D45: the dated line replaces the static one between the markers; '' leaves the static one
     let rel = [];
@@ -80,7 +81,7 @@ function inject(html, path) {
     if (line) html = html.replace(/<!--gl:now-->[\s\S]*?<!--\/gl:now-->/, () => line);
   }
   if (ld) html = html.replace('<!--gl:shows-ld-->', () => showsLdHtml(rows));
-  return shows ? html.replace('<!--gl:shows-->', () => showsHtml(rows, new Date(), path === '/' ? { limit: 3, allLink: '/shows/' } : { past: true })) : html;
+  return externalize(shows ? html.replace('<!--gl:shows-->', () => showsHtml(rows, new Date(), path === '/' ? { limit: 3, allLink: '/shows/' } : { past: true })) : html);
 }
 
 function send(req, res, status, type, body, extra = {}) {
