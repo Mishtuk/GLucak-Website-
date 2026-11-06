@@ -1,3 +1,39 @@
+# Re-review (Laptop boss, 2026-11-06): d8254fa (F1-F3, S1-S3) + 254773c (F4), checked at HEAD 7aa5cb9
+
+**Verdict: approved. F1-F4 and S1-S3 are closed; no real defects found.** Backup can be told to Gabe.
+
+How it was checked: read both diffs (`server.js`, `src/lib/backup.js`, `src/lib/store.js`, `tools/backup.mjs`,
+`public/js/edit.js`, `src/pages/edit/index.astro`). `npm test` **154/154**. Live: `node server.js` on ports 8796 / 8797
+(`DEV_EDITOR=1`) and 8798 (real `SESSION_SECRET` + `EDITOR_USERS`), temp `DATA_DIR`s in the scratchpad, headless Chrome
+over CDP on 9337 clicking `#backup-link`; only those PIDs stopped, ports free afterwards. Probe: `scratchpad/rr/probe.mjs` (not in the repo).
+
+| Item | Probe | Result |
+|---|---|---|
+| F1 orphans | 2 used + 3 orphan uploads | backup holds exactly the 2 used photos, no orphan. Products read before the photos (race closed). |
+| F1 cap | 170 used photos x 320 KB | download **413** `too_big` in 0.97 s, logged with the byte count (74,302,608 > 52,428,800); `tools/backup.mjs export` exit 1 with the same line, no file written |
+| F2 | valid backup minus one photo | onto a folder that has the photo: restores, no warning. Onto an empty folder with `--yes`: prints `Product 2: its photo "bbbb....webp" is not in the backup, so it will be missing on the Shop page.`, writes the pre-restore file, restores the rest |
+| F3 | download with `Accept-Encoding: br, gzip` | no `Content-Encoding`; written directly, not through `send()` |
+| F4 expired session | cookie valid for 4 s at page load, click after it expired | `You were signed out. Sign in above, then download again.`, sign-in card shown, focus on `#username` |
+| F4 working / done | fresh session, one click | mid-flight `Making your backup…` + `aria-disabled="true"`; then `Done. Look for it in your downloads.`, `glucak-backup-2026-11-06.json` in the download folder (Content-Disposition name), `aria-disabled` removed |
+| F4 429 | 11th click in the hour | `Too many backups. Wait an hour, then try again.` |
+| F4 offline | CDP offline emulation | `That didn't download. Check your connection and try again.` |
+| F4 413 | page on the over-cap server | `This backup is too big for one file. Tell the person who runs the site.` |
+| F4 a11y | DOM | `#backup-msg` `role="status"`, text via `textContent`; the plain `<a href download>` kept as the no-JS fallback |
+| S1-S2 | tests at `backup.test.js:191` / `:201` | pass; code matches the fix (temp files removed on failure, `Restore stopped partway (...)` with the way back; damaged lists copied aside with `COPYFILE_EXCL`; `saveList` copies to `.prev` only a list that parses) |
+| S3 | `Sec-Fetch-Site: cross-site` GET `/edit/api/backup` | **403** `That didn't go through. Try again.`; `same-origin` GET `/edit/api/shows` 200 |
+
+All seven message strings match `docs/copy/round2.md` section 5 character for character, and so does the link (`Download a backup`).
+
+Not a defect, for the copywriter / owner: the **hint** is `docs/copy/backup.md`'s 71-char line (`One file with your shows,
+products and photos. Keep it somewhere safe.`), not round2.md's 157-char one, which adds `If anything is ever lost, the
+person who runs the site can put it back from this file.` backup.md drops it on purpose ("Gabe never restores"). Both are
+fine; round2.md wanted that sentence so Gabe knows who the file is for. Pick one and make the two files agree.
+
+Nit (no change needed): the 200 now goes out chunked with no `Content-Length`, so the no-JS fallback download shows no
+size or progress. The JS path reads the whole blob first, so Gabe doesn't see it.
+
+---
+
 # Backup + restore security review (Desktop boss, 2026-11-06): 9e3a633, checked at HEAD 70b95f3
 
 Second, independent pass focused on security, done while the Laptop is out of tokens. The Laptop boss's review (aca19dd)
