@@ -114,7 +114,8 @@ Later (not before the owner says go): DESIGN.md -> Astro scaffold from Riverside
   Kealey 6000x4000 (hero-grade), two small video stills (Sylvain Paslier, MCCC MSP). Asked Gabe for originals.
 - Owner: real-phone test of `prototype/` (offer: Desktop serves it on the home Wi-Fi). Check: 1) fitted lines fill
   the width, no overflow; 2) duotone photo renders; 3) bottom bar sits above the iPhone home indicator; 4) GLUCAK
-  doesn't reflow as the font loads. Note Android vs iPhone (Safari is the big unknown).
+  doesn't reflow as the font loads; 5) Add to calendar opens the calendar on iPhone and Android. Note Android vs
+  iPhone (Safari is the big unknown).
 - For Gabe: "Epilepsy survivor" wording (Instagram adds "Healed by Christ since 2009"); booking email; the current show
   list with cities (he re-posts schedules often; his 11-05 update wasn't readable); the 10 questions in social-content.md.
   IDENTITY date is settled: his own post says Aug 13, 2027.
