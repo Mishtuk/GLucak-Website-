@@ -58,7 +58,7 @@ const upcomingHtml = (list) => {
   const items = first.type === 'show' ? posterHtml(first) + rest.map(rowHtml).join('') : list.map(rowHtml).join('');
   return `<ul class="shows">${items}</ul>`;
 };
-const playedHtml = (list) => list.length ? `<div class="played"><h3>Played</h3><ul class="rows">${list.map(rowHtml).join('')}</ul></div>` : '';
+const playedHtml = (list) => list.length ? `<div class="played"><h2>Played</h2><ul class="rows">${list.map(rowHtml).join('')}</ul></div>` : '';
 const emptyHtml = (played) => `<div class="empty"><p class="empty-line">No shows booked right now</p><div class="empty-actions"><a class="btn btn-solid" href="${INSTAGRAM}" rel="noopener">Follow</a>${BOOKING_EMAIL ? `<a class="btn btn-line" href="mailto:${esc(BOOKING_EMAIL)}?subject=Show%20request">Request a show</a>` : ''}</div>${playedHtml(played)}</div>`;
 
 /**
@@ -74,6 +74,24 @@ export function showsHtml(rows, now = new Date(), { limit = Infinity, past = fal
   if (allLink) out += `<a class="text-link" href="${esc(allLink)}">All shows</a>`;
   if (past) out += playedHtml(s.past);
   return out;
+}
+
+/** MusicEvent JSON-LD <script> for the upcoming shows ('' when none). JSON.stringify, then '<' escaped so no value can close the tag. */
+export function showsLdHtml(rows, now = new Date()) {
+  const ok = rows.filter((r) => { try { return validateShow(r); } catch { return false; } });
+  const events = splitShows(ok, now).upcoming.map((r) => {
+    let startDate = r.date;
+    if (r.time) { // the New York offset on that date, e.g. -05:00 or -04:00
+      const off = new Intl.DateTimeFormat('en-US', { timeZone: TZ, timeZoneName: 'longOffset' }).formatToParts(new Date(`${r.date}T${r.time}:00Z`)).find((p) => p.type === 'timeZoneName').value.replace('GMT', '');
+      startDate = `${r.date}T${r.time}:00${off || '+00:00'}`;
+    }
+    const m = r.city.match(/^(.+?),\s*([A-Za-z]{2})$/);
+    return { '@context': 'https://schema.org', '@type': 'MusicEvent', name: `GLucak at ${r.venue}`, startDate,
+      eventStatus: 'https://schema.org/EventScheduled', eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      location: { '@type': 'Place', name: r.venue, address: { '@type': 'PostalAddress', addressLocality: m ? m[1] : r.city, ...(m && { addressRegion: m[2].toUpperCase() }) } },
+      performer: { '@type': 'MusicGroup', name: 'GLucak' }, ...(r.type === 'show' && r.link && { offers: { '@type': 'Offer', url: r.link } }) };
+  });
+  return events.length ? `<script type="application/ld+json">${JSON.stringify(events).replace(/</g, '\\u003c')}</script>` : '';
 }
 
 const dayDiff = (a, b) => Math.round((Date.parse(a) - Date.parse(b)) / 864e5);

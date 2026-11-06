@@ -81,7 +81,7 @@ test('past list and Home limit', () => {
   const home = showsHtml(rows, noon('2026-06-01'), { limit: 1 });
   assert.ok(home.includes('A, C') && !home.includes('B, C') && !home.includes('Old'));
   const page = showsHtml(rows, noon('2026-06-01'), { past: true });
-  assert.ok(page.includes('<h3>Played</h3>') && page.includes('Old, C') && !page.includes('Past shows'));
+  assert.ok(page.includes('<h2>Played</h2>') && page.includes('Old, C') && !page.includes('Past shows'));
   assert.ok(showsHtml(rows, noon('2026-06-01'), { limit: 3, allLink: '/shows/' }).includes('href="/shows/">All shows<'));
 });
 

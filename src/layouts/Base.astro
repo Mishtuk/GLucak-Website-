@@ -3,11 +3,10 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import MobileBar from '../components/MobileBar.astro';
 import Footer from '../components/Footer.astro';
-import { era } from '../components/content.js';
+import { era, SITE_URL } from '../components/content.js';
 
 interface Props { title: string; description?: string; home?: boolean; hero?: 'a' | 'b'; current?: 'music' | 'shows' | 'about'; credits?: string[]; image?: string }
 const { title, description = 'GLucak: Rise, Live It Loud, Push Past Fear, The Time Is Now.', home = false, hero = 'a', current, credits, image = 'home' } = Astro.props;
-const SITE_URL = (import.meta.env.SITE_URL ?? 'https://glucak.com').replace(/\/$/, '');
 const ogImage = `${SITE_URL}/media/og/${image}.png`;
 
 // Era colors become custom properties (D12). Only #rrggbb values pass.
@@ -53,6 +52,7 @@ const table = (i) => `${lo[i].toFixed(3)} ${hi[i].toFixed(3)}`;
     <link rel="apple-touch-icon" href="/media/apple-touch-icon-180.png" />
     <link rel="preload" href="/fonts/big-shoulders-display-900.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/atkinson-hyperlegible-next-wght.woff2" as="font" type="font/woff2" crossorigin />
+    <slot name="head" />
     <style set:html={`:root{${eraCss}}`}></style>
     <script is:inline src="/js/boot.js"></script>
     <script is:inline src="/js/app.js" defer></script>

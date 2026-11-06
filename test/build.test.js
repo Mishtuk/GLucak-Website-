@@ -13,6 +13,7 @@ test('build output exists', () => assert.ok(existsSync(join(DIST, 'index.html'))
 test('no inline script bodies (CSP script-src self)', () => {
   for (const p of Object.keys(pages)) {
     for (const m of html(p).matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
+      if (/type="application\/ld\+json"/.test(m[1])) { JSON.parse(m[2]); continue; } // JSON-LD is data, not script
       assert.match(m[1], /\bsrc=/, `${p}: script without src`);
       assert.equal(m[2].trim(), '', `${p}: inline script body`);
     }

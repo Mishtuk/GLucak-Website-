@@ -8,7 +8,7 @@ import { randomBytes } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { extname, join, normalize, sep } from 'node:path';
 import { brotliCompressSync, constants as zc, gzipSync } from 'node:zlib';
-import { nowHtml, showsHtml } from './src/lib/shows.js';
+import { nowHtml, showsHtml, showsLdHtml } from './src/lib/shows.js';
 import { signup } from './src/lib/signup.js';
 import { allow, checkLogin, clearFailures, cookieHeader, locked, parseEditors, readCookie, recordFailure, sameOrigin, signSession, verifySession, SESSION_DAYS, USER_LOCK } from './src/lib/auth.js';
 import { checkShows, listVersion, readList, readShows, saveList } from './src/lib/store.js';
@@ -69,8 +69,8 @@ function inject(html, path) {
     const shop = productsHtml(products, { preview: !shopOn() });
     html = html.replace('<!--gl:shop-->', () => shop);
   }
-  const shows = html.includes('<!--gl:shows-->'), now = html.includes('<!--gl:now-->');
-  if (!shows && !now) return html;
+  const shows = html.includes('<!--gl:shows-->'), ld = html.includes('<!--gl:shows-ld-->'), now = html.includes('<!--gl:now-->');
+  if (!shows && !now && !ld) return html;
   const rows = readShows(DATA, SHOWS);
   if (now) { // D45: the dated line replaces the static one between the markers; '' leaves the static one
     let rel = [];
@@ -78,6 +78,7 @@ function inject(html, path) {
     const line = nowHtml(rows, new Date(), Array.isArray(rel) ? rel : []);
     if (line) html = html.replace(/<!--gl:now-->[\s\S]*?<!--\/gl:now-->/, () => line);
   }
+  if (ld) html = html.replace('<!--gl:shows-ld-->', () => showsLdHtml(rows));
   return shows ? html.replace('<!--gl:shows-->', () => showsHtml(rows, new Date(), path === '/' ? { limit: 3, allLink: '/shows/' } : { past: true })) : html;
 }
 

@@ -61,8 +61,10 @@
   `docs/review/photo-treatments/` DONE (018f486, sheet.png). Picks: hero A (a) era grade, hero B (b) riso / (f) MCCC,
   Live It Loud (c) poster, Push Past Fear (d) crowd, About (e) contact strip (swap its HANDS frame). **Privacy:** the
   child in the crowd is in frame on the current hero A + likely Push Past Fear; (a) and (d) leave him out: swap soon.
-- **Desktop research round 3 (owner 2026-11-06):** claimed `docs/research/launch-readiness.md`,
-  `docs/research/discoverability-a11y.md`. Proposals only.
+- **Desktop research round 3 DONE:** `launch-readiness.md` (host rec: Render Starter + disk, runner-up Azure B1;
+  GitHub Actions daily rebuild; Fourthwall CD/vinyl to confirm by email), `discoverability-a11y.md`. Built the Desktop
+  findings: Spotify skip link, one h1 per page, distinct link names, signup aria, robots.txt + sitemap.xml, MusicGroup +
+  MusicEvent JSON-LD (per visit). 114 tests. Laptop: 1.4.4 200% text overlaps on / and /shows/; address field question.
 - **Desktop (2026-11-06): verdict rows 2-4 done** (D45 Now line live: 'Out Nov 13: Who I Am'; F1 / F2 / D49; D47
   headings visible without JS + print, instant :active). `npm test` 105/105. Next: row 7 (port the Laptop's rows 5-6).
 - **Desktop (2026-11-06): L2 ported** (shop :target details, line-art samples, glyph + word statuses; admin collapsed

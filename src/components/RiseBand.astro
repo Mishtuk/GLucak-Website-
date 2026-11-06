@@ -1,32 +1,35 @@
 ---
 import Quote from './Quote.astro';
 import { credit, releases, SPOTIFY_EMBED, SPOTIFY_PLAYLIST } from './content.js';
+const { h1 = false } = Astro.props; // /music/ has no hero, so Rise is its h1 (and the release title drops to h2)
+const H = h1 ? 'h1' : 'h2', T = h1 ? 'h2' : 'h3';
 const r = releases()[0];
 ---
 <section class="band band-rise" id="music" aria-labelledby="h-rise">
   <div class="wrap rise-grid">
-    <h2 class="spine" id="h-rise"><span class="tab">Music</span> <span class="phrase phrase-rise">Rise</span></h2>
+    <H class="spine" id="h-rise"><span class="tab">Music</span> <span class="phrase phrase-rise">Rise</span></H>
 
     <div class="rise-player">
+      <a class="skip" href="#after-player">Skip the Spotify player</a>
       <div class="player-box">
         <p class="player-note">Loading the Spotify player. If it doesn't appear, use <strong>Play full songs on Spotify</strong> below.</p>
         <iframe class="player" title="GLucak playlist on Spotify" src={SPOTIFY_EMBED} width="100%" height="352" loading="lazy" allow="encrypted-media; clipboard-write; fullscreen"></iframe>
       </div>
-      <p class="under-player">
+      <p class="under-player" id="after-player">
         <a class="btn btn-line btn-small" href={SPOTIFY_PLAYLIST} rel="noopener">Play full songs on Spotify</a>
-        <a class="under-link" href={r.link} rel="noopener">Listen everywhere</a>
+        <a class="under-link" href={r.link} rel="noopener" aria-label={`Listen to ${r.title} everywhere`}>Listen everywhere</a>
       </p>
     </div>
 
     <article class="release">
       <img class="cover" src={r.cover} alt={r.placeholder ? `Placeholder for the ${r.title} cover art` : `${r.title} cover art`} width="400" height="400" loading="lazy" />
       <div class="release-text">
-        <h3>{r.title}</h3>
+        <T>{r.title}</T>
         {credit(r) && <p class="credit">{credit(r)}</p>}
         <p class="muted">Latest release. Listen on:</p>
         <p class="listen-on">
-          <a href={r.link} rel="noopener">every platform</a>
-          {r.soundcloud && <a href={r.soundcloud} rel="noopener">SoundCloud</a>}
+          <a href={r.link} rel="noopener" aria-label={`Listen to ${r.title} on every platform`}>every platform</a>
+          {r.soundcloud && <a href={r.soundcloud} rel="noopener" aria-label={`${r.title} on SoundCloud`}>SoundCloud</a>}
         </p>
         {r.placeholder && <p class="ph-chip inline">Placeholder cover</p>}
       </div>

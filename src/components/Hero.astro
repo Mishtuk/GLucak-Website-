@@ -29,8 +29,8 @@ const now = releases()[0];
     </h1>
     <p class="slogan fit"><span class="sl sl-1">Rise, Live It Loud,</span> <span class="sl sl-2">Push Past Fear, The Time Is Now.</span></p>
     <div class="hero-actions">
-      <a class="btn btn-solid" href="#music">Listen</a>
-      <a class="btn btn-line" href="#shows">Shows</a>
+      <a class="btn btn-solid" href="#music" aria-label="Listen to the music">Listen</a>
+      <a class="btn btn-line" href="#shows" aria-label="See upcoming shows">Shows</a>
     </div>
     <p class="now"><span class="now-tag">Now</span> <Fragment set:html="<!--gl:now-->" /><a href={now.link} rel="noopener">Out now: {now.title}</a><Fragment set:html="<!--/gl:now-->" /></p>
   </div>

@@ -1,12 +1,14 @@
 ---
 import { latestVideo, YOUTUBE } from './content.js';
 // Facade: no YouTube loads until tapped (public/js/app.js swaps in a youtube-nocookie iframe). Without JS it is a link.
+const { h1 = false } = Astro.props; // true when the page's top heading is an h1 (/shows/), so this is an h2
+const T = h1 ? 'h2' : 'h3';
 const v = latestVideo();
 const href = v ? `https://www.youtube.com/watch?v=${v.id}` : YOUTUBE;
 const title = v?.title ?? 'GLucak on YouTube';
 ---
 <div class="video-block" id="shows-video">
-  <h3>Latest video</h3>
+  <T>Latest video</T>
   <a class="yt" href={href} rel="noopener" data-yt={v?.id} data-title={title}>
     <span class="yt-play" aria-hidden="true"></span>
     <span class="yt-title">{title}</span>

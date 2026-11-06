@@ -58,14 +58,18 @@
   const form = $('#signup');
   if (form) {
     const status = $('#signup-status');
+    const email = form.elements.email;
+    const bad = (msg) => { status.textContent = msg; email.setAttribute('aria-invalid', 'true'); };
+    email.addEventListener('input', () => email.removeAttribute('aria-invalid'));
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = form.elements.email.value.trim();
-      if (!form.checkValidity()) { status.textContent = 'Enter an email like name@example.com.'; return; }
+      const value = email.value.trim();
+      if (!form.checkValidity()) { bad('Enter an email like name@example.com.'); return; }
       try {
-        const res = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' }, body: new URLSearchParams({ email, website: form.elements.website?.value ?? '' }) });
+        const res = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' }, body: new URLSearchParams({ email: value, website: form.elements.website?.value ?? '' }) });
         if (res.ok) { status.textContent = "You're on the list."; form.reset(); }
-        else status.textContent = res.status === 400 || res.status === 422 ? 'Enter an email like name@example.com.' : "That didn't go through. Try again.";
+        else if (res.status === 400 || res.status === 422) bad('Enter an email like name@example.com.');
+        else status.textContent = "That didn't go through. Try again.";
       } catch { status.textContent = "That didn't go through. Try again."; }
     });
   }

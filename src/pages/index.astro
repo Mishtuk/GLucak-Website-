@@ -6,12 +6,20 @@ import VideoBlock from '../components/VideoBlock.astro';
 import Signup from '../components/Signup.astro';
 import Quote from '../components/Quote.astro';
 import PushPhoto from '../components/PushPhoto.astro';
-import { PATREON, PHOTO_CREDITS as C, era, identity } from '../components/content.js';
+import { PATREON, PHOTO_CREDITS as C, SITE_URL, SOCIALS, era, identity } from '../components/content.js';
 const idn = identity();
+
+// MusicGroup + WebSite JSON-LD (data, not script: CSP ignores it). '<' escaped so nothing can close the tag.
+const ld = JSON.stringify([
+  { '@context': 'https://schema.org', '@type': 'MusicGroup', name: 'GLucak', url: `${SITE_URL}/`, logo: `${SITE_URL}/media/apple-touch-icon-180.png`, image: `${SITE_URL}/media/og/home.png`,
+    genre: ['EDM', 'Hip-Hop/Rap', 'Rock'], sameAs: SOCIALS.map(([, href]) => href) },
+  { '@context': 'https://schema.org', '@type': 'WebSite', name: 'GLucak', url: `${SITE_URL}/` },
+]).replace(/</g, '\\u003c');
 
 const HERO = 'ab'; // D34: A (GLUCAK over the photo) under 900px, B (photo in the name, riso) from 900px up; 'a' / 'b' still work
 ---
 <Base title="GLucak" home hero={HERO} credits={[C.kealey, ...(HERO === 'b' ? [C.mccc] : [])]}>
+  <script type="application/ld+json" slot="head" set:html={ld}></script>
   <div class="top">
     <div class="glow" aria-hidden="true"></div>
     <Hero variant={HERO} />
@@ -59,7 +67,7 @@ const HERO = 'ab'; // D34: A (GLUCAK over the photo) under 900px, B (photo in th
             {era.mark && <img class="mark mark-identity" src={era.mark} alt="" width="300" height="96" loading="lazy" />}
             <p class="identity">IDENTITY</p>
             {idn.out
-              ? <p class="identity-when">Out now. <a class="text-link" href={idn.link} rel="noopener">Listen</a></p>
+              ? <p class="identity-when">Out now. <a class="text-link" href={idn.link} rel="noopener" aria-label="Listen to IDENTITY">Listen</a></p>
               : <><p class="identity-when"><time datetime={idn.date}>{idn.pretty}</time> &middot; {idn.days} {idn.days === 1 ? 'day' : 'days'} to go</p>
                  <a class="btn btn-line" href={idn.link} rel="noopener">Pre-save IDENTITY</a></>}
           </div>
