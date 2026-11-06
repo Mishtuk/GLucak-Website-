@@ -40,7 +40,7 @@
   --space-l: 1.5rem;
   --space-xl: 2.25rem;
   --section: clamp(2.75rem, 1.5rem + 5vw, 6.5rem);
-  --gutter: clamp(1.25rem, 0.8rem + 2vw, 2.5rem);
+  --gutter: clamp(20px, 12.8px + 2vw, 40px);
   --container: 90rem;
 
   --radius-s: 2px;
@@ -106,7 +106,7 @@ p { text-wrap: pretty; }
 
 /* ---------- Accessibility ---------- */
 .skip {
-  position: absolute; left: 1rem; top: -100px; z-index: 100;
+  position: absolute; left: 1rem; top: -100vh; z-index: 100;
   padding: 0.75rem 1.25rem; background: var(--text); color: var(--bg); font-weight: 700;
 }
 .skip:focus { top: 0.5rem; }
@@ -155,9 +155,7 @@ p { text-wrap: pretty; }
   background: transparent; border-bottom: 2px solid transparent;
 }
 .site-header.is-solid, .site-header:has(details[open]) { background: var(--bg); border-color: var(--line); }
-.header-bar { display: flex; align-items: center; gap: var(--space-m); min-height: var(--header-h); container-type: inline-size; }
-/* 1.4.4: when big text leaves no room, the word goes and the mark stays (the brand link keeps its aria-label). */
-@container (max-width: 19rem) { .mark + .brand-word { display: none; } }
+.header-bar { display: flex; align-items: center; gap: var(--space-m); min-height: var(--header-h); }
 .brand {
   margin-right: auto; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 48px;
   font-family: var(--font-display); font-weight: 900; font-size: 1.75rem; letter-spacing: 0.01em; text-decoration: none;
@@ -278,7 +276,7 @@ img.duo { filter: url('#duo'); }
 .sl-2 { font-size: calc(100cqi / var(--w-sl2)); margin-top: 0.3rem; }
 
 .hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-s); margin-top: var(--space-m); } /* WCAG 1.4.4: wraps when big text leaves no room */
-.hero-actions .btn { flex: 1 1 auto; }
+.hero-actions .btn { flex: 1; }
 .now { display: flex; align-items: center; gap: var(--space-s); min-height: 48px; margin-top: 0.25rem; font-weight: 700; font-size: var(--step--1); }
 .now a { display: inline-flex; align-items: center; min-height: 48px; text-underline-offset: 3px; }
 .now-tag { padding: 0 0.45rem; background: var(--text); color: var(--bg); font-size: var(--step--1); line-height: 1.5; font-weight: 700; flex: none; }
@@ -325,10 +323,10 @@ html[data-hero='b'] .slot img { width: 100%; height: 100%; object-fit: cover; ob
 
 /* ---------- Rise ---------- */
 .rise-player { margin-top: var(--space-s); }
-.player-box { position: relative; display: block; width: 100%; height: 352px; overflow: hidden; border-radius: 12px; background: color-mix(in srgb, var(--bg) 78%, var(--text)); }
+.player-box { position: relative; display: block; width: 100%; height: auto; min-height: 352px; overflow: hidden; border-radius: 12px; background: color-mix(in srgb, var(--bg) 78%, var(--text)); }
 /* The note sits under the iframe: seen only while the embed loads or if it's blocked (DESIGN section 7). */
 .player-note { padding: var(--space-m); font-size: var(--step--1); line-height: 1.35; }
-.player { position: absolute; inset: 0; display: block; width: 100%; height: 352px; border: 0; border-radius: 12px; }
+.player { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border: 0; border-radius: 12px; }
 /* Play full songs on Spotify is a real button (D19 + 2026-11-05): logged-out fans get 30s previews, this is the way to
    full songs. Outline, not solid: the accent stays with Listen. Full width on phones, so the thumb can't miss it. */
 .under-player { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs) var(--space-l); margin-top: var(--space-s); font-weight: 700; font-size: var(--step--1); }
@@ -724,7 +722,7 @@ html[data-hero='ab'] .slot { display: none; }
    the show rows, so the grid reads as a list, not as buttons. Two columns under 380px, three from 380px (the six socials
    in two rows), Patreon on its own full row (support, not a social). Footer from 900px: all seven in one row.
    SoundCloud, the widest word, goes last in its row, so at 380-400px its last few px run into the page gutter, never into Spotify. */
-.links { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); column-gap: var(--space-m); margin-top: var(--space-xs); border-bottom: 2px solid var(--line); }
+.links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-m); margin-top: var(--space-xs); border-bottom: 2px solid var(--line); }
 .links li { min-width: 0; border-top: 2px solid var(--line); }
 .links a {
   display: flex; align-items: center; gap: 0.4rem; min-height: 48px; margin-inline: -0.5rem; padding-inline: 0.5rem;
@@ -734,9 +732,9 @@ html[data-hero='ab'] .slot { display: none; }
 .links-wide { grid-column: 1 / -1; }
 @media (hover: hover) { .links a:hover span { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; } }
 /* Boss fix (D55): columns never narrower than their word, so SoundCloud ends inside its rule (it ran 11px past it at 390). */
-@media (min-width: 380px) { .links { grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr)); } } /* 1.4.4: rem, so big text drops to fewer columns */
+@media (min-width: 380px) { .links { grid-template-columns: repeat(3, minmax(max-content, 1fr)); } }
 @media (min-width: 900px) {
-  .site-footer .links { grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); } /* D63 F1: a cell is at least its word */
+  .site-footer .links { grid-template-columns: repeat(7, minmax(max-content, 1fr)); } /* D63 F1: a cell is at least its word */
   .site-footer .links-wide { grid-column: auto; }
 }
 /* About: the same list, one step bigger (it is the page's content there, not its footer). */
@@ -825,7 +823,8 @@ a, button, summary, label { -webkit-tap-highlight-color: transparent; }
 /* Boss ruling (D55): Home only (the release block follows the player there). Music has no release block, so it keeps the link. */
 @media (max-width: 699px) { .rise-player:has(~ .release) .under-link { display: none; } }
 /* About's larger list (not prototyped): three max-content columns at the bigger size overflow a phone (423px at 390), so keep two until 520px. */
-.links-lg { grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); } /* rem: two columns on a phone, three from ~520px, one when text is big */
+.links-lg { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 520px) { .links-lg { grid-template-columns: repeat(3, minmax(max-content, 1fr)); } }
 /* D63 F3: About's big link grid at 320px: SoundCloud ran past its rule. */
 @media (max-width: 379px) { .links-lg a { gap: 0.4rem; } }
 /* D63 F4: the header brand's pressed state (16e removed the tap highlight). */
@@ -854,13 +853,118 @@ html[data-motion='off']::view-transition-group(*),
 html[data-motion='off']::view-transition-old(*),
 html[data-motion='off']::view-transition-new(*) { animation: none !important; }
 
-/* ---------- WCAG 1.4.4 / 1.4.10: big text in a narrow card ----------
-   Under 17rem of card (a phone at 200% text) the show rows and the poster stack instead of running past the edge. */
-@container (max-width: 17rem) {
-  .row { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'date' 'cal' 'text' 'btn'; row-gap: 0.25rem; padding-block: 0.6rem; }
-  .row > .btn-show { justify-self: start; }
-  .row:not(:has(.cal-btn)) .row-date { grid-row: auto; }
-  .poster { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; grid-template-areas: 'date' 'place' 'meta' 'btn' 'art'; }
-  .poster .btn-show { margin-bottom: var(--space-s); }
-  .poster-art { width: calc(100% + 2 * var(--space-m)); margin: 0 calc(-1 * var(--space-m)) calc(-1 * var(--space-m)); }
+/* =====================================================================================================================
+   17. Text at 200% (a11y audit row 1, WCAG 1.4.4 / 1.4.10, 2026-11-06). DESIGN.md section 17; port this block word for
+   word at the END of global.css (it must come after everything above: it overrides media rules).
+   Root font 200% doubles every rem and em but no px and no px media query, so each fix below keys on text size, not
+   on screen size: a flex row that wraps only when a word no longer fits (flex-basis 0% + the automatic min-width), or
+   a container query in rem (rem in a container query is the root font size, so 21rem is 336px at 100% and 672px at
+   200%). Every threshold sits below what the narrowest 100% layout (320px) measures, so nothing changes at 100%.
+   ===================================================================================================================== */
+
+/* Skip link: -100px hid it only while it was under 100px tall; at 200% its bottom showed at the top of every page. */
+.skip { top: -100vh; }
+
+/* Header. Cause: GLUCAK (1.75rem), the 94px mark and Menu are one row that can't wrap (a fixed bar, px height), and the
+   word's 1.5 line-height made the bar 84px tall at 200% (taller than --header-h, so it covered the tab under it).
+   The wordmark (a logotype) grows with the text up to 11.5% of the header width; the decorative mark drops out when the
+   header is under 19rem; the desktop nav returns to Menu when it can't fit its row (36rem: about 1150px at 200%). */
+.site-header { container-type: inline-size; }
+.brand { line-height: 1; font-size: min(1.75rem, 11.5cqi); }
+@container (width < 19rem) { .mark + .brand-word { display: none; } } /* owner D64: the logo always stays; the word gives way */
+@container (width < 36rem) {
+  .nav-desktop, .header-listen { display: none; }
+  .nav-mobile { display: block; }
 }
+
+/* Hero and 404 buttons: two flex: 1 buttons on one row, no wrap, so SHOWS ran off the screen. Now they wrap only when a
+   word can't fit (flex: 1 = basis 0%, and the automatic min-width keeps each button as wide as its word). */
+.hero-actions, .lost-actions { flex-wrap: wrap; }
+
+/* Release block: the text beside the 96px cover couldn't get narrower than its longest word (DODGE,). It now drops under
+   the cover only when that word doesn't fit beside it. */
+.release { flex-wrap: wrap; }
+.release-text { flex: 1 1 0%; }
+
+/* Spotify box: the loading / blocked note is longer than 352px at 200% and was cut off. The box grows with it; the player
+   fills the box. 352px exactly at 100%, as before (CLS 0). */
+.player-box { height: auto; min-height: 352px; }
+.player { height: 100%; }
+
+/* Poster and show rows (.shows is already a container; the Played list's .rows becomes one).
+   Poster cause: a 1fr text column beside a 55% art column: Tickets (wider than the column at 200%) ran over the art.
+   Under 15rem the art goes under the text, full card width, bled to the sides and foot.
+   Rows cause: 4.5rem date + text + Tickets in one 60px row: Details went off-screen. Under 17rem: date and calendar on
+   one line, the place under them, the button under that. */
+.rows { container-type: inline-size; }
+@container (width < 15rem) {
+  .poster { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: 'date' 'place' 'meta' 'btn' 'art'; }
+  .poster-art { width: calc(100% + 2 * var(--space-m)); margin: var(--space-m) calc(-1 * var(--space-m)) calc(-1 * var(--space-m)); }
+}
+@container (width < 17rem) {
+  .row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'date cal' 'text text' 'btn btn'; row-gap: var(--space-xs); padding-block: var(--space-s); }
+  .row-date, .row:not(:has(.cal-btn)) .row-date { grid-row: auto; align-self: center; }
+  .cal-btn { justify-self: end; align-self: center; margin: 0; }
+  .row > .btn-show { justify-self: start; }
+}
+
+/* Link grid. Cause: three columns at least as wide as their words (from 380px), seven in a row (from 900px): at 200%
+   the words are twice as wide, so the grid ran 280px off a 390 screen and the words overlapped at 1280.
+   Seven in a row from 52rem, three from 21rem, two from 15.5rem, else one. */
+.wrap:has(> .links) { container-type: inline-size; } /* the footer, and About's "Find GLucak" */
+@media (min-width: 900px) {
+  @container (width < 52rem) {
+    .site-footer .links { grid-template-columns: repeat(3, minmax(max-content, 1fr)); }
+    .site-footer .links-wide { grid-column: 1 / -1; }
+  }
+}
+@container (width < 21rem) { .links { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container (width < 15.5rem) { .links { grid-template-columns: minmax(0, 1fr); } }
+
+/* Phone bar. Cause: four 1rem labels in four quarter-width columns: 90px words in 80px columns at 320. The bar is a fixed
+   62px strip that body padding and scroll-padding are measured from (in px), so it can't grow to two rows; its labels
+   grow with the text up to 7% of the bar's width (22px at 320, 27px at 390): one row, with air between the words. */
+.phone-bar { container-type: inline-size; }
+.phone-bar a { font-size: min(1rem, 7cqi); }
+
+/* Shop grid. Cause: two columns at least as wide as "Coming soon" + its glyph; at 200% on a phone they ran off. One
+   column under 11.5rem. */
+.band-shop > .wrap { container-type: inline-size; }
+@container (width < 11.5rem) { .shop-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* 17c. Product detail: the way back to the grid (a11y row 10, WCAG 2.4.3). Last in the detail, after Buy and its note
+   (or the status), so it costs the first screen nothing. The text-link look, one step smaller. */
+.product-back { margin-top: var(--space-xs); font-size: var(--step--1); }
+@media (max-width: 699px) { .product-detail .product-body > .product-back { grid-column: 1 / -1; } }
+
+/* Empty state: "Request a show" was nowrap, 373px at 200% on a 310px line. It may wrap onto two lines now (only when it
+   has a line of its own and still doesn't fit). */
+.empty-actions .btn { white-space: normal; text-align: center; }
+
+/* Video facade: the label sat absolutely at the box's foot, so a long one climbed out of the 16:9 box over the heading.
+   It is in flow at the foot now; the box (aspect-ratio, overflow visible) grows when the label is taller than it. Same
+   place at 100%. */
+.yt { display: flex; flex-direction: column; justify-content: flex-end; overflow: visible; }
+.yt-title { position: relative; z-index: 1; inset: auto; margin: 0 0.75rem 0.6rem; }
+
+/* Page gutter in px, not rem: at 200% the 1.25rem floor doubled the side margins (40px each on a 320 phone) and took the
+   width the bigger words needed (the fitted footer line's "Join." fell to 45px wide). Same values at 100%. */
+:root { --gutter: clamp(20px, 12.8px + 2vw, 40px); }
+/* Menu is pulled into the gutter by its own padding so its word lines up with the page edge; at 200% that padding
+   (0.85rem) outgrew the px gutter and the button stuck 7px off the screen. Never more than the gutter. */
+.nav-mobile summary { margin-right: calc(-1 * min(0.85rem, var(--gutter))); }
+
+/* Product detail on a phone: name and price beside a 48% picture left the name about 4 letters wide at 200% (SAMPL / E:).
+   Under 17rem it stacks: name, the picture at two thirds of the width (tape on its corner), price, then the rest (with no
+   price, the description takes row 3, still under the picture). */
+@container (width < 17rem) {
+  .product-detail { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
+  .product-detail .product-name { grid-column: 1; grid-row: 1; }
+  .product-detail .product-media { grid-column: 1; grid-row: 2; max-width: 66%; }
+  .product-detail .product-tape { grid-column: 1; grid-row: 2; }
+  .product-detail .product-price { grid-column: 1; grid-row: 3; }
+}
+
+/* Poster text column (found on the build's real data, at 100% too): a long place word ("Philadelphia,") is wider than
+   the 1fr column beside the art at 320 and ran under the picture. It hyphenates (lang="en"), and breaks only if it must. */
+.poster-place, .poster-meta { overflow-wrap: break-word; hyphens: auto; }

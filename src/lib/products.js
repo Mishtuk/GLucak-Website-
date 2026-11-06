@@ -94,7 +94,7 @@ export function actionHtml(p) {
 const img = (p, cls, alt) => `<img class="${cls}" src="${esc(p.image)}" alt="${alt}" width="600" height="600" loading="lazy" decoding="async" />`;
 const priceHtml = (p) => (p.status === 'sample' ? '' : `<p class="product-price">${price(p.price)}</p>`); // a sample's price would read as real (D37)
 const card = (p) => `<li class="product-card" data-status="${p.status}"><a class="product-link" href="#${anchor(p)}">${img(p, 'product-media', '')}${tape(p)}<p class="product-name">${esc(p.name)}</p>${priceHtml(p)}${statusP(p)}</a></li>`;
-const detail = (p) => `<article class="product-detail" id="${anchor(p)}" data-status="${p.status}">${img(p, 'product-media', esc(p.name))}${tape(p)}<div class="product-body"><h2 class="product-name">${esc(p.name)}</h2>${priceHtml(p)}${p.description ? `<p class="product-desc">${esc(p.description)}</p>` : ''}${p.sizes?.length ? `<p class="product-sizes">Sizes: ${p.sizes.map(esc).join(', ')}</p>` : ''}${actionHtml(p)}</div></article>`;
+const detail = (p) => `<article class="product-detail" id="${anchor(p)}" data-status="${p.status}">${img(p, 'product-media', esc(p.name))}${tape(p)}<div class="product-body"><h2 class="product-name">${esc(p.name)}</h2>${priceHtml(p)}${p.description ? `<p class="product-desc">${esc(p.description)}</p>` : ''}${p.sizes?.length ? `<p class="product-sizes">Sizes: ${p.sizes.map(esc).join(', ')}</p>` : ''}${actionHtml(p)}<a class="text-link product-back" href="#h-shop">Back to all merch</a></div></article>`;
 
 /** The /shop/ marker: optional Preview chip (shop not switched on), sample banner, grid, then one detail per product. */
 export function productsHtml(rows, { preview = false } = {}) {

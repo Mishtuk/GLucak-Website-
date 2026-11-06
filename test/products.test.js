@@ -154,3 +154,14 @@ test('D49: sold-out products sort last on /shop/, the rest keep their order', ()
   const ids = [...html.match(/<ul class="shop-grid">[\s\S]*?<\/ul>/)[0].matchAll(/href="#product-(\w+)"/g)].map((m) => m[1]);
   assert.deepEqual(ids, ['b', 'c', 'a']);
 });
+
+test('each product detail ends with one "Back to all merch" link to #h-shop', () => {
+  const html = productsHtml([good(), good({ id: 'b', status: 'sold-out' })]);
+  const details = html.split('<article class="product-detail').slice(1);
+  assert.equal(details.length, 2);
+  for (const d of details) {
+    const link = '<a class="text-link product-back" href="#h-shop">Back to all merch</a>';
+    assert.equal(d.split(link).length - 1, 1);
+    assert.ok(d.endsWith(link + '</div></article>') || d.includes(link + '</div></article>'));
+  }
+});

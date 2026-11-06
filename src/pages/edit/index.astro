@@ -89,7 +89,7 @@ html:has(.ed-body) { scroll-padding: 1rem 0 10rem; } /* a focused field never hi
 .ed ::placeholder { color: var(--muted); opacity: 1; }
 .ed-hint { display: block; margin-top: 0.3rem; font-size: var(--step--1); line-height: 1.35; color: var(--muted); }
 .ed-two { display: grid; gap: 0 var(--space-m); }
-@media (min-width: 480px) { .ed-two { grid-template-columns: 1fr 1fr; } }
+
 
 /* Status: radio rows with the full option words (a closed <select> cut them off at 390). The checked row is outlined in
    text and its dot filled; the whole row is the target. */
@@ -132,8 +132,8 @@ html:has(.ed-body) { scroll-padding: 1rem 0 10rem; } /* a focused field never hi
 .ed-ask-btns { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xs); margin-top: var(--space-s); }
 
 /* Tabs: two halves of one bar. The open one is inverted (text ground, bg letters), like the site's crate tabs. */
-.ed-tabs { display: grid; grid-template-columns: 1fr 1fr; margin-top: var(--space-l); border: 2px solid var(--text); border-radius: var(--radius-s); }
-.ed-tab { min-height: 56px; padding: 0.5rem 1rem; font: inherit; font-weight: 800; font-size: var(--step-0); color: var(--text); background: transparent; border: 0; }
+.ed-tabs { display: flex; flex-wrap: wrap; margin-top: var(--space-l); border: 2px solid var(--text); border-radius: var(--radius-s); }
+.ed-tab { flex: 1 1 0%; min-height: 56px; padding: 0.5rem 1rem; font: inherit; font-weight: 800; font-size: var(--step-0); color: var(--text); background: transparent; border: 0; }
 .ed-tab[aria-selected='true'] { background: var(--text); color: var(--bg); }
 .ed-tab:focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
 .ed-help { max-width: 40rem; margin-top: var(--space-m); color: var(--muted); }
@@ -218,6 +218,23 @@ html:has(.ed-body) { scroll-padding: 1rem 0 10rem; } /* a focused field never hi
   .ed-bar .ed-msg { order: 0; grid-column: 1; grid-row: 1; }
   .ed-bar .ed-main { grid-column: 2; grid-row: 1; }
 }
+
+/* Admin console. Tabs cause: a 1fr | 1fr grid, PRODUCTS wider than half the card at 200%: clipped. Now a wrapping flex
+   row: two equal halves while both words fit, else one tab per row. */
+/* Rows and fields: under 17rem (200% on a phone) the row's 1rem padding and the 4.25rem date column left the place and
+   the status words no room. The date / picture sits over the text; padding halves. */
+.ed { container-type: inline-size; }
+@container (width < 17rem) {
+  .ed-row { padding: var(--space-s) var(--space-xs); }
+  .ed-row-head, .ed-row-head:has(.ed-row-date) { grid-template-columns: minmax(0, 1fr); }
+  .ed-choice { padding-inline: var(--space-xs); gap: var(--space-xs); }
+  .ed-choice span { min-width: 0; overflow-wrap: anywhere; }
+}
+/* Date / time fields: the native date input's own minimum width (about 354px at 200%) pushed its grid column off the
+   screen. Fields may shrink; the input still fills its field. */
+.ed-two { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 480px) { .ed-two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.ed-field { min-width: 0; }
         </style>
   </body>
 </html>
