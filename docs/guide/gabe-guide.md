@@ -6,7 +6,7 @@ The screenshots use made-up sample shows and products. Your page will show your 
 
 ## 1. Sign in
 
-1. Open your edit page (we send you the link; save it as a bookmark).
+1. Open your edit page (I send you the link; save it as a bookmark).
 2. Type your **Name** and **Password**, then press **Sign in**.
 
 ![Sign in](shots/01-sign-in-390.webp)
@@ -15,7 +15,7 @@ You stay signed in for 7 days on that phone or computer. Press **Sign out** at t
 
 **If it says "That name and password don't match. Check them and try again."** Look at the spelling and capital letters and try again.
 
-**If it says "Too many tries. Wait 15 minutes, then try again."** The page locked itself after a few wrong tries. That keeps strangers out. Wait 15 minutes and try once, carefully. Still locked out or forgot the password? Message us (see the end) and we will send a new one. Don't keep trying.
+**If it says "Too many tries. Wait 15 minutes, then try again."** The page locked itself after a few wrong tries. That keeps strangers out. Wait 15 minutes and try once, carefully. Still locked out or forgot the password? Message me (see the end) and I will send a new one. Don't keep trying.
 
 ## 2. Add a show
 
@@ -94,7 +94,7 @@ At the bottom of the page press **Download a backup**. It makes one file with yo
 
 ![Download a backup](shots/10-backup-390.webp)
 
-Keep that file somewhere safe, like your Google Drive or email it to yourself. Do it now and then, and before big changes. You never have to do anything with it yourself; if anything is ever lost, we can put it back from that file.
+Keep that file somewhere safe, like your Google Drive or email it to yourself. Do it now and then, and before big changes. You never have to do anything with it yourself; if anything is ever lost, I can put it back from that file.
 
 If it says **You were signed out. Sign in above, then download again.** do that. If it says **Too many backups. Wait an hour, then try again.** it can wait.
 
@@ -102,7 +102,7 @@ If it says **You were signed out. Sign in above, then download again.** do that.
 
 Everything here only changes your shows and products. You can't touch the design, the music or the other pages, and an empty or silly entry just gets an error message. Worst case: don't press Save, reload the page, and it goes back to how the site is now.
 
-**Send us instead** (don't try it here):
+**Send me instead** (don't try it here):
 
 - Big changes: new pages, a new look, the shop going live.
 - A new release: send the title, date and links.
@@ -111,4 +111,4 @@ Everything here only changes your shows and products. You can't touch the design
 
 ## Who to contact
 
-Message us (Alex, the person who runs your site) the way you usually do, and say what you need. If a message in the edit screen says "Tell the person who runs the site", that means us.
+Text or email me, Alex Mishtuk (contact details are in the email this guide came with), and say what you need. If a message in the edit screen says "Tell the person who runs the site", that means me.
