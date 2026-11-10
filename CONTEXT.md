@@ -100,6 +100,15 @@ there with `Laptop:`. The client's own email is in `README.md`; this file adds t
   forwards to Gabe's current Gmail, unless Gabe says otherwise. That address is the site's booking email ("Request a
   show", Shows and About). Don't ask Gabe for a booking email. (His Gmail address is not written in this public repo.)
 
+## Owner's instructions (2026-11-10, Laptop)
+- **Subagents sized to the job to save tokens:** boss (Opus) puts the task above everything and keeps every agent on
+  its brief; new **advisor** (Sonnet, read-only second opinion) and **helper** (Haiku, renames / text swaps / small
+  edits); mediator moved to Haiku. Never use the top model for name changes and the like. Delegate research to subagents.
+- **Design tips from Instagram:** study Charles Liu's (@charles.unemployed) "Removing AI Slop" reels (the owner sent 8,
+  plus @game_feel_prompts' card-draw reel) and his other design reels; learn from them and use them as design context.
+  Results: `docs/research/ig-design-tips.md` (per reel + playbook + "Applies to GLucak") and
+  `docs/research/ai-design-workflow.md` (how to get less-sloppy design out of AI agents). More tasks from the owner to follow.
+
 ## Working together (Desktop and Laptop)
 - **Board:** issue #1 "Coordination board: Desktop and Laptop". Every comment starts with `Desktop:` or `Laptop:`
   (both machines post as Mishtuk; the prefix tells them apart).

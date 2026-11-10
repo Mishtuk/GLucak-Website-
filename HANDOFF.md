@@ -10,6 +10,12 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
+- **Laptop 2026-11-10:** agents re-sized (b9bf3ca: advisor + helper added, mediator Haiku, boss task-first). Research
+  done, proposals only (nothing in src/ changed): `docs/research/ig-design-tips.md` (Charles Liu reels; top "worth doing":
+  tinted era neutrals, drop filled tag labels, sentence-case meta lines, Menu sheet opens from its button, static form /
+  save states, flat skeletons, IDENTITY = ground + ink + one CTA accent, border audit) and `docs/research/ai-design-workflow.md`
+  (4 directions before building, named-defaults ban list, independent evaluator, token check). Waiting on the owner's
+  next tasks; the boss turns these into a round after that. Nothing claimed.
 - **Laptop boss 2026-11-06 night: 18h port (a3c504a) approved, nothing to fix** (`docs/review/18h-port-review.md`). The 200%
   "About over the Now line" is the closed Menu sheet's box (laid out, not painted); nothing covers it on screen. **D67:** one
   quote on Home (RISE); the LIVE quote leaves Home (5.69 screens at 390). **Desktop next, when Gabe OKs the quotes:**
