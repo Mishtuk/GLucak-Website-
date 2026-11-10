@@ -18,7 +18,7 @@ const r = releases()[0];
       <div class={release ? 'rise-play' : 'rise-player'}>
         <a class="skip skip-inline" href="#after-player">Skip the Spotify player</a>
         <div class="player-box">
-          <p class="player-note">Loading the Spotify player. If it doesn't appear, use <strong>Play full songs on Spotify</strong> below.</p>
+          <p class="player-note">Loading the Spotify player. Not showing? Use <strong>Play full songs on Spotify</strong> below.</p>
           <iframe class="player" title="GLucak playlist on Spotify" src={SPOTIFY_EMBED} width="100%" height="352" loading="lazy" allow="encrypted-media; clipboard-write; fullscreen"></iframe>
         </div>
         <p class="under-player" id="after-player">

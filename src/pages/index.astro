@@ -51,7 +51,7 @@ const HERO = 'ab'; // D34: A (GLUCAK over the photo) under 900px, B (photo in th
         <p class="bio-lead v2-bio">Despite facing various difficulties and struggles over the years, Epilepsy survivor and Producer-Rapper/DJ GLucak has shown no intent to give up on either his Faith in God or his mission in creating energetic music to bring others to Christ.</p>
         <div class="push-actions">
           <a class="btn btn-solid" href={PATREON} rel="noopener">Patreon</a>
-          <a class="btn btn-line" href="/about/">About GLucak</a>
+          <a class="btn btn-line" href="/about/">Full bio</a>
         </div>
       </div>
     </div>
@@ -72,7 +72,7 @@ const HERO = 'ab'; // D34: A (GLUCAK over the photo) under 900px, B (photo in th
             {idn.date && (idn.out
               ? <p class="identity-when">Out now. <a class="text-link" href={idn.link} rel="noopener" aria-label="Listen to IDENTITY">Listen</a></p>
               : <><p class="identity-when"><time datetime={idn.date}>{idn.pretty}</time> &middot; {idn.days} {idn.days === 1 ? 'day' : 'days'} to go</p>
-                 <a class="btn btn-line" href={idn.link} rel="noopener">Pre-save IDENTITY</a></>)}
+                 <a class="btn btn-line" href={idn.link} rel="noopener" aria-label="Pre-save IDENTITY">Pre-save</a></>)}
           </div>
         </div>
       </div>

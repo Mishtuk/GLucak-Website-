@@ -28,7 +28,7 @@ const links = ORDER.map((id) => SOCIALS.find((s) => s.id === id));
       <ul class="links links-lg">
         {links.map((s) => <li class={s.id === 'patreon' ? 'links-wide' : undefined}><a href={s.href} rel="noopener"><svg aria-hidden="true"><use href={`#i-${s.id}`} /></svg><span>{s.name}</span></a></li>)}
       </ul>
-      <h2>Booking and shows</h2>
+      <h2>Booking</h2>
       <p class="muted">Book GLucak: <span class="ph-chip inline">Placeholder: booking email pending</span></p>
       <h2>Photo credits</h2>
       <ul class="credit-list">

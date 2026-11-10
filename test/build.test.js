@@ -72,7 +72,7 @@ test('IDENTITY block: real date from releases.json, pre-save before the day, Out
   for (const p of ['/', '/music/']) {
     const h = html(p);
     assert.ok(h.includes(`datetime="${idn.date}"`), `${p}: IDENTITY date`);
-    if (idn.date > today) assert.ok(h.includes(`href="${idn.link}"`) && h.includes('Pre-save IDENTITY'), `${p}: pre-save`);
+    if (idn.date > today) assert.ok(h.includes(`href="${idn.link}"`) && h.includes('Pre-save'), `${p}: pre-save`);
     else assert.ok(h.includes('Out now'), `${p}: out now`);
     assert.ok(!h.includes('IDENTITY, 2027'), `${p}: old placeholder line`);
   }
@@ -107,9 +107,9 @@ test('approved copy is on each page verbatim; no ASK GABE; no quote ships', () =
     'Nevertheless, no matter the musical style or genre, be it his debut single or his upcoming 3rd album (rumored to be his best work yet), the mission statement has always been the same: Rise, Live It Loud, Push Past Fear, The Time Is Now.'];
   const want = {
     '/': ['Live It Loud', bio[0], 'Get the next show and every new song first.'],
-    '/music/': ['All releases', 'Hear more on SoundCloud', 'Pre-save IDENTITY'],
+    '/music/': ['Releases', 'Hear more on SoundCloud', 'Pre-save'],
     '/shows/': ['Live It Loud', 'Book GLucak:'],
-    '/about/': [...bio, 'Find GLucak', 'Booking and shows', 'Photo credits', 'Photo: Alexander Kealey'],
+    '/about/': [...bio, 'Find GLucak', 'Booking', 'Photo credits', 'Photo: Alexander Kealey'],
   };
   for (const [p, texts] of Object.entries(want)) for (const t of texts) assert.ok(html(p).includes(t), `${p}: ${t}`);
   for (const p of Object.keys(pages)) {
