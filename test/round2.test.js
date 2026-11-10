@@ -76,7 +76,7 @@ test('Music: single-link tiles with distinct names, newest first, hatched slot f
   assert.match(tiles[2], /<img class="tile-art" src="\/media\/covers\/duck-dodge-jump-fight\.webp" alt=""[\s\S]*tile-go">Listen</);
   assert.ok(!h.includes('IDENTITY</h3>'), 'IDENTITY has its own block');
   assert.ok(!h.includes('class="release"') && !h.includes('Latest release. Listen on:'), 'RiseBand without its release block on Music');
-  assert.match(h, /<span class="tile-tag">Album<\/span>Dec 19, 2025/);
+  assert.match(h, /<span class="tile-type">Album<\/span>Dec 19, 2025/);
 });
 
 test('footer and About: link grid with inline icons, Patreon wide, no loose socials list', async () => {

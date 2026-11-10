@@ -1,0 +1,11 @@
+Round IG slice 3: --tint, painted values in Chrome (build at 8833, placeholder era, --tint set on :root over CDP, 8-bit values read back through a canvas)
+Shipped: --tint: 0% (D71). The owner picks from docs/review/ig-round/design/tint-sheet.png; the change is `--tint: 5%;` and nothing else.
+
+tint   --bg-2   --line   text on bg-2  muted on bg-2   Chrome computed --bg-2 (oklch)
+0%     #212121  #4c4c4c  14.77         7.68            oklch(0.247589 0.0000122935 32.3028)
+5%     #2b2423  #564e4c  13.96         7.26            oklch(0.26869 0.0109643 32.3028)
+10%    #352724  #5f4f4c  13.13         6.83            oklch(0.289792 0.0219163 32.3028)
+
+0% is today's #212121 / #4c4c4c exactly (0/255 apart); 5% and 10% match the 19b sheet to the digit.
+Lines (computed): 0% oklch(0.417573 0.0000207424 32.3028), 5% oklch(0.430176 0.0109723 32.3028), 10% oklch(0.442779 0.0219239 32.3028).
+test/tokens.test.js holds: ships at 0%, 0% within 1/255 of today's greys, text and muted on --bg-2 >= 4.5:1 at 0, 5 and 10%, no colour literal outside :root (#000 mask allowed).

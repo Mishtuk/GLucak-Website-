@@ -32,7 +32,7 @@ const now = releases()[0];
       <a class="btn btn-solid" href="#music" aria-label="Listen to the music">Listen</a>
       <a class="btn btn-line" href="#shows" aria-label="See upcoming shows">Shows</a>
     </div>
-    <p class="now"><span class="now-tag">Now</span> <Fragment set:html="<!--gl:now-->" /><a href={now.link} rel="noopener">Out now: {now.title}</a><Fragment set:html="<!--/gl:now-->" /></p>
+    <p class="now"><Fragment set:html="<!--gl:now-->" /><a href={now.link} rel="noopener">Out now: {now.title}</a><Fragment set:html="<!--/gl:now-->" /></p>
   </div>
   <p class="ph-chip hero-chip">Placeholder colors</p>
 </section>

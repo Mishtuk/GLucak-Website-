@@ -20,9 +20,11 @@
   --muted: #b3b3b3;
   --texture: url('/grain.png');
 
-  /* Derived: no extra era roles */
-  --bg-2: color-mix(in srgb, var(--text) 7%, var(--bg));
-  --line: color-mix(in srgb, var(--text) 26%, var(--bg));
+  /* Derived: no extra era roles. --tint (DESIGN 19b, D71) mixes that share of the era accent into the two dark
+     neutrals, in OKLCH; 0% = the plain greys. The owner picks the value from docs/review/ig-round/design/tint-sheet.png. */
+  --tint: 0%;
+  --bg-2: color-mix(in oklch, var(--accent) var(--tint), color-mix(in srgb, var(--text) 7%, var(--bg)));
+  --line: color-mix(in oklch, var(--accent) var(--tint), color-mix(in srgb, var(--text) 26%, var(--bg)));
 
   /* Type */
   --font-display: 'Big Shoulders Display', Impact, 'Arial Narrow', sans-serif;
@@ -279,7 +281,6 @@ img.duo { filter: url('#duo'); }
 .hero-actions .btn { flex: 1; }
 .now { display: flex; align-items: center; gap: var(--space-s); min-height: 48px; margin-top: 0.25rem; font-weight: 700; font-size: var(--step--1); }
 .now a { display: inline-flex; align-items: center; min-height: 48px; text-underline-offset: 3px; }
-.now-tag { padding: 0 0.45rem; background: var(--text); color: var(--bg); font-size: var(--step--1); line-height: 1.5; font-weight: 700; flex: none; }
 .hero-chip { bottom: 0.35rem; }
 
 /* Hero B: photo in the name, at his own break. The slot stands taller than the letters. */
@@ -343,10 +344,9 @@ html[data-hero='b'] .slot img { width: 100%; height: 100%; object-fit: cover; ob
 .listen-on a { display: inline-flex; align-items: center; min-height: 48px; text-underline-offset: 3px; }
 
 /* "From Gabe" (D21): his words, exact, credited. One per band at most, after the main content, static. Hard left rule
-   in text, same weight as the band edges; the tag repeats the Now tag; no accent (the era color stays on actions). */
-/* Compact: the tag floats into the quote's first line (no line of its own); the credit is one 48px link line. */
+   in text, same weight as the band edges; no accent (the era color stays on actions). No label (DESIGN 19a): the rule,
+   the quote marks and the credit say whose words they are. The credit is one 48px link line. */
 .quote { position: relative; margin-top: var(--space-m); padding-left: var(--space-m); border-left: 4px solid var(--text); max-width: 36rem; }
-.quote-tag { float: left; margin: 0.1rem 0.6rem 0 0; padding: 0 0.45rem; background: var(--text); color: var(--bg); font-size: var(--step--1); font-weight: 700; line-height: 1.5; }
 /* Quote and credit run inline: the credit follows the last word when it fits (short quotes take one line). */
 .quote-text, .quote-text p { display: inline; font-size: var(--step-1); font-weight: 700; line-height: 1.3; }
 .quote-text p::before { content: '\201C'; }
@@ -547,9 +547,7 @@ iframe.yt { width: 100%; border: 0; }
 .ph-chip.inline { position: static; display: inline-block; margin-top: var(--space-xs); }
 /* Sign-up honeypot: off-screen for people, still in the form for bots. */
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
-.release-meta { font-size: var(--step--1); color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
 .credit { font-size: var(--step--1); color: var(--muted); }
-.coming .release-row { border-top: 1px solid var(--muted); padding-top: var(--space-s); }
 .credit-list { font-size: var(--step--1); color: var(--muted); }
 
 /* ---------- Shop (D36, D37): the merch table ---------- */
@@ -707,8 +705,9 @@ html[data-hero='ab'] .slot { display: none; }
 .tile-artists { color: var(--muted); font-size: var(--step--1); line-height: 1.25; }
 .tile-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.5rem; color: var(--muted); font-size: var(--step--1); line-height: 1.25; font-variant-numeric: tabular-nums; }
 .tile[data-state='coming'] .tile-meta { color: var(--text); font-weight: 700; }
-/* Album / EP only (singles are most of the grid, so the tag marks the exception). The Now tag's look. */
-.tile-tag { padding: 0 0.4rem; background: var(--text); color: var(--bg); font-weight: 700; line-height: 1.5; }
+/* Album / EP only (singles are most of the grid, so the word marks the exception). A plain word, no fill (DESIGN 19a):
+   text 700 beside the muted date; the meta row's gap separates them. */
+.tile-type { color: var(--text); font-weight: 700; }
 .tile-go { margin-top: 0.15rem; font-weight: 700; font-size: var(--step--1); line-height: 1.25; text-decoration: underline; text-underline-offset: 3px; }
 @media (hover: hover) { .tile-link:hover .tile-title { text-decoration: underline; text-decoration-thickness: 0.06em; text-underline-offset: 0.1em; } }
 @media (min-width: 700px) { .crate { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-xl) var(--space-l); } }
@@ -721,7 +720,7 @@ html[data-hero='ab'] .slot { display: none; }
    the show rows, so the grid reads as a list, not as buttons. Two columns under 380px, three from 380px (the six socials
    in two rows), Patreon on its own full row (support, not a social). Footer from 900px: all seven in one row.
    SoundCloud, the widest word, goes last in its row, so at 380-400px its last few px run into the page gutter, never into Spotify. */
-.links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-m); margin-top: var(--space-xs); border-bottom: 2px solid var(--line); }
+.links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-m); margin-top: var(--space-xs); }
 .links li { min-width: 0; border-top: 2px solid var(--line); }
 .links a {
   display: flex; align-items: center; gap: 0.4rem; min-height: 48px; margin-inline: -0.5rem; padding-inline: 0.5rem;
@@ -807,8 +806,7 @@ a, button, summary, label { -webkit-tap-highlight-color: transparent; }
 .cal-btn:active { background: linear-gradient(var(--text), var(--text)) center / 36px 36px no-repeat; color: var(--bg); }
 .tile-link:active .tile-art, .product-link:active .product-media { outline: 4px solid var(--text); outline-offset: 0; }
 .tile-link:active .tile-text { background: var(--text); color: var(--bg); }
-.tile-link:active .tile-text :is(.tile-artists, .tile-meta) { color: var(--bg); }
-.tile-link:active .tile-tag { background: var(--bg); color: var(--text); }
+.tile-link:active .tile-text :is(.tile-artists, .tile-meta, .tile-type) { color: var(--bg); }
 .product-link:active .product-name { background: var(--text); color: var(--bg); }
 .yt:active { border-style: solid; border-color: var(--text); }
 .yt:active .yt-play { background: var(--text); }
@@ -1018,7 +1016,6 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 .v2-thumb { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--bg-2); border: 2px solid var(--line); }
 .v2-thumb .yt-play { top: 50%; width: 56px; height: 56px; }
 .v2-vtitle { font-weight: 700; font-size: var(--step--1); line-height: 1.3; }
-.v2-tag { padding: 0 0.4rem; background: var(--text); color: var(--bg); }
 @media (hover: hover) { .v2-vid a:hover .v2-vtitle { text-decoration: underline; text-underline-offset: 3px; } }
 .v2-vid a:active .v2-thumb { border-color: var(--text); }
 .v2-vid a:active .v2-vtitle { background: var(--text); color: var(--bg); }

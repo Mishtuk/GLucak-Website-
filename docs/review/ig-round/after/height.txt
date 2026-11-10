@@ -1,0 +1,8 @@
+Round IG after slices 1, 3, 5 (build at HEAD 595f2ca + slice 1/3/5 edits). Home scrollHeight at 390x660, reduced motion, Spotify/YouTube blocked as in the baseline.
+
+Quotes off (QUOTES_APPROVED=false): 3631px = 5.502 screens. Baseline 3633px = 5.505. Bar: <= 3633px. PASS (-2px, all from the .links border-bottom; 19a added 0).
+Quotes on, D67 setup (QUOTES_APPROVED=true, temp build into a scratch outDir, served with DIST_DIR): 3775px = 5.720 screens. Cap 5.8 (3828px). PASS.
+  The RISE quote block is 132px (was 160px before the "From Gabe" tag went); quotes-on minus quotes-off = 144px = the 132px block + its 12px top margin.
+  Against "3633 + the quote's height": 3633 + 132 = 3765, so 3775 is 10px over that literal sum (the 12px margin is not in the block height); 3775 - 3633 = 142 is inside the 144px footprint. Flagged for the boss.
+content.js restored from a copy after the temp build; `git status` shows no change to src/components/content.js.
+a11y200 (OUT=docs/review/ig-round/after-a11y): 0 views with issues, same 48 views as baseline. Home 390 page 3633 -> 3631; Music 390 3292 -> 3234 (the Album tag no longer wraps).

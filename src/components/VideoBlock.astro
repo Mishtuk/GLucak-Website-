@@ -22,7 +22,7 @@ const items = (rows.length ? rows : [{ title: 'GLucak on YouTube' }]).map((v) =>
             {v.thumb && <img class="yt-img" src={`${v.thumb}-640.webp`} srcset={`${v.thumb}-640.webp 640w, ${v.thumb}-1280.webp 1280w`} sizes={i === 0 ? "(min-width: 900px) 34vw, 82vw" : "(min-width: 900px) 22vw, 82vw"} width="1280" height="720" alt="" loading="lazy" decoding="async" />}
             <span class="yt-play" aria-hidden="true"></span>
           </span>
-          <span class="v2-vtitle">{i === 0 && rows.length > 0 && <span class="v2-tag">Latest</span>} {v.title}</span>
+          <span class="v2-vtitle">{v.title}</span>
         </a>
       </li>
     ))}
