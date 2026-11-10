@@ -12,7 +12,7 @@
 ## Now working on
 - **Laptop 2026-11-10 round IG (D69), plan `docs/review/round-ig-plan.md`:** claims `DESIGN.md`, `src/styles/global.css`,
   `src/components/{Hero,Quote,VideoBlock,Signup}.astro`, `src/pages/index.astro`, `src/pages/{music,shows,about}/`,
-  `public/js/app.js`, `test/round2.test.js`, `test/tokens.test.js`, `docs/review/ig-round/`, `docs/copy/ig-round.md`.
+  `public/js/app.js`, `src/components/RiseBand.astro`, `test/{round2,build,tokens,signup-ui}.test.js`, `docs/review/ig-round/`, `docs/copy/ig-round.md`.
   Not server.js or src/lib/. Owner away; nothing published / paid / sent to Gabe.
 - **Laptop 2026-11-10:** agents re-sized (b9bf3ca: advisor + helper added, mediator Haiku, boss task-first). Research
   done, proposals only (nothing in src/ changed): `docs/research/ig-design-tips.md` (Charles Liu reels; top "worth doing":
