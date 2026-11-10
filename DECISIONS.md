@@ -245,3 +245,23 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   is the raw, lived voice the site is about, next to his song. "Hope to see you there!" is a sign-off that the shows list
   under it already makes. Re-ruling the cap for a 40px sign-off would open the door to every later addition, and
   restyling the credit trades a measured overflow for 28px.
+- **D69** (2026-11-10, Laptop boss, round IG, `docs/review/round-ig-plan.md`): Who builds while the Desktop is silent? **Ruling:**
+  this round the Laptop also builds in `src/`, after claiming its files in HANDOFF "Now working on" (pull, claim, push first). It
+  never touches `server.js` or `src/lib/` (the Desktop's standing claims). The designer specs against the build (DESIGN.md section 19
+  with exact CSS deltas), not the prototype, which has been behind the build since the 18h port; DESIGN.md still comes before any
+  build. The split returns to D2's when the Desktop answers on #1. **Why:** the Desktop has been silent on #1 since Nov 7, the owner
+  wants the site moving while he is away, and porting through a stale prototype would cost a second pass for no gain.
+- **D71** (2026-11-10, Laptop boss, round IG): Which reel lessons (`ig-design-tips.md` 4b) go in? **Ruling:** adopt (1) no filled
+  tag labels (Now, From Gabe, Album / EP, Latest become plain words or go; dead `.release-meta` removed), (2) a sign-up Sending state
+  with a guard against double submits, (3) a `--tint` token that mixes the era accent into `--bg-2` / `--line` in OKLCH, **shipped
+  at 0%** until the owner picks from a 3-option sheet, (4) a redundant-words pass on our own strings (never Gabe's), (5) at most 3
+  rules removed where space already groups. Cut: press scale (D47 stands: instant colour swap, no movement), a Menu open animation,
+  skeletons (already reserved: 352px player, 16:9 thumbs, CLS 0), IDENTITY 2+1 (waits on Gabe's colours), concentric radii (moot),
+  and every pulse / glow / shine / ripple (Hard rule 1). No new motion this round; Home stays within D39 (quotes-off at most 5.54).
+  **Why:** each adopted item removes a known AI-default tell or a real defect at no height and no motion; the owner's standing taste
+  is to see palette options before one rolls out, so the tint lands as a one-value switch, not a change of look.
+- **D73** (2026-11-10, Laptop boss, from `ai-design-workflow.md` 3.9-3.10): How is a round judged? **Ruling:** every round ends
+  with an independent evaluator (glucak-advisor, never the agent that built it): viewport-size shots at 390x660 and 1280x800,
+  before and after, scored 1-5 on design quality and originality (each counted twice), craft and function, with the calibration
+  examples in the round plan, a hard-rule check, and at most 3 ranked fixes that become the next round. **Why:** builders grade
+  their own work too kindly, and a fixed rubric keeps rounds comparable; the boss still makes the final call.
