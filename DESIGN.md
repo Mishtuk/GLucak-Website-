@@ -1540,3 +1540,204 @@ button); there is no `[aria-disabled]` rule for `.btn` and none is added (no glo
 focus stays on Join and a screen reader hears "Sending…" then the answer from the same live region. A tap while sending still
 gives 16e's instant swap (the tap was felt; the status line says why nothing else happens). No JS: the form posts as before.
 Text through `textContent` only.
+
+## 20. Round IG2: the section label, Spotify's Play on screen one, About's right column, no middle dots (Laptop designer, 2026-11-10)
+Sources: `docs/review/ig-round/eval.md` fixes 1-3, `docs/review/round-ig2-plan.md` slice A, D6, D39, D47, D69, D75, D77.
+**Specified against the build** (repo at 334b539, `npx astro build --outDir SCRATCH\dist-design`, `node server.js` on port 8851,
+empty `DATA_DIR`). Every look was injected into the served build over CDP (no `src/` edit). Line numbers are
+`src/styles/global.css` at 334b539. Shots and the sheet: `docs/review/ig-round2/design/`. Scripts: `SCRATCH\ds\` (`m3.mjs` the
+directions, `m10.mjs` the final numbers; `dirs.mjs`, `b20.mjs`, `c20.mjs`, `d20.mjs` are the injected deltas).
+**Spotify was NOT blocked for any Play number.** Note for whoever measures next: `Network.setBlockedURLs` on the page session
+does not block the embed (it is an out-of-process frame with its own network), so "blocked" shots have been loading it too.
+The box heights below do not depend on it (the loading note fits inside the box either way).
+
+**Hard rules held:** nothing new moves; no transition, animation or transform added (`writing-mode` in direction 4 is not a
+transform); nothing can flash; no new colour role, no new font; the glow untouched. Measured with everything recommended
+injected: `document.getAnimations()` on Home = **1** with motion on (the glow), **0** under reduced motion.
+Home at 390x660, quotes off: **3631 -> 3297px** (bar 3631). 320x568: 3734 -> 3420; 1280x800: 4287 -> 4277. About 390: 2169 ->
+2159; About 1280: 1916 -> 1906; Music 390: 3234 -> 3216. The first show's poster at 390 moves up from y 1330 to y 996.
+
+**Generic defaults in my first plan, and what replaced each (ai-design-workflow 5):**
+| Default I reached for | Why it is the template look | Instead |
+|---|---|---|
+| The label as a small word on its own line above the big heading, inside the band (direction 3) | That is the eyebrow, slop #13 / #18, even without tracked caps | Shot only because the brief asks for it; rejected on numbers (+83px Home, 4.05:1 on the About photo) |
+| Label in the accent colour so it "pops" without a fill | Accent as small text on `bg` is banned (section 3) and spends the era colour on a label | `text` only |
+| Direction 4 as masking tape or a sticker with the word on it | Tape is a filled tag by another name | The spine: the word set down the phrase's edge like a record spine in a crate, no ground at all |
+| 20b: trim every margin until Play shows (the eval's "~70px") | A hope, not a plan: measured, the margins don't add up (20b) | Change the one thing that decides Play's offset: the embed's height on phones |
+| 20b: our own big round Play button linking to Spotify | A fake control, and it isn't Spotify's Play | Spotify's own player, at the size whose Play fits |
+| 20c: three stacked outlined CTA buttons | The CTA stack, plus the ghost buttons the eval named as a tell | A setlist: three ruled rows of display-face words, the site's own ruled-list language (show rows, link grid); buttons shot as the fallback |
+| 20c: a second photo with a button (the eval's other idea) | A decorative image is not an action; photo slots are 18c's job | Actions only |
+| 20d: swap the dot for a slash, pipe or en dash | The same meta-string tell with another glyph | Two spans; weight and colour separate them (19a) |
+| 20d: "LATEST SINGLE" in small caps over the date | Tracked caps eyebrow (banned) | Sentence case, `text` 700, as today |
+
+### 20a. The section label: four directions (D75)
+Sheet: **`docs/review/ig-round2/design/labels-sheet.png`** (top row Home 390x660 scrolled 240px, hero actions to the RISE edge;
+bottom row /shows/ 1280x800 at 50%). Singles: `20a-d{1-4}-home-390.png`, `20a-d{1-4}-shows-1280.png`. Contrast is WCAG 2 of
+the label's colour against the **worst pixel** under its own box (text hidden, then shot), so grain and photos count.
+| Direction | D6 (exact word, 17px, same `<h1>`/`<h2>`) | Frees above RISE at 390 | Home 390 quotes off | Worst contrast: Home 390 / Shows 1280 / About 1280 | Filled? |
+|---|---|---|---|---|---|
+| 1. Control: the crate tab as built | yes | 0 | 3631 | 17.32 / 17.32 / 17.32 | **yes** |
+| **2. The word unfilled, standing on the 4px rule** | yes | **10px** | **3621** | **14.30 / 17.32 / 17.32** | no |
+| 3. The word as a line in the band, above the phrase | yes | 4.7px (frees the 34px reserve, adds a 29px line to all four bands) | **3714 (over the bar)** | 10.00 / 12.28 / **4.05 (fails)** | no |
+| 4. The spine: the word down the phrase's left edge, top to bottom (`writing-mode: vertical-rl`) | yes, but read sideways | 34px | 3563 | 10.49 / 12.46 / **3.80 (fails)** | no |
+Direction 4 also narrows every fitted phrase by 25px at 390 (about 7% smaller type) and at 1280 is a 17px word beside a 213px
+phrase: it reads as a margin note, not before the phrase. Directions 3 and 4 put the word on About's crowd photo, where it
+fails 4.5:1.
+
+**Recommendation: 2.** It is the only direction that beats the control on all three gate tests: same D6 terms, 10px back, no
+fill. It keeps the crate idea's position (the word stands on the band's top edge, where a divider's lettering sits) and loses
+only the white block, which is exactly what the eval objected to. On sub pages the first band's rule becomes visible so the word
+has a rule to stand on (today it is transparent there; without it the word floats under the header). **Supersedes** section 1
+point 2's tab (the word stays, the block goes) and 19c's line-297 ruling (the rule now also shows at the top of sub pages).
+
+**CSS (global.css, exact), direction 2:**
+- Line 51: `--tab-h: 2.125rem;` becomes `--tab-h: 1.5rem;` (the hero reserve, `.sub`'s top padding and `scroll-padding-top`
+  follow; the 404's hatched `.tab-blank` becomes 24px tall, still standing on its band).
+- Lines 301-308 become:
+  ```css
+  /* The section word (DESIGN 20a, D75): the exact nav word standing on the band's 4px rule, where a crate divider's
+     lettering sits. No fill. It costs no height inside the band. */
+  .spine { position: static; font-weight: 400; }
+  .tab {
+    position: absolute; left: max(var(--gutter), calc((100% - var(--container)) / 2)); top: calc(-1 * var(--tab-h) - 4px); height: var(--tab-h);
+    display: inline-flex; align-items: flex-end; padding-bottom: 0.25rem;
+    color: var(--text);
+    font-family: var(--font-body); font-size: 1.0625rem; font-weight: 700; line-height: 1;
+  }
+  ```
+  (`.tab-blank` at line 775 still sets its own ground and width.)
+- Line 536 `.sub > .band:first-child { border-top-color: transparent; }`: delete.
+- No markup change. No hover or pressed state (the word is not a link).
+**If the boss keeps the control:** no 20a change; use 20b's "control" column.
+
+### 20b. Spotify's Play on the first 390x660 screen
+**Measured (Spotify unblocked, 390x660, the embed 325px wide in the card):** Play is a white disc at **offset 140-184px inside
+the 352px embed** (44px, x 296-339; `20b-play-offset-352.png`). The iframe's top today is **555.9**; the phone bar's top is
+**598** (660 - 62). So with the 352 embed the target would be **iframe top <= 414**: **142px** to find.
+
+**The listed sources cannot give 142px.** Under the slogan (bottom at y 313) the column at 390 is: 16 hero-actions margin, 52
+Listen / Shows, 4 `.now` margin, 48 Now line, 50 hero padding-bottom (the 34px tab reserve + 16), 4 rule, 16 band padding-top,
+44.8 RISE, 8 card padding-top. Setting every adjustable one to zero, the RISE line included, frees 16 + 4 + 50 + 16 + 44.8 + 8 =
+**138.8 < 142**. Play stays covered unless the slogan, GLUCAK, Listen / Shows, the face strip or the Now line move, which the
+brief keeps. Spotify's 152px compact embed puts Play at 117-147 (`20b-play-offset-152.png`): iframe top <= 451, 105px to find,
+still more than the listed sources give without deleting the RISE line.
+
+**The answer: on phones (under 700px) Home's embed is Spotify's 80px player.** Play sits at **offset 46-74** (a 28px disc, x
+322-350; `20b-play-offset-80.png`), so the **target is iframe top <= 524px at 390x660** (598 - 74). Same embed URL (the box
+height decides Spotify's layout): cover, playlist title, current track, Preview, previous / next / save / more / Play. Not shown
+on phones: the three-row track list; it stays from 700px and on `/music/` (`.rise-player` keeps 352). "Play full songs on
+Spotify" stays right under it. The first show rises 334px on phones.
+**Boss calls:** (a) phones stop seeing the track list on Home; (b) Spotify's own Play is 28px here, not 44 (their control; it
+passes WCAG 2.5.8's 24px, not our 48px floor for our own targets, the same kind of exception as section 9's focus ring); (c) 80px
+is Spotify's older compact height, not one of the two their generator offers today (152, 352). It renders as shot today; if
+Spotify ever changes it, the box keeps 80px and nothing jumps (the loading note is 56px at 390, 76px at 320).
+
+**Where the px come from** (iframe top 555.9 -> target <= 524; a 4px card padding is kept with 2 so RISE doesn't sit on the player):
+| Source (all under 700px) | With 20a = 2 (recommended) | With the control tab |
+|---|---|---|
+| 20a's smaller reserve (`--tab-h` 34 -> 24px) | -10 | 0 |
+| `.hero-actions` margin-top 16 -> 12 | -4 | -4 |
+| `.now` margin-top 4 -> 0 | -4 | -4 |
+| `.hero-inner` padding-bottom: tab-h + 16 -> tab-h + 4 (2) / tab-h + 0 (control) | -12 | -16 |
+| `.band-rise` padding-top 16 -> 8 | -8 | -8 |
+| `.v2-card` padding-top 8 -> 4 (2) / 0 (control) | -4 | -8 |
+| **Iframe top, measured** | **513.9** (Play 560-588: **10px clear** of the bar) | **515.9** (Play 562-590: 8px clear) |
+Other phones (recommended set): 360x640 Play 3px clear; 430x932 264px clear (it was already on screen); 320x568 not on screen
+(iframe 482, bar 506: that phone would need the hero itself to change). The slogan, GLUCAK, Listen / Shows, the face strip, the
+Now line and RISE are untouched. Caveat: where `env(safe-area-inset-bottom)` is non-zero (iPhone home-screen mode) the bar is
+up to 34px taller and covers Play; in normal Safari it is 0.
+
+**CSS (global.css, exact): append at the end of the file** (after line 1096, so it wins over line 887's `min-height: 352px` and
+line 1061's card padding):
+```css
+/* DESIGN 20b: Spotify's Play on the first phone screen. Home's player (.rise-play) is Spotify's 80px player under 700px
+   (Play sits 46-74px down it); /music/ (.rise-player) keeps 352. The loading note fits the 80px box. */
+@media (max-width: 699px) {
+  .rise-play .player-box { min-height: 80px; }
+  .rise-play .player-note { padding: 0.5rem 0.75rem; line-height: 1.25; }
+  .hero-actions { margin-top: var(--space-s); }
+  .now { margin-top: 0; }
+  .band-rise { padding-top: var(--space-xs); }
+  .hero-inner { padding-bottom: calc(var(--tab-h) + 0.25rem); }
+  .v2-card { padding-top: 0.25rem; }
+}
+```
+With the control tab instead, the last two lines are `.hero-inner { padding-bottom: var(--tab-h); }` and `.v2-card { padding-top: 0; }`.
+No markup change: the iframe keeps `height="352"` (the no-CSS fallback); CSS sizes it. `test/build.test.js:132` still passes.
+**Supersedes** section 5's "the official embed at exactly 352px" on Home under 700px, and section 7's "Box keeps 352px" there
+(80px). Shots: `20b-home-390-before-unblocked.png`, `20b-home-390-rec.png`, `20b-home-390-ctrl.png`.
+
+### 20c. About from 900px: the right column opens with the actions
+Today the 5fr column is empty beside the bio; Patreon sits at its bottom (`align-items: end`), at y 794 at 1280x800, where it
+peeks in as a second orange fill beside the header's LISTEN. **The setlist:** at the top of the column, three ruled rows in the
+display face, like a setlist taped beside the bio: **Listen** (`/music/`), **Shows** (`/shows/`), **Patreon**. Existing words
+only. No fill, so the header's LISTEN is the view's one accent fill (measured: one at 1280 and at 900; two today). Rows 72px
+(48px+), a 2px `line` rule over each (the link grid's rule), `--step-3` (56px at 1280). Hover underlines; pressed is 16e's swap.
+Phones (under 900px) unchanged: the list is not shown and the solid Patreon button stays (About 390 2169 -> 2159, only 20a's
+10px). Shots: `20c-about-1280-setlist.png` (recommended), `20c-about-900-setlist.png`, `20c-about-1280-buttons.png` (fallback:
+three outlined buttons, Patreon outlined from 900px), `20c-about-1280-before.png`.
+
+**Markup, `src/pages/about/index.astro`: the `push-actions` div becomes:**
+```astro
+<div class="push-actions about-actions">
+  <ul class="about-set">
+    <li><a href="/music/">Listen</a></li>
+    <li><a href="/shows/">Shows</a></li>
+    <li><a href={PATREON} rel="noopener">Patreon</a></li>
+  </ul>
+  <a class="btn btn-solid about-patreon" href={PATREON} rel="noopener">Patreon</a>
+</div>
+```
+(server.js's `externalize` adds the new-tab hint to both Patreon links, as it does today. Home's `.push-actions` is not
+touched: every rule below is scoped to `about-*` classes.)
+
+**CSS (global.css, exact):**
+- After line 440 (`.push-actions`), add:
+  ```css
+  /* About from 900px (DESIGN 20c): the right column opens with a setlist of actions, no fill (the header's LISTEN is the
+     view's one accent). Phones keep the solid Patreon button. */
+  .about-set { display: none; }
+  @media (min-width: 900px) {
+    .about-actions { display: block; align-self: start; }
+    .about-patreon { display: none; }
+    .about-set { display: grid; }
+    .about-set li { border-top: 2px solid var(--line); }
+    .about-set a { display: flex; align-items: center; min-height: 4.5rem; font-family: var(--font-display); font-weight: 900; font-size: var(--step-3); line-height: 1; text-transform: uppercase; text-decoration: none; }
+  }
+  @media (hover: hover) { .about-set a:hover { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; } }
+  ```
+- Line 797 (16e's pressed list): add `.about-set a:active,` to the selector list (instant swap, no transition).
+**If the boss prefers buttons:** the same div without the `ul` and without `about-patreon`, with
+`<a class="btn btn-line about-wide" href="/music/">Listen</a><a class="btn btn-line about-wide" href="/shows/">Shows</a>` before
+Patreon, and `.about-wide { display: none; } @media (min-width: 900px) { .about-actions { align-self: start; display: grid; gap: var(--space-s); }
+.about-actions .about-wide { display: inline-flex; } .about-actions .btn-solid { background: color-mix(in srgb, var(--bg) 62%, transparent); color: var(--text); border-color: var(--text); } }`.
+
+### 20d. The two middle-dot lines become two spans (the 19a pattern)
+Word `text` 700, date `muted` 400, in a flex row; the row's `column-gap` separates them. A literal space between the spans keeps
+`textContent`, find-in-page and screen readers reading "Latest single Sep 4, 2026" (a flex row doesn't paint it). Order and
+words unchanged. Shots: `20d-kicker-{390,1280}-{before,after}.png`, `20d-idn-{390,1280}-{before,after}.png`.
+| Line | Word (`text` 700) | Date (`muted` 400) | Height |
+|---|---|---|---|
+| Release card kicker (`RiseBand.astro:34`) | Latest single | Sep 4, 2026 | 390: 40 -> 20px (now one line); 1280: 20 |
+| IDENTITY countdown (`index.astro:74`, `music/index.astro:38`) | 276 days to go | August 13, 2027 (first, as today) | unchanged (47 at 390, 23 at 1280) |
+Contrast: muted on `bg-2` 7.68:1 (19b), higher on `bg`; `text` as today.
+
+**Markup (exact):**
+- `src/components/RiseBand.astro:34` becomes (the date expression, its `replaceAll` and its no-break spaces stay exactly as they are):
+  `<p class="v2-kicker"><span class="v2-kicker-type">Latest {r.type ?? 'release'}</span>{r.date && <>{' '}<span>{dateLine(r.date).replaceAll(…unchanged…)}</span></>}</p>`
+- `src/pages/index.astro:74` and `src/pages/music/index.astro:38`, the countdown `<p>` becomes:
+  `<p class="identity-when identity-count"><time class="identity-date" datetime={idn.date}>{idn.pretty}</time>{' '}<span>{idn.days} {idn.days === 1 ? 'day' : 'days'} to go</span></p>`
+- `src/pages/v2/index.astro`: not touched (frozen comparison page).
+
+**CSS (global.css, exact):**
+- Line 998 becomes `.v2-kicker { display: flex; flex-wrap: wrap; column-gap: 0.5rem; color: var(--muted); font-size: var(--step--1); font-weight: 400; line-height: 1.25; }`
+  followed by a new line `.v2-kicker-type { color: var(--text); font-weight: 700; }`
+- After line 460 (`.identity-when`): `.identity-count { display: flex; flex-wrap: wrap; column-gap: 0.5rem; }` and
+  `.identity-date { color: var(--muted); font-weight: 400; }`
+Tests: `test/v2port.test.js:76` still finds the kicker and its no-break date. Slice 2's grep then finds no `&middot;` / `·`
+outside `src/pages/v2/`.
+
+### 20e. Visible changes this round (ai-design-workflow 3.12: at most 3)
+1. Home on phones: Spotify's 80px player with Play on screen one (the page 334px shorter). 2. The section word loses its white
+block (20a = 2) and sub pages show their top rule. 3. About from 900px opens with the setlist. 20d is a detail inside existing
+lines (one line shorter at 390).
