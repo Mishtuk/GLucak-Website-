@@ -22,7 +22,7 @@ const shortDate = (d) => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', 
                 <span class="tile-text">
                   <h3 class="tile-title">{r.title}</h3>
                   {credit(r) && <span class="tile-artists">{credit(r)}</span>}
-                  <span class="tile-meta">{TYPE_TAG[r.type] && r.type !== 'single' && <span class="tile-tag">{TYPE_TAG[r.type]}</span>}{r.coming ? `Out ${dateLine(r.date)}` : dateLine(r.date)}</span>
+                  <span class="tile-meta">{TYPE_TAG[r.type] && r.type !== 'single' && <span class="tile-type">{TYPE_TAG[r.type]}</span>}{r.coming ? `Out ${dateLine(r.date)}` : dateLine(r.date)}</span>
                   <span class="tile-go">{r.coming ? 'Pre-save' : 'Listen'}</span>
                 </span>
               </a>
