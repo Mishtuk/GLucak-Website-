@@ -441,6 +441,7 @@ Same header, footer, bar, tokens and tabs. Each page opens with its one fitted p
 | **Embed blocked or slow** | Box keeps 352px. A note under the iframe, seen only while it loads or if it's blocked: "Loading the Spotify player. If it doesn't appear, use Play full songs on Spotify below." No layout jump. |
 | **No JS** | Page reads fully: no motion, headings visible, facade is a link, server-rendered shows. |
 | **Sign-up** | Success: "You're on the list." Bad email: "Enter an email like name@example.com." Server down: "That didn't go through. Try again." All in `role="status"`. |
+| **Sign-up sending** (DESIGN 19d) | Valid email sent: the status line reads "Sending…" and Join gets `aria-disabled="true"`; another tap or Enter does nothing until the server answers, then one of the three messages above replaces it and `aria-disabled` goes. Join keeps its look (no grey, no spinner, no new words on it). A bad email never reaches Sending. No JS: the form posts as before. |
 | **Link not known yet** | Build fails rather than ships `#`. In the prototype these are dashed links. |
 
 ## 8. Motion (hard rule)
@@ -1381,3 +1382,161 @@ hide is Home-only (`.v2-main .played`), so Home's empty state shows no Played ro
    .under-link` line, `.rise-grid`'s `.release, .quote { grid-column: 1; }`. `rise-grid`, `rise-player`, `shows-grid`,
    `PushPhoto` and the poster art stay (Music, /shows/, About use them). `/v2/` and `v2.css` can go when the owner no longer
    wants the side-by-side.
+
+## 19. Round IG: no filled labels, tinted neutrals, one rule less, the sign-up's Sending state (Laptop designer, 2026-11-10)
+Sources: `docs/research/ig-design-tips.md` 4b items 1, 2, 3, 6, 9; `docs/review/round-ig-plan.md` (slice A); D47, D57, D67,
+D69, D71. **Specified against the build** (repo at f0b4acc, `dist/` served by `node server.js`, empty `DATA_DIR`), not the
+prototype (D69). Line numbers are `src/styles/global.css` at f0b4acc. Every look below was checked by injecting the delta
+into the served build over CDP (no `src/` edit); shots in `docs/review/ig-round/design/` (`19a-*`, `19c-*` before / after,
+`tint-*`, `tint-sheet.png`).
+
+**Hard rules held:** nothing new moves, nothing can flash, no new colour role, no new font, the glow untouched. Home at
+390x660, quotes off: **3633px -> 3631px** (19a 0, 19c -2; the slice 0 baseline is 3633 on this machine). 320: 3814 -> 3812;
+1280: 4289 -> 4287. With the RISE quote on (the D67 setup) the quote block is **28px shorter** (160 -> 132px at 390).
+
+**Generic defaults in my first plan, and what replaced each (ai-design-workflow 5):**
+| Default I reached for | Why it is the template look | Instead |
+|---|---|---|
+| Swap each pill for a small tracked-out caps eyebrow ("NOW", "FROM GABE") above the line | The eyebrow is slop #13 / #18; it moves the label, it doesn't remove it | Drop the label where the line already says it; one plain word in weight and colour where it doesn't (Album / EP) |
+| "Album · Dec 19, 2025" | Middle-dot meta line (the ban list) | Two spans in the existing flex row, separated by its 0.5rem gap: the word in `text` 700, the date stays `muted` |
+| Label in the accent colour | Accent as small text on `bg` is banned (section 3); it also spends the era colour on a label | `text` only |
+| A big decorative quotation mark (accent, 4rem) where "From Gabe" was | Decoration standing in for a label | Nothing added: the 4px rule, the quote marks and the credit already say whose words |
+| A stock warm-grey ramp (stone / zinc) for the neutrals | A palette from a framework, not from the era | Mix the era's own accent into `--bg-2` / `--line` in OKLCH, one number, 0% = today |
+| "Remove borders for a cleaner look", rules swapped for panels or shadows | Panels are slop #6; shadows are banned here | Keep every rule that does a job; remove only the one that repeats an ending the content already makes; zero would have been an allowed answer |
+| Sending = spinner in the button, button greyed to 50% | A spinner is motion; a faded button reads as broken, and `disabled` drops focus | The words "Sending…" in the status line that already exists; Join keeps its look; `aria-disabled`, so focus stays |
+
+### 19a. Filled labels: three go, one becomes a word (4b items 2, 3; D71 (1))
+The four filled spans (`text` ground, `bg` letters) are the "tags and pills" tell. Each line was checked to read alone.
+| Label | Where | Ruling | The line without it |
+|---|---|---|---|
+| **Now** (`.now-tag`) | `Hero.astro:35` | **Drop** | Every Now state starts with its own status word and date (D57): "Out Nov 13: Who I Am", "Out today: …", "Out now: …", "Show Nov 20: {venue}, {city}", "Open mic Nov 20: …", "Show today: …"; the fallback is "Out now: {title}". "Now Out now: …" said it twice. Same 48px row (measured 385-433 at 390, unchanged). |
+| **From Gabe** (`.quote-tag`) | `Quote.astro:9` | **Drop** | Quote marks, the 4px `text` rule and the credit link "GLucak, Instagram, Sep 2026" under it. Shown only once `QUOTES_APPROVED` (still off). |
+| **Album / EP** (`.tile-tag`) | `music/index.astro:25` | **A plain word**: `span.tile-type`, `text` 700, beside the `muted` date | "**Album** Dec 19, 2025". Singles carry no word (D55). It now fits on the date's line at 390 (the filled tag wrapped it: meta 48 -> 20px, Music 3292 -> 3234px). A coming album would read "**Album** **Out Jan 5, 2027**" (both 700 `text`, the coming tile's existing rule). |
+| **Latest** (`.v2-tag`) | `VideoBlock.astro:25` | **Drop** | `videoRow(3)` puts the newest upload first by construction, and from 900px it is the big card spanning two rows (18h D1). The "Watch" heading and the order say it. |
+
+**Markup (exact):**
+- `src/components/Hero.astro:35` becomes (the `<!--gl:now-->` markers stay exactly as they are; server.js fills them):
+  `<p class="now"><Fragment set:html="<!--gl:now-->" /><a href={now.link} rel="noopener">Out now: {now.title}</a><Fragment set:html="<!--/gl:now-->" /></p>`
+- `src/components/Quote.astro`: delete line 9, `<p class="quote-tag">From Gabe</p>`.
+- `src/pages/music/index.astro:25`: in the `tile-meta` span, `<span class="tile-tag">{TYPE_TAG[r.type]}</span>` becomes
+  `<span class="tile-type">{TYPE_TAG[r.type]}</span>` (nothing else on the line changes).
+- `src/components/VideoBlock.astro:25` becomes `<span class="v2-vtitle">{v.title}</span>`.
+- `test/round2.test.js:79`: `/<span class="tile-tag">Album<\/span>Dec 19, 2025/` becomes `/<span class="tile-type">Album<\/span>Dec 19, 2025/`.
+  (`test/build.test.js:92, 118` look for "From Gabe" only to prove quotes are off; they still pass and still pin "Trust me, I know".)
+
+**CSS (global.css, exact):**
+- Delete line 282 (`.now-tag { … }`), line 349 (`.quote-tag { … }`), line 1021 (`.v2-tag { … }`) and the dead line 550
+  (`.release-meta { … }`: no element uses it; it was 4b item 3's all-caps meta line).
+- Lines 345-347, the quote's comment, become:
+  ```css
+  /* "From Gabe" (D21): his words, exact, credited. One per band at most, after the main content, static. Hard left rule
+     in text, same weight as the band edges; no accent (the era color stays on actions). No label (DESIGN 19a): the rule,
+     the quote marks and the credit say whose words they are. The credit is one 48px link line. */
+  ```
+- Lines 710-711 become:
+  ```css
+  /* Album / EP only (singles are most of the grid, so the word marks the exception). A plain word, no fill (DESIGN 19a):
+     text 700 beside the muted date; the meta row's gap separates them. */
+  .tile-type { color: var(--text); font-weight: 700; }
+  ```
+- Lines 810-811 (16e, the pressed tile) become one line; without `.tile-type` in it a pressed tile would draw `text` on `text`:
+  ```css
+  .tile-link:active .tile-text :is(.tile-artists, .tile-meta, .tile-type) { color: var(--bg); }
+  ```
+  (checked: `19a-music-390-pressed.png`, "Album" reads in `bg` on the inverted block.)
+
+**Not touched here:** the `.now` row's `gap` (harmless with one child); the card kicker "Latest single · Sep 4, 2026" and
+the IDENTITY line "August 13, 2027 · 276 days to go" already use a middle dot (copy, slice 4 or the next round, not a
+label); `src/pages/v2/index.astro:75` and `src/styles/v2.css:48` still carry `.v2-tag` on the frozen, unlinked /v2/
+comparison page (18h item 7). **Boss call:** either slice 1's grep skips `src/pages/v2/` and `src/styles/v2.css`, or the
+coder may also delete the tag there (same one-line change). I'd skip them: the owner's side-by-side should stay as he saw it.
+**Supersedes:** section 5's Now line ("Now" tag + one link: now the link alone) and its quote markup and compact tag (the
+`p.quote-tag` goes), 16a's type tag "in the Now tag's look", 18b's `span.v2-tag` **Latest**.
+
+### 19b. Tinted neutrals: one `--tint` number (4b item 1; D71 (3), ships at 0%)
+`--bg-2` and `--line` are pure greys today (sRGB mixes of `text` into `bg`). They become today's mix with a share of the
+era `accent` mixed in, in OKLCH. A grey has no hue, so the mix takes the accent's hue (Chrome reports 32.3 for the
+placeholder's `#ff4d2e` at every share) and gains chroma in proportion; it also lifts lightness a little toward the accent,
+which is why `bg-2` separates more from `bg`. Every era gets its own tint for free (the IDENTITY guess's indigo leans violet).
+`--text`, `--muted`, `--bg` and the era files are not touched.
+
+**CSS, global.css lines 23-25 (the "Derived" lines in `:root`) become:**
+```css
+  /* Derived: no extra era roles. --tint (DESIGN 19b, D71) mixes that share of the era accent into the two dark
+     neutrals, in OKLCH; 0% = the plain greys. The owner picks the value from docs/review/ig-round/design/tint-sheet.png. */
+  --tint: 0%;
+  --bg-2: color-mix(in oklch, var(--accent) var(--tint), color-mix(in srgb, var(--text) 7%, var(--bg)));
+  --line: color-mix(in oklch, var(--accent) var(--tint), color-mix(in srgb, var(--text) 26%, var(--bg)));
+```
+At 0% Chrome paints `#212121` / `#4c4c4c`, exactly today's (0/255 apart). Everything that uses them follows with no other
+edit: the footer ground, the release card, tile and thumbnail grounds, the empty slot, product pictures, `--hatch`, the
+header rule, the Menu sheet rule, show rows, link-grid rules, the `/edit/` cards and rows. Not affected: the Spotify box's
+and old facade's loading ground (`color-mix(in srgb, var(--bg) 78%, var(--text))`, lines 326 and 415): Spotify paints over it.
+
+**The sheet** (`docs/review/ig-round/design/tint-sheet.png`; single shots `tint-{0,5,10}-home-390.png`, `-footer-390.png`).
+Contrast is WCAG 2 on the painted value, placeholder era; the IDENTITY guess (section 3c) measured the same way.
+| Option | `--bg-2` | `--line` | text on bg-2 | muted on bg-2 | bg-2 vs bg | Listen fill on bg-2 | IDENTITY guess: text / muted on bg-2 |
+|---|---|---|---|---|---|---|---|
+| A, 0% (today, ships) | `#212121` | `#4c4c4c` | 14.77 | 7.68 | 1.17 | 4.87 | 15.10 / 8.49 |
+| **B, 5% (subtle, recommended)** | `#2b2423` | `#564e4c` | **13.96** | **7.26** | 1.24 | 4.61 | 14.29 / 8.03 |
+| C, 10% (stronger) | `#352724` | `#5f4f4c` | 13.13 | 6.83 | 1.32 | 4.33 | 13.46 / 7.57 |
+All pass the 4.5:1 text floor with room (lowest: muted 6.83 at C); 16% would still give muted 6.24, so the floor is not
+what limits the choice; the look is.
+
+**Recommendation: B, 5%.** On the phone's first screen the change is only the card's edge and the header rule; it shows in the
+footer and, from 900px, the release card, which today is a cold grey panel sitting in the warm accent glow. At 5% both read as
+a warm charcoal that belongs to the glow and to the accent. At 10% the footer reads as brown: a colour of its own, a fourth
+one beside `bg`, `text` and `accent`, against section 1's "everything else is bg and text". **It ships at 0% (D71)**; when the
+owner picks, the change is `--tint: 5%;` and nothing else. The slice 3 test should hold text and muted on `bg-2` >= 4.5 at 0,
+5 and 10%.
+
+### 19c. Rules and borders (4b item 9; D71 (5)): one removed
+Every border and rule in global.css at f0b4acc. Kept unless the grouping is already made by space or by the change of content.
+| Line | Selector | What | Ruling |
+|---|---|---|---|
+| 132 | `.btn` (+ `.btn-solid`, hover, 16e) | 3px `text` | **Keep.** The outline buttons (Shows, Pre-save, Spotify) are only their border; D47's pressed swap uses it |
+| 113 | `:focus-visible` | 3px `text` outline | **Keep.** Focus (section 9) |
+| 147 | `.ph-chip` | 1px dashed `muted` | **Keep.** Placeholder mark, removed at launch |
+| 155, 157, 978 | `.site-header` | 2px `line` under the solid bar | **Keep.** A fixed bar the same colour as the page: content slides under it; nothing else marks its edge once you scroll |
+| 185 | `.sheet` | 2px `line` under the open Menu | **Keep.** Ends the sheet over the page |
+| 297, 536 | `.band` | 4px `text` top, the spine | **Keep.** The poster look; the tabs stand on it (section 1 point 2) |
+| 348 | `.quote` | 4px `text` left | **Keep.** With "From Gabe" gone (19a) it is half of what marks the quote |
+| 398 | `.row` | 2px `line` under each show row | **Keep.** Rows sit 0.3rem apart: no space does this |
+| 415, 813 | `.yt`, `.yt:active` | 2px `line` | No visible effect: only `iframe.yt` (app.js) has the class and line 534 sets `border: 0`. Left |
+| 450 | `.signup input` | 3px `text` | **Keep.** The field's only edge (control, 3:1) |
+| 470 | `.site-footer` | 4px `text` top | **Keep.** The spine's last segment |
+| 477 | `.motion-btn` | 2px `muted` | **Keep.** The button's only edge |
+| 487, 546 | `.phone-bar` | 2px `text` top; current page 3px inset | **Keep.** Fixed over content; the current-page mark |
+| 552 | `.coming .release-row` | 1px `muted` | **Dead** (no `.coming` element since the 16a crate): delete, no visual change, not counted |
+| 581, 608-609, 639, 589-593 | shop: `.product-media`, `.product-detail`, `.shop-empty`, status glyph | | **Keep.** Shop is off; the target edge and glyphs carry meaning |
+| 696 | `.tile-art-none` | 2px `line` round the hatched sleeve | **Keep.** `bg-2` is 1.17:1 on `bg`; without it the square's edge is the hatch's ragged stop |
+| 724 | `.links` | 2px `line` under the whole list | **Remove** (below) |
+| 725 | `.links li` | 2px `line` over each row | **Keep.** The ruled list of D53 ("a list, not buttons") |
+| 752 | `.cal-link` | 3px `bg` on the poster | **Keep.** The button's only edge |
+| 1018, 1023 | `.v2-thumb` | 2px `line` round each thumbnail | **Keep, checked.** YouTube thumbnails carry black side bars (Hobbyist?: a portrait frame in 16:9); on the `#111` page the frame is the card's only edge. Pressed uses it (16e) |
+| 1039 | `.v2-slot` | 2px dashed `muted` | **Keep.** Dashed = waiting on Gabe (18c) |
+
+**The one removal, line 724:** every row of the link grid already has its rule above it; the list's end is made by its last
+48px row and the change to the muted 16px lines after it (12px `margin-top` on the footer's slogan; on About the next
+`h2` in display type). The closing rule repeated that ending. 390: the footer goes from five rule rows to four; 1280: the
+seven links stop sitting between two lines. -2px on every page. I looked for three and found one: the rest each do a job.
+```css
+.links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-m); margin-top: var(--space-xs); }
+```
+(was the same with `border-bottom: 2px solid var(--line);` at the end), and delete line 552 (dead). Shots: `19c-footer-390-*`, `19c-footer-1280-*`.
+
+### 19d. The sign-up's Sending state (4b item 6; D71 (2))
+The row is in section 7 ("Sign-up sending"). States, all in the existing `p.signup-status` (`role="status"`, `muted`, 1.5em
+reserved, so no line moves):
+| State | Status line | Join | Input |
+|---|---|---|---|
+| Idle | empty | as built | as built |
+| Bad email (checked before sending; or the server answers 400 / 422) | "Enter an email like name@example.com." | as built (`aria-disabled` removed if it was sending) | `aria-invalid="true"` (until typed in) |
+| **Sending** (valid email, request out) | **"Sending…"** (one character, U+2026) | `aria-disabled="true"`; a second tap or Enter does nothing until the answer | unchanged |
+| Success | "You're on the list." | `aria-disabled` removed | cleared (`form.reset()`) |
+| Server down / 5xx / network | "That didn't go through. Try again." | `aria-disabled` removed | kept, so a retry is one tap |
+**No look change:** Join keeps its accent fill and words while sending (no grey, no opacity, no spinner, no "Sending…" on the
+button); there is no `[aria-disabled]` rule for `.btn` and none is added (no global.css edit). `aria-disabled`, not `disabled`:
+focus stays on Join and a screen reader hears "Sending…" then the answer from the same live region. A tap while sending still
+gives 16e's instant swap (the tap was felt; the status line says why nothing else happens). No JS: the form posts as before.
+Text through `textContent` only.

@@ -1,0 +1,10 @@
+﻿Round IG Slice 0 baseline (untouched build, npm run build, node server.js PORT=8827 with fresh empty DATA_DIR)
+
+a11y200 --url http://127.0.0.1:8827 (OUT=docs/review/ig-round/baseline-a11y): 0 views with issues
+Full report: docs/review/ig-round/baseline-a11y/report.txt
+
+Home scrollHeight at 390x660, quotes off (QUOTES_APPROVED=false): 3633px = 5.505 screens (brief expected 5.43 = 3584px; diff +49px, +0.075)
+
+Shots (reduced motion, viewport only, docs/review/ig-round/before/): home, music, shows, about at 390x660 and 1280x800
+
+Note (main session): 3633 = 5.505 is the Laptop baseline (same as the Laptop 18h review, docs/review/18h-port-review.md:73; the Desktop measures 3584 with its own DATA_DIR). Slices are judged against THIS number on this machine: Home must not get taller than 3633px quotes-off at 390x660.
