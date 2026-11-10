@@ -10,16 +10,19 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
-- **Laptop 2026-11-10 round IG (D69), plan `docs/review/round-ig-plan.md`:** claims `DESIGN.md`, `src/styles/global.css`,
-  `src/components/{Hero,Quote,VideoBlock,Signup}.astro`, `src/pages/index.astro`, `src/pages/{music,shows,about}/`,
-  `public/js/app.js`, `src/components/RiseBand.astro`, `test/{round2,build,tokens,signup-ui}.test.js`, `docs/review/ig-round/`, `docs/copy/ig-round.md`.
+- **Laptop 2026-11-10 round IG DONE (D69/D71/D73, plan `docs/review/round-ig-plan.md`, gate `docs/review/ig-round/gate.md`).**
+  Built in src/: sign-up "Sending…" + one POST per double tap (5e5313b); copy trims Booking / Pre-save / Releases / Full bio /
+  player note (595f2ca); no filled tag pills, Album/EP plain bold, `--tint: 0%` token, two redundant rules out (85fb607, ef2fe8b).
+  `npm test` 171/171, a11y200 0 issues, Home 3631px quotes off at 390 (Laptop baseline 3633). Advisor score **4.0/5**, hard rule 1
+  PASS (`docs/review/ig-round/eval.md`); its 3 fixes (Spotify Play in screen one at 390; flatten white `.tab` labels; About
+  1280 right column) are the next round. **Owner:** pick the tint 0 / 5 / 10% from `docs/review/ig-round/design/tint-sheet.png`
+  (designer recommends 5%). Claims stay on the same files for the next round (below).
+- **Laptop 2026-11-10 claim (next round, same files):** `DESIGN.md`, `src/styles/global.css`,
+  `src/components/{Hero,Quote,VideoBlock,Signup,RiseBand}.astro`, `src/pages/index.astro`, `src/pages/{music,shows,about}/`,
+  `public/js/app.js`, `test/{round2,build,tokens,signup-ui}.test.js`, `docs/review/ig-round*/`, `docs/copy/`.
   Not server.js or src/lib/. Owner away; nothing published / paid / sent to Gabe.
-- **Laptop 2026-11-10:** agents re-sized (b9bf3ca: advisor + helper added, mediator Haiku, boss task-first). Research
-  done, proposals only (nothing in src/ changed): `docs/research/ig-design-tips.md` (Charles Liu reels; top "worth doing":
-  tinted era neutrals, drop filled tag labels, sentence-case meta lines, Menu sheet opens from its button, static form /
-  save states, flat skeletons, IDENTITY = ground + ink + one CTA accent, border audit) and `docs/research/ai-design-workflow.md`
-  (4 directions before building, named-defaults ban list, independent evaluator, token check). Waiting on the owner's
-  next tasks; the boss turns these into a round after that. Nothing claimed.
+- **Laptop 2026-11-10:** agents re-sized (b9bf3ca: advisor + helper added, mediator Haiku, boss task-first). Research:
+  `docs/research/ig-design-tips.md` (Charles Liu reels) and `docs/research/ai-design-workflow.md`.
 - **Laptop boss 2026-11-06 night: 18h port (a3c504a) approved, nothing to fix** (`docs/review/18h-port-review.md`). The 200%
   "About over the Now line" is the closed Menu sheet's box (laid out, not painted); nothing covers it on screen. **D67:** one
   quote on Home (RISE); the LIVE quote leaves Home (5.69 screens at 390). **Desktop next, when Gabe OKs the quotes:**
