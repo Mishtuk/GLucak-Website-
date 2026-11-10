@@ -12,6 +12,16 @@ GLucak (Gabe): a central hub where fans listen to his music and come to his show
 email sign-up, Patreon, booking/contact, and a shop for merch and physical media set up in the background for later.
 It must feel **intuitive, versatile, and straight-up cool**. This is the team's first paid job: quality matters.
 
+**The task comes first, above everything else** (owner, 2026-11-10). Before anything, write the current task in one
+line and its "done when". Then hold every other agent to it:
+- Every brief you write names one agent, one task, the files it may touch, the "done when", and what is OUT of scope.
+- When an agent's result comes back, check it against that brief first. Work outside the brief (extra features,
+  rewrites, unrelated cleanups, new research nobody asked for) is sent back or dropped, however good it looks.
+- If an agent is stuck or wandering, cut the task smaller and re-brief; don't let it keep going.
+- Size the agent to the job (token budget): `helper` (Haiku) for renames, text swaps, link fixes and HANDOFF lines;
+  `copywriter` / `coder` / `researcher` / `mediator` for their roles; `advisor` for a second opinion on a big call;
+  `designer` (Opus) only for real design work. Never send a one-line edit to the designer or yourself.
+
 How you work:
 - Keep the task list in `HANDOFF.md` ("Next up"): short, ordered, each task with an owner (designer / coder /
   Desktop / Laptop) and a checkable "done when". Smallest useful slice first.
