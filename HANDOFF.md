@@ -18,7 +18,7 @@
   1280 right column) are the next round. **Owner:** pick the tint 0 / 5 / 10% from `docs/review/ig-round/design/tint-sheet.png`
   (designer recommends 5%). Claims stay on the same files for the next round (below).
 - **Laptop 2026-11-10 claim (next round, same files):** `DESIGN.md`, `src/styles/global.css`,
-  `src/components/{Hero,Quote,VideoBlock,Signup,RiseBand}.astro`, `src/pages/index.astro`, `src/pages/{music,shows,about}/`,
+  `src/components/{Hero,Quote,VideoBlock,Signup,RiseBand}.astro`, `src/pages/index.astro`, `src/pages/{music,shows,about,shop}/`, `src/pages/404.astro`,
   `public/js/app.js`, `test/{round2,build,tokens,signup-ui}.test.js`, `docs/review/ig-round*/`, `docs/copy/`.
   Not server.js or src/lib/. Owner away; nothing published / paid / sent to Gabe.
 - **Laptop 2026-11-10:** agents re-sized (b9bf3ca: advisor + helper added, mediator Haiku, boss task-first). Research:

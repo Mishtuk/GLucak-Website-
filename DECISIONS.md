@@ -265,3 +265,20 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   before and after, scored 1-5 on design quality and originality (each counted twice), craft and function, with the calibration
   examples in the round plan, a hard-rule check, and at most 3 ranked fixes that become the next round. **Why:** builders grade
   their own work too kindly, and a fixed rubric keeps rounds comparable; the boss still makes the final call.
+- **D75** (2026-11-10, Laptop boss, round IG2, `docs/review/round-ig2-plan.md`; eval fix 2): Do the white `.tab` section labels go?
+  **Ruling:** the label stays a plain word on every page: the exact nav word, 16px or more, 4.5:1, inside the same heading as the
+  phrase (D6). Only its form is open: the designer shoots 4 directions (the crate tab as built as the control, the word unfilled on
+  the rule, the word as a line inside the band, one from Gabe's world, never a pill) and the boss picks at the gate on D6, the px it
+  frees above RISE at 390, and "not a filled label". If none beats the control, the crate tab stays. **Why:** the tab is deliberate
+  (DESIGN 1 item 2) and is the condition D6 set for keeping the slogan as headings; the eval's premise "where the heading already
+  says it" doesn't hold on Home, where the heading is "Live It Loud", not "Shows". But the filled block is the same pattern D71
+  removed elsewhere, and the hero reserves `--tab-h` for it, so its form is worth a measured look, not a guess.
+- **D77** (2026-11-10, Laptop boss, round IG2): Scope after the 4.0 review. **Ruling:** build eval fix 1 (Spotify's Play pressable on
+  the first 390x660 screen, measured with Spotify unblocked) and fix 3 (About's right column at 900px+ holds Listen / Shows /
+  Patreon at its top), the label per D75, and drop the two middle-dot meta lines (the 19a two-span pattern). Cut: the footer
+  "LISTEN. SHOWS. JOIN." (echoes Gabe's slogan; `server.js` inserts "Shop." into it, a Desktop claim), outlined ghost buttons (they
+  are how one accent fill per view works, and touch every page), the 1280 near-black lower hero and the glow (eval: keep), the
+  placeholder chip (absolute, frees no height; goes with Gabe's colours). From the research: the 4-directions step for this one
+  component and the named-defaults "never" list in every designer brief; palette directions wait on Gabe's colours (D35). Home
+  stays at most 3631px quotes off at 390x660. **Why:** at most 3 visible changes per round keeps the evaluator's before/after
+  readable (`ai-design-workflow.md` 3.12); listen is main action 1 and most fans arrive on phones.
