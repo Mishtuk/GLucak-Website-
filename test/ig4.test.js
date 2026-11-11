@@ -68,7 +68,7 @@ test('23a: the new photo files are what the pages serve, once per slot, and the 
 test('23c: the Menu sheet transition exists only under no-preference AND data-motion on (none under reduced motion)', () => {
   const at = css.indexOf('23c. Menu sheet');
   assert.ok(at > 0);
-  const block = css.slice(at);
+  const block = css.slice(at, css.indexOf('/* ---------- DESIGN 24a.')); // the IG5 blocks after it have their own tests (ig5.test.js)
   assert.match(block, /@media \(prefers-reduced-motion: no-preference\) \{/);
   // outside that media block the sheet has no transition or animation anywhere in the file
   const stripped = css.replace(block.slice(block.indexOf('@media (prefers-reduced-motion: no-preference)')), '');

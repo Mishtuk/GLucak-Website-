@@ -2,16 +2,19 @@
 import Base from '../../layouts/Base.astro';
 import RiseBand from '../../components/RiseBand.astro';
 import NoCover from '../../components/NoCover.astro';
-import { crate, era, SOUNDCLOUD, identity, dateLine, credit, TYPE_TAG } from '../../components/content.js';
+import { crate, era, SOUNDCLOUD, START, identity, dateLine, credit, TYPE_TAG } from '../../components/content.js';
 const idn = identity();
 const tiles = crate(); // all releases but IDENTITY (its own block below), newest first
 const shortDate = (d) => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 ---
 <Base image="music" title="Music | GLucak" current="music" description="Listen to GLucak: the playlist, every release, and IDENTITY.">
-  <RiseBand h1 release={false} />
+  <RiseBand h1 release={false} ground />
   <section class="band releases-band" id="releases" aria-labelledby="h-releases">
     <div class="wrap">
-      <h2 id="h-releases" class="prose-h">Releases</h2>
+      <div class="releases-head">
+        <h2 id="h-releases" class="prose-h">Releases</h2>
+        <p class="start-line">New here? <a class="go" href={START.link} rel="noopener" aria-label={`Start with ${START.title}, on all platforms`}>Start with {START.title}</a></p>
+      </div>
       {tiles.length > 0 && (
         <ul class="crate">
           {tiles.map((r) => (

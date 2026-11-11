@@ -30,6 +30,7 @@ export const SITE_URL = (import.meta.env.SITE_URL ?? 'https://glucak.com').repla
 export const SPOTIFY_EMBED = 'https://open.spotify.com/embed/playlist/0D45boIc9xWAdDjz1uTDRo';
 export const SPOTIFY_PLAYLIST = 'https://open.spotify.com/playlist/0D45boIc9xWAdDjz1uTDRo';
 export const GO = 'https://wingsmusic.lnk.to/370407-Go';
+export const START = { title: 'Go', link: GO }; // DESIGN 24c, Q44: the "New here?" pick (variant: the playlist)
 export const SOUNDCLOUD = 'https://soundcloud.com/glucak';
 export const PATREON = 'https://patreon.com/GLucakMusic';
 export const YOUTUBE = 'https://www.youtube.com/channel/UCha7GtkOI9A0dzbTG3igbLg';

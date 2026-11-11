@@ -108,8 +108,8 @@ test('approved copy is on each page verbatim; no ASK GABE; no quote ships', () =
   const want = {
     '/': ['Live It Loud', bio[0], 'Get the next show and every new song first.'],
     '/music/': ['Releases', 'Hear more on SoundCloud', 'Pre-save'],
-    '/shows/': ['Live It Loud', 'Book GLucak:'],
-    '/about/': [...bio, 'Find GLucak', 'Booking', 'Photo credits', 'Photo: Alexander Kealey'],
+    '/shows/': ['Live It Loud', 'Book GLucak'],
+    '/about/': [...bio, 'Find GLucak', 'Book GLucak', 'Photo credits', 'Photo: Alexander Kealey'],
   };
   for (const [p, texts] of Object.entries(want)) for (const t of texts) assert.ok(html(p).includes(t), `${p}: ${t}`);
   for (const p of Object.keys(pages)) {
@@ -171,6 +171,6 @@ test('D47: no phrase hidden by default (only .fade-wait, added by app.js), print
 test('404 page is built: Wrong turn, noindex, Listen / Shows / Home', () => {
   const h = readFileSync(join(DIST, '404.html'), 'utf8');
   assert.match(h, /<title>Page not found - GLucak<\/title>/);
-  assert.ok(h.includes('Wrong') && h.includes('turn.'));
+  assert.ok(h.includes('Wrong') && />turn<\/span>/.test(h) && !h.includes('turn.'));
   assert.match(h, /name="robots" content="noindex"/);
 });

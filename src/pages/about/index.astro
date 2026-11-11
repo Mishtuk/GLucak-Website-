@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import PushPhoto from '../../components/PushPhoto.astro';
+import ForVenues from '../../components/ForVenues.astro';
 import { PATREON, PHOTO_CREDITS as C, SOCIALS } from '../../components/content.js';
 const ORDER = ['spotify', 'youtube', 'instagram', 'soundcloud', 'threads', 'x', 'patreon'];
 const links = ORDER.map((id) => SOCIALS.find((s) => s.id === id));
@@ -29,12 +30,11 @@ const links = ORDER.map((id) => SOCIALS.find((s) => s.id === id));
       </div>
     </div>
     <div class="wrap prose">
+      <ForVenues />
       <h2>Find GLucak</h2>
       <ul class="links links-lg">
         {links.map((s) => <li class={s.id === 'patreon' ? 'links-wide' : undefined}><a href={s.href} rel="noopener"><svg aria-hidden="true"><use href={`#i-${s.id}`} /></svg><span>{s.name}</span></a></li>)}
       </ul>
-      <h2>Booking</h2>
-      <p class="muted">Book GLucak: <span class="ph-chip inline">Placeholder: booking email pending</span></p>
       <h2>Photo credits</h2>
       <ul class="credit-list">
         {[C.kealey].map((c) => <li>{c.replace(/\.$/, '')}</li>)}

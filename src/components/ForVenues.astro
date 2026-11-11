@@ -1,0 +1,13 @@
+---
+import { BOOKING_EMAIL } from '../lib/shows.js';
+// DESIGN 24b: the booker's block. Words: docs/copy/ig5.md 1. No address yet = no button and no chip: it ends on Listen.
+---
+<div class="venues">
+  <h2>Book GLucak</h2>
+  <p class="venues-line">Horsham-based producer-rapper and DJ. Open mics and full shows, often with guitarist Fran Carroll.</p>
+  <p class="venues-act">
+    {BOOKING_EMAIL && <a class="btn btn-line" href={`mailto:${BOOKING_EMAIL}?subject=${encodeURIComponent('Booking: [date / venue]')}`} aria-label="Request a show by email">Request a show</a>}
+    <a class="go" href="/music/">Listen</a>
+  </p>
+  {BOOKING_EMAIL && <p class="venues-addr">{BOOKING_EMAIL}</p>}
+</div>

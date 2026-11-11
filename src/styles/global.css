@@ -798,10 +798,8 @@ html[data-hero='ab'] .slot { display: none; }
 .row:not(:has(.cal-btn)) .row-date { grid-row: 1 / span 2; align-self: center; } /* Played rows: no glyph, the date centres as before */
 
 /* ---------- 16d. 404 ---------- */
-:root { --w-lost: 5.2211; --w-lost1: 2.8179; --w-lost2: 2.1825; } /* WRONG TURN. / WRONG / TURN., measured x 1.003 (round2.mjs --measure) */
+:root { --w-lost: 4.9704; --w-lost1: 2.8179; --w-lost2: 1.9318; } /* WRONG TURN / WRONG / TURN, nbsp, measured x 1.003 (DESIGN 24d) */
 .band-lost { padding-top: var(--space-l); }
-/* An empty ledge: the step with nothing written on it. Decorative (aria-hidden). */
-.tab-blank { width: 4.5rem; }
 .lost-title { display: block; }
 .ln-lost1 { font-size: calc(100cqi / var(--w-lost1)); }
 .ln-lost2 { font-size: calc(100cqi / var(--w-lost2)); margin-top: 0.08em; }
@@ -1218,4 +1216,50 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
   html[data-motion='on'] .nav-mobile:not([open]) > .sheet { opacity: 0; scale: 0.95; }
   html[data-motion='on'] .nav-mobile[open] > .sheet { opacity: 1; scale: 1; transition-duration: 200ms; transition-timing-function: var(--ease); }
   @starting-style { html[data-motion='on'] .nav-mobile[open] > .sheet { opacity: 0; scale: 0.95; } }
+}
+
+/* ---------- DESIGN 24a. Inner grounds (IG5): a still mask painted tone-on-tone, as the hero wall (23b item 1) ---------- */
+/* From 900px only; under 900px nothing applies and no file loads. One paint for all: --line 50% into --bg, so every ground
+   pixel is text 13% into bg (text 12.34:1, muted 6.42:1 at worst). Static: no animation, transition or scroll link. Each
+   ground is drawn by tools/photo/grounds.mjs from the page's own subject (Shows reuses the hero wall). */
+.has-ground { isolation: isolate; } /* .band is already position: relative; z-index: 2 */
+@media (min-width: 900px) {
+  .has-ground::before {
+    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background-color: color-mix(in srgb, var(--line) 50%, var(--bg));
+    -webkit-mask: var(--ground) var(--ground-at) / var(--ground-size) var(--ground-repeat, no-repeat);
+    mask: var(--ground) var(--ground-at) / var(--ground-size) var(--ground-repeat, no-repeat);
+  }
+  /* 404: the Truchet field at its drawn size (4px lines, 96px cells); repeats past 1728px with no seam. */
+  .ground-turns { --ground: url('/media/g-turns.svg'); --ground-at: 0 0; --ground-size: 1728px 864px; --ground-repeat: repeat; }
+  /* Music: one record, centred 15rem into the content and 30rem down the band. */
+  .ground-grooves {
+    --ground: url('/media/g-grooves.svg'); --ground-size: 1440px 1440px;
+    --ground-at: calc(max(var(--gutter), (100vw - var(--container)) / 2) + 15rem - 720px) calc(30rem - 720px);
+  }
+  /* Shows: the hero wall turned over, a strip as tall as the LIVE IT LOUD line. */
+  .ground-wall { --ground: url('/media/hero-wall-1600.webp'); --ground-at: 50% 0; --ground-size: 100% auto; }
+  .ground-wall::before { bottom: auto; aspect-ratio: 4.6 / 1; transform: scaleX(-1); }
+}
+
+/* ---------- DESIGN 24b. For venues (Shows, About): type only, the Watch / Played heading, one action row ---------- */
+.venues { display: grid; justify-items: start; gap: var(--space-xs); margin-top: var(--space-xl); max-width: 34rem; }
+.venues h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; }
+.venues-line { font-size: var(--step-0); line-height: 1.4; }
+.venues-act { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs) var(--space-l); }
+.venues-addr { font-weight: 700; overflow-wrap: anywhere; }
+.venues .go { margin-left: -0.25rem; } /* the word lines up with the heading (.go keeps 0.25rem padding for its tap box) */
+.prose > .venues { margin-top: 0; margin-bottom: var(--space-l); } /* About: .prose already opens with --space-xl */
+.shows-side { display: grid; align-content: start; min-width: 0; }
+
+/* ---------- DESIGN 24c. Music: the crate's way in ---------- */
+.releases-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 var(--space-l); }
+.start-line { display: flex; flex-wrap: wrap; align-items: center; column-gap: 0.75rem; color: var(--muted); font-weight: 700; font-size: var(--step-0); }
+.start-line .go { color: var(--text); }
+/* The setlist arrow turns diagonal when the link leaves the site (as .about-set, 21b); ext.js adds target=_blank at build.
+   Today only Start with Go matches; the hero / 404 / Full bio arrows are internal and keep the straight arrow. */
+.go[target='_blank']::after {
+  width: 0.56em;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 28L26 6M9 5h18v18' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 28L26 6M9 5h18v18' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E");
 }

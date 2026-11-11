@@ -44,7 +44,7 @@ test('.ics route: a past show and an unknown id are 404 with the Wrong turn page
     const r = await fetch(`${base}${p}`);
     assert.equal(r.status, 404, p);
     const h = await r.text();
-    assert.ok(h.includes('Wrong') && h.includes('turn.') && h.includes('Page not found'), p);
+    assert.ok(h.includes('Wrong') && />turn<\/span>/.test(h) && !h.includes('turn.') && h.includes('Page not found'), p);
   }
 });
 
@@ -54,7 +54,7 @@ test('unknown path: 404 with the Wrong turn page (title, line, Listen / Shows / 
   assert.match(r.headers.get('content-type'), /text\/html/);
   const h = await r.text();
   assert.match(h, /<title>Page not found - GLucak<\/title>/);
-  assert.ok(h.includes('Wrong') && h.includes('turn.') && h.includes("That page isn&#39;t here. The music is.") || h.includes("That page isn't here. The music is."));
+  assert.ok(h.includes('Wrong') && />turn<\/span>/.test(h) && !h.includes('turn.') && h.includes("That page isn&#39;t here. The music is.") || h.includes("That page isn't here. The music is."));
   for (const [href, w] of [['/music/', 'Listen'], ['/shows/', 'Shows'], ['/', 'Home']]) assert.match(h, new RegExp(`<a [^>]*href="${href}"[^>]*>${w}</a>`), w);
   assert.match(h, /name="robots" content="noindex"/);
   assert.ok(!h.includes('gl:'), 'no raw markers');

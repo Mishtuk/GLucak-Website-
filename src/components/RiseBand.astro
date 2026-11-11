@@ -5,11 +5,11 @@ import { credit, dateLine, releases, SPOTIFY_EMBED, SPOTIFY_PLAYLIST } from './c
 // Home (release): one panel with the cover, title, Listen and the player; a garage still beside it from 900px (v2 port).
 // The player is first in the DOM (phones: first on screen, and Tab reaches it before Listen); from 900px CSS order puts the cover row first.
 // release={false} on /music/: the player alone (the crate's first released tile is that release); Rise is its h1 (release title drops to h2).
-const { h1 = false, release = true } = Astro.props;
+const { h1 = false, release = true, ground = false } = Astro.props;
 const H = h1 ? 'h1' : 'h2', T = h1 ? 'h2' : 'h3';
 const r = releases()[0];
 ---
-<section class="band band-rise" id="music" aria-labelledby="h-rise">
+<section class:list={['band band-rise', ground && 'has-ground ground-grooves']} id="music" aria-labelledby="h-rise">
   <div class="wrap v2-split">
     <div class="v2-side">
       <H class="spine" id="h-rise"><span class="tab">Music</span> <span class="phrase phrase-rise">Rise</span></H>
