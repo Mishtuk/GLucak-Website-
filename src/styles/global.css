@@ -716,17 +716,6 @@ html[data-hero='ab'] .slot { display: none; }
 .tile-link { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; height: 100%; text-decoration: none; }
 .tile-link:focus-visible { outline-offset: 4px; }
 .tile-art { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; background: var(--bg-2); }
-/* No art yet (a coming single, or a cover file still missing): the hatch ("nothing real here yet", as in the shop) with
-   the release date on a bg label, like a date sticker on an empty sleeve. Never a cover we made (D51). */
-.tile-art-none {
-  display: grid; place-items: center; container-type: inline-size;
-  background-color: var(--bg-2); background-image: var(--hatch); border: 2px solid var(--line);
-}
-.tile-when {
-  padding: 0.12em 0.16em; background: var(--bg); color: var(--text);
-  font-family: var(--font-display); font-weight: 900; font-size: 24cqi; line-height: 0.82; text-transform: uppercase;
-  white-space: nowrap;
-}
 /* The text under the cover. Inset by 0.5rem of padding and pulled back by the same margin, so at rest it lines up with
    the cover's edges and when pressed the inverted block has air around the words. */
 .tile-text { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.3rem; justify-items: start; margin-inline: -0.5rem; padding: 0.6rem 0.5rem 0.5rem; }
@@ -1028,6 +1017,27 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 .v2-kicker-type { color: var(--text); font-weight: 700; }
 .v2-rel h3, .v2-rel h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; text-wrap: balance; overflow-wrap: anywhere; }
 .v2-rel .btn { margin-top: 0.35rem; }
+
+/* ---------- 22. No cover yet: the sleeve card ---------- */
+/* A release with no cover file: its title standing on a rule, the type word under it (and the date while it's coming).
+   The site's own furniture, not art: bordered (covers never are), our two fonts, era tokens only, no image file (D51). */
+.nocover {
+  container-type: inline-size; display: grid; grid-template-rows: minmax(0, 1fr) auto; box-sizing: border-box;
+  width: 100%; height: auto; aspect-ratio: 1; padding: 8%;
+  background: var(--bg-2); border: 2px solid var(--line); color: var(--text);
+}
+.v2-card .nocover { background: var(--bg); } /* one step off the ground it sits on */
+.nocover-title {
+  align-self: end; padding-bottom: 5cqi;
+  font-family: var(--font-display); font-weight: 900; font-size: var(--nc-fs); line-height: 0.88; text-transform: uppercase;
+  text-wrap: balance; overflow-wrap: anywhere;
+}
+.nocover-type {
+  display: flex; flex-wrap: wrap; justify-content: space-between; column-gap: 0.5em;
+  border-top: clamp(2px, 1.4cqi, 4px) solid currentColor; padding-top: 4cqi;
+  font-family: var(--font-body); font-weight: 700; font-size: clamp(0.75rem, 9cqi, 1.125rem); line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
 
 /* Shows: the poster's art is the hero's photo again (Kealey), so on Home it is dropped: one photo per slot. */
 .v2-main .poster-art { display: none; }

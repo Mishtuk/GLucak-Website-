@@ -1,0 +1,16 @@
+---
+// DESIGN 22: the title card for a release with no cover file. Built from the release's own data; HTML only, never an
+// image file and never in a share card (D51). Goes as soon as `cover` is set.
+import { TYPE_TAG } from './content.js';
+interface Props { title: string; type?: string; when?: string; label?: string; class?: string }
+const { title, type, when, label, class: cls } = Astro.props;
+// Size from the title alone, in cqi of the card's content box: the longest word fits the width (0.55em a letter, worst case
+// in Big Shoulders 900 caps), the whole title fits ~2/3 of the height (0.414em a character on average), capped at 40.
+const longest = Math.max(...title.split(/\s+/).map((w) => w.length));
+const fs = Math.min(100 / (longest * 0.55), Math.sqrt((100 * 68 * 0.7) / (title.length * 0.414)), 40).toFixed(1);
+const a11y = label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': 'true' };
+---
+<span class:list={['nocover', cls]} style={`--nc-fs: ${fs}cqi`} {...a11y}>
+  <span class="nocover-title" aria-hidden="true">{title}</span>
+  <span class="nocover-type" aria-hidden="true"><span>{TYPE_TAG[type] ?? 'Release'}</span>{when && <span>{when}</span>}</span>
+</span>

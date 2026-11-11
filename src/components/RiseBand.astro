@@ -1,5 +1,6 @@
 ---
 import Quote from './Quote.astro';
+import NoCover from './NoCover.astro';
 import { credit, dateLine, releases, SPOTIFY_EMBED, SPOTIFY_PLAYLIST } from './content.js';
 // Home (release): one panel with the cover, title, Listen and the player; a garage still beside it from 900px (v2 port).
 // The player is first in the DOM (phones: first on screen, and Tab reaches it before Listen); from 900px CSS order puts the cover row first.
@@ -29,13 +30,14 @@ const r = releases()[0];
         </p>
       </div>
       {release && <article class="v2-rel">
-        <img class="v2-cover" src={r.cover} alt={r.placeholder ? `Placeholder for the ${r.title} cover art` : `${r.title} cover art`} width="400" height="400" />
+        {r.placeholder
+          ? <NoCover class="v2-cover" title={r.title} type={r.type} label={`${r.title}: no cover art yet`} />
+          : <img class="v2-cover" src={r.cover} alt={`${r.title} cover art`} width="400" height="400" />}
         <div class="v2-rel-text">
           <p class="v2-kicker"><span class="v2-kicker-type">Latest {r.type ?? 'release'}</span>{r.date && <>{' '}<span>{dateLine(r.date).replaceAll(" ", " ")}</span></>}</p>
           <T>{r.title}</T>
           {credit(r) && <p class="credit">{credit(r)}</p>}
           <a class="btn btn-solid" href={r.link} rel="noopener" aria-label={`Listen to ${r.title}`}>Listen</a>
-          {r.placeholder && <p class="ph-chip inline">Placeholder cover</p>}
         </div>
       </article>}
       {release && <Quote band="rise" />}
