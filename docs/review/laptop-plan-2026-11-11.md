@@ -43,3 +43,17 @@ helper = Haiku (text swaps, republish, HANDOFF lines), mediator = Haiku. Main se
 
 Not doing: more micro-polish on screen one, pulses / glows / shimmer (hard rule 1), dithering or ASCII, paid
 references (Mobbin, Interface Craft).
+
+## Update 2026-11-11 (later): IG4 shipped (4.33). Next ideas
+Inputs: `docs/research/next-ideas-2026-11-11.md` (Gabe's new content, booking / EPK, phase 6+ ideas) and
+`docs/review/inner-audit-2026-11-11.md` (inner pages at 390 / 1280).
+
+| # | When | Round | Who | Files | Done when |
+|---|---|---|---|---|---|
+| 1 | now | **IG5 "inner pages"**: (a) the print language reaches the inner pages as a shared tone-on-tone ground, 900px+ only, static: Truchet on 404, record-groove rings under Music's RISE, hero wall on Shows; (b) "For venues" block on Shows + About, today's facts only, request button waits for the booking email; (c) Music "New here? Start with Go"; (d) no periods in "Wrong turn.", blank 404 ledge out; (e) the Nov 10 YouTube Short into videos.json | designer (spec, grounds), copywriter (venue block + start line), coder, advisor | global.css, music / shows / about / 404 pages, src/data/videos.json, tools/photo/texture.mjs, test/ | advisor >= 4.3 on inner pages, hard rule 1 PASS, Home height unchanged |
+| 2 | owner OK (Desktop's src/lib + server.js) | **S round**: S1 sign-up crash, S7 `//` redirect, failed sign-in log, Dependabot + `npm ci`; Shows: empty state as a blank paper poster with Join, poster = first full show (not an open mic), Directions from the saved address, "Shop." / empty-shop periods | coder, boss review | server.js, src/lib/{signup,shows,store,products}.js | security S1 / S7 closed; shows tests updated |
+| 3 | when Gabe answers (flash check Q16) | **Videos page** (phase 6 early): live Crooked Eye clip first, YouTube RSS, click-to-play posters only | designer, coder | new src/pages/videos/ | no autoplay; flash audit PASS |
+| 4 | Nov 13 / Jan 15 (needs owner OK to publish) | **Release-day pages**: Who I Am, then Scenic Route spotlight; flip to Out now by date | designer, copywriter, coder | src/pages/music/ | flips with no one touching it (needs the daily rebuild) |
+| 5 | Gabe's words per song | Story-behind-the-song pages; "bring the show to your city" form (needs Desktop's server) | copywriter, coder | later | Gabe approves the words |
+
+Not now: Bandsintown sync (a second source of truth next to Gabe's edit screen); textures on covers, logo, product photos or the About h1.
