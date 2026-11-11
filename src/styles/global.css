@@ -66,6 +66,7 @@
   --w-now1: 3.3440;
   --w-now2: 2.7618;
   --w-rise: 1.5938;
+  --w-watch: 2.5775; /* WATCH, Big Shoulders 900 uppercase, letter-spacing 0 (DESIGN 26e) */
   --w-date: 3.4794;
   --w-close: 8.1318;
   --w-merch: 2.6128;
@@ -149,7 +150,7 @@ p { text-wrap: pretty; }
   font-family: var(--font-display); font-weight: 900; font-size: 1.5rem; line-height: 1; letter-spacing: 0.02em;
   text-transform: uppercase; text-decoration: none; color: var(--text);
 }
-.go::after {
+.go::after, .h-go::after {
   content: ''; flex: none; width: 0.7em; height: 0.56em; background: currentColor;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M0 16H35M23 4l12 12-12 12' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M0 16H35M23 4l12 12-12 12' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat;
@@ -895,7 +896,7 @@ html[data-motion='off']::view-transition-new(*) { animation: none !important; }
 .site-header { container-type: inline-size; }
 .brand { line-height: 1; font-size: min(1.75rem, 11.5cqi); }
 @container (width < 19rem) { .mark + .brand-word { display: none; } } /* owner D64: the logo always stays; the word gives way */
-@container (width < 36rem) {
+@container (width < 44rem) { /* DESIGN 26e: was 36rem; with Videos + Shop at 200% text the desktop row needs ~1379px */
   .nav-desktop, .header-listen { display: none; }
   .nav-mobile { display: block; }
 }
@@ -1253,6 +1254,8 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 .shows-side { display: grid; align-content: start; min-width: 0; }
 
 /* ---------- DESIGN 24c. Music: the crate's way in ---------- */
+.releases-band .idn:first-child { margin-top: 0; }
+.idn + .releases-head { margin-top: var(--section); } /* IDENTITY now leads the Music page (IG6 eval fix 2): the release grid follows it */
 .releases-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 var(--space-l); }
 .start-line { display: flex; flex-wrap: wrap; align-items: center; column-gap: 0.75rem; color: var(--muted); font-weight: 700; font-size: var(--step-0); }
 .start-line .go { color: var(--text); }
@@ -1309,3 +1312,35 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 /* IG6: at 200% text on a phone the cover and the countdown cannot share a row (the Pre-save button ran past the edge); stack them. 17rem tracks the text size, the px viewport does not. */
 .releases-band > .wrap { container: rel / inline-size; }
 @container rel (width < 17rem) { .idn { grid-template-areas: 'cover cover' 'state state' 'tracks-h tracks-h' 'tracks tracks' 'credit credit'; } .idn-cover { max-width: 12rem; } }
+
+/* ---------- DESIGN 26. Videos page (round V1). Static: no animation, no transition. ---------- */
+.band-vids { padding-top: var(--space-l); }
+.vids-top { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: 'head' 'lead' 'also'; gap: var(--space-m); }
+.vids-top > .spine { grid-area: head; }
+.vids-top > .vid-lead { grid-area: lead; }
+.vids-top > .vid-also { grid-area: also; margin-top: var(--space-s); }
+.phrase-watch { font-size: 3.5rem; line-height: 0.82; text-box: trim-both cap alphabetic; }
+.vid-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-l) var(--space-m); margin: 0; }
+.vid-grid { margin-top: var(--space-m); }
+.vid-lead .v2-vtitle { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; }
+.vid-meta { display: flex; flex-wrap: wrap; gap: 0.25rem 0.6rem; margin-top: 0.25rem; color: var(--muted); font-size: var(--step--1); font-variant-numeric: tabular-nums; }
+.vid-more { margin-top: var(--space-xl); }
+.v2-vid button { all: unset; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.4rem; width: 100%; cursor: pointer; }
+.v2-vid button:focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
+@media (hover: hover) { .v2-vid button:hover .v2-vtitle { text-decoration: underline; text-underline-offset: 3px; } }
+.v2-vid button:active .v2-thumb { border-color: var(--text); }
+.v2-vid button:active .v2-vtitle { background: var(--text); color: var(--bg); }
+@media (min-width: 700px) { .vid-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 900px) {
+  .vids-top { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: 'head lead' 'also lead'; grid-template-rows: auto 1fr; column-gap: var(--space-xl); }
+  .vids-top > .vid-also { align-self: end; margin-top: 0; max-width: 20rem; } /* clearly under the lead: 320 vs 672px at 1280 */
+  .vids-top > .spine { container-type: inline-size; }
+  .phrase-watch { font-size: calc(100cqi / var(--w-watch)); } /* fills the 5fr column: 149px tall at 1280 */
+  .vid-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .vid-grid .v2-vid:first-child { grid-row: auto; } /* Home's D1 rule spans the first card; not here */
+}
+/* The Watch heading links to /videos/ (Home h3, Shows h2): 0px added (measured); a 47px tap box, padding cancelled by margin. */
+.h-go { display: inline-flex; align-items: center; gap: 0.4rem; padding-block: 10px; margin-block: -10px; text-decoration: none; color: inherit; }
+@media (hover: hover) { .h-go:hover { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; } }
+/* Menu sheet: with Videos + Shop at 200% text the last link ends at 624px, below a 568px screen. It scrolls, not cuts off. */
+.sheet { max-height: calc(100dvh - var(--header-h) - var(--bar-h, 0px)); overflow-y: auto; overscroll-behavior: contain; }

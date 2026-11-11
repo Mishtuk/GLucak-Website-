@@ -2642,3 +2642,171 @@ photos fill Home's empty slot, About's actions column and Shows' booking block. 
 - Printing his CD photos in the family; the looking photo on a launch page; the CD's brush lettering as an image.
 - The live shot as the Shows or About header under the h1 (his graded purple reaches about 3:1 in the LED highlights; no scrim on his art).
 - Deleting `placeholder.json` (still the test era) or the old renders (git history and `docs/review/ig4/textures/` keep both eras).
+
+## 26. Round V1: the Videos page (Laptop designer, 2026-11-11)
+Sources: `laptop-plan-2026-11-11.md` Update row 3, Gabe's answers rows 11 and 13, sections 18 (video row, D64), 23a (thumbnails
+are not treated), 24, 25, CONTEXT hard rules 1 and 3. **Specified against the build** (dist at a7e385e, `node server.js` on 8977,
+empty `DATA_DIR`, Spotify and YouTube blocked at the resolver, reduced motion). The page was mocked over CDP on `/privacy/` (no
+`src/` edit). Scripts and shots are in the session scratchpad, not the repo. Measured: 390x660 lead poster 177-373, name ends at
+406, meta at 434 (**screen one holds h1, poster, name, meta**; the phone bar starts at 598); 320x568 meta at 395; page 390 3002px,
+1280 1995px; no horizontal overflow at 320 / 390 / 900 / 1280. **Home 3735 at 390 stays 3735** (320 3934, 1280 4209 with the shop on).
+
+**Hard rule 1.** The page has no `<iframe>` until a press. Posters are still files on our server. No animation, no transition.
+Only the two flashing videos are blocked (`FLASHING`); every other video on the page is Gabe's own work, not flagged by him.
+
+### 26a. Decisions
+| Question | Ruling | Why |
+|---|---|---|
+| Posters | **The video's own YouTube thumbnail, saved to `public/media/videos/<id>-{640,1280}.webp`** by the existing `tools/fetch-video-thumbs.mjs` (D64), re-encoded with sharp and metadata dropped. Not printed in the texture family | 18 of 20 files already exist. 23a ruled the thumbnails stay as YouTube shows them: his title cards and featured artists' names, and the poster must match the video that loads. No request to `i.ytimg.com` from a page |
+| Order | 1. Scenic Route, live at Crooked Eye (lead). 2. Thank you Riverside! (the second live clip). 3. Music videos, newest first, undated last, the lyric video last. 4. One link out for Shorts | The roadmap puts the live clip first. Riverside is the only other live clip Gabe cleared (answers row 11) |
+| Shorts | **Not on the page.** One line at the end links to the channel's Shorts tab | 13 of 20 rows are vertical Shorts (checked: `/shorts/<id>` answers 200), letterboxed inside a 16:9 poster (the Home row shows it). Most are teasers that go stale ("coming in January!"). Home's Watch row already shows the newest upload, so the site stays current |
+| Nav | **Videos joins the nav**: Music, Shows, Videos, About (then Shop). The phone bar's **Watch goes to `/videos/` on every page**, Home included. Home's and Shows' **Watch heading becomes a link** to the page | Hard rule 3 (one click from the nav). Measured at 900: the row uses 701 of 823px with Shop on. The heading link adds 0px to Home; a "Watch all" line under the row would add 25px at 390. Music gets no link (its job is listening) |
+| Ground | None | The posters are the page's pictures. A ground behind them adds noise |
+| Feed | `src/data/videos.json` stays the source (no RSS at build) | The feed is mostly Shorts, which this page doesn't list. A feed sync can join the daily rebuild later (Desktop / owner) |
+
+### 26b. Data (`src/data/videos.json`) and the one new poster
+Optional new fields: `name` (the visible name; falls back to `title`), `with` (featured artist, muted), `place` (live only),
+`lead: true` (one row), `crop: [x, y, w, h]` (fractions of a 16:9 frame, the poster only). Words are drafts for the copywriter.
+
+| id | Add |
+|---|---|
+| `aZNW63M_C2E` | `"name":"Scenic Route","place":"Crooked Eye Brewery","lead":true` |
+| **new** `OOGT3GxlQJk` | `{"id":"OOGT3GxlQJk","title":"Thank you Riverside!","date":null,"kind":"live","featured":false,"name":"Thank you Riverside!","place":"Riverside, Horsham","crop":[0,0,0.625,0.625]}` (0:18, a regular video, not a Short) |
+| `ZGlnFchIVVY` | `"name":"You're Not Alone","with":"with Emily Mae"` (from its title card; the copywriter checks) |
+| `K-OZiNvQB14` | `"name":"Duck, Dodge, Jump, Fight!","with":"feat. J-BOY"` |
+| `jL3OKWeRFwg` | `"name":"Rapping Like (Oh Yeah)","with":"with Micah Haun"` |
+| `6SpsSt8rPzI` | `"name":"Earned Your Stripes"` (the music video; the Visualizer stays blocked) |
+| `LBQ4fqLVHSI` | `"kind":"lyric-video","name":"Go","with":"feat. Emily Mae"` |
+
+**Privacy crop:** the Riverside thumbnail shows audience members (a child at the left). The crop (maxres 1280x720 -> x 0-800,
+y 0-450) keeps Gabe, the pallet wall and the cross. The only audience left is the back of one head at the bottom edge, with no
+face (checked). `tools/fetch-video-thumbs.mjs`: if a row has `crop` and the source is 16:9, `extract` it before each resize. If
+the source is not 16:9 (the `hqdefault` fallback is letterboxed), skip the row and log it. With `withoutEnlargement`, the `-1280`
+file is the 800px crop (no upscaling). Then run `node tools/fetch-video-thumbs.mjs`.
+
+### 26c. Logic: `src/components/videos.js` (new, pure, no `import.meta`, so `node --test` can import it)
+```js
+// DESIGN 26: the Videos page groups. rows = videos.json, flashing = FLASHING from content.js.
+const ok = (v, flashing) => /^[\w-]{11}$/.test(v?.id ?? '') && !flashing.test(v.title ?? '') && !flashing.test(v.name ?? '');
+const newest = (rows) => [...rows].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));
+export function groupVideos(rows, flashing) {
+  const safe = (rows ?? []).filter((v) => ok(v, flashing));
+  const live = newest(safe.filter((v) => v.kind === 'live'));
+  const lead = live.find((v) => v.lead) ?? live[0] ?? null;
+  const music = [...newest(safe.filter((v) => v.kind === 'music-video')), ...newest(safe.filter((v) => v.kind === 'lyric-video'))];
+  return { lead, live: live.filter((v) => v !== lead), music };
+}
+```
+`content.js`: `export const videosPage = () => groupVideos(load('videos') ?? [], FLASHING);` and
+``export const SHORTS = `${YOUTUBE}/shorts`;``. `latestVideo()` / `videoRow()` don't change (the undated Riverside row sorts last).
+
+### 26d. Markup: `src/pages/videos/index.astro` and `src/components/VideoCard.astro` (both new)
+`VideoCard` (props `v`, `lead`, `tag` = `'li'` or `'div'`) reuses the Watch row's card (`.v2-vid`, `.v2-thumb`, `.yt-play`,
+`.v2-vtitle`). The `thumb` check is the same as `VideoBlock` (both files exist, or the grey box):
+```astro
+<Tag class:list={['v2-vid', lead && 'vid-lead']}>
+  <a href={`https://www.youtube.com/watch?v=${v.id}`} rel="noopener" data-yt={v.id} data-title={v.name ?? v.title}>
+    <span class="v2-thumb">{thumb && <img class="yt-img" src={`${thumb}-640.webp`} srcset={`${thumb}-640.webp 640w, ${thumb}-1280.webp 1280w`} sizes={lead ? '(min-width: 900px) 55vw, 92vw' : '(min-width: 900px) 30vw, (min-width: 700px) 46vw, 92vw'} width="1280" height="720" alt="" loading={lead ? 'eager' : 'lazy'} fetchpriority={lead ? 'high' : undefined} decoding="async" />}<span class="yt-play" aria-hidden="true"></span></span>
+    <span class="v2-vtitle">{v.name ?? v.title}</span>
+  </a>
+  <p class="vid-meta"><span>{v.place ? `Live at ${v.place}` : v.kind === 'lyric-video' ? 'Lyric video' : 'Music video'}</span>{v.with && <span>{v.with}</span>}{v.date && <time datetime={v.date}>{dateLine(v.date)}</time>}</p>
+</Tag>
+```
+The page: `<Base image="videos" title="Videos | GLucak" current="videos" credits={[C.vladd, C.joseph, C.yt]} description="Watch
+GLucak: Scenic Route live at Crooked Eye, and every music video.">`, `const g = videosPage();`
+```astro
+<section class="band band-vids" aria-labelledby="h-vids">
+  <div class="wrap vids-top">
+    <h1 class="spine" id="h-vids"><span class="tab">Videos</span> <span class="phrase phrase-watch">Watch</span></h1>
+    {g.lead ? <VideoCard v={g.lead} lead tag="div" /> : <p class="vid-lead"><a class="go" href={YOUTUBE} rel="noopener">GLucak on YouTube</a></p>}
+    {g.live.length > 0 && <ul class="vid-list vid-also">{g.live.map((v) => <VideoCard v={v} tag="li" />)}</ul>}
+  </div>
+</section>
+{g.music.length > 0 && <section class="band band-mv" aria-labelledby="h-mv"><div class="wrap">
+  <h2 id="h-mv" class="prose-h">Music videos</h2>
+  <ul class="vid-list vid-grid">{g.music.map((v) => <VideoCard v={v} tag="li" />)}</ul>
+  <p class="start-line vid-more">Shorts most weeks: <a class="go" href={SHORTS} rel="noopener">On YouTube</a></p>
+</div></section>}
+```
+DOM order is the reading order on every width (h1, lead, Riverside, music videos, Shorts). From 900px the grid moves Riverside
+under WATCH. With no music videos, the Shorts line moves into the first band. The link words go to the copywriter.
+
+### 26e. CSS (append to `global.css`; static, no new `--accent` use)
+```css
+/* ---------- DESIGN 26. Videos page (round V1). Static: no animation, no transition. ---------- */
+.band-vids { padding-top: var(--space-l); }
+.vids-top { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: 'head' 'lead' 'also'; gap: var(--space-m); }
+.vids-top > .spine { grid-area: head; }
+.vids-top > .vid-lead { grid-area: lead; }
+.vids-top > .vid-also { grid-area: also; margin-top: var(--space-s); }
+.phrase-watch { font-size: 3.5rem; line-height: 0.82; text-box: trim-both cap alphabetic; }
+.vid-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-l) var(--space-m); margin: 0; }
+.vid-grid { margin-top: var(--space-m); }
+.vid-lead .v2-vtitle { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; }
+.vid-meta { display: flex; flex-wrap: wrap; gap: 0.25rem 0.6rem; margin-top: 0.25rem; color: var(--muted); font-size: var(--step--1); font-variant-numeric: tabular-nums; }
+.vid-more { margin-top: var(--space-xl); }
+.v2-vid button { all: unset; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.4rem; width: 100%; cursor: pointer; }
+.v2-vid button:focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
+@media (hover: hover) { .v2-vid button:hover .v2-vtitle { text-decoration: underline; text-underline-offset: 3px; } }
+.v2-vid button:active .v2-thumb { border-color: var(--text); }
+.v2-vid button:active .v2-vtitle { background: var(--text); color: var(--bg); }
+@media (min-width: 700px) { .vid-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 900px) {
+  .vids-top { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: 'head lead' 'also lead'; grid-template-rows: auto 1fr; column-gap: var(--space-xl); }
+  .vids-top > .vid-also { align-self: end; margin-top: 0; max-width: 20rem; } /* clearly under the lead: 320 vs 672px at 1280 */
+  .vids-top > .spine { container-type: inline-size; }
+  .phrase-watch { font-size: calc(100cqi / var(--w-watch)); } /* fills the 5fr column: 149px tall at 1280 */
+  .vid-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .vid-grid .v2-vid:first-child { grid-row: auto; } /* Home's D1 rule (global.css 1122) spans the first card; not here */
+}
+/* The Watch heading links to /videos/ (Home h3, Shows h2): 0px added (measured); a 47px tap box, padding cancelled by margin. */
+.h-go { display: inline-flex; align-items: center; gap: 0.4rem; padding-block: 10px; margin-block: -10px; text-decoration: none; }
+@media (hover: hover) { .h-go:hover { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; } }
+/* Menu sheet: with Videos + Shop at 200% text the last link ends at 624px, below a 568px screen. It scrolls, not cuts off. */
+.sheet { max-height: calc(100dvh - var(--header-h) - var(--bar-h, 0px)); overflow-y: auto; overscroll-behavior: contain; }
+```
+Also: add `.h-go::after` to the `.go::after` selector (global.css 152; the setlist arrow). `:root` gets `--w-watch: 2.5775;`
+(measured: Big Shoulders 900, uppercase, letter-spacing 0). Line 898 `@container (width < 36rem)` -> **`44rem`**. At 200% text
+with Videos and Shop, the desktop row needs about 1379px; at 36rem it overflowed and squeezed the brand from 272 to 178px. At
+100% text nothing changes (the 900px breakpoint governs).
+
+### 26f. Nav, play button, other files
+- `Header.astro` nav: `['videos', 'Videos', '/videos/']` between Shows and About. `Base.astro` Props `current`: add `'videos'`.
+- `MobileBar.astro`: rename the key `'watch'` to `'videos'` (and both marker checks); href `'/videos/'` on every page; the label stays Watch.
+- `VideoBlock.astro` heading: `<T><a class="h-go" href="/videos/">Watch<span class="vh"> all videos</span></a></T>`.
+- **`public/js/app.js`, the play button (replaces the `a[data-yt]` block, so it also applies to Home and Shows):** each valid
+  `a[data-yt]` becomes a `<button type="button" aria-label="Play {data-title}">` holding the same thumb and name (drop the `.vh`
+  new-tab hint). Without JS it stays a link to YouTube. On press, build the iframe exactly as today
+  (`https://www.youtube-nocookie.com/embed/<id>?autoplay=1&rel=0`). **Autoplay is set only here, after the press**, so one press
+  plays. Set `title` to `"{data-title}: video"`, replace the button, and move focus to the iframe. Keep the name visible: put a
+  `<span class="v2-vtitle">` with the name after the iframe. **One player at a time:** before inserting, swap any open
+  `iframe.yt` and its name back to the button (this stops it). Enter and Space work because it is a real `<button>`.
+- `src/pages/sitemap.xml.ts` PAGES: add `'/videos/'`. `tools/og.mjs` pages: `videos: { word: 'VIDEOS', art: photo of
+  media/videos/aZNW63M_C2E-1280.webp }`, then run it (until then `image="home"`).
+- `content.js` `CREDIT_FOR`: the Vladd (`videos/aZNW63M_C2E-`) and Joseph rows are already there. Extend the yt row to
+  `[/\/media\/v2\/(belt|stage)-|videos\/OOGT3GxlQJk-/, PHOTO_CREDITS.yt]` (one row per credit: the test pairs them).
+- No `server.js` change: the CSP already allows `frame-src https://www.youtube-nocookie.com`, and the static route serves `/videos/`.
+
+### 26g. Tests the coder adds (`test/v1.test.js`; mirror the credits in `test/v2port.test.js` 53)
+1. **No autoplay before a press:** `dist/videos/index.html` has no `<iframe`, no `autoplay`, no `youtube.com/embed`, no
+   `i.ytimg.com`. In `app.js`, `autoplay=1` appears only inside the click handler.
+2. **Nocookie:** `app.js` builds `https://www.youtube-nocookie.com/embed/`; no `www.youtube.com/embed` in `public/js` or `dist`.
+3. **FLASHING:** `groupVideos(fixture, FLASHING)` with "Running The Gauntlet (Official Lyric Video)" (kind music-video) and
+   "Earned Your Stripes (Official Visualizer)" (kind lyric-video, and once as `name` under a clean title) returns neither, in any
+   group; the Earned Your Stripes music video stays. Add `videos/index.html` to the page list in `gabe-answers.test.js` 21-24.
+4. **Order and scope:** the first `data-yt` on `/videos/` is `aZNW63M_C2E`, then `OOGT3GxlQJk`; `ZGlnFchIVVY` comes before
+   `K-OZiNvQB14`; `LBQ4fqLVHSI` is last. No row of kind `other` (Shorts) appears; the `/shorts` link is there.
+5. **Credits:** the `/videos/` footer has the Vladd, Joseph Lucak and "GLucak on YouTube" credits; add `videos/index.html` to the
+   v2port loop, plus the Vladd row and the extended yt row.
+6. **Accessibility:** every card's `.v2-vtitle` is non-empty; every poster `img` has `alt=""`, width and height, and files that
+   exist; only the lead is eager; one `h1`. In `app.js`: `type="button"`, an `aria-label` starting "Play ", and an iframe `title`.
+7. **Nav:** every page's `.nav-desktop` and `.sheet` link to `/videos/`; the phone bar's Watch href is `/videos/`, with
+   `aria-current="page"` on `/videos/`; Home has `#shows-video h3 a.h-go[href="/videos/"]`; the sitemap lists `/videos/`.
+8. **Poster files:** `public/media/videos/OOGT3GxlQJk-{640,1280}.webp` exist with no EXIF (sharp metadata).
+Run checks (advisor): Home <= 3735 at 390; 0 animations on `/videos/` at rest and under reduced motion; flash audit PASS;
+a11y200 0 issues (the 44rem header, the scrolling sheet); keyboard: Tab to Play, Enter, focus lands in the player.
+
+### 26h. Rejected
+Shorts as a vertical row (letterboxed; teasers go stale). Posters printed in the texture family (23a). A "Watch all" line under
+Home's row (+25px at 390). Videos as a section on Music (fans look for it on its own; Puck Live hid things). A ground on the page.
+An epilepsy warning line (only cleared videos show; a warning would suggest otherwise).

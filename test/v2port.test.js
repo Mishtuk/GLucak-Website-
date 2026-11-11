@@ -50,9 +50,9 @@ test('phrase beside its content: 5 : 7 grid from 900px, phones stacked', () => {
 
 test('credits match the images each page shows; clamp gone; focusin handler; 200% Now-line rule', () => {
   const content = readFileSync(join(ROOT, 'src/components/content.js'), 'utf8');
-  const CREDIT_FOR = [[/\/media\/v2\/(belt|stage)-/, 'Video stills: GLucak on YouTube.'], [/covers\/identity/, 'IDENTITY cover: GLucak.'], [/\/media\/cd-/, 'Photos: from the IDENTITY CD.'], [/\/media\/v2\/garage-|videos\/K-OZiNvQB14-/, 'Video still: Joseph Lucak.'], [/a-era-grade/, 'Photo: Alexander Kealey.']];
+  const CREDIT_FOR = [[/\/media\/v2\/(belt|stage)-|videos\/OOGT3GxlQJk-/, 'Video stills: GLucak on YouTube.'], [/videos\/aZNW63M_C2E-/, 'Video still: Vladd (Vladdtime).'],[/covers\/identity/, 'IDENTITY cover: GLucak.'], [/\/media\/cd-/, 'Photos: from the IDENTITY CD.'], [/\/media\/v2\/garage-|videos\/K-OZiNvQB14-/, 'Video still: Joseph Lucak.'], [/a-era-grade/, 'Photo: Alexander Kealey.']];
   assert.ok(content.includes('CREDIT_FOR'));
-  for (const page of ['index.html', 'shows/index.html', 'about/index.html', 'music/index.html']) {
+  for (const page of ['index.html', 'shows/index.html', 'about/index.html', 'music/index.html', 'videos/index.html']) {
     const h = readFileSync(join(ROOT, 'dist', page), 'utf8');
     const credits = h.match(/class="credits">([^<]*)</)?.[1] ?? '';
     const srcs = [...h.matchAll(/src="([^"]+)"/g)].map((m) => m[1]);

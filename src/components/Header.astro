@@ -3,7 +3,7 @@ import { era } from './content.js';
 interface Props { home?: boolean; current?: string }
 const { home = false, current } = Astro.props;
 // Shop joins the nav only with SHOP_ENABLED=1: server.js fills the gl:nav-shop marker (src/lib/products.js shopLinks).
-const nav = [['music', 'Music', '/music/'], ['shows', 'Shows', '/shows/'], ['about', 'About', '/about/']];
+const nav = [['music', 'Music', '/music/'], ['shows', 'Shows', '/shows/'], ['videos', 'Videos', '/videos/'], ['about', 'About', '/about/']];
 ---
 {home && <div class="sentinel" aria-hidden="true"></div>}
 <header class:list={['site-header', { 'is-solid': !home }]} data-overlay={home ? '' : undefined}>

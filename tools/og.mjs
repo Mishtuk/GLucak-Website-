@@ -23,6 +23,7 @@ const pages = {
   home: { word: '', art: `<div class="photo" style="background-image:url(${u('media/a-era-grade-1600.webp')})"></div>`, slogan: true },
   about: { word: 'ABOUT', art: `<div class="photo" style="background-image:url(${u('media/a-era-grade-1600.webp')})"></div>` },
   shows: { word: 'SHOWS', art: `<div class="photo" style="background-image:url(${u('media/c-poster-1000.webp')});background-position:50% 30%"></div>` }, // gig poster on Gabe, no fan as focal point
+  videos: { word: 'VIDEOS', art: `<div class="photo" style="background-image:url(${u('media/videos/aZNW63M_C2E-1280.webp')})"></div>` }, // DESIGN 26f: the Scenic Route live still
   music: { word: 'MUSIC', art: `<div class="grid g4">${covers}</div>` },
   shop: { word: 'SHOP', art: `<div class="grid g2">${shop}</div><div class="tag">Preview</div>` },
 };

@@ -366,3 +366,20 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
 - **Music:** IDENTITY as the CD: cover, countdown, 12-track list; Scenic Route one size up, linked, "Single, out Jan 15. His
   favorite." (copywriter to confirm), no accent (2 + 1).
 - **Why:** CONTEXT says launch in IDENTITY's colours; the real art now exists. Home 390 stays 3484 (cap 3601).
+
+## D95 (Laptop coder, 2026-11-11): Round V1 built, the Videos page (DESIGN 26) plus three IG6 eval fixes
+- **Videos page** `/videos/` (`src/pages/videos/index.astro`, `VideoCard.astro`, pure `src/components/videos.js`): Scenic Route live (lead), Thank you
+  Riverside! (privacy-cropped poster, 800x450, only the back of one head left), then music videos newest first, lyric video last, one link
+  to the Shorts tab. No iframe until a press. Posters are our own copies of YouTube's thumbnails (`tools/fetch-video-thumbs.mjs` now honours `crop`).
+- **Rulings applied (main session):** every video except the two FLASHING ones is treated as cleared by Gabe; Riverside credit is "GLucak on
+  YouTube" until Gabe names the filmer; a "with X" line only when X is in the video's own YouTube title (so You're Not Alone has none; Emily
+  Mae is on the Go lyric video, Micah Haun and J-BOY on theirs). A test enforces it.
+- **Nav:** Videos joins the nav (Music, Shows, Videos, About); the phone bar's Watch goes to `/videos/` everywhere (the Shop swap markers are
+  untouched); Home and Shows "Watch" headings link to it; sitemap + share image (`og/videos.png`; the other four og files were reverted, not re-made).
+  `public/js/app.js`: cards become real Play buttons, `autoplay=1` only inside the press handler, one player at a time. Nav container breakpoint 36rem -> 44rem; the Menu sheet scrolls.
+- **IG6 eval fixes:** (1) Music: the IDENTITY block (now under an h2) leads the page, above the Releases grid (Music 390 height unchanged, 4404). (2) Home
+  jump slot: `cd-jump-*` replaced by `cd-live-portrait-352/704.webp`, a 4:5 face-level crop of the CD inside-live frame, graded as Gabe made it
+  (same as the other CD photos, D93 / DESIGN 25h: no print), no metadata; his glasses, cap and mic read clearly; the old jump files are deleted.
+  (3) apple-touch icon ground `#111111` -> `#05024c` (`prototype/tools/resize.mjs`; only that icon regenerated and copied).
+- **Measured:** Home 390 = 3735 (unchanged), Videos 390 3037, 1280 2006, 0 running animations on Home / Videos / Music / Shows with motion on and reduced, no overflow.
+  `npm test` 227/227 (`test/v1.test.js`: 14 tests). Home and Music keep their Spotify iframe; no YouTube iframe is in any built page.

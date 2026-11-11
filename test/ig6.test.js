@@ -55,7 +55,7 @@ test('25e: the CD block CSS never uses the accent (2 + 1 rule) and adds no motio
 
 test("25b-d: Gabe's photos and the re-printed images are wired; every new file has no EXIF", async () => {
   const home = page('index.html');
-  assert.match(home, /class="v2-photo v2-wide-only v2-jump" src="\/media\/cd-jump-352\.webp"[^>]*alt="GLucak mid-jump under a park shelter"/);
+  assert.match(home, /class="v2-photo v2-wide-only v2-jump" src="\/media\/cd-live-portrait-352\.webp"[^>]*alt="GLucak singing live in purple light"/);
   assert.ok(!home.includes('Photo slot: crowd shot'), 'the empty slot is gone');
   assert.match(page('about/index.html'), /class="about-photo" src="\/media\/cd-studio-480\.webp"[^>]*alt="GLucak in his home studio/);
   const shows = page('shows/index.html');

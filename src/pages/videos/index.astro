@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import VideoCard from '../../components/VideoCard.astro';
+import { videosPage, YOUTUBE, SHORTS, PHOTO_CREDITS as C } from '../../components/content.js';
+// DESIGN 26: Scenic Route live (lead), the Riverside clip, then every music video. No iframe until a press. Shorts: one link out.
+const g = videosPage();
+---
+<Base image="videos" title="Videos | GLucak" current="videos" credits={[C.vladd, C.joseph, C.yt]} description="Watch GLucak: Scenic Route live at Crooked Eye, and every music video.">
+  <section class="band band-vids" aria-labelledby="h-vids">
+    <div class="wrap vids-top">
+      <h1 class="spine" id="h-vids"><span class="tab">Videos</span> <span class="phrase phrase-watch">Watch</span></h1>
+      {g.lead ? <VideoCard v={g.lead} lead tag="div" /> : <p class="vid-lead"><a class="go" href={YOUTUBE} rel="noopener">GLucak on YouTube</a></p>}
+      {g.live.length > 0 && <ul class="vid-list vid-also">{g.live.map((v) => <VideoCard v={v} tag="li" />)}</ul>}
+      {g.music.length === 0 && <p class="start-line vid-more">Shorts most weeks: <a class="go" href={SHORTS} rel="noopener">On YouTube</a></p>}
+    </div>
+  </section>
+  {g.music.length > 0 && (
+    <section class="band band-mv" aria-labelledby="h-mv">
+      <div class="wrap">
+        <h2 id="h-mv" class="prose-h">Music videos</h2>
+        <ul class="vid-list vid-grid">{g.music.map((v) => <VideoCard v={v} tag="li" />)}</ul>
+        <p class="start-line vid-more">Shorts most weeks: <a class="go" href={SHORTS} rel="noopener">On YouTube</a></p>
+      </div>
+    </section>
+  )}
+</Base>

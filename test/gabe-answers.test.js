@@ -19,7 +19,7 @@ test('no flagged video is on any built page', () => {
   const vids = JSON.parse(readFileSync(join(root, 'src/data/videos.json'), 'utf8'));
   const rows = Array.isArray(vids) ? vids : vids.items ?? vids.videos ?? [];
   const bad = rows.filter((v) => FLASHING.test(v.title ?? '')).map((v) => v.id);
-  for (const page of ['index.html', 'shows/index.html', 'music/index.html']) {
+  for (const page of ['index.html', 'shows/index.html', 'music/index.html', 'videos/index.html']) {
     const html = readFileSync(join(root, 'dist', page), 'utf8');
     for (const id of bad) assert.ok(!html.includes(id), `${page} shows flashing video ${id}`);
   }

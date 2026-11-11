@@ -78,21 +78,44 @@
     });
   }
 
-  /* ---------- Latest video: a plain link until tapped, then the privacy-enhanced player ---------- */
-  document.querySelectorAll('a[data-yt]').forEach((yt) => {
-    if (!/^[\w-]{11}$/.test(yt.dataset.yt)) return;
-    yt.addEventListener('click', (e) => {
-      e.preventDefault();
-      const f = document.createElement('iframe');
-      f.className = 'yt';
-      f.src = `https://www.youtube-nocookie.com/embed/${yt.dataset.yt}?autoplay=1&rel=0`;
-      f.title = yt.dataset.title || 'Latest video';
-      f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
-      f.allowFullscreen = true;
-      f.style.aspectRatio = '16 / 9';
-      yt.replaceWith(f);
-      f.focus();
-    });
+  /* ---------- Videos (DESIGN 26f): a link to YouTube until JS runs; then a Play button; the privacy-enhanced player loads only after a press ---------- */
+  const videoOk = (id) => /^[\w-]{11}$/.test(id ?? '');
+  const buttons = new Map(); // open iframe -> the button it replaced (one player at a time)
+  function makeButton(link) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('aria-label', `Play ${link.dataset.title || 'video'}`);
+    b.dataset.yt = link.dataset.yt;
+    b.dataset.title = link.dataset.title || '';
+    for (const n of link.childNodes) {
+      if (n.nodeType === 1 && n.classList.contains('vh')) continue; // the new-tab hint does not apply to a button
+      b.append(n.cloneNode(true));
+    }
+    b.addEventListener('click', () => play(b));
+    return b;
+  }
+  function play(b) {
+    for (const [f, old] of buttons) { // stops the video that is playing
+      const name = f.nextElementSibling;
+      if (name && name.classList.contains('v2-vtitle')) name.remove();
+      f.replaceWith(old);
+      buttons.delete(f);
+    }
+    const f = document.createElement('iframe');
+    f.className = 'yt';
+    f.src = `https://www.youtube-nocookie.com/embed/${b.dataset.yt}?autoplay=1&rel=0`; // autoplay is set only here, after the press
+    f.title = `${b.dataset.title || 'Video'}: video`;
+    f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    f.allowFullscreen = true;
+    f.style.aspectRatio = '16 / 9';
+    const name = b.querySelector('.v2-vtitle');
+    b.replaceWith(f);
+    if (name) f.after(name.cloneNode(true));
+    buttons.set(f, b);
+    f.focus();
+  }
+  document.querySelectorAll('a[data-yt]').forEach((a) => {
+    if (videoOk(a.dataset.yt)) a.replaceWith(makeButton(a));
   });
 
   /* Swipe row: a focused card scrolls fully into view (instant, no smooth motion) */

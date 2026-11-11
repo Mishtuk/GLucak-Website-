@@ -13,7 +13,7 @@ const items = (rows.length ? rows : [{ title: 'GLucak on YouTube' }]).map((v) =>
 }));
 ---
 <div class="video-block v2-videos" id="shows-video">
-  <T>Watch</T>
+  <T><a class="h-go" href="/videos/">Watch<span class="vh"> all videos</span></a></T>
   <ul class="v2-vrow">
     {items.map((v, i) => (
       <li class="v2-vid">

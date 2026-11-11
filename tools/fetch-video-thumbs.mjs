@@ -15,10 +15,19 @@ async function get(id) {
   }
   return null;
 }
-for (const { id } of rows) {
+for (const { id, crop } of rows) {
   if (!/^[\w-]{11}$/.test(id) || (existsSync(path(`${id}-1280.webp`)) && existsSync(path(`${id}-640.webp`)))) continue;
   const buf = await get(id);
   if (!buf) { console.log('skip (no thumbnail):', id); continue; }
-  for (const w of [1280, 640]) await sharp(buf).resize(w, Math.round(w * 9 / 16), { fit: 'cover', withoutEnlargement: true }).webp({ quality: 78 }).toFile(path(`${id}-${w}.webp`)); // no .withMetadata(): metadata is dropped
+  // DESIGN 26b: a row with `crop` [x, y, w, h] (fractions of a 16:9 frame) is cropped first (privacy: keeps fans' faces out). Not 16:9 (the hqdefault fallback is letterboxed) = skip.
+  let img = sharp(buf);
+  if (crop) {
+    const m = await img.metadata();
+    if (Math.abs(m.width / m.height - 16 / 9) > 0.02) { console.log('skip (crop needs a 16:9 source):', id); continue; }
+    const [x, y, w, h] = crop;
+    img = img.extract({ left: Math.round(x * m.width), top: Math.round(y * m.height), width: Math.round(w * m.width), height: Math.round(h * m.height) });
+  }
+  const cropped = crop ? await img.toBuffer() : buf;
+  for (const w of [1280, 640]) await sharp(cropped).resize(w, Math.round(w * 9 / 16), { fit: 'cover', withoutEnlargement: true }).webp({ quality: 78 }).toFile(path(`${id}-${w}.webp`)); // no .withMetadata(): metadata is dropped
   console.log('ok:', id);
 }

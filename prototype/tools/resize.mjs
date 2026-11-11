@@ -27,7 +27,7 @@ const JOBS = [
   // Favicon: the cross only, a plain square crop of the original (no redrawing). Wing tips that fall inside the
   // square stay, as drawn. 32px for tabs, 180px on the era ground for iOS home screens (iOS fills transparency black).
   { src: 'logo-d-identity.png', out: 'favicon-32.png', width: 32, height: 32, type: 'image/png', crop: [404, 31, 746, 446], pad: true },
-  { src: 'logo-d-identity.png', out: 'apple-touch-icon-180.png', width: 180, height: 180, type: 'image/png', crop: [404, 31, 746, 446], pad: true, bg: '#111111', inset: 0.14 },
+  { src: 'logo-d-identity.png', out: 'apple-touch-icon-180.png', width: 180, height: 180, type: 'image/png', crop: [404, 31, 746, 446], pad: true, bg: '#05024c', inset: 0.14 },
 ];
 
 const server = createServer((req, res) => {

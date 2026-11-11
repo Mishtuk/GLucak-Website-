@@ -6,7 +6,7 @@ import Footer from '../components/Footer.astro';
 import Icons from '../components/Icons.astro';
 import { era, HEADER_STYLE, SITE_URL } from '../components/content.js';
 
-interface Props { title: string; description?: string; home?: boolean; hero?: 'a' | 'b'; current?: 'music' | 'shows' | 'about'; credits?: string[]; image?: string }
+interface Props { title: string; description?: string; home?: boolean; hero?: 'a' | 'b'; current?: 'music' | 'shows' | 'videos' | 'about'; credits?: string[]; image?: string }
 const { title, description = 'GLucak: Rise, Live It Loud, Push Past Fear, The Time Is Now.', home = false, hero = 'a', current, credits, image = 'home' } = Astro.props;
 const ogImage = `${SITE_URL}/media/og/${image}.png`;
 

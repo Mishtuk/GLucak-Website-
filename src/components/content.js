@@ -1,6 +1,7 @@
 // Build-time content: era file, releases and videos. Missing data files fall back to marked placeholders.
 import { etDay } from '../lib/shows.js';
 import era from '../eras/identity.json';
+import { groupVideos } from './videos.js';
 
 export { era };
 // Header look, one place: 'solid' = a solid dark band from the first paint (v2, follows D25); 'scrim' = the gradient scrim over the Home hero until you scroll.
@@ -25,7 +26,7 @@ export const PHOTO_CREDITS = {
 };
 // Image src -> the credit it needs. Pages list their credits by hand; test/credits.test.js scans each built page's images against this so they can't drift.
 export const CREDIT_FOR = [
-  [/\/media\/v2\/(belt|stage)-/, PHOTO_CREDITS.yt],
+  [/\/media\/v2\/(belt|stage)-|videos\/OOGT3GxlQJk-/, PHOTO_CREDITS.yt],
   [/covers\/identity|identity-art-/, PHOTO_CREDITS.identity],
   [/\/media\/cd-/, PHOTO_CREDITS.cd],
   [/videos\/aZNW63M_C2E-/, PHOTO_CREDITS.vladd],
@@ -52,6 +53,7 @@ export const START = { title: 'Go', link: GO }; // DESIGN 24c, Q44: the "New her
 export const SOUNDCLOUD = 'https://soundcloud.com/glucak';
 export const PATREON = 'https://patreon.com/GLucakMusic';
 export const YOUTUBE = 'https://www.youtube.com/channel/UCha7GtkOI9A0dzbTG3igbLg';
+export const SHORTS = `${YOUTUBE}/shorts`; // DESIGN 26: the Videos page links here instead of listing Shorts
 // id = the icon symbol (Icons.astro). Order is the footer's (DESIGN 16b).
 export const SOCIALS = [
   { id: 'instagram', name: 'Instagram', href: 'https://www.instagram.com/glucakofficial/' },
@@ -102,6 +104,9 @@ export function tileAction(r) {
 // The Earned Your Stripes MUSIC video is fine; only its Visualizer is out.
 export const FLASHING = /running the gauntlet|earned your stripes.*visuali[sz]er/i;
 const videos = () => (load('videos') ?? []).filter((v) => !FLASHING.test(v.title ?? ''));
+
+/** The Videos page (DESIGN 26): { lead, live, music }. Shorts (kind other) are not listed. */
+export const videosPage = () => groupVideos(load('videos') ?? [], FLASHING);
 
 /** Newest video with a valid 11-character YouTube id, or null (the block then links to the channel). */
 export function latestVideo() {

@@ -1,0 +1,17 @@
+---
+import { existsSync } from 'node:fs';
+import { dateLine } from './content.js';
+// DESIGN 26d: one card on the Videos page. Reuses the Watch row's card (.v2-vid, .v2-thumb, .yt-play, .v2-vtitle).
+// Facade: a link to YouTube until app.js turns it into a Play button; the player only loads after a press (hard rule 1).
+interface Props { v: Record<string, any>; lead?: boolean; tag?: 'li' | 'div' }
+const { v, lead = false, tag: Tag = 'li' } = Astro.props;
+const thumb = existsSync(`public/media/videos/${v.id}-1280.webp`) && existsSync(`public/media/videos/${v.id}-640.webp`) ? `/media/videos/${v.id}` : null;
+const name = v.name ?? v.title;
+---
+<Tag class:list={['v2-vid', lead && 'vid-lead']}>
+  <a href={`https://www.youtube.com/watch?v=${v.id}`} rel="noopener" data-yt={v.id} data-title={name}>
+    <span class="v2-thumb">{thumb && <img class="yt-img" src={`${thumb}-640.webp`} srcset={`${thumb}-640.webp 640w, ${thumb}-1280.webp 1280w`} sizes={lead ? '(min-width: 900px) 55vw, 92vw' : '(min-width: 900px) 30vw, (min-width: 700px) 46vw, 92vw'} width="1280" height="720" alt="" loading={lead ? 'eager' : 'lazy'} fetchpriority={lead ? 'high' : undefined} decoding="async" />}<span class="yt-play" aria-hidden="true"></span></span>
+    <span class="v2-vtitle">{name}</span>
+  </a>
+  <p class="vid-meta"><span>{v.place ? `Live at ${v.place}` : v.kind === 'lyric-video' ? 'Lyric video' : 'Music video'}</span>{v.with && <span>{v.with}</span>}{v.date && <time datetime={v.date}>{dateLine(v.date)}</time>}</p>
+</Tag>

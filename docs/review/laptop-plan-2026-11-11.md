@@ -56,4 +56,6 @@ Inputs: `docs/research/next-ideas-2026-11-11.md` (Gabe's new content, booking / 
 | 4 | Nov 13 / Jan 15 (needs owner OK to publish) | **Release-day pages**: Who I Am, then Scenic Route spotlight; flip to Out now by date | designer, copywriter, coder | src/pages/music/ | flips with no one touching it (needs the daily rebuild) |
 | 5 | Gabe's words per song | Story-behind-the-song pages; "bring the show to your city" form (needs Desktop's server) | copywriter, coder | later | Gabe approves the words |
 
+Row 3 done 2026-11-11 (D95): the Videos page is built (DESIGN 26) and the three IG6 eval fixes ride with it; `npm test` 227/227, Home 390 = 3735.
+
 Not now: Bandsintown sync (a second source of truth next to Gabe's edit screen); textures on covers, logo, product photos or the About h1.
