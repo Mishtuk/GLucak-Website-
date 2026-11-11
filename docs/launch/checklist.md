@@ -53,6 +53,8 @@ Where a product has no roles, use a shared-vault login plus 2FA recovery codes h
 - [ ] Fourthwall: only when the shop opens (spring). Gabe sets up Stripe Connect in his own name. Gabe.
 - [ ] One private list of who owns and who pays for each, with renewal dates in the owner's calendar (domain, host, Kit). Owner.
 - [ ] Secrets (SESSION_SECRET, EDITOR_USERS, KIT_API_KEY) live only in the host dashboard and the password manager, never in the repo, chat or screenshots. Owner.
+- [ ] Do not put Cloudflare's orange-cloud proxy in front of the site (DNS-only) unless `server.js` first reads `CF-Connecting-IP`; otherwise every visitor looks like one IP (security review S2). Owner.
+- [ ] Run one host instance only (no scaling out): sign-up limits and sign-in lockouts live in memory (`runbook.md` line 12). Owner.
 
 ## 4. Build items left
 From ROADMAP.md and HANDOFF.md as of 2026-11-06. Tick when merged and `npm test` is green.
@@ -65,6 +67,7 @@ Desktop = `server.js`, `src/`, builds and Chrome. Laptop = design, copy, review.
 - [ ] Kit single-add endpoint: `signup.js` posts `forms/{form}/subscribers`; Kit's page lists `forms/{form_id}/subscribers/{id}`. Prove 200/201 in the Kit test, else switch to the by-id or bulk endpoint. Desktop.
 - [ ] Sign-up reply says "check your inbox to confirm" (double opt-in). Laptop copy, Desktop wires.
 - [ ] Confirm `signup.js` logs no email addresses and no password hashes. Desktop.
+- [ ] **Launch blocker S1:** apply `docs/review/patches/s1-signup-crash.diff`; a JSON `null` or `[]` POST to `/api/signup` answers 400 and the site stays up (the patch's HTTP test covers it; re-run by hand on the host). Desktop.
 - [ ] Privacy page final (email sign-up, Spotify embed); no child in frame on Home or Push Past Fear (D1 done). Laptop review.
 - [ ] Shows empty state is good, in case no shows are booked on day one. Laptop review.
 - [ ] Booking chips: swap the placeholder for gabriel@glucak.com once the mailbox exists. Desktop.
@@ -98,6 +101,10 @@ Desktop = `server.js`, `src/`, builds and Chrome. Laptop = design, copy, review.
 - [ ] Uptime monitor alerts (stop the service once on the test URL and watch for the email). Owner.
 - [ ] Rollback rehearsed: found the host's "roll back to previous deploy" and wrote down the old DNS values. Owner.
 - [ ] `npm test` green on the commit being launched. Desktop.
+- [ ] `npm audit --omit=dev` shows 0 vulnerabilities on the launch commit; Dependabot on, or a monthly calendar reminder to update astro and sharp. Desktop + Owner.
+- [ ] **Host env check** (dashboard, values never pasted anywhere): `TRUST_PROXY=1`, `NODE_ENV=production`, `SESSION_SECRET` 32+ random characters, `EDITOR_USERS`, `KIT_API_KEY` + `KIT_FORM_ID` set, `DEV_EDITOR` unset. Without `TRUST_PROXY` all visitors share one sign-up limit and there is no HSTS. Owner + Desktop.
+- [ ] **Headers on the live site:** `curl -sI https://glucak.com/` shows HSTS, CSP, X-Content-Type-Options, X-Frame-Options and Referrer-Policy; `http://` redirects to `https://`. Owner / Desktop.
+- [ ] **Rate-limit smoke test:** six sign-ups from one phone give 429 on the sixth; a phone on another network still succeeds. Owner.
 
 ## 6. Launch day (Mon Jan 11, 2027, on the owner's go)
 Do not announce until every box in section 5 is ticked. Steps are in `runbook.md` sections 6-8.
