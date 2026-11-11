@@ -185,6 +185,7 @@ credit goes with his still, which is no longer used. The About page repeats the 
   `grain.png` (128px tile, 15 KB).
 
 ### 3c. IDENTITY guess era (2026-11-05): **a guess, not Gabe's colors**
+**Superseded 2026-11-11 by section 25 (D93):** the real era is `src/eras/identity.json`, from Gabe's IDENTITY CD art.
 Prototype only: `?era=identity-guess` (in `prototype/data.js`, **not** in `src/eras/`). It lets the owner see the site in
 IDENTITY's light before Gabe's real art and colors arrive (about Nov 30); then this era is deleted, not promoted. In this era the
 hero chip reads "IDENTITY colors: our guess from the smart-link art" and the footer note says the same.
@@ -2447,3 +2448,197 @@ crate order does not change.
 - The For venues block on a paper card (competes with the poster), in About's right column (repeats LISTEN), or with the chip.
 - Start with Go under RISE (pushes D81's Play button off screen one at 390).
 - A filled Request a show on About (two fills in one phone view).
+
+## 25. Round IG6: the IDENTITY era from Gabe's real art (Laptop designer, 2026-11-11)
+Sources: Gabe's IDENTITY CD files (`assets/from-gabe/identity-cd/`, CREDITS.md), `docs/research/gabe-answers-2026-11-06.md`
+(rows 3, 7, 17), CONTEXT ("Start with the IDENTITY album colors"), `ig-design-tips.md` 4b item 8 (the 2 + 1 rule), sections 3,
+3a, 3c, 19b, 23, 24, D35, D51. **Specified against the build** (repo 7199966, a scratch copy built with the era switch and the
+specificity fix in 25a, `node server.js` on 8961, empty `DATA_DIR`, Spotify and YouTube blocked at the resolver, reduced motion).
+New slots were injected over CDP, no `src/` edit: CSS `docs/review/ig6/design/25-delta.css.txt`, markup `25-patch.js.txt`.
+Shots `docs/review/ig6/design/25-<page>-<320|390|900|1280>-after.png`; sheets **`era-candidates.png`** and **`textures-identity.png`**;
+on-page text-over-print contrast `25-contrast.txt`. This section **replaces the D35 guess era (3c)**: the site launches in IDENTITY.
+
+**Hard rules held.** No motion added (0 animations at rest, as IG4). Gabe's CD art is used as he graded it (resize and one crop,
+no tint, no screen, no AI; D51 extended to his CD photos). No new colour role, no new font. Every new file EXIF / ICC / XMP free
+(checked). No audience faces: the four CD photos show Gabe alone. **Heights:** Home 390x660 **3484 -> 3484** (cap 3601), 320
+3634 -> 3634, 900 3800 -> 3753, 1280 4051 -> 4004 (the jump photo is shorter than the dashed slot it replaces). Music 390 3605 ->
+4181, 1280 2883 -> 3218 (the tracklist); About 390 2254 -> 2615, 1280 2002 -> 2286 (the studio photo); Shows 390 2643 -> 2834,
+1280 2069 -> 2069. No horizontal overflow at 320 / 390 / 900 / 1280. (Home measured 3484 at 7199966 before any change: below
+IG4's 3601 because the shows list changed.)
+
+**Generic defaults I reached for, and what replaced each (ai-design-workflow 5):**
+| Default | Why it is the template look | Instead |
+|---|---|---|
+| The brightest colour in the art (cyan) as the accent | Picks for pop, ignores what the accent also prints | Magenta: the light in the art, and it passes as a print ink (25a) |
+| Accent on the favourite track | Breaks 2 + 1 (accent only on Listen / Tickets) | Volume by size, the site's idea 1: SCENIC ROUTE one step bigger, the only linked row |
+| Tracklist in the CD's brush lettering | A second display face; type as a picture | Big Shoulders, the site's poster face, numbers muted as on the CD |
+| Gabe's photos run through the texture family | Retouching an artist's finished art | As graded; the family prints only our own sources |
+
+### 25a. The era file: `src/eras/identity.json` (written; passes `test/eras.test.js`)
+Sampled from the art (k-means, 300px): cover `#000000` 28%, indigo `#05024c` 19%, `#02023c` 11%, blue-violet `#2607a9` / `#4e08c5`,
+flare `#9017c7`, type `#dddaec`; CD back room `#8109f9` 21%, LED / magenta `#b91afe`; tracklist lettering cyan `#5ce1e6` (37% of a
+line); jump photo magenta `#d805fa`.
+
+| Role | Value | From the art |
+|---|---|---|
+| `bg` | `#05024c` | The cover's indigo field (its largest non-black cluster). Against black 1.12 (Logo D needs <= 1.5) |
+| `text` | `#f4f2ff` | The white IDENTITY type, a touch cool |
+| `accent` | **`#d93cfb`** | The magenta light: LED strip (CD back), jump photo, the cover's flare |
+| `accent-text` | `#05024c` | `bg`, as every era |
+| `muted` | `#b7b2e3` | Lavender grey between the type and the field |
+| derived `bg-2` / `line` / ground | `#161359` / `#43407b` / `#242163` | 3, 19b (`--tint` 0%), 24a |
+
+`name` "IDENTITY", `word` "IDENTITY", `art` `/media/covers/identity.webp`, `texture` null (site grain), `mark` Logo D (unchanged).
+
+**Candidates** (`era-candidates.png`; same ground / ink / muted; the prints re-run per candidate in a scratch mirror):
+
+| | Listen (bg on accent) | fill vs page / bg-2 | Tickets fill vs paper | Prints: night riso / About crowd | Verdict |
+|---|---|---|---|---|---|
+| A cyan `#5ce1e6` (lettering) | 11.94 | 11.94 / 10.51 | 1.42 | **3.40 FAIL / 3.40 FAIL** | Too light as an ink under text; prints his face teal |
+| **B magenta `#d93cfb`** | **5.35** | **5.35 / 4.71** | 3.17 | **6.29 / 4.88-5.03** | **Pick** |
+| C blue-violet `#8a6cff` (lifted) | 5.06 | 5.06 / 4.46 | 3.35 | 6.61 / 4.66-4.80 | Passes only as a pastel lavender; no separation from the ground |
+
+**Why B:** it passes every era rule and every print check as made (cyan would need a new cap in `texture.mjs`); it is the light
+*in* the art, so our prints and his purple photos read as one print run (cyan is a second hue family beside his purples on every
+page); and it still separates from the indigo for the two actions. Common: text/bg 16.96, text/bg-2 14.94, muted/bg 9.37, muted/bg-2
+8.25, muted on the ground 7.10, duotone peak 4.03 (86% toward accent), Logo D wings median 5.58 on bg, 5.25 on bg-2 (guess era
+5.48 / 5.19). The poster's Tickets fill is 3.17 on the paper and keeps its 3px `bg` border (16.96).
+
+**Bug found (the coder fixes it first): era colours never reach the page.** `Base.astro` 57 prints `:root{--bg:...}` in a `<style>`
+before the inlined `global.css`, whose `:root` (line 16) sets the placeholder values again; same specificity, the later one wins.
+The placeholder era hid it (same values). Fix, `src/layouts/Base.astro` 57 and `src/pages/edit/index.astro` 18:
+``<style set:html={`html:root{${eraCss}}`}></style>`` (specificity 0,1,1 beats `:root`). Verified in the scratch build: the page
+`bg` is `#05024c`.
+
+**Switch:** `src/components/content.js` 3: `import era from '../eras/identity.json';`. `placeholder.json` stays (review / test era).
+The footer chip goes by itself (`Footer.astro` 8 shows it only for `Placeholder`). `theme-color` and the duotone follow the file.
+
+### 25b. The texture family re-printed (files written)
+`node tools/photo/texture.mjs --era src/eras/identity.json` (all slots; renders kept in `docs/review/ig4/textures/identity/`),
+copied over the IG4 files in `public/media/` (same names, so no markup change): `a-night-phone-800`, `d-crowd-screen-{1600,800,
+phone-800}`, `v2/stage-lines-{360,634}`, `v2/garage-toner-{480,874}`, `v2/belt-plates-{320,634}`. `hero-wall-1600` and the grounds
+are colourless masks: no re-draw; `grounds.mjs --era src/eras/identity.json --only=` PASS (text 12.86, muted 7.11).
+`run.mjs` (hard-coded `V:/` paths, so run from a scratch mirror with the same code) made **new** names: `b-riso-identity-600` /
+`-1000` (hero B) and `c-poster-identity-600` / `-1000` (the Shows poster). Checks: night riso name zone **6.29:1** (file), crowd
+**4.88 / 4.95 / 5.03**; on the page (text hidden, 1.2px blur, p95 / brightest pixel): GLUCAK 390 **8.96** / 7.10, slogan 11.95,
+SHOWS 15.90, Now line 16.78; 1280 G 13.35, LUCAK 15.11, slogan 14.68; About PUSH PAST FEAR 390 **6.52** / 4.24, 1280 **6.32** / 4.00
+(display text, large); Music RISE on the grooves 14.57. (The `.sl-2` box reads p95 14.02 but a brightest pixel of 1.23: that pixel
+is not on the photo's dark field, likely a neighbour inside the box; not re-checked by hand.) His face holds in the night riso at
+1:1 (`textures-identity.png` row 1).
+- `src/components/Hero.astro` 26 and 28: `/media/b-riso-600.webp 600w, /media/b-riso-1000.webp 1000w` ->
+  `/media/b-riso-identity-600.webp 600w, /media/b-riso-identity-1000.webp 1000w`.
+- **Desktop / owner OK (src/lib):** `src/lib/shows.js` 62 `c-poster-` -> `c-poster-identity-` (same sizes). Until then the poster
+  prints in `#111` ink on the lavender paper (`mix-blend-mode: darken`): readable, just not the era ink.
+- Not re-made: `a-era-grade-*` (only `?hero=a` from 900px), `f-mccc-*` (only `?hero=b` under 900px), `e-contact-*` (unused).
+- Tool defaults follow the live era: `tools/photo/texture.mjs` 5, 27, 28, `tools/photo/grounds.mjs` 5, 17, `tools/og.mjs` 2, 13:
+  `placeholder.json` -> `identity.json` (texture's `DEFAULT` regex `/identity\.json$/`). Then `node tools/og.mjs` re-makes the
+  share images in the era (it may add `covers/identity` to its cover list). Favicon / apple-touch icon still sit on `#111`
+  (`prototype/tools/resize.mjs`): a follow-up.
+
+### 25c. Gabe's photos: where each goes (as graded; files written)
+All four are IDENTITY CD art he graded himself, so none is printed in the family (the family prints our own sources); each
+fills a slot that was empty or repeated the Kealey frame (owner note 6: no repeated image). Alt text in 25f; credit 25f.
+
+| Photo | Slot | Files (`public/media/`) | Why |
+|---|---|---|---|
+| **jump** (960 sq) | Home, Push Past Fear, from 900px: **replaces the dashed "Photo slot: crowd shot" box** (grid area p2, 22rem, 4:5) | `cd-jump-352` 352x440 (21 KB), `-704` 704x880 (54 KB); crop x 60-828 (keeps him and the bench) | The slot waited for a photo; the jump is the band's phrase |
+| **studio** (960 sq) | About: closes the actions column (from 900px under the setlist; phones under the Patreon button, full width up to 30rem) | `cd-studio-480` (44 KB), `-960` (150 KB, q64) | The bio says Producer-Rapper/DJ: him at the pads, guitar, controller |
+| **CD inside, live** (4000x2000) | Shows: opens "Book GLucak" (`ForVenues` `photo` prop, Shows only) | `cd-live-640` 640x320 (7 KB), `-1280` (17 KB) | A booker sees him perform; it replaces the Kealey wall strip (below) |
+| **looking** (960 sq) | **Held** (no launch slot) | none | Busy fish-eye glow, his profile turned away; a fourth purple photo would crowd. For the Photos page (soon) |
+
+**Shows drops `ground-wall`** (24a allowed it: "if the owner reads the wall as a repeat"): with the live photo on the page, the
+Kealey frame would otherwise show on Shows twice (wall, poster) besides Home. `src/pages/shows/index.astro` 9:
+`class="band band-live"`. The wall stays on Home only.
+
+### 25d. The IDENTITY cover (files written; never tinted or textured)
+`public/media/covers/identity.webp` 640x640 (10 KB; the `fetch-covers.mjs` name and size: `<slug>.webp`, max 640, q80), plus
+`covers/identity-320.webp` (5 KB) and `covers/identity-960.webp` (18 KB) for `srcset`. `src/data/releases.json` 7: IDENTITY
+`"cover": null` -> `"cover": "/media/covers/identity.webp"` (shows in the crate / release card from release day; `crate()` skips
+IDENTITY before). **Home, Join band** (`src/pages/index.astro` 67) replaces the Instagram crop:
+```astro
+<img class="v2-photo" src="/media/covers/identity-320.webp" srcset="/media/covers/identity-320.webp 320w, /media/covers/identity.webp 640w" sizes="(min-width: 900px) 12rem, 26vw" width="640" height="640" alt="IDENTITY cover art" loading="lazy" />
+```
+(390: 91px square beside the countdown; height unchanged. `v2/identity-art-*` stay in the repo, unused.) Not changed: at 320 the
+art in that block is 36px wide (36x45 before; the 20rem container query): pre-existing, worth a look next round.
+
+### 25e. Music: IDENTITY as the CD (cover, countdown, tracklist)
+Replaces `src/pages/music/index.astro` 37-45 (both `identity-state` branches) with one block; the countdown markup inside is
+unchanged. Tracklist from the CD back (answers row 17). Scenic Route (12) is his favourite and the first single (Jan 15): one step
+bigger (`--step-2`), the only linked row (setlist arrow, diagonal: a smart link), a muted note; **no accent** (2 + 1).
+`src/components/content.js`, after `START` (line 33):
+```js
+// DESIGN 25e: IDENTITY's tracklist, from the CD back (Gabe, answers row 17). Track 12 is his favourite and the first single.
+export const IDENTITY_TRACKS = ['IDENTITY', 'ChurchBoy', 'Single Kids', 'WYLD LOVE', 'Life Blood', 'Mayday Mayday', 'Light', 'Mere Reflection', 'Another Dimension', 'Trenches', 'Finish Strong', 'Scenic Route'];
+export const IDENTITY_CREDIT = 'All songs written, recorded, produced, mixed and mastered by Gabriel Lucak.'; // the CD back, sentence case
+```
+and after `upcoming()`:
+```js
+/** Scenic Route's row (DESIGN 25e): pre-save until its day, then out now. null = the row is plain text. */
+export function favorite() {
+  const r = (load('releases') ?? []).find((x) => x?.title === 'Scenic Route' && http(x.link));
+  if (!r) return null;
+  const out = !r.date || r.date <= etDay();
+  const day = r.date && new Date(`${r.date}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+  return { link: r.link, note: out ? 'Single, out now. His favorite.' : `Single, out ${day}. His favorite.`, label: out ? 'Scenic Route: listen to the single' : 'Scenic Route: pre-save the single' };
+}
+```
+Music markup (add `IDENTITY_TRACKS, IDENTITY_CREDIT, favorite` to the line 5 import; `const fav = favorite();` after line 6):
+```astro
+<div class="idn">
+  <img class="idn-cover" src="/media/covers/identity-320.webp" srcset="/media/covers/identity-320.webp 320w, /media/covers/identity.webp 640w, /media/covers/identity-960.webp 960w" sizes="(min-width: 900px) 26rem, 42vw" width="640" height="640" alt="IDENTITY cover art: GLucak in blue light, the IDENTITY logo under the title" loading="lazy" />
+  <div class="identity-state">
+    {era.mark && <img class="mark mark-identity" src={era.mark} alt="" width="300" height="96" loading="lazy" />}<p class="identity identity-lg">IDENTITY</p>
+    {idn.date && (idn.out
+      ? <p class="identity-when">Out now. <a class="text-link" href={idn.link} rel="noopener" aria-label="Listen to IDENTITY">Listen</a></p>
+      : <><p class="identity-when identity-count"><time class="identity-date" datetime={idn.date}>{idn.pretty}</time>{' '}<span>{idn.days} {idn.days === 1 ? 'day' : 'days'} to go</span></p>
+         <a class="btn btn-line" href={idn.link} rel="noopener" aria-label="Pre-save IDENTITY">Pre-save</a></>)}
+  </div>
+  <ol class="tracks" aria-label="IDENTITY tracklist">
+    {IDENTITY_TRACKS.map((t, i) => t === 'Scenic Route'
+      ? <li class="track track-fav"><span class="track-n">{i + 1}</span>{fav
+          ? <><a class="go" href={fav.link} rel="noopener" aria-label={fav.label}>{t}</a><span class="track-note">{fav.note}</span></>
+          : <span class="track-title">{t}</span>}</li>
+      : <li class="track"><span class="track-n">{i + 1}</span><span class="track-title">{t}</span></li>)}
+  </ol>
+  <p class="tracks-credit">{IDENTITY_CREDIT}</p>
+</div>
+```
+CSS: append **`docs/review/ig6/design/25-delta.css.txt`** to the end of `global.css` (after line 1265) word for word (it also
+carries 25c's rules). Layout: phones, the cover (9fr, 150px at 390) beside the countdown (the state stacks the mark over the
+word), then the tracklist in one column (as the CD back), then the credit. From 900px the 5 : 7 grid of every band: cover left
+(486px at 1280) beside state, tracks, credit; two track columns from 72rem (at 900 two columns pushed SCENIC ROUTE's arrow off
+its word; at 390 they wrapped Mere Reflection and Another Dimension). The `.go` arrow turns diagonal by itself (24c,
+`target=_blank` from `ext.js`). States: the Scenic Route link keeps the `.go` hover underline, focus ring and 16e pressed swap;
+48px tall. Numbers `muted` (9.37:1). **Words to the copywriter:** "Single, out Jan 15. His favorite." and the sentence-case
+credit are drafts (facts from Gabe's answers; he called it his favorite). Shots `25-music-{320,390,900,1280}-after.png`.
+
+### 25f. Markup for 25c, credits, tests (exact)
+- `src/pages/index.astro` 49: the `.v2-slot` div becomes
+  `<img class="v2-photo v2-wide-only v2-jump" src="/media/cd-jump-352.webp" srcset="/media/cd-jump-352.webp 352w, /media/cd-jump-704.webp 704w" sizes="22rem" width="704" height="880" alt="GLucak mid-jump under a park shelter" loading="lazy" />`
+  (the `.v2-slot` CSS stays for later empty slots).
+- `src/pages/about/index.astro` 17: `class="wrap push-body about-body"`; inside `.about-actions`, after the Patreon `<a>` (line 28):
+  `<img class="about-photo" src="/media/cd-studio-480.webp" srcset="/media/cd-studio-480.webp 480w, /media/cd-studio-960.webp 960w" sizes="(min-width: 900px) 38vw, (min-width: 34rem) 30rem, 100vw" width="960" height="960" alt="GLucak in his home studio, headphones on, his gear on the floor around him" loading="lazy" />`
+- `src/components/ForVenues.astro`: `const { photo = false } = Astro.props;` and, as the first child of `.venues`:
+  `{photo && <img class="venues-photo" src="/media/cd-live-640.webp" srcset="/media/cd-live-640.webp 640w, /media/cd-live-1280.webp 1280w" sizes="(min-width: 72rem) 34rem, 100vw" width="1280" height="640" alt="GLucak singing live in purple light" loading="lazy" />}`.
+  `src/pages/shows/index.astro` 16: `<ForVenues photo />`; line 9 per 25c. About keeps `<ForVenues />` (no photo).
+- `content.js` `PHOTO_CREDITS`: `identity: 'IDENTITY cover: GLucak. Logo: Dave Bahm.'` and new `cd: 'Photos: from the IDENTITY CD.'`
+  (the photographer is still open in Gabe's answers; put the name in when he says). `CREDIT_FOR`: `[/identity-art-/, ...]` ->
+  `[/covers\/identity/, PHOTO_CREDITS.identity]`, and add `[/\/media\/cd-/, PHOTO_CREDITS.cd]`.
+- Credits props: Home (`index.astro` 21) add `C.cd`; About (line 9 and the list at line 40) `[C.kealey, C.cd]`; Shows (line 7)
+  `[C.kealey, C.joseph, C.cd]`; Music (`music/index.astro` 10) `credits={[C.identity]}` (import `PHOTO_CREDITS as C`).
+- Tests (Laptop-made): `test/ig3.test.js` 26-34: the chip shows only while the era is Placeholder, so with IDENTITY assert no
+  `ph-chip footer-chip` on any page. `test/ig5.test.js` 57: Shows is `class="band band-live"` with no `has-ground`.
+  `test/v2port.test.js` 53: mirror the CREDIT_FOR rows (`'IDENTITY cover: GLucak.'`, `'Photos: from the IDENTITY CD.'`).
+  New: `dist/index.html` contains `html:root{--bg:#05024c`; `/music/` has 12 `class="track` items and one `track-fav`; the 25e CSS
+  block uses no `--accent`; every `public/media/cd-*.webp` and `covers/identity*.webp` has no EXIF (sharp metadata);
+  `music/index.html` contains `covers/identity`.
+
+### 25g. Visible changes (at most 3, plus the colour)
+The colour (the whole site goes indigo / white / magenta). 1. The IDENTITY block on Music becomes the CD. 2. Three of Gabe's
+photos fill Home's empty slot, About's actions column and Shows' booking block. 3. Shows loses its wall strip.
+
+### 25h. Rejected
+- Cyan as the accent (prints fail at 3.40:1; a second hue family); the violet (pastel only); magenta on the favourite track (2 + 1).
+- Printing his CD photos in the family; the looking photo on a launch page; the CD's brush lettering as an image.
+- The live shot as the Shows or About header under the h1 (his graded purple reaches about 3:1 in the LED highlights; no scrim on his art).
+- Deleting `placeholder.json` (still the test era) or the old renders (git history and `docs/review/ig4/textures/` keep both eras).

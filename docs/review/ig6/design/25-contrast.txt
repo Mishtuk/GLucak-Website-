@@ -1,0 +1,13 @@
+/ 390 .n-rest,.name-row: p95 8.96:1, brightest 7.10:1
+/ 390 .sl-1: p95 11.95:1, brightest 11.07:1
+/ 390 .sl-2: p95 14.02:1, brightest 1.23:1
+/ 390 .hero-actions .go: p95 15.90:1, brightest 15.44:1
+/ 390 .now: p95 16.78:1, brightest 16.57:1
+/ 1280 .n-g: p95 13.35:1, brightest 12.90:1
+/ 1280 .n-rest: p95 15.11:1, brightest 12.90:1
+/ 1280 .slogan: p95 14.68:1, brightest 12.90:1
+/ 1280 .hero-actions .go: p95 13.86:1, brightest 12.90:1
+/about/ 390 .push-title .phrase: p95 6.52:1, brightest 4.24:1
+/about/ 1280 .push-title .phrase: p95 6.32:1, brightest 4.00:1
+/music/ 1280 .phrase-rise: p95 14.57:1, brightest 13.51:1
+/404.html 1280 .lost .phrase, .band-lost .phrase: missing

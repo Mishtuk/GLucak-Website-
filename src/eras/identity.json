@@ -1,0 +1,8 @@
+{
+  "name": "IDENTITY",
+  "colors": { "bg": "#05024c", "text": "#f4f2ff", "accent": "#d93cfb", "accent-text": "#05024c", "muted": "#b7b2e3" },
+  "art": "/media/covers/identity.webp",
+  "texture": null,
+  "mark": "/media/mark-identity-300.webp",
+  "word": "IDENTITY"
+}

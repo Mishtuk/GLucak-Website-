@@ -1,0 +1,37 @@
+/* ---------- DESIGN 25. IDENTITY era: Gabe's CD photos, the cover, the tracklist (IG6) ---------- */
+/* 25c: Home, Push Past Fear, from 900px: the jump photo takes the empty slot's place (same area, same 22rem width). */
+.v2-jump { grid-area: p2; aspect-ratio: 4 / 5; }
+@media (min-width: 900px) { .v2-push .v2-jump { width: min(100%, 22rem); } }
+/* 25c: About: the studio photo closes the actions column (phones: under the Patreon button, full width). As Gabe graded it. */
+.about-photo { display: block; flex: 1 1 100%; width: 100%; max-width: 30rem; height: auto; aspect-ratio: 1; background: var(--bg-2); }
+@media (min-width: 900px) {
+  .about-photo { margin-top: var(--space-l); max-width: none; }
+  .about-body { align-items: start; } /* the bio starts level with the setlist; with the photo the right column is the taller one */
+}
+/* 25c: Shows: the CD's live shot opens the For venues block (Shows only, ForVenues photo prop). */
+.venues-photo { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; margin-bottom: var(--space-xs); background: var(--bg-2); }
+/* 25e: Music: IDENTITY as the CD: the cover (front), the countdown, the tracklist (back). Never tinted (D51). */
+.idn { display: grid; grid-template-columns: minmax(0, 9fr) minmax(0, 11fr); grid-template-areas: 'cover state' 'tracks tracks' 'credit credit'; gap: var(--space-m); align-items: center; margin-top: var(--section); }
+.idn > * { min-width: 0; }
+.idn-cover { grid-area: cover; display: block; width: 100%; height: auto; aspect-ratio: 1; background: var(--bg-2); }
+.idn > .identity-state { grid-area: state; margin-top: 0; grid-template-columns: minmax(0, 1fr); }
+.idn > .identity-state .identity { overflow-wrap: anywhere; }
+.tracks { grid-area: tracks; columns: 1; column-gap: var(--space-m); list-style: none; margin: var(--space-xs) 0 0; padding: 0; }
+.track {
+  display: grid; grid-template-columns: 1.3em minmax(0, 1fr); column-gap: 0.35em; align-items: baseline; break-inside: avoid; padding-block: 0.3rem;
+  font-family: var(--font-display); font-weight: 900; font-size: var(--step-1); line-height: 1.05; text-transform: uppercase;
+}
+.track-n { color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+/* Scenic Route, track 12: his favourite, the album's first single (Jan 15). Louder by size (the site's one idea: volume comes from size), the only linked row, a muted note. No accent (2 + 1 rule: accent only on Listen / Tickets). */
+.track-fav { font-size: var(--step-2); padding-top: 0.5rem; }
+.track-fav .go { justify-self: start; white-space: nowrap; min-height: 48px; padding-inline: 0; font-size: inherit; letter-spacing: 0; }
+.track-note { grid-column: 2; font-family: var(--font-body); font-weight: 700; font-size: var(--step--1); line-height: 1.3; text-transform: none; color: var(--muted); }
+.tracks-credit { grid-area: credit; color: var(--muted); font-size: var(--step--1); line-height: 1.4; }
+/* One column, as the CD back; two from 72rem, where each column holds ANOTHER DIMENSION and SCENIC ROUTE + arrow on one line
+   (two columns wrapped them at 390 and 900). */
+@media (min-width: 72rem) { .tracks { columns: 2; } }
+@media (min-width: 900px) {
+  .idn { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: 'cover state' 'cover tracks' 'cover credit'; grid-template-rows: auto auto 1fr; column-gap: var(--space-xl); row-gap: var(--space-m); align-items: start; }
+  .idn > .identity-state { grid-template-columns: auto 1fr; }
+  .tracks { column-gap: var(--space-xl); }
+}

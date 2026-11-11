@@ -1,0 +1,30 @@
+// DOM patch = the markup DESIGN 25 asks for (what the coder writes in the .astro files). Served build at the era switch.
+const $ = s => document.querySelector(s);
+const SR = { link: 'https://wingsmusic.lnk.to/ScenicRoute', note: 'Single, out Jan 15. His favorite.' };
+const TRACKS = ['IDENTITY', 'ChurchBoy', 'Single Kids', 'WYLD LOVE', 'Life Blood', 'Mayday Mayday', 'Light', 'Mere Reflection', 'Another Dimension', 'Trenches', 'Finish Strong', 'Scenic Route'];
+const COVER = (sizes, cls, alt) => `<img class="${cls}" src="/media/covers/identity-320.webp" srcset="/media/covers/identity-320.webp 320w, /media/covers/identity.webp 640w, /media/covers/identity-960.webp 960w" sizes="${sizes}" width="640" height="640" alt="${alt}" loading="lazy">`;
+// Hero B: the IDENTITY riso
+for (const s of document.querySelectorAll('source')) if (/b-riso-600/.test(s.srcset)) s.srcset = '/media/b-riso-identity-600.webp 600w, /media/b-riso-identity-1000.webp 1000w';
+// Home
+if ($('.v2-identity')) {
+  $('.v2-identity > img').outerHTML = COVER('(min-width: 900px) 12rem, 26vw', 'v2-photo', 'IDENTITY cover art');
+  $('.v2-slot').outerHTML = `<img class="v2-photo v2-wide-only v2-jump" src="/media/cd-jump-352.webp" srcset="/media/cd-jump-352.webp 352w, /media/cd-jump-704.webp 704w" sizes="22rem" width="704" height="880" alt="GLucak mid-jump under a park shelter" loading="lazy">`;
+}
+// Music
+if ($('#h-releases')) {
+  const st = $('.releases-band .identity-state'), idn = document.createElement('div'); idn.className = 'idn';
+  st.before(idn);
+  idn.insertAdjacentHTML('beforeend', COVER('(min-width: 900px) 26rem, 42vw', 'idn-cover', 'IDENTITY cover art: GLucak in blue light, the IDENTITY logo under the title'));
+  idn.append(st);
+  idn.insertAdjacentHTML('beforeend', `<ol class="tracks" aria-label="IDENTITY tracklist">${TRACKS.map((t, i) => t === 'Scenic Route'
+    ? `<li class="track track-fav"><span class="track-n">${i + 1}</span><a class="go" href="${SR.link}" rel="noopener" target="_blank" aria-label="Scenic Route: pre-save the single (opens in a new tab)">${t}</a><span class="track-note">${SR.note}</span></li>`
+    : `<li class="track"><span class="track-n">${i + 1}</span><span class="track-title">${t}</span></li>`).join('')}</ol><p class="tracks-credit">All songs written, recorded, produced, mixed and mastered by Gabriel Lucak.</p>`);
+}
+// About
+if ($('.about-actions')) $('.about-actions').closest('.push-body').classList.add('about-body');
+if ($('.about-actions')) $('.about-actions').insertAdjacentHTML('beforeend', `<img class="about-photo" src="/media/cd-studio-480.webp" srcset="/media/cd-studio-480.webp 480w, /media/cd-studio-960.webp 960w" sizes="(min-width: 900px) 38vw, (min-width: 34rem) 30rem, 100vw" width="960" height="960" alt="GLucak in his home studio, headphones on, his gear on the floor around him" loading="lazy">`);
+// Shows
+if ($('.band-live .shows-side')) {
+  $('.band-live').classList.remove('has-ground', 'ground-wall');
+  $('.shows-side .venues').insertAdjacentHTML('afterbegin', `<img class="venues-photo" src="/media/cd-live-640.webp" srcset="/media/cd-live-640.webp 640w, /media/cd-live-1280.webp 1280w" sizes="(min-width: 72rem) 34rem, 100vw" width="1280" height="640" alt="GLucak singing live in purple light" loading="lazy">`);
+}

@@ -349,3 +349,20 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   period, blank ledge removed, `--w-lost` 4.9704 / `--w-lost2` 1.9318.
 - **Why:** the print shop reaches the inner pages with each page's own subject and no photo repeated on them; bookers get a
   finished block today; Home is untouched (3601 / 4277 measured).
+
+## D93 (Laptop designer, 2026-11-11): Round IG6 spec, the IDENTITY era from Gabe's real art (DESIGN 25). Proposed; boss / owner confirm
+- **Era** `src/eras/identity.json` (written): bg `#05024c` (the cover's indigo), text `#f4f2ff`, **accent `#d93cfb` magenta** (the
+  LED / flare / jump-photo light), accent-text = bg, muted `#b7b2e3`. Picked from three on `docs/review/ig6/design/era-candidates.png`:
+  cyan (the tracklist lettering) is brightest on the button but fails as a print ink under text (3.40:1) and adds a second hue
+  family; blue-violet passes only as a pastel. Magenta: Listen 5.35:1, fill vs page 5.35, every print check passes. Replaces the
+  D35 guess; the site defaults to IDENTITY (content.js 3), the Placeholder chip goes with it.
+- **Bug for the coder first:** `Base.astro` 57 / `edit/index.astro` 18 print `:root{era}` before global.css's `:root`, so no era
+  ever applied; becomes `html:root{...}`.
+- **Prints re-skinned** (texture.mjs over the IG4 names; run.mjs as new `b-riso-identity-*`, `c-poster-identity-*`); poster swap
+  is `src/lib` (owner OK). Grounds unchanged (colourless), check PASS.
+- **Gabe's CD photos as he graded them:** jump fills Home's empty Push slot (900px+), studio closes About's actions column, the CD's
+  live shot opens Shows' "Book GLucak"; looking held. Shows drops the Kealey wall strip (repeat). Cover files
+  `covers/identity(-320/-960).webp`, Home's Join art and releases.json point to them.
+- **Music:** IDENTITY as the CD: cover, countdown, 12-track list; Scenic Route one size up, linked, "Single, out Jan 15. His
+  favorite." (copywriter to confirm), no accent (2 + 1).
+- **Why:** CONTEXT says launch in IDENTITY's colours; the real art now exists. Home 390 stays 3484 (cap 3601).
