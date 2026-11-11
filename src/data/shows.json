@@ -1,5 +1,19 @@
 [
-  { "date": "2026-12-12", "time": "19:00", "type": "show", "venue": "Placeholder Venue", "city": "Somewhere, PA", "link": "https://example.com/tickets" },
-  { "date": "2026-12-19", "type": "open-mic", "venue": "Placeholder Cafe", "city": "Elsewhere, PA", "link": "https://example.com/open-mic" },
-  { "date": "2026-10-01", "time": "20:00", "type": "show", "venue": "Placeholder Hall", "city": "Somewhere, PA" }
+  { "date": "2026-11-02", "time": "19:00", "type": "open-mic", "venue": "Crooked Eye", "city": "Hatboro, PA", "address": "13 E Montgomery Ave" },
+  { "date": "2026-11-04", "time": "19:30", "type": "open-mic", "venue": "High Steaks", "city": "Ambler, PA" },
+  { "date": "2026-11-05", "time": "19:00", "type": "open-mic", "venue": "Puck Live", "city": "Doylestown, PA", "address": "1 Printers Alley" },
+  { "date": "2026-11-11", "time": "19:00", "type": "open-mic", "venue": "Chambers 19", "city": "Doylestown, PA", "address": "19 N Main St" },
+  { "date": "2026-11-12", "time": "19:00", "type": "open-mic", "venue": "Puck Live", "city": "Doylestown, PA", "address": "1 Printers Alley" },
+  { "date": "2026-11-15", "time": "13:00", "type": "open-mic", "venue": "Mike's York Road Tavern", "city": "Warminster, PA", "address": "544 York Rd" },
+  { "date": "2026-11-16", "time": "19:00", "type": "open-mic", "venue": "Crooked Eye", "city": "Hatboro, PA", "address": "13 E Montgomery Ave" },
+  { "date": "2026-11-17", "time": "19:00", "type": "open-mic", "venue": "M.O.M's", "city": "Doylestown, PA" },
+  { "date": "2026-11-18", "time": "19:00", "type": "open-mic", "venue": "Chambers 19", "city": "Doylestown, PA", "address": "19 N Main St" },
+  { "date": "2026-11-19", "time": "19:00", "type": "open-mic", "venue": "Puck Live", "city": "Doylestown, PA", "address": "1 Printers Alley" },
+  { "date": "2026-11-22", "time": "20:00", "type": "open-mic", "venue": "Fox Chase Tavern", "city": "Philadelphia, PA" },
+  { "date": "2026-11-29", "time": "13:00", "type": "open-mic", "venue": "Mike's York Road Tavern", "city": "Warminster, PA", "address": "544 York Rd" },
+  { "date": "2026-11-30", "time": "19:00", "type": "open-mic", "venue": "Crooked Eye", "city": "Hatboro, PA", "address": "13 E Montgomery Ave" },
+  { "date": "2026-12-01", "time": "19:00", "type": "open-mic", "venue": "M.O.M's", "city": "Doylestown, PA" },
+  { "date": "2026-12-02", "time": "20:00", "type": "open-mic", "venue": "North Penn VFW", "city": "Glenside, PA" },
+  { "date": "2026-12-04", "time": "17:00", "type": "open-mic", "venue": "Music and Arts Center of Airport Square", "city": "North Wales, PA" },
+  { "date": "2027-01-16", "time": "18:00", "type": "show", "venue": "Riverside", "city": "Horsham, PA", "address": "239 Columbia Ave" }
 ]

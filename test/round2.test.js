@@ -71,9 +71,9 @@ test('Music: single-link tiles with distinct names, newest first, hatched slot f
     names.push(t.match(/<h3 class="tile-title">([^<]*)</)[1]);
   }
   assert.equal(new Set(names).size, names.length, 'distinct names');
-  assert.deepEqual(names.slice(0, 3), ['Scenic Route', 'Who I Am', 'Duck, Dodge, Jump, Fight']);
+  assert.deepEqual(names.slice(0, 3), ['Scenic Route', 'Welcome Home', 'Who I Am']);
   assert.match(tiles[0], /data-state="coming"[\s\S]*nocover tile-art[\s\S]*<span>Jan 15<\/span>[\s\S]*Out Jan 15, 2027[\s\S]*tile-go">Pre-save</);
-  assert.match(tiles[2], /<img class="tile-art" src="\/media\/covers\/duck-dodge-jump-fight\.webp" alt=""[\s\S]*tile-go">Listen</);
+  assert.match(tiles[3], /<img class="tile-art" src="\/media\/covers\/duck-dodge-jump-fight\.webp" alt=""[\s\S]*tile-go">Listen</);
   assert.ok(!h.includes('IDENTITY</h3>'), 'IDENTITY has its own block');
   assert.ok(!h.includes('class="release"') && !h.includes('Latest release. Listen on:'), 'RiseBand without its release block on Music');
   assert.match(h, /<span class="tile-type">Album<\/span>Dec 19, 2025/);

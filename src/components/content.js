@@ -71,9 +71,14 @@ export const dateLine = (d) => (d ? new Date(`${d}T12:00:00Z`).toLocaleDateStrin
 export const credit = (r) => (r.artists && r.artists.trim() !== 'GLucak' ? r.artists : null);
 export const TYPE_TAG = { single: 'Single', ep: 'EP', album: 'Album' };
 
+// Hard rule 1 (Gabe, 2026-11-06): these two have flashing lights and never show, even if a feed adds them.
+// The Earned Your Stripes MUSIC video is fine; only its Visualizer is out.
+export const FLASHING = /running the gauntlet|earned your stripes.*visuali[sz]er/i;
+const videos = () => (load('videos') ?? []).filter((v) => !FLASHING.test(v.title ?? ''));
+
 /** Newest video with a valid 11-character YouTube id, or null (the block then links to the channel). */
 export function latestVideo() {
-  const rows = (load('videos') ?? []).map((v) => {
+  const rows = videos().map((v) => {
     const id = v.id ?? v.videoId ?? String(v.url ?? '').match(/(?:v=|youtu\.be\/|embed\/)([\w-]{11})/)?.[1];
     return { ...v, id };
   }).filter((v) => /^[\w-]{11}$/.test(v.id ?? ''));
@@ -84,7 +89,7 @@ export function latestVideo() {
 export function videoRow(n = 3) {
   const latest = latestVideo();
   if (!latest) return [];
-  const feat = newest((load('videos') ?? []).filter((v) => v.featured && /^[\w-]{11}$/.test(v.id ?? '') && v.id !== latest.id));
+  const feat = newest(videos().filter((v) => v.featured && /^[\w-]{11}$/.test(v.id ?? '') && v.id !== latest.id));
   return [latest, ...feat.slice(0, n - 1)];
 }
 
