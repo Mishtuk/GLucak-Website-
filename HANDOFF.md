@@ -10,6 +10,15 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
+- **Laptop 2026-11-11 status (owner asleep, working autonomously).** Rounds IG2 (7e9c62a: section word on the rule, About
+  setlist, no middle dots) and IG3 (2795c0f, D87: ledge, setlist arrows, chip on the footer rule) done; each scored 4.0 by the
+  advisor, who calls visual polish at diminishing returns (`docs/review/ig-round3/eval.md`). Then round R1 (robustness):
+  stress test with messy data, 4 overflow fixes (982614a, `docs/review/r1-stress.md`); DESIGN 22 sleeve card for releases with
+  no cover, built (2ae6e60; Who I Am goes latest Nov 13 with cover:null); browser fallbacks for iOS 15-18, verified in WebKit 27 +
+  Firefox 159 (3cefd93, `docs/review/r1-browsers.md`, 11-row real-phone checklist). `npm test` 188/188, a11y200 0 issues, Home
+  3601px. **Security** (`docs/review/security-2026-11-10.md`): ready with fixes; **S1 launch blocker for the Desktop**: POST
+  `null` JSON to /api/signup crashes the server; tested patch in `docs/review/patches/s1-signup-crash.diff`. Desktop silent since Nov 7.
+  **Owner:** read Charles Liu's Instagram reply (Chrome extension was disconnected); the two picks below (player size, tint).
 - **Laptop 2026-11-10 round IG DONE (D69/D71/D73, plan `docs/review/round-ig-plan.md`, gate `docs/review/ig-round/gate.md`).**
   Built in src/: sign-up "Sending…" + one POST per double tap (5e5313b); copy trims Booking / Pre-save / Releases / Full bio /
   player note (595f2ca); no filled tag pills, Album/EP plain bold, `--tint: 0%` token, two redundant rules out (85fb607, ef2fe8b).
@@ -19,7 +28,7 @@
   (designer recommends 5%). Claims stay on the same files for the next round (below).
 - **Laptop 2026-11-10 claim (next round, same files):** `DESIGN.md`, `src/styles/global.css`,
   `src/components/{Hero,Quote,VideoBlock,Signup,RiseBand,Footer}.astro`, `src/pages/index.astro`, `src/pages/{music,shows,about,shop}/`, `src/pages/404.astro`,
-  `public/js/app.js`, `test/{round2,build,tokens,signup-ui}.test.js`, `docs/review/ig-round*/`, `docs/copy/`.
+  `public/js/app.js`, `src/components/NoCover.astro`, `test/*.test.js` (Laptop-made), `docs/review/`, `docs/copy/`.
   Not server.js or src/lib/. Owner away; nothing published / paid / sent to Gabe.
 - **Laptop 2026-11-10:** agents re-sized (b9bf3ca: advisor + helper added, mediator Haiku, boss task-first). Research:
   `docs/research/ig-design-tips.md` (Charles Liu reels) and `docs/research/ai-design-workflow.md`.
