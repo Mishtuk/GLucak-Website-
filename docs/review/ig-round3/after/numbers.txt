@@ -1,0 +1,22 @@
+Build: round IG3 (DESIGN 21, D87: ledge, setlist arrows, footer chip). Spotify/YouTube blocked via --host-resolver-rules (D85). Reduced motion unless noted. server.js :8863 empty DATA_DIR.
+Home 390x660 reduced, quotes off: scrollHeight 3601px (limit 3601) OK
+Home 390 first screen chips in view: []
+Home 390 anims reduced: 0
+Home 390 anims motion on: 1
+Home 1280 anims motion on: 1; chips in first screen: []
+Home 1280 anims reduced: 0
+/music/ 390: anims motion on 0, reduced 0
+/music/ 1280: anims motion on 0, reduced 0
+/shows/ 390: anims motion on 0, reduced 0
+/shows/ 1280: anims motion on 0, reduced 0
+/about/ 390: anims motion on 0, reduced 0
+/about/ 1280: anims motion on 0, reduced 0
+/nope/ 390: anims motion on 0, reduced 0
+/nope/ 1280: anims motion on 0, reduced 0
+/ 390 footer chip: {"chipTop":-10,"chipBottom":16,"right":21,"w":146,"footerBorderTop":"4px"}
+/music/ 390 footer chip: {"chipTop":-10,"chipBottom":16,"right":21,"w":146,"footerBorderTop":"4px"}
+/about/ 390 footer chip: {"chipTop":-10,"chipBottom":16,"right":21,"w":146,"footerBorderTop":"4px"}
+About 900: accent fills in view 1 ["A.btn btn-solid btn-small header-listen"]; setlist arrow widths: 34.0156px/- 34.0156px/- 27.2031px/_blank
+About 1280: accent fills in view 1 ["A.btn btn-solid btn-small header-listen"]; setlist arrow widths: 39.1875px/- 39.1875px/- 31.3594px/_blank
+a11y200 (OUT=docs/review/ig-round3/after-a11y): 0 views with issues; 48 views ok
+npm test: 177/177 pass (test/ig3.test.js new)

@@ -142,7 +142,7 @@ p { text-wrap: pretty; }
   .btn-line:hover { background: var(--text); color: var(--bg); }
 }
 
-/* Placeholder marks: visible on purpose. All removed at build. */
+/* Placeholder marks: visible on purpose, off the first screen. Each goes when its real content arrives. */
 .ph-chip {
   position: absolute; right: 0.5rem; bottom: 0.5rem; z-index: 3;
   padding: 0 0.45rem; font-size: 1rem; line-height: 1.5;
@@ -281,7 +281,7 @@ img.duo { filter: url('#duo'); }
 .hero-actions .btn { flex: 1; }
 .now { display: flex; align-items: center; gap: var(--space-s); min-height: 48px; margin-top: 0.25rem; font-weight: 700; font-size: var(--step--1); }
 .now a { display: inline-flex; align-items: center; min-height: 48px; text-underline-offset: 3px; }
-.hero-chip { bottom: 0.35rem; }
+.footer-chip { top: -0.85rem; bottom: auto; right: max(var(--gutter), calc((100% - var(--container)) / 2)); } /* DESIGN 21c: on the footer's top rule */
 
 /* Hero B: photo in the name, at his own break. The slot stands taller than the letters. */
 html[data-hero='b'] .hero-photo { display: none; }
@@ -298,14 +298,18 @@ html[data-hero='b'] .slot img { width: 100%; height: 100%; object-fit: cover; ob
 .band { position: relative; z-index: 2; border-top: 4px solid var(--text); padding-block: var(--space-m) var(--section); background-image: var(--texture); }
 .band-rise { background-color: transparent; }
 
-/* The section word (DESIGN 20a, D75): the exact nav word standing on the band's 4px rule, where a crate divider's
-   lettering sits. No fill. It costs no height inside the band. */
+/* The section word (DESIGN 21a direction 1, D87, "the ledge"): the exact nav word standing on the band's 4px rule, which
+   steps up 4px under it as a solid trapezoid (no box, no fill behind the word). Static; costs no height inside the band. */
 .spine { position: static; font-weight: 400; }
 .tab {
   position: absolute; left: max(var(--gutter), calc((100% - var(--container)) / 2)); top: calc(-1 * var(--tab-h) - 4px); height: var(--tab-h);
   display: inline-flex; align-items: flex-end; padding-bottom: 0.25rem;
   color: var(--text);
   font-family: var(--font-body); font-size: 1.0625rem; font-weight: 700; line-height: 1;
+}
+.tab::before {
+  content: ''; position: absolute; left: -0.25rem; right: -0.25rem; bottom: 0; height: 0.25rem; background: currentColor;
+  clip-path: polygon(0 100%, 0.25rem 0, calc(100% - 0.25rem) 0, 100% 100%);
 }
 .band > .wrap, .push-title { position: static; }
 .phrase { display: block; font-family: var(--font-display); font-weight: 900; text-transform: uppercase; }
@@ -448,6 +452,18 @@ html[data-shows='none'] .quote-live { display: none; }
   .about-set { display: grid; }
   .about-set li { border-top: 2px solid var(--line); }
   .about-set a { display: flex; align-items: center; min-height: 4.5rem; font-family: var(--font-display); font-weight: 900; font-size: var(--step-3); line-height: 1; text-transform: uppercase; text-decoration: none; }
+  /* DESIGN 21b: the link cue at rest. An arrow in the rules' 4px stroke at the row's end, currentColor (so 16e's pressed swap
+     inverts it); the diagonal for the new-tab row. Static: no transition, no transform. */
+  .about-set a::after {
+    content: ''; flex: none; width: 0.7em; height: 0.56em; margin-left: auto; background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M0 16H35M23 4l12 12-12 12' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M0 16H35M23 4l12 12-12 12' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  .about-set a[target='_blank']::after {
+    width: 0.56em;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 28L26 6M9 5h18v18' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 28L26 6M9 5h18v18' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E");
+  }
 }
 @media (hover: hover) { .about-set a:hover { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; } }
 
@@ -784,8 +800,8 @@ html[data-hero='ab'] .slot { display: none; }
 /* ---------- 16d. 404 ---------- */
 :root { --w-lost: 5.2211; --w-lost1: 2.8179; --w-lost2: 2.1825; } /* WRONG TURN. / WRONG / TURN., measured x 1.003 (round2.mjs --measure) */
 .band-lost { padding-top: var(--space-l); }
-/* An empty crate divider: the tab with nothing written on it, hatched. Decorative (aria-hidden). */
-.tab-blank { width: 4.5rem; background-color: var(--text); background-image: repeating-linear-gradient(-45deg, var(--bg) 0 2px, transparent 2px 8px); }
+/* An empty ledge: the step with nothing written on it. Decorative (aria-hidden). */
+.tab-blank { width: 4.5rem; }
 .lost-title { display: block; }
 .ln-lost1 { font-size: calc(100cqi / var(--w-lost1)); }
 .ln-lost2 { font-size: calc(100cqi / var(--w-lost2)); margin-top: 0.08em; }
