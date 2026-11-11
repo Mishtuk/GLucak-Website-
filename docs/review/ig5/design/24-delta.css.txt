@@ -1,0 +1,50 @@
+/* ---------- DESIGN 24a. Inner grounds (IG5): a still mask painted tone-on-tone, as the hero wall (23b item 1) ---------- */
+/* From 900px only; phones get nothing and load nothing (the mask url sits inside the media query). One paint for all three:
+   --line 50% into --bg (the hero wall's), so every ground pixel is text 13% into bg: text 12.34:1, muted 6.42:1 at worst.
+   Static: no animation, no transition, no scroll link. Each ground is the page's own subject, drawn once by a script. */
+.has-ground { isolation: isolate; } /* .band is already position: relative; z-index: 2 */
+@media (min-width: 900px) {
+  .has-ground::before {
+    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background-color: color-mix(in srgb, var(--line) 50%, var(--bg));
+    -webkit-mask: var(--ground) var(--ground-at) / var(--ground-size) var(--ground-repeat, no-repeat);
+    mask: var(--ground) var(--ground-at) / var(--ground-size) var(--ground-repeat, no-repeat);
+  }
+  /* 404: the Truchet field, at its drawn size (4px lines, 72px cells), repeated past 1728px with no seam. */
+  .ground-turns { --ground: url('/media/g-turns.svg'); --ground-at: 0 0; --ground-size: 1728px 864px; --ground-repeat: repeat; }
+  /* Music: one record, its centre 15rem into the content and 30rem down the band, so RISE sits on the grooves and the
+     label fills the empty column under it. The player box is opaque and covers the rest. */
+  .ground-grooves {
+    --ground: url('/media/g-grooves.svg'); --ground-size: 1440px 1440px;
+    --ground-at: calc(max(var(--gutter), (100vw - var(--container)) / 2) + 15rem - 720px) calc(30rem - 720px);
+  }
+  /* Shows: the hero wall turned over, only as tall as the LIVE IT LOUD line (a 4.6:1 strip from the rule down), so the
+     letters stand on the wall's cut edge. Zero new bytes (Home already loaded it). */
+  .ground-wall { --ground: url('/media/hero-wall-1600.webp'); --ground-at: 50% 0; --ground-size: 100% auto; }
+  .ground-wall::before { bottom: auto; aspect-ratio: 4.6 / 1; transform: scaleX(-1); }
+}
+
+/* ---------- DESIGN 24b. For venues (Shows, About) ---------- */
+.venues { display: grid; justify-items: start; gap: var(--space-xs); margin-top: var(--space-xl); max-width: 34rem; }
+.venues h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; }
+.venues-line { font-size: var(--step-0); line-height: 1.4; }
+.venues-act { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs) var(--space-l); }
+.venues-addr { font-weight: 700; overflow-wrap: anywhere; }
+.shows-side { display: grid; align-content: start; min-width: 0; }
+.about-actions .venues { flex: 1 1 100%; }
+/* The setlist arrow, diagonal when the link leaves the site (as .about-set, 21b). */
+.go[target='_blank']::after {
+  width: 0.56em;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 28L26 6M9 5h18v18' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 28L26 6M9 5h18v18' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E");
+}
+
+/* ---------- DESIGN 24c. Music: New here? Start with Go ---------- */
+.releases-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 var(--space-l); }
+.start-line { display: flex; flex-wrap: wrap; align-items: center; column-gap: 0.75rem; color: var(--muted); font-weight: 700; font-size: var(--step-0); }
+.start-line .go { color: var(--text); }
+
+/* ---------- DESIGN 24d. 404 ---------- */
+:root { --w-lost: 4.9704; --w-lost1: 2.8179; --w-lost2: 1.9318; }
+.prose > .venues { margin-top: 0; margin-bottom: var(--space-l); }
+.venues .go { margin-left: -0.25rem; } /* the word lines up with the heading (.go carries 0.25rem padding for its tap box) */

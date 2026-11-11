@@ -2261,3 +2261,189 @@ No markup change. Measured (Chrome, 390, motion on): opening runs `opacity, scal
 4. Band rules go grey with the white ledge. 5. The section word grows to a display label. 6. Footer words lose their periods.
 **Boss call:** the plan bundles items 1-5 on purpose (last clichés, one evaluation). If the evaluator's before / after must stay
 readable, build in two passes: (A) 23a + item 1 (the owner's request), (B) items 2-5; the Menu (23c) ships with M1.
+
+## 24. Round IG5: inner pages (grounds, For venues, Start with Go, the 404) (Laptop designer, 2026-11-11)
+Sources: `docs/review/laptop-plan-2026-11-11.md` (Update row 1), `docs/review/inner-audit-2026-11-11.md` (4, 7, 9, 10; ideas 4, 5,
+3 and 6), section 23 (the texture family), CONTEXT hard rules, the copywriter's `docs/copy/ig5.md` (all words below are theirs;
+this section only shapes the slots). **Specified against the build** (repo 9160bab, `astro build --outDir SCRATCH\ig5\dist`,
+`node server.js` on 8951 with the shipped shows and on 8952 with `shows.json = []`, empty `DATA_DIR`). Every look was injected
+over CDP, no `src/` edit: CSS `docs/review/ig5/design/24-delta.css.txt`, markup `24-patch.js.txt`. Spotify and YouTube blocked at
+the resolver (D85; grey boxes = blocked embeds). Reduced motion. Line numbers: `src/styles/global.css` at 9160bab.
+Shots `docs/review/ig5/design/24-<page>-<width>-{before,after,email}.png` (music, shows, shows-empty, about, 404 at 390 / 900 / 1280).
+
+**Hard rules held.** Every ground is a still mask (no animation, transition or scroll link); nothing can flash. No new colour role
+or font. Grounds from 900px only; under 900px no rule applies and no file loads. Never on covers, the logo, product photos, the
+About h1 or any photo. Text on a ground, measured (text box with the text hidden, 1.2px blur): worst brightest pixel **12.28:1**
+(404, Shows), Music 12.81:1. By construction every ground pixel is text 13% into bg (`#2f2f2f`): text 12.34:1, muted 6.42:1, so
+`.row-kind`, `.muted` and the like stay above 4.5:1 even if a ground reaches them. **Home unchanged:** 390 **3601**, 1280 **4277**
+with the CSS in (no Home element gets a new class; `RiseBand` adds them only when `ground` is passed, and Home does not pass it).
+No horizontal overflow at 320 / 390 / 900 / 1280.
+
+**Generic defaults I reached for, and what replaced each (ai-design-workflow 5):**
+| Default | Why it is the template look | Instead |
+|---|---|---|
+| A Book of Shapes pattern per page | A library pattern is a picked filter; its licence also bars a picker in `/edit/` | Our own seeded geometry (`tools/photo/grounds.mjs`), each from the page's subject |
+| Concentric rings for Music | Perfect rings read as a target or a sonar UI | One spiral groove (a record has one), tracks with lands between, a blank label: a record |
+| A dense Truchet wallpaper on the 404 | 72px cells read as a generative screensaver (shot first) | 96px cells in the 4px rule stroke: five roads across the band that turn and never arrive |
+| A booking card on paper or in a box | Containers with borders (#6); a second paper block competes with the poster | Plain type in the Watch / Played heading style, one action row |
+| "Booking email coming soon" or the placeholder chip in the block | Reads as abandoned (next-ideas B3) | The no-address state ends on a real link (Listen), so it reads as finished |
+| "Message on Instagram" as the booking action | An invented channel (copywriter: nothing Gabe wrote says he books by DM) | Held until Q43 |
+
+### 24a. Inner grounds (one mechanism, three subjects)
+`node tools/photo/grounds.mjs` (new, sibling of `texture.mjs`) writes `public/media/g-turns.svg` (1728x864, **9.2 KB**) and
+`public/media/g-grooves.svg` (1440x1440, **2.8 KB**): black paths on transparent, no colour (the mask reads alpha), so an era swap
+needs no re-draw; the script re-checks the painted tone against the era file's text and muted colours (`--era path.json`; exit 1
+under 4.5:1). Seeds fixed (404, 33): same file every run. Shows reuses `hero-wall-1600.webp` (31 KB, cached from Home, 0 new
+bytes). Truchet and spirals are plain geometry; no Book of Shapes file is used (nothing near Joy Division / Brockmann, no credit line).
+
+| Page | Ground | Why this subject | Placement (900px+) |
+|---|---|---|---|
+| 404 `.band-lost` | **Turns:** quarter-arc Truchet, 96px cells, 4px stroke | The page's joke as a line: every cell turns, nothing arrives | Whole band at drawn size, `repeat` (Truchet edges meet at midpoints: no seam past 1728px) |
+| Music `.band-rise` | **Grooves:** one spiral groove (2px, 6px pitch), 9 tracks with 22px lands, a blank label (4px ring) and the spindle hole | The page's object: the record (one side, nine seeded tracks) | Centre 15rem into the content, 30rem down the band: RISE sits on the grooves, the label fills the empty column under it; the opaque player covers the rest |
+| Shows `.band-live` | **The wall, turned over** (hero wall mask, `scaleX(-1)`), a strip `aspect-ratio: 4.6 / 1` from the rule down | The stage he played (pallet wall, flower cross) as the Live It Loud header; the letters stand on its cut edge | Strip only: ends ~10px under LIVE IT LOUD at 1280; the poster covers its left end |
+
+Shows options tried and dropped: the drum kit cut from the left of the Kealey frame (above every head, but noise behind 220px
+letters, and still the same photo); the Crooked Eye stage lights (portrait stills; starbursts = the "sparkle" tell). If the owner
+reads the wall as a repeat (CONTEXT note 6), Shows drops `ground-wall` alone; the other two stand.
+
+**CSS: append after the 23c block (end of `global.css`, after line 1221):**
+```css
+/* ---------- DESIGN 24a. Inner grounds (IG5): a still mask painted tone-on-tone, as the hero wall (23b item 1) ---------- */
+/* From 900px only; under 900px nothing applies and no file loads. One paint for all: --line 50% into --bg, so every ground
+   pixel is text 13% into bg (text 12.34:1, muted 6.42:1 at worst). Static: no animation, transition or scroll link. Each
+   ground is drawn by tools/photo/grounds.mjs from the page's own subject (Shows reuses the hero wall). */
+.has-ground { isolation: isolate; } /* .band is already position: relative; z-index: 2 */
+@media (min-width: 900px) {
+  .has-ground::before {
+    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background-color: color-mix(in srgb, var(--line) 50%, var(--bg));
+    -webkit-mask: var(--ground) var(--ground-at) / var(--ground-size) var(--ground-repeat, no-repeat);
+    mask: var(--ground) var(--ground-at) / var(--ground-size) var(--ground-repeat, no-repeat);
+  }
+  /* 404: the Truchet field at its drawn size (4px lines, 96px cells); repeats past 1728px with no seam. */
+  .ground-turns { --ground: url('/media/g-turns.svg'); --ground-at: 0 0; --ground-size: 1728px 864px; --ground-repeat: repeat; }
+  /* Music: one record, centred 15rem into the content and 30rem down the band. */
+  .ground-grooves {
+    --ground: url('/media/g-grooves.svg'); --ground-size: 1440px 1440px;
+    --ground-at: calc(max(var(--gutter), (100vw - var(--container)) / 2) + 15rem - 720px) calc(30rem - 720px);
+  }
+  /* Shows: the hero wall turned over, a strip as tall as the LIVE IT LOUD line. */
+  .ground-wall { --ground: url('/media/hero-wall-1600.webp'); --ground-at: 50% 0; --ground-size: 100% auto; }
+  .ground-wall::before { bottom: auto; aspect-ratio: 4.6 / 1; transform: scaleX(-1); }
+}
+```
+(`100vw` only places the record: with a classic scrollbar it lands ~8px off above 1520px, invisible in a ground. Old Safari
+without `color-mix`: the declaration drops and the band stays plain `bg`, as the hero wall does.)
+
+**Markup:**
+- `src/pages/404.astro` 6: `class="band band-lost lost has-ground ground-turns"`.
+- `src/pages/shows/index.astro` 8: `class="band band-live has-ground ground-wall"`.
+- `src/components/RiseBand.astro` 8: `const { h1 = false, release = true, ground = false } = Astro.props;`; line 12:
+  `<section class:list={['band band-rise', ground && 'has-ground ground-grooves']} id="music" aria-labelledby="h-rise">`
+  (Home still renders `class="band band-rise"`: diff `dist/index.html` before / after, identical).
+  `src/pages/music/index.astro` 11: `<RiseBand h1 release={false} ground />`.
+
+### 24b. For venues (Shows, About)
+One component, same words on both pages: **`src/components/ForVenues.astro`** (new). Words from `docs/copy/ig5.md` 1 (heading
+"Book GLucak", lines 1 + 2; line 3 optional). Gabe OKs "Horsham-based" and naming Fran Carroll first (Q45, hard rule 4). The
+address switch is the one that exists: `BOOKING_EMAIL` in `src/lib/shows.js` 45 (imported, not edited).
+```astro
+---
+import { BOOKING_EMAIL } from '../lib/shows.js';
+// DESIGN 24b: the booker's block. Words: docs/copy/ig5.md 1. No address yet = no button and no chip: it ends on Listen.
+---
+<div class="venues">
+  <h2>Book GLucak</h2>
+  <p class="venues-line">Horsham-based producer-rapper and DJ. Open mics and full shows, often with guitarist Fran Carroll.</p>
+  <p class="venues-act">
+    {BOOKING_EMAIL && <a class="btn btn-line" href={`mailto:${BOOKING_EMAIL}?subject=${encodeURIComponent('Booking: [date / venue]')}`} aria-label="Request a show by email">Request a show</a>}
+    <a class="go" href="/music/">Listen</a>
+  </p>
+  {BOOKING_EMAIL && <p class="venues-addr">{BOOKING_EMAIL}</p>}
+</div>
+```
+- **No address (today):** heading, the facts, `LISTEN ->` (the setlist arrow link, 52px). A finished block, not a pending one: no
+  chip, no "coming soon". The pending address is tracked in HANDOFF / the launch checklist, not on the page.
+- **Address set:** `REQUEST A SHOW` (outlined, 52px) and `LISTEN ->` on one row (the hero's button + arrow pattern), the address as
+  text under it (700 weight; bookers copy it when `mailto:` has no mail app). **Outlined on both pages**, not filled: on About at
+  390 the solid Patreon button is in the same view (two fills when I tried solid), and on Shows TICKETS is the page's fill.
+- "Watch a live set" (copy 1, link 1) joins the row as a second `.go` only after Q16 / Q46; "See photos" not until a Photos page.
+
+**Placement.**
+- `src/pages/shows/index.astro` 12-16: delete line 14 (`<p class="muted">Book GLucak: ...`) and replace line 16 with
+  `<div class="shows-side"><VideoBlock h1 /><ForVenues /></div>`. From 72rem it is the right column under Watch (balances Played on
+  the left); below 72rem it closes the page after Watch. Heights: 390 1812 -> **1957**, 1280 1587 -> **1553**; empty list 390
+  1453 -> 1598, 1280 1330 -> 1520 (the left gap there is round S's blank poster, `src/lib`).
+- `src/pages/about/index.astro`: delete lines 36-37 (`<h2>Booking</h2>` and its `p`) and put `<ForVenues />` as the first child of
+  `.wrap.prose` (before `<h2>Find GLucak</h2>`): above Find GLucak (audit A1), left column under the bio at 1280. Heights: 390
+  2159 -> **2254**, 1280 1906 -> **2002**. (About's right column was tried: its LISTEN sat two rows under the setlist's LISTEN.)
+
+**CSS (append after 24a):**
+```css
+/* ---------- DESIGN 24b. For venues (Shows, About): type only, the Watch / Played heading, one action row ---------- */
+.venues { display: grid; justify-items: start; gap: var(--space-xs); margin-top: var(--space-xl); max-width: 34rem; }
+.venues h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; }
+.venues-line { font-size: var(--step-0); line-height: 1.4; }
+.venues-act { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs) var(--space-l); }
+.venues-addr { font-weight: 700; overflow-wrap: anywhere; }
+.venues .go { margin-left: -0.25rem; } /* the word lines up with the heading (.go keeps 0.25rem padding for its tap box) */
+.prose > .venues { margin-top: 0; margin-bottom: var(--space-l); } /* About: .prose already opens with --space-xl */
+.shows-side { display: grid; align-content: start; min-width: 0; }
+```
+States: `.go` and `.btn-line` keep their rest / hover / focus ring / 16e pressed swap (nothing new). Tap targets 52px.
+Shots: `24-shows-{390,1280}-after.png`, `24-shows-empty-*-after.png`, `24-about-*-after.png`, `24-{shows,about}-{390,1280}-email.png`.
+
+### 24c. Music: "New here? Start with Go"
+Words `docs/copy/ig5.md` 2. Which release is Gabe's call (Q44), so one constant in `src/components/content.js` after line 32:
+`export const START = { title: 'Go', link: GO }; // DESIGN 24c, Q44: the "New here?" pick (variant: the playlist)`.
+`src/pages/music/index.astro` 5: add `START` to the import; line 14 becomes:
+```astro
+<div class="releases-head">
+  <h2 id="h-releases" class="prose-h">Releases</h2>
+  <p class="start-line">New here? <a class="go" href={START.link} rel="noopener" aria-label={`Start with ${START.title}, on all platforms`}>Start with {START.title}</a></p>
+</div>
+```
+On the Releases heading row, not under RISE: at 1280 heading left, line right, no extra row (2867 -> 2883); at 390 it wraps under
+the heading as the crate's first line (+52px: 3224 -> **3276**). Screen one at 390 is untouched (D81's Play button stays). The
+crate order does not change.
+```css
+/* ---------- DESIGN 24c. Music: the crate's way in ---------- */
+.releases-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 var(--space-l); }
+.start-line { display: flex; flex-wrap: wrap; align-items: center; column-gap: 0.75rem; color: var(--muted); font-weight: 700; font-size: var(--step-0); }
+.start-line .go { color: var(--text); }
+/* The setlist arrow turns diagonal when the link leaves the site (as .about-set, 21b); ext.js adds target=_blank at build.
+   Today only Start with Go matches; the hero / 404 / Full bio arrows are internal and keep the straight arrow. */
+.go[target='_blank']::after {
+  width: 0.56em;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 28L26 6M9 5h18v18' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 28L26 6M9 5h18v18' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E");
+}
+```
+"New here?" in `muted` (8.4:1 on bg), the link in `text`. `ext.js` appends " (opens in a new tab)" to the aria-label.
+
+### 24d. 404: no period, no blank ledge
+- `src/pages/404.astro` 8: delete `<span class="tab tab-blank" aria-hidden="true"></span>`. Line 9: `turn.` -> `turn`.
+- `global.css` 801: `:root { --w-lost: 4.9704; --w-lost1: 2.8179; --w-lost2: 1.9318; } /* WRONG TURN / WRONG / TURN, nbsp, measured x 1.003 (DESIGN 24d) */`
+  Measured in Chrome, Big Shoulders Display 900 at 1000px, the one-line form with the `::after` no-break space (the method that
+  reproduces the old 5.2211). TURN without the period is narrower, so on phones it **grows** (font-size = width / 1.9318); the two
+  lines differ more in size, as the fitted phrases do. Lines 1187-1188 and 1199 (old-Safari copies) read the same vars: no edit.
+- Lines 803-804 (the `.tab-blank` comment and rule): delete. `test/ig3.test.js` 16 still passes (it asserts no hatch on it).
+- Heights: 404 390 1225 -> 1243, 1280 1080 -> 1090; no overflow at 320.
+- Same sweep in Desktop's files (owner OK): `src/lib/products.js` 103 and 118 (DESIGN 23 already lists 118).
+
+### 24e. Tests the coder updates (Laptop-made)
+- `test/build.test.js` 111: `'Book GLucak:'` -> `'Book GLucak'`; 112: `'Booking'` -> `'Book GLucak'`. Add: About has `class="venues"`
+  before `Find GLucak`; no `ph-chip` inside `.venues`; `/music/` has `start-line` and `wingsmusic.lnk.to/370407-Go`.
+- `test/build.test.js` 174, `test/round2.test.js` 47 and 57: `h.includes('turn.')` -> `/>turn<\/span>/.test(h) && !h.includes('turn.')`.
+  Add: no `tab-blank` in the 404.
+- New: `/` HTML contains none of `has-ground`, `venues`, `start-line`; in `global.css` `.has-ground::before` sits only inside
+  `@media (min-width: 900px)` and the 24a block has no `animation` / `transition`; `g-turns.svg` < 12 KB, `g-grooves.svg` < 4 KB;
+  `node tools/photo/grounds.mjs --only=` exits 0 (contrast check only).
+- `test/shows.test.js` 96-101 unchanged (the empty state is `src/lib`, round S).
+
+### 24f. Rejected
+- Grounds under 900px; any ground on the About strip, covers, IDENTITY art, the poster, thumbnails, the shop.
+- The drum-kit mask and stage-light starbursts for Shows (24a); Book of Shapes files (licence picker rule; our own cost ~40 lines).
+- The For venues block on a paper card (competes with the poster), in About's right column (repeats LISTEN), or with the chip.
+- Start with Go under RISE (pushes D81's Play button off screen one at 390).
+- A filled Request a show on About (two fills in one phone view).

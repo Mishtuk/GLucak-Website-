@@ -335,3 +335,17 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
 - **Why:** the owner asked for the texture across the site; one shop with varied screens keeps one family without a filter
   sampler; items 1-5 remove the clichés the IG3 eval named and move no height (Home 390 3601, 320 3724, 1280 4277). Six visible
   changes exceed the 3-change habit (ai-design-workflow 3.12): the boss may build in two passes (DESIGN 23e).
+
+## D91 (Laptop designer, 2026-11-11): Round IG5 spec, inner pages (DESIGN 24). Proposed; boss / owner confirm
+- **24a grounds** (900px+, static, tone-on-tone `--line` 50% into `--bg`, never under text below 4.5:1; measured worst 12.28:1):
+  404 = our own seeded quarter-arc Truchet (96px cells, 4px stroke, 9 KB SVG); Music = one spiral record groove with 9 tracks
+  and a blank label under RISE (3 KB SVG); Shows = the hero wall mask turned over, a strip under LIVE IT LOUD (0 new bytes).
+  Generator `tools/photo/grounds.mjs` (colourless masks, era contrast check). No Book of Shapes file. If the owner reads the
+  Shows wall as a repeat, Shows drops it alone.
+- **24b For venues:** one `ForVenues.astro` on Shows (under Watch) and About (above Find GLucak); the copywriter's words; until
+  `BOOKING_EMAIL` exists it ends on `LISTEN ->` with no chip and no "coming soon"; then an outlined Request a show plus the
+  address as text. Instagram DM held (Q43).
+- **24c** "New here? Start with Go" on the Releases heading row (`START` constant, Gabe's pick Q44). **24d** "Wrong turn" with no
+  period, blank ledge removed, `--w-lost` 4.9704 / `--w-lost2` 1.9318.
+- **Why:** the print shop reaches the inner pages with each page's own subject and no photo repeated on them; bookers get a
+  finished block today; Home is untouched (3601 / 4277 measured).

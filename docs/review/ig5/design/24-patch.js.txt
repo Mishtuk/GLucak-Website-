@@ -1,0 +1,38 @@
+// DOM patch = the markup DESIGN 24 asks for (what the coder writes in the .astro files). window.__EMAIL switches the booking state.
+const $ = s => document.querySelector(s);
+const EMAIL = window.__EMAIL || null;
+const venues = (page) => {
+  const d = document.createElement('div'); d.className = 'venues';
+  const act = EMAIL
+    ? `<a class="btn btn-line" href="mailto:${EMAIL}?subject=Booking" aria-label="Request a show by email">Request a show</a><a class="go" href="/music/">Listen</a>`
+    : `<a class="go" href="/music/">Listen</a>`;
+  d.innerHTML = `<h2 id="h-venues">Book GLucak</h2><p class="venues-line">Horsham-based producer-rapper and DJ. Open mics and full shows, often with guitarist Fran Carroll.</p><p class="venues-act">${act}</p>${EMAIL ? `<p class="venues-addr">${EMAIL}</p>` : ''}`;
+  return d;
+};
+// 404
+if ($('.band-lost')) {
+  $('.tab-blank')?.remove();
+  $('.ln-lost2').textContent = 'turn';
+  $('.band-lost').classList.add('has-ground', 'ground-turns');
+}
+// Music
+if ($('#h-releases')) {
+  $('.band-rise').classList.add('has-ground', 'ground-grooves');
+  const h = $('#h-releases'), head = document.createElement('div'); head.className = 'releases-head';
+  h.before(head); head.append(h);
+  head.insertAdjacentHTML('beforeend', `<p class="start-line">New here? <a class="go" href="https://wingsmusic.lnk.to/370407-Go" rel="noopener" target="_blank" aria-label="Start with Go, on all platforms (opens in a new tab)">Start with Go<span class="vh"> (opens in a new tab)</span></a></p>`);
+}
+// Shows
+if ($('.band-live')) {
+  $('.band-live').classList.add('has-ground', 'ground-wall');
+  [...document.querySelectorAll('.shows-grid p.muted')].forEach(p => /Book GLucak/.test(p.textContent) && p.remove());
+  const vb = $('.shows-grid > .video-block'), side = document.createElement('div'); side.className = 'shows-side';
+  vb.before(side); side.append(vb, venues('shows'));
+}
+// About
+if ($('#h-push')) {
+  const hs = [...document.querySelectorAll('.prose h2')], b = hs.find(h => h.textContent.trim() === 'Booking');
+  if (b) { b.nextElementSibling.remove(); b.remove(); }
+  const find = hs.find(h => h.textContent.trim() === 'Find GLucak');
+  const v = venues('about'); v.classList.add('venues-about'); find.before(v);
+}

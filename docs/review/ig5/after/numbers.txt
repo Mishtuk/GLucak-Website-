@@ -1,0 +1,28 @@
+Build: round IG5 (DESIGN 24), local build, node server.js :8961 empty DATA_DIR. Spotify/YouTube blocked. Chrome headless over CDP, reduced motion unless noted.
+
+/ 390 reduced: {"anims":0,"motion":"off","sh":3601,"sw":390,"ground":"n/a"}
+/ 390 motion on: {"anims":0,"motion":"on","sh":3553,"sw":390,"ground":"n/a"}
+/ 1280 reduced: {"anims":0,"motion":"off","sh":4277,"sw":1280,"ground":"n/a"}
+/ 1280 motion on: {"anims":0,"motion":"on","sh":4277,"sw":1280,"ground":"n/a"}
+/music/ 390 reduced: {"anims":0,"motion":"off","sh":3276,"sw":390,"ground":"none"}
+/music/ 390 motion on: {"anims":0,"motion":"on","sh":3228,"sw":390,"ground":"none"}
+/music/ 1280 reduced: {"anims":0,"motion":"off","sh":2883,"sw":1280,"ground":"painted"}
+/music/ 1280 motion on: {"anims":0,"motion":"on","sh":2883,"sw":1280,"ground":"painted"}
+/shows/ 390 reduced: {"anims":0,"motion":"off","sh":1957,"sw":390,"ground":"none"}
+/shows/ 390 motion on: {"anims":0,"motion":"on","sh":1909,"sw":390,"ground":"none"}
+/shows/ 1280 reduced: {"anims":0,"motion":"off","sh":1553,"sw":1280,"ground":"painted"}
+/shows/ 1280 motion on: {"anims":0,"motion":"on","sh":1553,"sw":1280,"ground":"painted"}
+/about/ 390 reduced: {"anims":0,"motion":"off","sh":2254,"sw":390,"ground":"n/a"}
+/about/ 390 motion on: {"anims":0,"motion":"on","sh":2206,"sw":390,"ground":"n/a"}
+/about/ 1280 reduced: {"anims":0,"motion":"off","sh":2002,"sw":1280,"ground":"n/a"}
+/about/ 1280 motion on: {"anims":0,"motion":"on","sh":2002,"sw":1280,"ground":"n/a"}
+/nope/ 390 reduced: {"anims":0,"motion":"off","sh":1243,"sw":390,"ground":"none"}
+/nope/ 390 motion on: {"anims":0,"motion":"on","sh":1195,"sw":390,"ground":"none"}
+/nope/ 1280 reduced: {"anims":0,"motion":"off","sh":1090,"sw":1280,"ground":"painted"}
+/nope/ 1280 motion on: {"anims":0,"motion":"on","sh":1090,"sw":1280,"ground":"painted"}
+ground mask at 899px /nope/: none | sw 899
+ground mask at 899px /music/: none | sw 899
+ground mask at 899px /shows/: none | sw 899
+ground mask at 900px /nope/: url("http://127.0.0.1:8961/media/g-turns | sw 900
+ground mask at 900px /music/: url("http://127.0.0.1:8961/media/g-groov | sw 900
+ground mask at 900px /shows/: url("http://127.0.0.1:8961/media/hero-wa | sw 900
