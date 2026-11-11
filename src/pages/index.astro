@@ -71,7 +71,7 @@ const HERO = 'ab'; // D34: A (GLUCAK over the photo) under 900px, B (photo in th
             <p class="identity">IDENTITY</p>
             {idn.date && (idn.out
               ? <p class="identity-when">Out now. <a class="text-link" href={idn.link} rel="noopener" aria-label="Listen to IDENTITY">Listen</a></p>
-              : <><p class="identity-when"><time datetime={idn.date}>{idn.pretty}</time> &middot; {idn.days} {idn.days === 1 ? 'day' : 'days'} to go</p>
+              : <><p class="identity-when identity-count"><time class="identity-date" datetime={idn.date}>{idn.pretty}</time>{' '}<span>{idn.days} {idn.days === 1 ? 'day' : 'days'} to go</span></p>
                  <a class="btn btn-line" href={idn.link} rel="noopener" aria-label="Pre-save IDENTITY">Pre-save</a></>)}
           </div>
         </div>

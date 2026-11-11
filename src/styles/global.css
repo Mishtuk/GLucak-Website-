@@ -48,7 +48,7 @@
   --radius-s: 2px;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --header-h: 60px;
-  --tab-h: 2.125rem;
+  --tab-h: 1.5rem;
   --bar-h: 0px;
   --safe-x: calc(2 * max(env(safe-area-inset-left), env(safe-area-inset-right)));
 
@@ -298,12 +298,13 @@ html[data-hero='b'] .slot img { width: 100%; height: 100%; object-fit: cover; ob
 .band { position: relative; z-index: 2; border-top: 4px solid var(--text); padding-block: var(--space-m) var(--section); background-image: var(--texture); }
 .band-rise { background-color: transparent; }
 
-/* The tab: a record-crate divider. It stands on the band's top edge, so it costs no height. */
+/* The section word (DESIGN 20a, D75): the exact nav word standing on the band's 4px rule, where a crate divider's
+   lettering sits. No fill. It costs no height inside the band. */
 .spine { position: static; font-weight: 400; }
 .tab {
   position: absolute; left: max(var(--gutter), calc((100% - var(--container)) / 2)); top: calc(-1 * var(--tab-h) - 4px); height: var(--tab-h);
-  display: inline-flex; align-items: center; padding-inline: 0.8rem;
-  background: var(--text); color: var(--bg);
+  display: inline-flex; align-items: flex-end; padding-bottom: 0.25rem;
+  color: var(--text);
   font-family: var(--font-body); font-size: 1.0625rem; font-weight: 700; line-height: 1;
 }
 .band > .wrap, .push-title { position: static; }
@@ -438,6 +439,17 @@ html[data-shows='none'] .quote-live { display: none; }
 .bio { display: grid; gap: var(--space-xs); }
 .bio-lead { font-size: var(--step-0); line-height: 1.4; font-weight: 500; }
 .push-actions { display: flex; flex-wrap: wrap; gap: var(--space-s); }
+/* About from 900px (DESIGN 20c): the right column opens with a setlist of actions, no fill (the header's LISTEN is the
+   view's one accent). Phones keep the solid Patreon button. */
+.about-set { display: none; }
+@media (min-width: 900px) {
+  .about-actions { display: block; align-self: start; }
+  .about-patreon { display: none; }
+  .about-set { display: grid; }
+  .about-set li { border-top: 2px solid var(--line); }
+  .about-set a { display: flex; align-items: center; min-height: 4.5rem; font-family: var(--font-display); font-weight: 900; font-size: var(--step-3); line-height: 1; text-transform: uppercase; text-decoration: none; }
+}
+@media (hover: hover) { .about-set a:hover { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; } }
 
 /* ---------- The Time Is Now ---------- */
 .band-now { padding-top: var(--space-l); }
@@ -459,6 +471,8 @@ html[data-shows='none'] .quote-live { display: none; }
 .mark-identity { height: 40px; }
 .identity-when { font-weight: 700; font-size: var(--step-0); line-height: 1.3; font-variant-numeric: tabular-nums; }
 .identity-when .text-link { min-height: 48px; }
+.identity-count { display: flex; flex-wrap: wrap; column-gap: 0.5rem; }
+.identity-date { color: var(--muted); font-weight: 400; }
 .identity-state .btn { margin-top: 0.25rem; }
 
 /* Photo credits for this page (CREDITS.md wording). The MCCC still appears only in hero B under 900px. */
@@ -533,7 +547,6 @@ html:not([data-hero='b']) .credit-b { display: none; }
 .yt-title { position: absolute; inset: auto 0.75rem 0.6rem; font-weight: 700; font-size: var(--step--1); line-height: 1.25; }
 iframe.yt { width: 100%; border: 0; }
 .sub { padding-top: calc(var(--header-h) + var(--tab-h) + 4px); }
-.sub > .band:first-child { border-top-color: transparent; }
 .releases { display: grid; gap: var(--space-m); margin-top: var(--space-l); }
 .releases .release { margin-top: 0; }
 .prose { display: grid; gap: var(--space-s); margin-top: var(--space-l); }
@@ -794,7 +807,7 @@ html[data-hero='ab'] .slot { display: none; }
    and photos are never changed: a pressed tile outlines its cover and inverts its words instead. */
 a, button, summary, label { -webkit-tap-highlight-color: transparent; }
 .btn:active, .btn-solid:active, .btn-line:active, .btn-show:active, .motion-btn:not(:disabled):active,
-.links a:active, .text-link:active, .under-link:active, .listen-on a:active, .now a:active, .legal a:active,
+.links a:active, .about-set a:active, .text-link:active, .under-link:active, .listen-on a:active, .now a:active, .legal a:active,
 .quote-credit a:active, .ln-close a:active, .nav-desktop a:active, .sheet a:active, .nav-mobile summary:active {
   background: var(--text); color: var(--bg); border-color: var(--text); transition: none;
 }
@@ -995,7 +1008,8 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 .v2-cover { width: 100%; height: auto; aspect-ratio: 1; }
 .v2-rel-text { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.35rem; justify-items: start; }
 .v2-rel-text > * { max-width: 100%; overflow-wrap: anywhere; }
-.v2-kicker { color: var(--muted); font-size: var(--step--1); font-weight: 700; line-height: 1.25; }
+.v2-kicker { display: flex; flex-wrap: wrap; column-gap: 0.5rem; color: var(--muted); font-size: var(--step--1); font-weight: 400; line-height: 1.25; }
+.v2-kicker-type { color: var(--text); font-weight: 700; }
 .v2-rel h3, .v2-rel h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; text-wrap: balance; overflow-wrap: anywhere; }
 .v2-rel .btn { margin-top: 0.35rem; }
 

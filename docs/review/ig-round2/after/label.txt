@@ -1,0 +1,23 @@
+Slice 1 (DESIGN 20a direction 2, D79): the section word unfilled on the band's 4px rule. global.css only.
+Build: npx astro build --outDir SCRATCH\dist-coder, node server.js on 8853, empty DATA_DIR. Shots *-blocked.png: Spotify blocked
+with --host-resolver-rules (D85). home-390-unblocked.png: Spotify loaded, scrolled 505px.
+
+Home height, quotes off: 390x660 = 3621px (before 3631; designer 3621; bar 3631). 320x568 = 3724. 1280x800 = 4277.
+Animations on Home (document.getAnimations): motion on = 1 (the glow), reduced motion = 0.
+a11y200 --url on the build: 0 views with issues (320 / 390 / 1280, 100% and 200%).
+
+Label box (17px, weight 700, colour rgb(245,245,245) = text, no fill), worst-pixel contrast against the pixels under its own box
+(text hidden, then shot; photo and grain count):
+  page   390 box (x,y,w x h)        390 worst   1280 box (x,y,w x h)       1280 worst
+  Home   20.6, 449.1, 46.6 x 24     14.30:1     38.4, 566.6, 46.6 x 24     16.44:1
+  Music  20.6, 64, 46.6 x 24        17.32:1     38.4, 76, 46.6 x 24        17.32:1
+  Shows  20.6, 64, 50.7 x 24        17.32:1     38.4, 76, 50.7 x 24        17.32:1
+  About  20.6, 64, 47.5 x 24        17.32:1     38.4, 76, 47.5 x 24        17.32:1
+  Shop   20.6, 64, 40.0 x 24        17.32:1     38.4, 76, 40.0 x 24        17.32:1
+  404    hatched .tab-blank 72 x 24 on its band (decorative, aria-hidden), no text
+Sub pages show the first band's 4px rule (the transparent rule is gone). No horizontal overflow at 390 or 1280 on any page.
+Page heights at 390x660: Music 3224, Shows 1812, About 2159, Shop 1940, 404 1225.
+
+Unblocked, for the record (Home 390x660, motion reduced): iframe top 545.9px (was 555.9), 352px tall; phone bar top 598.
+Spotify's Play disc: about x 296-340, y 687-731 (44px), read off home-390-unblocked.png (offset ~141-185 in the embed);
+its top is 89px below the bar's top, so Play is still covered on screen one (20b is HELD, D81; nothing from it is built).

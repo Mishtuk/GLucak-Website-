@@ -1,0 +1,16 @@
+Slice 2 (DESIGN 20c setlist + 20d two spans, D83). Build: dist-coder on port 8853; shots *-blocked.png = Spotify blocked (D85).
+Shots in this folder are the final state (slices 1 + 2): home / music / about at 390x660 and 1280x800, about-900-blocked.png,
+home-390-kicker / home-390-countdown / home-1280-kicker / music-1280-countdown. (Slice 1's own numbers: label.txt.)
+
+About scrollHeight at 390x660: before the slice 2 edit 2159px, after 2159px (not higher; phones keep the solid Patreon button,
+the setlist is display:none under 900px). 1280x800: 1906 (unchanged). 900x800: 1913.
+About >= 900px first screen: setlist in the right column at the top, three 72px rows (Listen /music/, Shows /shows/, Patreon),
+1280: y 398-620 (rows 400 / 474 / 548, 486px wide); 900: y 347-569. Solid Patreon button hidden from 900px.
+Accent fills in the first screen (orange): 1 at 900 and 1280 (the header's LISTEN); was 2 (LISTEN + Patreon).
+Home 390x660 quotes off: 3601px (3621 after slice 1; the release kicker is now one line, 40 -> 20px). 320x568: 3724. 1280x800: 4277.
+Kicker: "Latest single" 700 text-colour + "Sep 4, 2026" 400 muted, literal space between (textContent "Latest single Sep 4, 2026").
+IDENTITY countdown: date 400 muted + "275 days to go" 700, same height (47px at 390).
+grep -rn "&middot;\|·" src/components src/pages --include=*.astro outside src/pages/v2: no matches.
+Animations on Home: motion on 1 (the glow), reduced 0; About: 0 / 0. No transition, animation or transform added.
+a11y200 --url: 0 views with issues (48 views, 320 / 390 / 1280 at 100% and 200%): a11y200.txt.
+npm test: 174 / 174 (171 + test/ig2.test.js, 3 tests: 20a no fill, 20c setlist, 20d no middle dot / two spans).

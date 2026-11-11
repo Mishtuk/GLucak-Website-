@@ -19,8 +19,13 @@ const links = ORDER.map((id) => SOCIALS.find((s) => s.id === id));
         <p>Two albums and numerous singles and EPs into the biz and with no plans to slow down, GLucak has been running at a ferocious pace crafting brand-new content and music for 2026 and 2027.</p>
         <p>Nevertheless, no matter the musical style or genre, be it his debut single or his upcoming 3rd album (rumored to be his best work yet), the mission statement has always been the same: Rise, Live It Loud, Push Past Fear, The Time Is Now.</p>
       </div>
-      <div class="push-actions">
-        <a class="btn btn-solid" href={PATREON} rel="noopener">Patreon</a>
+      <div class="push-actions about-actions">
+        <ul class="about-set">
+          <li><a href="/music/">Listen</a></li>
+          <li><a href="/shows/">Shows</a></li>
+          <li><a href={PATREON} rel="noopener">Patreon</a></li>
+        </ul>
+        <a class="btn btn-solid about-patreon" href={PATREON} rel="noopener">Patreon</a>
       </div>
     </div>
     <div class="wrap prose">
