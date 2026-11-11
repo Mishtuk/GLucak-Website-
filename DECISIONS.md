@@ -315,3 +315,23 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   tap affordance; contrast within the control's (12.46 / 10.62 / 17.32). Zero height, no motion.
 - **21b approved** (rules-stroke arrow per setlist row, diagonal arrow for Patreon, existing hover underline / focus ring /
   pressed swap). **21c approved** (chip moves to the footer's top rule, only while the era is Placeholder); Footer.astro claimed.
+
+## D89 (Laptop designer, 2026-11-11): Round IG4 spec, the texture family and the last clichés (DESIGN 23). Proposed; boss / owner confirm
+- **Texture family** (owner's note: the hero riso "in different ways" on the other images): one print shop, a different screen
+  per slot, every ink and paper from the era file (`tools/photo/texture.mjs`, re-run per era). Phones' hero A: night riso (black
+  stock, accent + white, fine screen, plates held down under the name). Hero B: unchanged. Live It Loud photo: white line screen on
+  black. Rise photo: photocopy toner. Push Past Fear photo: two coarse plates, 1% off register. About's crowd: halftone only in
+  the shadows. Not treated: covers, IDENTITY art, Logo D (never tinted), YouTube thumbnails (his title cards, other artists'
+  names, platform logos), the poster (already one ink, coarse; a Desktop file). Text over every image 4.5:1 or better (p95).
+- **Item 1:** the drifting accent glow goes; from 900px the hero's ground is a static 1-bit screen of the pallet wall behind Gabe
+  (Kealey, above every head), a mask painted tone-on-tone (`--line` 50% into `--bg`). Home: 0 animations at rest.
+- **Item 2:** SHOWS (hero, 404) and Full bio (Home) become the setlist arrow link (`.go`): one button per row.
+- **Item 3:** band and footer rules in `--line`; the ledge carries the only white, under the word.
+- **Item 4:** the section word stays (D6) and becomes a real label: display face 900, `--step-1`, nav case, inside the 24px reserve.
+- **Item 5:** footer "Listen Shows Join", no periods; `word-spacing: 0.375em` keeps the fitted width, so `--w-close` and the footer
+  height don't change; the placeholder chip loses its box (dashed underline), so the Motion switch is the footer's one outline.
+  Desktop follow-up (owner OK): "Shop." -> "Shop" in `src/lib/products.js` 118.
+- **Item 6 (M1):** the Menu sheet opens from the Menu button (scale 0.95 -> 1, 200ms ease-out in, 160ms out), motion-on gate only.
+- **Why:** the owner asked for the texture across the site; one shop with varied screens keeps one family without a filter
+  sampler; items 1-5 remove the clichés the IG3 eval named and move no height (Home 390 3601, 320 3724, 1280 4277). Six visible
+  changes exceed the 3-change habit (ai-design-workflow 3.12): the boss may build in two passes (DESIGN 23e).

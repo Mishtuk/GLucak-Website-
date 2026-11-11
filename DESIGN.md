@@ -2041,3 +2041,223 @@ the same words at 16px.
 ### 22g. Visible changes (at most 3)
 1. Music: Scenic Route and Who I Am become sleeve cards (title on the rule, Single, the date) instead of hatched date stickers.
 2. Home from Nov 13: Who I Am's sleeve card instead of the grey X; the dashed chip goes.
+
+## 23. Round IG4: the texture family, and the last clichés (Laptop designer, 2026-11-11)
+Sources: owner's note 2026-11-11 ("I like the textured look you used for the first image at the very top of the page. Try that
+in different ways for the other images on the web page"), `docs/review/laptop-plan-2026-11-11.md` items 1-6, the IG3 eval, D6,
+D34, D47, D51, D79, D87, 3b, 21. **Specified against the build** (repo at 7aa0b4a, `npx astro build --outDir SCRATCH\dist`,
+`node server.js` on port 8893, empty `DATA_DIR`). Every look below was injected into the served build over CDP (no `src/` edit);
+the injected CSS is `docs/review/ig4/design/23-delta.css.txt`. Spotify and YouTube blocked at the resolver (D85): the grey
+boxes are the blocked embeds. Reduced motion unless said. Line numbers are `src/styles/global.css` at 7aa0b4a.
+Shots: `docs/review/ig4/design/23-*.png` (before / after at 320, 390, 900, 1280; About, Music, Shows, 404, footer, Menu).
+Contact sheet: **`docs/review/ig4/design/textures-sheet.png`** (before / after per slot). Script: `tools/photo/texture.mjs`.
+
+**Correction to the brief:** the image the owner liked (hero B from 900px, `b-riso-600/1000`) is Kealey's photo printed as a
+two-colour riso (accent + ink on paper, round dots at 75 / 45 degrees, the accent plate off register). It is not the MCCC still
+(`f-mccc-*` shows only with `?hero=b` under 900px, never in the D34 default).
+
+**Hard rules held:** every file is a still (static misregistration, no animated grain); nothing can flash; the hero's drift
+animation goes, so Home has **0** running animations at rest with motion on (was 1) and 0 reduced; the only new motion is the
+Menu sheet's one-off open / close (23c), motion-on gate only. No AI, no upscaling (`load()` refuses), no generative fill;
+privacy crops unchanged (Kealey crops stop above every audience face and the child; Crooked Eye and garage stills show Gabe
+only). No new colour role: inks and papers are `bg`, `text`, `accent` from the era file; the hero wall is painted with a mix of
+`--line` and `--bg`. No new font. Every file EXIF / ICC / XMP free (checked). **Heights unchanged:** Home 390x660 **3601**
+reduced / 3553 motion on, 320x568 **3724**, 1280x800 **4277**, About 390 2159, Music 390 3224.
+
+**Generic defaults in my first plan, and what replaced each (ai-design-workflow 5):**
+| Default I reached for | Why it is the template look | Instead |
+|---|---|---|
+| One halftone filter on every photo | The "filter sampler" / one preset everywhere (photo-art-direction 1) | One print shop: the same two stocks (paper = `text`, black = `bg`) and the same inks, a different screen per slot |
+| Animated grain or a shifting second plate on the hero | Motion for texture's sake; Hard rule 1 | Misregistration fixed in the pixels |
+| The glow swapped for a CSS dot grid (`radial-gradient` repeat) | A perfect, tiling dot grid is the AI-texture tell | A real 1-bit screen of the pallet wall behind Gabe at that show |
+| Halftone on the YouTube thumbnails too | Treats his title cards and other artists' names as decoration | Thumbnails stay as YouTube shows them (23a, rejected) |
+| SHOWS as a smaller outlined button | Still a ghost button beside the filled one | The setlist arrow link (21b): a word and an arrow |
+| The section word as tracked small caps | The eyebrow (banned) | The display face in nav case, a real label size |
+
+### 23a. The texture family, per slot
+`node tools/photo/texture.mjs` writes every file below into `public/media/` (new names; the old files stay) in the placeholder
+era; `--era src/eras/<era>.json` writes the same set into `docs/review/ig4/textures/<era>/` (tested with
+`tools/photo/eras/test-blue.json`: all checks pass, crowd 4.73 -> 5.03:1). Era swap = one re-run, then copy. Each halftone is
+screened at its own file size (moiré rule, 3b); `sizes` and the `width` / `height` attributes do not change, so layout and
+heights do not move. **Alt text unchanged everywhere.** Contrast is WCAG 2 of `text` (#f5f5f5) against the 95th percentile of
+the image blurred by one screen period (what the eye sees of a dot screen), **CSS scrims not counted**; then measured again on
+the page (the text's box with the text hidden, 1.2px blur: p95, and the brightest pixel).
+
+| Slot (where) | Treatment | New files (KB) | Was | Source | Text on it |
+|---|---|---|---|---|---|
+| **Hero A, phones under 900px** (`Hero.astro` 16-17) | **Night riso:** the hero B riso turned over. Black stock, accent for the mid-tones (15°), white ink for the highlights (45°, 1.5px off register), fine screen (4.4px) so his face holds. The blue wall is held at a low flat tone (keyed by colour: blue leads red), so Gabe prints and the wall sinks to the stock. Under the name (file y >= 405) white is out and accent capped | `a-night-phone-800` 800x1000 (61, lossless) | `a-era-grade-phone-800` | Kealey, same crop | File: **6.18:1**. Page 390: GLUCAK **8.85** (brightest pixel 6.90), slogan 12.18, SHOWS 16.31 |
+| **Hero B, from 900px** (`Hero.astro` 25, 27) | **Unchanged** (the reference: two-colour riso on paper) | - | `b-riso-600/1000` | Kealey | none on it |
+| **Hero ground, from 900px** (replaces `.glow`, 23b item 1) | **The wall:** the pallet wall and flower cross behind Gabe at that show, one coarse 45° screen (9px), saved as a colourless 1-bit alpha mask; CSS paints it `color-mix(in srgb, var(--line) 50%, var(--bg))` on `bg` (tone-on-tone) | `hero-wall-1600` 1600x594 (31, lossless alpha) | the accent radial glow | Kealey, source x 2540-5340, y 1060-2100 (above every head) | Page 1280: G 12.81, LUCAK 14.94, slogan 14.42, Now line 14.24, SHOWS 13.34 (brightest pixel 12.28) |
+| **Live It Loud photo, from 900px** (`index.astro` 33) | **Line screen:** one ink, paper white, on black stock, straight lines at -30° whose width carries the tone (engraving / white-on-black stock print) | `v2/stage-lines-360` 360x640 (10), `-634` 634x1128 (28), lossless | `v2/stage-360/634` | Crooked Eye still `yt-aZNW63M_C2E-2` | none |
+| **Rise photo, from 900px** (`RiseBand.astro` 16) | **Photocopy toner (grain only, no screen):** a copier's curve, toner lands where tone and a clumped grain agree; black on paper. The punk-flyer member | `v2/garage-toner-480` 480x270 (9), `-874` 874x492 (26), lossless | `v2/garage-480/874` | Duck, Dodge video still `yt-K-OZiNvQB14-1` | none |
+| **Push Past Fear photo, Home, every width** (`index.astro` 49) | **Two plates, pulled by hand:** the riso's accent + ink on paper, a coarse screen (7px / 4.4px), angles 15 / 75 (hero B is 75 / 45), the accent plate 1% of the width off register with a hair of skew | `v2/belt-plates-320` 320x569 (28), `-634` 634x1128 (99), lossless | `v2/belt-320/634` | Crooked Eye still `yt-aZNW63M_C2E-4` | none |
+| **About, Push Past Fear head** (`PushPhoto.astro` 6-7) | **Halftone only in the shadows:** the (d) tritone and grain as before, but below the mid-tone the print flattens to the mid colour and coarse ink dots (45°) carry the dark. Same crops as (d) | `d-crowd-screen-phone-800` 800x371 (74), `-800` 800x222 (48), `-1600` 1600x445 (144), lossy | `d-crowd-*` | Kealey, (d)'s crops | File: 4.73 / 4.73 / **4.87**:1. Page: PUSH PAST FEAR 390 **6.28** (brightest pixel 4.10), 1280 **6.07** (3.75; display text, large) |
+| Live It Loud poster, `/shows/` (`src/lib/shows.js` 62) | **Unchanged:** it already is the family's one-ink, coarse 45° member; and the file is the Desktop's | - | `c-poster-600/1000` | Kealey | - |
+| Covers (Music, Home card), IDENTITY art, Logo D | **Never treated** (3, 3a, D51) | - | - | - | - |
+| YouTube thumbnails (Watch row) | **Not treated (rejected):** his designed title cards with other artists' names (J-BOY, Emily Mae) and platform logos; a screen breaks the type and logos at 640px; the facade must match the video that loads; the row refreshes itself from the feed | - | - | - | - |
+| 404, Shop | No photos (Shop's sample product pictures are placeholders and the shop is off) | - | - | - | - |
+
+Order down Home at 1280: wall (tone-on-tone) + riso (paper, red / ink), toner (paper, black), lines (black stock, white), plates
+(paper, coarse red / ink). At 390: night riso (black stock, red / white), plates (117px wide). Each slot one process; the family
+is the shop (two stocks, the era inks), so the page reads as one print run, not a filter sampler.
+
+**Markup (exact; alt, sizes, width, height, loading stay as they are):**
+- `src/components/Hero.astro` 16: `/media/a-era-grade-phone-800.webp` -> `/media/a-night-phone-800.webp`. Line 17 (variant `'a'`,
+  phones under 700px): the same replacement in its `srcset`. Line 18 (the 3:2 desktop files for `?hero=a`) unchanged.
+- `src/pages/index.astro` 33: `stage-360` -> `stage-lines-360`, `stage-634` -> `stage-lines-634` (src and srcset). Line 49:
+  `belt-320` -> `belt-plates-320`, `belt-634` -> `belt-plates-634`.
+- `src/components/RiseBand.astro` 16: `garage-480` -> `garage-toner-480`, `garage-874` -> `garage-toner-874`.
+- `src/components/PushPhoto.astro` 6-7: `d-crowd-800` -> `d-crowd-screen-800`, `d-crowd-1600` -> `d-crowd-screen-1600`,
+  `d-crowd-phone-800` -> `d-crowd-screen-phone-800`.
+- `src/components/content.js` 27: `[/a-era-grade/, PHOTO_CREDITS.kealey]` -> `[/a-era-grade|a-night-/, PHOTO_CREDITS.kealey]`
+  (the v2 regexes already match the new names). Mirror it in `test/v2port.test.js` 53. `test/v2port.test.js` 36 (no `d-crowd` on
+  Home) still holds.
+- The class stays `graded` on every one. No CSS change for the images themselves (same aspect ratios, same `object-position`).
+
+### 23b. Plan items 1-5
+**Item 1. Hero glow -> the wall (static).**
+- `src/pages/index.astro` 24: delete `<div class="glow" aria-hidden="true"></div>`.
+- `src/components/Hero.astro`: make the first child of `<section class="hero" aria-label="GLucak">`:
+  `<div class="hero-wall" aria-hidden="true"></div>`
+- `global.css` 201-218 (the comment, `.top`, `.glow`, its motion block and `@keyframes drift`) become:
+  ```css
+  /* ---------- Top: hero + Rise ---------- */
+  .top { position: relative; isolation: isolate; overflow: clip; }
+  /* DESIGN 23 (IG4 item 1): the hero's ground is the pallet wall and flower cross behind Gabe at that show (Kealey), one
+     coarse 1-bit screen (tools/photo/texture.mjs), painted tone-on-tone. A mask, so the era colours it. Static. From 900px
+     only: under 900px hero A's photo fills the hero. Text on it measured 12.3:1 or better. */
+  .hero-wall { display: none; }
+  @media (min-width: 900px) {
+    .hero-wall {
+      display: block; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+      background-color: color-mix(in srgb, var(--line) 50%, var(--bg));
+      -webkit-mask: url('/media/hero-wall-1600.webp') 50% 100% / cover no-repeat;
+      mask: url('/media/hero-wall-1600.webp') 50% 100% / cover no-repeat;
+    }
+  }
+  ```
+  (`.hero` is `z-index: 0`, so the wall sits under `.hero-inner` (z 2); `.hero-photo` comes later in the DOM and covers it for
+  `?hero=a`.) The iOS fallback block (1149-1152) keeps `.top`'s `overflow: hidden`; fix its comment's "the hero glow" to "the hero".
+  Old Safari without `color-mix` (R1 block, line 1156): the declaration is dropped, the wall is transparent and the hero is plain
+  `bg`, as intended (no fallback colour: that block sets `--line` to `muted`, far too light for a ground texture).
+- `public/js/app.js` 43-45: delete the comment "Glow stops once…", `const top = $('.top');` and the `IntersectionObserver` line
+  (nothing else reads `.top` or `glow-away`).
+- Not touched: `src/pages/v2/index.astro` 23 (frozen page; its `.glow` div becomes an empty, unstyled div).
+
+**Item 2. SHOWS ghost button -> the setlist arrow link (one button per screen).** The same change on the two other rows where
+an outlined button sits beside a filled one: the 404 and Home's Patreon / Full bio. Pre-save and "Play full songs on Spotify"
+stay outlined (each is the only button in its row, 19c).
+- `src/components/Hero.astro` 31: `<a class="go" href="#shows" aria-label="See upcoming shows">Shows</a>`
+- `src/pages/404.astro` 13: `<a class="go" href="/shows/" aria-label="See upcoming shows">Shows</a>`
+- `src/pages/index.astro` 54: `<a class="go" href="/about/">Full bio</a>`
+- `global.css`, after line 143 (the end of the `@media (hover: hover)` button block), add:
+  ```css
+  /* DESIGN 23 (IG4 item 2): the second action beside a filled button is a word with the setlist arrow (21b), not an outlined
+     button: one button per screen. Same 52px height as the button, display face, the arrow in the rules' 4px stroke,
+     currentColor (so 16e's pressed swap inverts it). Static. */
+  .go {
+    display: inline-flex; align-items: center; gap: 0.5rem; min-height: 52px; padding-inline: 0.25rem;
+    font-family: var(--font-display); font-weight: 900; font-size: 1.5rem; line-height: 1; letter-spacing: 0.02em;
+    text-transform: uppercase; text-decoration: none; color: var(--text);
+  }
+  .go::after {
+    content: ''; flex: none; width: 0.7em; height: 0.56em; background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M0 16H35M23 4l12 12-12 12' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M0 16H35M23 4l12 12-12 12' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  @media (hover: hover) { .go:hover { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; } }
+  .hero-actions .go, .lost-actions .go, .push-actions .go { flex: none; }
+  ```
+- Line 281 `.hero-actions`: `gap: var(--space-s);` -> `gap: var(--space-s) var(--space-l); align-items: center;`. Same two edits
+  on line 446 `.push-actions` and line 799 `.lost-actions`. `.hero-actions .btn { flex: 1; }` (282) and `.lost-actions .btn
+  { flex: 1; }` (800) stay: on phones LISTEN fills what SHOWS leaves (one row at 320, measured); from 900px the built
+  `flex: none; min-width: 11rem` stays. `test/a11y200.test.js` 10-12 still pass.
+- Line 815 (16e's pressed list): add `.go:active,` to the selector list.
+- States: rest = word + arrow; hover = 3px underline on the word; focus = the global 3px ring round the 52px box; pressed = 16e
+  swap (`text` ground, word and arrow `bg`). Shots: `23-home-390-after.png`, `23-home-1280-after.png`, `23-404-390-after.png`.
+
+**Item 3. Band rules in `--line`; white only under the word.**
+- Line 299 `.band`: `border-top: 4px solid var(--text)` -> `border-top: 4px solid var(--line)`.
+- Line 501 `.site-footer`: the same.
+- Lines 311-314 (`.tab::before`) become:
+  ```css
+  .tab::before {
+    content: ''; position: absolute; left: -0.25rem; right: -0.25rem; bottom: -4px; height: 0.5rem; background: currentColor;
+    clip-path: polygon(0 100%, 0 50%, 0.25rem 0, calc(100% - 0.25rem) 0, 100% 50%, 100% 100%);
+  }
+  ```
+  (the ledge now also covers the 4px of rule under the word, so white shows only there; the 404's blank ledge follows).
+- Lines 301-302, the comment, end "…steps up 4px under it as a solid trapezoid, the only white on the rule (DESIGN 23)."
+- Not changed: `.quote`'s 4px left rule, the phone bar's top line, the header's 2px `--line`.
+
+**Item 4. The section word: sized as a real label (decided; not dropped).** Dropping it would break D6 (the label is what keeps
+the slogan headings intuitive) and change every heading's text ("Shows Live It Loud"). So: the display face, `--step-1`
+(20px at 390, 24px at 1280), **nav case** (not caps: a small all-caps word over a caps phrase is the eyebrow). It stays inside the
+24px reserve, so nothing moves (Home 3601).
+- Lines 305-310 (`.tab`) become:
+  ```css
+  .tab {
+    position: absolute; left: max(var(--gutter), calc((100% - var(--container)) / 2)); top: calc(-1 * var(--tab-h) - 4px); height: var(--tab-h);
+    display: inline-flex; align-items: flex-end; padding-bottom: 0.3rem;
+    color: var(--text);
+    font-family: var(--font-display); font-size: var(--step-1); font-weight: 900; line-height: 0.82;
+  }
+  ```
+- `test/ig2.test.js` 14: the last check becomes `/font-family: var\(--font-display\); font-size: var\(--step-1\); font-weight: 900/.test(tab)`.
+- Measured: Music word 17.32:1 at 390; About word on the crowd 17.32:1; on sub pages about 5px clear of the header line
+  (`23-about-390-after.png`, `23-music-1280-after.png`).
+
+**Item 5. Footer: "Listen Shows Join", one outlined object.**
+- `src/components/Footer.astro` 10: drop the three periods (`Listen.` -> `Listen`, `Shows.` -> `Shows`, `Join.` -> `Join`);
+  nothing else on the line changes.
+- Line 502: `.ln-close { font-size: calc(100cqi / var(--w-close)); word-spacing: 0.375em; }`. `--w-close` (line 70) stays
+  **8.1318**: measured, the three periods were 0.75em, so two 0.375em word gaps put the line back at the same width and the same
+  font size (footer and Home height unchanged; the three words spread across the line like the fitted phrases).
+- Line 692: `--w-close: 10.46` -> `--w-close: 10.85` (fits the shop line both with today's "Shop." from `src/lib/products.js` 118
+  and without its period). **Desktop follow-up (src/lib, owner OK):** `products.js` 118 `Shop.` -> `Shop`, and
+  `test/shop.test.js` 58 `Shop\.` -> `Shop`. Until then a shop-on footer reads "Listen Shows Shop. Join" (the shop is off).
+- One outline: the Motion switch keeps its 2px outline (a control; 19c). The placeholder chip on the rule loses its box and keeps
+  the dashed placeholder mark as an underline (the `.pending` vocabulary). Line 285 becomes:
+  `.footer-chip { top: -0.85rem; bottom: auto; right: max(var(--gutter), calc((100% - var(--container)) / 2)); border: 0; padding: 0 0.35rem; text-decoration: underline dashed var(--muted); text-underline-offset: 4px; }`
+  The sign-up field on sub pages keeps its 3px edge (a form field's only boundary).
+- Shots: `23-footer-390-after.png`, `23-footer-1280-after.png`.
+
+### 23c. Item 6 (round M1): the Menu sheet opens from the Menu button
+Motion-on gate only. Reduced motion, or the footer switch off: the sheet appears and goes at once, as today. Compositor
+properties only (`opacity`, `scale`); one transition per tap, no loop, nothing to flash. The close uses `::details-content` +
+`transition-behavior: allow-discrete` (Chrome / Edge 131, Firefox 143, Safari 18.4); older browsers open with the fade and close
+at once (progressive enhancement, no JS). **Append at the end of `global.css`:**
+```css
+/* ---------- 23c. Menu sheet: opens from the Menu button (IG4 item 6) ---------- */
+/* Scales from 0.95 at the Menu button's corner, 200ms ease-out in, 160ms ease-in out. The closed rule
+   (.nav-mobile:not([open]) > .sheet { display: none; }) stays: display and the details content transition with
+   allow-discrete, so the sheet stays painted while it fades out. */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-motion='on'] .nav-mobile::details-content { transition: content-visibility 160ms allow-discrete; }
+  html[data-motion='on'] .sheet {
+    transform-origin: calc(100% - var(--gutter) - 1.75rem) 0;
+    transition: opacity 160ms ease-in, scale 160ms ease-in, display 160ms allow-discrete;
+  }
+  html[data-motion='on'] .nav-mobile:not([open]) > .sheet { opacity: 0; scale: 0.95; }
+  html[data-motion='on'] .nav-mobile[open] > .sheet { opacity: 1; scale: 1; transition-duration: 200ms; transition-timing-function: var(--ease); }
+  @starting-style { html[data-motion='on'] .nav-mobile[open] > .sheet { opacity: 0; scale: 0.95; } }
+}
+```
+No markup change. Measured (Chrome, 390, motion on): opening runs `opacity, scale`; 50ms into closing the sheet is still
+`display: grid` at opacity 0.77 (`display, opacity, scale` running); reduced motion: 0 animations on tap. Shot:
+`23-menu-390-open.png`. Test idea: the block exists only inside `prefers-reduced-motion: no-preference` with `data-motion='on'`;
+`document.getAnimations()` on Home at rest is 0 in both modes.
+
+### 23d. Rejected
+- Treating the YouTube thumbnails, covers, IDENTITY art, Logo D (23a). The poster: already the family, and Desktop-owned.
+- Hero A on phones in the paper riso (as hero B): white GLUCAK on paper fails, and it would repeat B. Black stock instead.
+- The wall at full `--line` (shot first: a grey second picture competing with GLUCAK and the riso); the wall under 900px.
+- A CSS `radial-gradient` dot grid for the hero (perfect tiling); any shifting or animated plate, grain or glitch (Hard rule 1).
+- Dropping the section word (D6); setting it in caps (eyebrow).
+- Changing `--w-close` (it would change the footer height; word spacing keeps it).
+
+### 23e. Visible changes (ai-design-workflow 3.12 says at most 3; this round has 6)
+1. Photos: five slots get their own print (23a). 2. The glow becomes the wall. 3. SHOWS / Full bio become arrow links.
+4. Band rules go grey with the white ledge. 5. The section word grows to a display label. 6. Footer words lose their periods.
+**Boss call:** the plan bundles items 1-5 on purpose (last clichés, one evaluation). If the evaluator's before / after must stay
+readable, build in two passes: (A) 23a + item 1 (the owner's request), (B) items 2-5; the Menu (23c) ships with M1.
