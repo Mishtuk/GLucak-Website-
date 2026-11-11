@@ -11,7 +11,7 @@ const htmlFiles = (d) => readdirSync(d).flatMap((n) => { const p = join(d, n); r
 
 test('21a: the ledge is a static solid step under the word (clip-path, no box, no motion)', () => {
   const ledge = css.match(/\n\.tab::before \{([^]*?)\n\}/)[1];
-  assert.ok(/clip-path: polygon/.test(ledge) && /background: currentColor/.test(ledge) && /height: 0\.25rem/.test(ledge));
+  assert.ok(/clip-path: polygon/.test(ledge) && /background: currentColor/.test(ledge) && /height: 0\.5rem/.test(ledge));
   assert.ok(!/animation|transition|transform/.test(ledge));
   assert.ok(!/\.tab-blank \{[^}]*(background|border)/.test(css), 'the blank ledge has no hatch');
 });

@@ -3,6 +3,6 @@ interface Props { eager?: boolean }
 const { eager = false } = Astro.props;
 ---
 <picture>
-  <source media="(min-width: 753px)" srcset="/media/d-crowd-800.webp 800w, /media/d-crowd-1600.webp 1600w" sizes="100vw" />
-  <img class="graded push-photo" src="/media/d-crowd-phone-800.webp" alt="" width="800" height="371" loading={eager ? undefined : 'lazy'} fetchpriority={eager ? 'high' : undefined} />
+  <source media="(min-width: 753px)" srcset="/media/d-crowd-screen-800.webp 800w, /media/d-crowd-screen-1600.webp 1600w" sizes="100vw" />
+  <img class="graded push-photo" src="/media/d-crowd-screen-phone-800.webp" alt="" width="800" height="371" loading={eager ? undefined : 'lazy'} fetchpriority={eager ? 'high' : undefined} />
 </picture>

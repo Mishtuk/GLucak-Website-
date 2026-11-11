@@ -1,0 +1,28 @@
+Build: round IG4 (DESIGN 23, D89), all items in one pass. Spotify/YouTube blocked (D85). server.js :8894 empty DATA_DIR. Chrome headless over CDP.
+Home 390x660 reduced, quotes off: scrollHeight 3601px (limit 3601) OK; motion on 3553
+Home 320x568: 3724; Home 1280x800: 4277 (unchanged from IG3)
+Home animations at rest: 0 reduced, 0 motion on (was 1: the glow); every other page 0 / 0 (see anims.txt)
+a11y200 (prototype/tools/a11y200.mjs --url, OUT=docs/review/ig4/after-a11y): 0 views with issues
+About 390 2159, Music 390 3224 (unchanged)
+npm test: 194/194 pass (test/ig4.test.js new, 6 tests; ig2 / ig3 section-word and ledge asserts updated)
+
+/ 390 reduced: {"anims":0,"motion":"off","sh":3601,"sw":390}
+/ 390 motion on: {"anims":0,"motion":"on","sh":3553,"sw":390}
+/ 1280 reduced: {"anims":0,"motion":"off","sh":4277,"sw":1280}
+/ 1280 motion on: {"anims":0,"motion":"on","sh":4277,"sw":1280}
+/music/ 390 reduced: {"anims":0,"motion":"off","sh":3224,"sw":390}
+/music/ 390 motion on: {"anims":0,"motion":"on","sh":3176,"sw":390}
+/music/ 1280 reduced: {"anims":0,"motion":"off","sh":2867,"sw":1280}
+/music/ 1280 motion on: {"anims":0,"motion":"on","sh":2867,"sw":1280}
+/shows/ 390 reduced: {"anims":0,"motion":"off","sh":1812,"sw":390}
+/shows/ 390 motion on: {"anims":0,"motion":"on","sh":1764,"sw":390}
+/shows/ 1280 reduced: {"anims":0,"motion":"off","sh":1587,"sw":1280}
+/shows/ 1280 motion on: {"anims":0,"motion":"on","sh":1587,"sw":1280}
+/about/ 390 reduced: {"anims":0,"motion":"off","sh":2159,"sw":390}
+/about/ 390 motion on: {"anims":0,"motion":"on","sh":2111,"sw":390}
+/about/ 1280 reduced: {"anims":0,"motion":"off","sh":1906,"sw":1280}
+/about/ 1280 motion on: {"anims":0,"motion":"on","sh":1906,"sw":1280}
+/nope/ 390 reduced: {"anims":0,"motion":"off","sh":1225,"sw":390}
+/nope/ 390 motion on: {"anims":0,"motion":"on","sh":1177,"sw":390}
+/nope/ 1280 reduced: {"anims":0,"motion":"off","sh":1080,"sw":1280}
+/nope/ 1280 motion on: {"anims":0,"motion":"on","sh":1080,"sw":1280}

@@ -1,0 +1,20 @@
+/ 390 reduced: {"anims":0,"motion":"off","sh":3601,"sw":390}
+/ 390 motion on: {"anims":0,"motion":"on","sh":3553,"sw":390}
+/ 1280 reduced: {"anims":0,"motion":"off","sh":4277,"sw":1280}
+/ 1280 motion on: {"anims":0,"motion":"on","sh":4277,"sw":1280}
+/music/ 390 reduced: {"anims":0,"motion":"off","sh":3224,"sw":390}
+/music/ 390 motion on: {"anims":0,"motion":"on","sh":3176,"sw":390}
+/music/ 1280 reduced: {"anims":0,"motion":"off","sh":2867,"sw":1280}
+/music/ 1280 motion on: {"anims":0,"motion":"on","sh":2867,"sw":1280}
+/shows/ 390 reduced: {"anims":0,"motion":"off","sh":1812,"sw":390}
+/shows/ 390 motion on: {"anims":0,"motion":"on","sh":1764,"sw":390}
+/shows/ 1280 reduced: {"anims":0,"motion":"off","sh":1587,"sw":1280}
+/shows/ 1280 motion on: {"anims":0,"motion":"on","sh":1587,"sw":1280}
+/about/ 390 reduced: {"anims":0,"motion":"off","sh":2159,"sw":390}
+/about/ 390 motion on: {"anims":0,"motion":"on","sh":2111,"sw":390}
+/about/ 1280 reduced: {"anims":0,"motion":"off","sh":1906,"sw":1280}
+/about/ 1280 motion on: {"anims":0,"motion":"on","sh":1906,"sw":1280}
+/nope/ 390 reduced: {"anims":0,"motion":"off","sh":1225,"sw":390}
+/nope/ 390 motion on: {"anims":0,"motion":"on","sh":1177,"sw":390}
+/nope/ 1280 reduced: {"anims":0,"motion":"off","sh":1080,"sw":1280}
+/nope/ 1280 motion on: {"anims":0,"motion":"on","sh":1080,"sw":1280}

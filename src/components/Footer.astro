@@ -8,7 +8,7 @@ const { home = false, credits = [] } = Astro.props;
   {era.name === 'Placeholder' && <p class="ph-chip footer-chip">Placeholder colors</p>}
   <div class="wrap">
     {!home && <div class="footer-join" id="join"><Signup /></div>}
-    <p class="closing fit"><span class="ln ln-close"><a href={home ? '#music' : '/music/'} aria-label="Listen to the music">Listen.</a> <a href={home ? '#shows' : '/shows/'} aria-label="See the shows">Shows.</a><Fragment set:html="<!--gl:footer-shop-->" /> <a href="#join" aria-label="Join the email list">Join.</a></span></p>
+    <p class="closing fit"><span class="ln ln-close"><a href={home ? '#music' : '/music/'} aria-label="Listen to the music">Listen</a> <a href={home ? '#shows' : '/shows/'} aria-label="See the shows">Shows</a><Fragment set:html="<!--gl:footer-shop-->" /> <a href="#join" aria-label="Join the email list">Join</a></span></p>
     <ul class="links">
       {SOCIALS.map((s) => <li class={s.id === 'patreon' ? 'links-wide' : undefined}><a href={s.href} rel="noopener"><svg aria-hidden="true"><use href={`#i-${s.id}`} /></svg><span>{s.name}</span></a></li>)}
     </ul>

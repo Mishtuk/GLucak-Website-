@@ -40,10 +40,6 @@
   });
   showMotion();
 
-  /* ---------- Glow stops once hero + Rise no longer fill the bottom of the screen ---------- */
-  const top = $('.top');
-  if (top) new IntersectionObserver(([e]) => root.classList.toggle('glow-away', !e.isIntersecting), { rootMargin: '-99% 0px 0px 0px' }).observe(top);
-
   /* ---------- Headings fade in once ---------- */
   const fades = new IntersectionObserver((list) => {
     for (const e of list) if (e.isIntersecting) { e.target.classList.add('seen'); fades.unobserve(e.target); }

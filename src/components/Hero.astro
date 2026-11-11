@@ -8,13 +8,14 @@ const { variant = 'a' } = Astro.props;
 const now = releases()[0];
 ---
 <section class="hero" aria-label="GLucak">
+  <div class="hero-wall" aria-hidden="true"></div>
   {variant !== 'b' && (
     <div class="hero-photo">
       <picture>
         {variant === 'ab' && <source media="(min-width: 900px)" srcset={GIF} />}
         {variant === 'ab'
-          ? <img class="graded" src="/media/a-era-grade-phone-800.webp" alt="" width="800" height="1000" fetchpriority="high" />
-          : <Fragment><source media="(max-width: 699px)" srcset="/media/a-era-grade-phone-800.webp 800w" sizes="100vw" width="800" height="1000" />
+          ? <img class="graded" src="/media/a-night-phone-800.webp" alt="" width="800" height="1000" fetchpriority="high" />
+          : <Fragment><source media="(max-width: 699px)" srcset="/media/a-night-phone-800.webp 800w" sizes="100vw" width="800" height="1000" />
         <img class="graded" src="/media/a-era-grade-1600.webp" srcset="/media/a-era-grade-800.webp 800w, /media/a-era-grade-1600.webp 1600w" sizes="100vw" alt="" width="1600" height="1067" fetchpriority="high" /></Fragment>}
       </picture>
     </div>
@@ -30,7 +31,7 @@ const now = releases()[0];
     <p class="slogan fit"><span class="sl sl-1">Rise, Live It Loud,</span> <span class="sl sl-2">Push Past Fear, The Time Is Now.</span></p>
     <div class="hero-actions">
       <a class="btn btn-solid" href="#music" aria-label="Listen to the music">Listen</a>
-      <a class="btn btn-line" href="#shows" aria-label="See upcoming shows">Shows</a>
+      <a class="go" href="#shows" aria-label="See upcoming shows">Shows</a>
     </div>
     <p class="now"><Fragment set:html="<!--gl:now-->" /><a href={now.link} rel="noopener">Out now: {now.title}</a><Fragment set:html="<!--/gl:now-->" /></p>
   </div>

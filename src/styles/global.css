@@ -141,6 +141,21 @@ p { text-wrap: pretty; }
   .btn-solid:hover { background: var(--text); border-color: var(--text); color: var(--bg); }
   .btn-line:hover { background: var(--text); color: var(--bg); }
 }
+/* DESIGN 23 (IG4 item 2): the second action beside a filled button is a word with the setlist arrow (21b), not an outlined
+   button: one button per screen. Same 52px height as the button, display face, the arrow in the rules' 4px stroke,
+   currentColor (so 16e's pressed swap inverts it). Static. */
+.go {
+  display: inline-flex; align-items: center; gap: 0.5rem; min-height: 52px; padding-inline: 0.25rem;
+  font-family: var(--font-display); font-weight: 900; font-size: 1.5rem; line-height: 1; letter-spacing: 0.02em;
+  text-transform: uppercase; text-decoration: none; color: var(--text);
+}
+.go::after {
+  content: ''; flex: none; width: 0.7em; height: 0.56em; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M0 16H35M23 4l12 12-12 12' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M0 16H35M23 4l12 12-12 12' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+@media (hover: hover) { .go:hover { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; } }
+.hero-actions .go, .lost-actions .go, .push-actions .go { flex: none; }
 
 /* Placeholder marks: visible on purpose, off the first screen. Each goes when its real content arrives. */
 .ph-chip {
@@ -198,24 +213,19 @@ p { text-wrap: pretty; }
   .nav-mobile { display: none; }
 }
 
-/* ---------- Top: hero + Rise share the glow ---------- */
+/* ---------- Top: hero + Rise ---------- */
 .top { position: relative; isolation: isolate; overflow: clip; }
-.glow {
-  /* Painted once, then only moved: transform and opacity, never a repainted gradient. */
-  position: absolute; z-index: 1; left: -30%; top: 12%; width: 160%; aspect-ratio: 1; pointer-events: none;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 34%, transparent), transparent);
-  opacity: 0.8;
-}
-@media (prefers-reduced-motion: no-preference) {
-  html[data-motion='on'] .glow {
-    will-change: transform, opacity;
-    animation: drift 24s ease-in-out infinite alternate;
+/* DESIGN 23 (IG4 item 1): the hero's ground is the pallet wall and flower cross behind Gabe at that show (Kealey), one
+   coarse 1-bit screen (tools/photo/texture.mjs), painted tone-on-tone. A mask, so the era colours it. Static. From 900px
+   only: under 900px hero A's photo fills the hero. Text on it measured 12.3:1 or better. */
+.hero-wall { display: none; }
+@media (min-width: 900px) {
+  .hero-wall {
+    display: block; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background-color: color-mix(in srgb, var(--line) 50%, var(--bg));
+    -webkit-mask: url('/media/hero-wall-1600.webp') 50% 100% / cover no-repeat;
+    mask: url('/media/hero-wall-1600.webp') 50% 100% / cover no-repeat;
   }
-  html[data-motion='on'].glow-away .glow { animation-play-state: paused; }
-}
-@keyframes drift {
-  from { transform: translate3d(-5%, -2%, 0); opacity: 0.68; }
-  to { transform: translate3d(7%, 4%, 0); opacity: 0.88; }
 }
 
 /* ---------- Hero ---------- */
@@ -278,11 +288,11 @@ img.duo { filter: url('#duo'); }
 .sl-1 { font-size: calc(100cqi / var(--w-sl1)); }
 .sl-2 { font-size: calc(100cqi / var(--w-sl2)); margin-top: 0.3rem; }
 
-.hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-s); margin-top: var(--space-m); } /* WCAG 1.4.4: wraps when big text leaves no room */
+.hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-s) var(--space-l); align-items: center; margin-top: var(--space-m); } /* WCAG 1.4.4: wraps when big text leaves no room */
 .hero-actions .btn { flex: 1; }
 .now { display: flex; align-items: center; gap: var(--space-s); min-height: 48px; margin-top: 0.25rem; font-weight: 700; font-size: var(--step--1); }
 .now a { display: inline-flex; align-items: center; min-height: 48px; text-underline-offset: 3px; }
-.footer-chip { top: -0.85rem; bottom: auto; right: max(var(--gutter), calc((100% - var(--container)) / 2)); } /* DESIGN 21c: on the footer's top rule */
+.footer-chip { top: -0.85rem; bottom: auto; right: max(var(--gutter), calc((100% - var(--container)) / 2)); border: 0; padding: 0 0.35rem; text-decoration: underline dashed var(--muted); text-underline-offset: 4px; } /* DESIGN 21c / 23: on the footer's top rule, no box, the dashed mark as an underline */
 
 /* Hero B: photo in the name, at his own break. The slot stands taller than the letters. */
 html[data-hero='b'] .hero-photo { display: none; }
@@ -296,7 +306,7 @@ html[data-hero='b'] .slot picture { display: contents; }
 html[data-hero='b'] .slot img { width: 100%; height: 100%; object-fit: cover; object-position: 44% 20%; }
 
 /* ---------- Bands and the spine ---------- */
-.band { position: relative; z-index: 2; border-top: 4px solid var(--text); padding-block: var(--space-m) var(--section); background-image: var(--texture); }
+.band { position: relative; z-index: 2; border-top: 4px solid var(--line); padding-block: var(--space-m) var(--section); background-image: var(--texture); }
 .band-rise { background-color: transparent; }
 
 /* The section word (DESIGN 21a direction 1, D87, "the ledge"): the exact nav word standing on the band's 4px rule, which
@@ -304,13 +314,13 @@ html[data-hero='b'] .slot img { width: 100%; height: 100%; object-fit: cover; ob
 .spine { position: static; font-weight: 400; }
 .tab {
   position: absolute; left: max(var(--gutter), calc((100% - var(--container)) / 2)); top: calc(-1 * var(--tab-h) - 4px); height: var(--tab-h);
-  display: inline-flex; align-items: flex-end; padding-bottom: 0.25rem;
+  display: inline-flex; align-items: flex-end; padding-bottom: 0.3rem;
   color: var(--text);
-  font-family: var(--font-body); font-size: 1.0625rem; font-weight: 700; line-height: 1;
+  font-family: var(--font-display); font-size: var(--step-1); font-weight: 900; line-height: 0.82;
 }
 .tab::before {
-  content: ''; position: absolute; left: -0.25rem; right: -0.25rem; bottom: 0; height: 0.25rem; background: currentColor;
-  clip-path: polygon(0 100%, 0.25rem 0, calc(100% - 0.25rem) 0, 100% 100%);
+  content: ''; position: absolute; left: -0.25rem; right: -0.25rem; bottom: -4px; height: 0.5rem; background: currentColor;
+  clip-path: polygon(0 100%, 0 50%, 0.25rem 0, calc(100% - 0.25rem) 0, 100% 50%, 100% 100%);
 }
 .band > .wrap, .push-title { position: static; }
 .phrase { display: block; font-family: var(--font-display); font-weight: 900; text-transform: uppercase; }
@@ -443,7 +453,7 @@ html[data-shows='none'] .quote-live { display: none; }
 .push-body { display: grid; gap: var(--space-m); margin-top: var(--space-m); }
 .bio { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xs); overflow-wrap: anywhere; }
 .bio-lead { font-size: var(--step-0); line-height: 1.4; font-weight: 500; overflow-wrap: anywhere; }
-.push-actions { display: flex; flex-wrap: wrap; gap: var(--space-s); }
+.push-actions { display: flex; flex-wrap: wrap; gap: var(--space-s) var(--space-l); align-items: center; }
 /* About from 900px (DESIGN 20c): the right column opens with a setlist of actions, no fill (the header's LISTEN is the
    view's one accent). Phones keep the solid Patreon button. */
 .about-set { display: none; }
@@ -498,8 +508,8 @@ html:not([data-hero='b']) .credit-b { display: none; }
 @media (min-width: 900px) { .credit-b { display: none; } }
 
 /* ---------- Footer ---------- */
-.site-footer { position: relative; z-index: 2; border-top: 4px solid var(--text); padding-block: var(--space-l); background: var(--bg-2); background-image: var(--texture); }
-.ln-close { font-size: calc(100cqi / var(--w-close)); }
+.site-footer { position: relative; z-index: 2; border-top: 4px solid var(--line); padding-block: var(--space-l); background: var(--bg-2); background-image: var(--texture); }
+.ln-close { font-size: calc(100cqi / var(--w-close)); word-spacing: 0.375em; }
 .ln-close { text-box: normal; line-height: 1; }
 .ln-close a { display: inline-flex; align-items: center; min-height: 48px; text-decoration: none; }
 .ln-close a:hover { text-decoration: underline; text-decoration-thickness: 0.06em; text-underline-offset: 0.08em; }
@@ -689,7 +699,7 @@ iframe.yt { width: 100%; border: 0; }
 @media (min-width: 1100px) { .shop-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
 /* With the shop on, the closing line gains "Shop." and is wider; re-fit it (measured: Listen. Shows. Shop. Join.). */
-.ln-close:has(a[href$="/shop/"]) { --w-close: 10.46; } /* measured 10.443em */
+.ln-close:has(a[href$="/shop/"]) { --w-close: 10.85; } /* measured 10.443em */
 /* D34 'ab': hero A under 900px, hero B (riso photo in the name) from 900px up. Same geometry as B's desktop rules. */
 html[data-hero='ab'] .slot { display: none; }
 @media (min-width: 900px) {
@@ -796,7 +806,7 @@ html[data-hero='ab'] .slot { display: none; }
 .ln-lost1 { font-size: calc(100cqi / var(--w-lost1)); }
 .ln-lost2 { font-size: calc(100cqi / var(--w-lost2)); margin-top: 0.08em; }
 .lost-line { margin-top: var(--space-m); font-size: var(--step-1); font-weight: 700; line-height: 1.3; max-width: 30rem; }
-.lost-actions { display: flex; gap: var(--space-s); margin-top: var(--space-l); }
+.lost-actions { display: flex; gap: var(--space-s) var(--space-l); align-items: center; margin-top: var(--space-l); }
 .lost-actions .btn { flex: 1; }
 .lost-home { margin-top: var(--space-xs); }
 @media (min-width: 900px) {
@@ -814,7 +824,7 @@ html[data-hero='ab'] .slot { display: none; }
 a, button, summary, label { -webkit-tap-highlight-color: transparent; }
 .btn:active, .btn-solid:active, .btn-line:active, .btn-show:active, .motion-btn:not(:disabled):active,
 .links a:active, .about-set a:active, .text-link:active, .under-link:active, .listen-on a:active, .now a:active, .legal a:active,
-.quote-credit a:active, .ln-close a:active, .nav-desktop a:active, .sheet a:active, .nav-mobile summary:active {
+.quote-credit a:active, .ln-close a:active, .go:active, .nav-desktop a:active, .sheet a:active, .nav-mobile summary:active {
   background: var(--text); color: var(--bg); border-color: var(--text); transition: none;
 }
 /* On the poster's paper the ink block is bg with paper letters. */
@@ -1146,8 +1156,8 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
    ===================================================================================================================== */
 
 /* The minifier drops a plain declaration written before its modern twin, so these are @supports rules, not duplicates.
-   No dvh (iOS before 15.4): body is at least a full screen, as 100vh. No overflow: clip (iOS before 16): the hero glow is
-   160% wide, so without this the page scrolls sideways; hidden does the same job here. */
+   No dvh (iOS before 15.4): body is at least a full screen, as 100vh. No overflow: clip (iOS before 16): the hero's
+   wide ground could scroll the page sideways; hidden does the same job here. */
 @supports not (min-height: 100dvh) { body { min-height: 100vh; } }
 @supports not (overflow: clip) { body { overflow-x: hidden; } .top { overflow: hidden; } }
 
@@ -1193,4 +1203,19 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
     .ln-merch { font-size: calc(var(--fitw) * 0.5 / var(--w-merch)); }
     .ln-date { font-size: calc(var(--fitw) * 0.12 / var(--w-date)); }
   }
+}
+
+/* ---------- 23c. Menu sheet: opens from the Menu button (IG4 item 6) ---------- */
+/* Scales from 0.95 at the Menu button's corner, 200ms ease-out in, 160ms ease-in out. The closed rule
+   (.nav-mobile:not([open]) > .sheet { display: none; }) stays: display and the details content transition with
+   allow-discrete, so the sheet stays painted while it fades out. */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-motion='on'] .nav-mobile::details-content { transition: content-visibility 160ms allow-discrete; }
+  html[data-motion='on'] .sheet {
+    transform-origin: calc(100% - var(--gutter) - 1.75rem) 0;
+    transition: opacity 160ms ease-in, scale 160ms ease-in, display 160ms allow-discrete;
+  }
+  html[data-motion='on'] .nav-mobile:not([open]) > .sheet { opacity: 0; scale: 0.95; }
+  html[data-motion='on'] .nav-mobile[open] > .sheet { opacity: 1; scale: 1; transition-duration: 200ms; transition-timing-function: var(--ease); }
+  @starting-style { html[data-motion='on'] .nav-mobile[open] > .sheet { opacity: 0; scale: 0.95; } }
 }

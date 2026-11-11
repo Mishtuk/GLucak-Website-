@@ -8,10 +8,10 @@ const ROOT = join(import.meta.dirname, '..');
 const page = (f) => readFileSync(join(ROOT, 'dist', f), 'utf8');
 const css = readFileSync(join(ROOT, 'src/styles/global.css'), 'utf8');
 
-test('20a: the section word stands on the band rule with no fill, 17px 700; sub pages show their top rule', () => {
+test('20a: the section word stands on the band rule with no fill, display label (DESIGN 23); sub pages show their top rule', () => {
   const tab = css.match(/\n\.tab \{([^]*?)\n\}/)[1];
   assert.ok(/--tab-h: 1\.5rem;/.test(css));
-  assert.ok(!/background/.test(tab) && /color: var\(--text\)/.test(tab) && /font-size: 1\.0625rem; font-weight: 700/.test(tab));
+  assert.ok(!/background/.test(tab) && /color: var\(--text\)/.test(tab) && /font-family: var\(--font-display\); font-size: var\(--step-1\); font-weight: 900/.test(tab));
   assert.ok(!css.includes('.sub > .band:first-child { border-top-color: transparent; }'));
 });
 

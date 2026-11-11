@@ -24,7 +24,7 @@ export const CREDIT_FOR = [
   [/\/media\/v2\/(belt|stage)-/, PHOTO_CREDITS.yt],
   [/identity-art-/, PHOTO_CREDITS.identity],
   [/\/media\/v2\/garage-|videos\/K-OZiNvQB14-/, PHOTO_CREDITS.joseph],
-  [/a-era-grade/, PHOTO_CREDITS.kealey],
+  [/a-era-grade|a-night-/, PHOTO_CREDITS.kealey],
 ];
 export const SITE_URL = (import.meta.env.SITE_URL ?? 'https://glucak.com').replace(/\/$/, '');
 export const SPOTIFY_EMBED = 'https://open.spotify.com/embed/playlist/0D45boIc9xWAdDjz1uTDRo';
