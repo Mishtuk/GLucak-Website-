@@ -109,6 +109,12 @@ there with `Laptop:`. The client's own email is in `README.md`; this file adds t
   Results: `docs/research/ig-design-tips.md` (per reel + playbook + "Applies to GLucak") and
   `docs/research/ai-design-workflow.md` (how to get less-sloppy design out of AI agents). More tasks from the owner to follow.
 
+## Owner's instructions (2026-11-11, Laptop)
+- Gabe's reply to the question list (his email of 2026-11-06) arrived via the owner: answers in
+  `docs/research/gabe-answers-2026-11-06.md`, IDENTITY CD art + photos in `assets/from-gabe/identity-cd/`. "Update the website
+  based on that, then work on anything that needs working on." Gabe made the IDENTITY cover; Dave Bahm the IDENTITY logo and the
+  lead singles' art. Never show the Running The Gauntlet lyric video or the Earned Your Stripes Visualizer (flashing).
+
 ## Working together (Desktop and Laptop)
 - **Board:** issue #1 "Coordination board: Desktop and Laptop". Every comment starts with `Desktop:` or `Laptop:`
   (both machines post as Mishtuk; the prefix tells them apart).
