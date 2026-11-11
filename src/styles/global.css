@@ -156,7 +156,8 @@ p { text-wrap: pretty; }
   position: fixed; inset: 0 0 auto; z-index: 50;
   background: transparent; border-bottom: 2px solid transparent;
 }
-.site-header.is-solid, .site-header:has(details[open]) { background: var(--bg); border-color: var(--line); }
+.site-header.is-solid { background: var(--bg); border-color: var(--line); }
+.site-header:has(details[open]) { background: var(--bg); border-color: var(--line); }
 .header-bar { display: flex; align-items: center; gap: var(--space-m); min-height: var(--header-h); }
 .brand {
   margin-right: auto; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 48px;
@@ -981,7 +982,7 @@ html[data-motion='off']::view-transition-new(*) { animation: none !important; }
 
 /* Poster text column (found on the build's real data, at 100% too): a long place word ("Philadelphia,") is wider than
    the 1fr column beside the art at 320 and ran under the picture. It hyphenates (lang="en"), and breaks only if it must. */
-.poster-place, .poster-meta { overflow-wrap: break-word; hyphens: auto; }
+.poster-place, .poster-meta { overflow-wrap: break-word; -webkit-hyphens: auto; hyphens: auto; }
 
 /* ======================================================================================================================
    v2 port (2026-11-06, owner picked v2 item by item; docs/review/v2-compare/README.md). Moved here from v2.css, which /v2/
@@ -1134,3 +1135,62 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 /* Closed Menu sheet: not laid out at all (Chrome lays out closed <details> content unpainted; testing tools then report
    phantom overlaps with the hero). From the Laptop's 18h review. */
 .nav-mobile:not([open]) > .sheet { display: none; }
+
+/* =====================================================================================================================
+   Other browsers (R1 cross-browser pass, docs/review/r1-browsers.md). Most fans arrive in Safari or Instagram's in-app
+   browser, which is the phone's own WebKit: it is only as new as the iPhone's iOS. Each block below is a fallback that
+   Chrome never reaches (an @supports test it passes), so nothing here changes how Chrome looks. Rule: extra space is
+   fine, clipped or hidden text is not. Not guarded, because the failure is cosmetic and the page still reads:
+   text-box (iOS before 18.2, older Firefox: the fitted words stand ~20px taller on a phone), text-wrap balance / pretty,
+   cross-document view transitions (a plain page change), :has() on the rows (a Played row's date stays on one line).
+   ===================================================================================================================== */
+
+/* The minifier drops a plain declaration written before its modern twin, so these are @supports rules, not duplicates.
+   No dvh (iOS before 15.4): body is at least a full screen, as 100vh. No overflow: clip (iOS before 16): the hero glow is
+   160% wide, so without this the page scrolls sideways; hidden does the same job here. */
+@supports not (min-height: 100dvh) { body { min-height: 100vh; } }
+@supports not (overflow: clip) { body { overflow-x: hidden; } .top { overflow: hidden; } }
+
+/* No color-mix() (iOS before 16.2): --bg-2 and --line would be invalid and every border and tile ground would vanish.
+   Plain ground and the era's muted ink instead (a visible line, a bit brighter than the mixed one). */
+@supports not (color: color-mix(in srgb, red, blue)) {
+  :root { --bg-2: var(--bg); --line: var(--muted); }
+  .btn-line, .yt-title, .player-box { background: var(--bg); }
+  .hero-photo::after { background: linear-gradient(to bottom, transparent 42%, var(--bg) 85%); }
+}
+
+/* No container units (iOS before 16): every fitted line would fall back to 18px body text. Size each line from the
+   viewport instead. Phones and tablets under 900px: the line fills the page width, as it does with cqi. From 900px the
+   lines sit in columns of different widths, so they get a safe share of the page rather than an exact fit (smaller than
+   the real thing, never wider than its column). */
+@supports not (width: 1cqi) {
+  :root { --fitw: min(100vw - 2 * var(--gutter) - var(--safe-x), var(--container)); }
+  .name-row { --fs: calc(var(--fitw) / var(--w-name)); }
+  html[data-hero='b'] .name-row { --fs: calc(var(--fitw) / (var(--w-name) + var(--k) + 0.1)); }
+  .sl-1 { font-size: calc(var(--fitw) / var(--w-sl1)); }
+  .sl-2 { font-size: calc(var(--fitw) / var(--w-sl2)); }
+  .ln-live { font-size: calc(var(--fitw) / var(--w-live)); }
+  .ln-now1 { font-size: calc(var(--fitw) / var(--w-now1)); }
+  .ln-now2 { font-size: calc(var(--fitw) / var(--w-now2)); }
+  .ln-close { font-size: calc(var(--fitw) / var(--w-close)); }
+  .ln-merch { font-size: calc(var(--fitw) / var(--w-merch)); }
+  .ln-lost1 { font-size: calc(var(--fitw) / var(--w-lost1)); }
+  .ln-lost2 { font-size: calc(var(--fitw) / var(--w-lost2)); }
+  .ln-push1 { font-size: calc(var(--fitw) * 0.65 / var(--w-push1)); }
+  .ln-push2 { font-size: calc(var(--fitw) * 0.65 / var(--w-push2)); }
+  .ln-date { font-size: calc(var(--fitw) * 0.45 / var(--w-date)); }
+}
+@media (min-width: 700px) { @supports not (width: 1cqi) { .ln-date { font-size: calc(var(--fitw) * 0.28 / var(--w-date)); } } }
+@media (min-width: 900px) {
+  @supports not (width: 1cqi) {
+    html[data-hero='ab'] .name-row { --fs: calc(var(--fitw) / (var(--w-name) + var(--k) + 0.1)); }
+    .sl-1, .sl-2 { font-size: calc(var(--fitw) / var(--w-slogan)); }
+    .lock-push .ln { font-size: calc(var(--fitw) * 0.4 / var(--w-push)); }
+    .lost-title .ln { font-size: calc(var(--fitw) * 0.5 / var(--w-lost)); }
+    .ln-live { font-size: calc(var(--fitw) * 0.4 / var(--w-live)); }
+    .ln-now1 { font-size: calc(var(--fitw) * 0.4 / var(--w-now1)); }
+    .ln-now2 { font-size: calc(var(--fitw) * 0.4 / var(--w-now2)); }
+    .ln-merch { font-size: calc(var(--fitw) * 0.5 / var(--w-merch)); }
+    .ln-date { font-size: calc(var(--fitw) * 0.12 / var(--w-date)); }
+  }
+}
