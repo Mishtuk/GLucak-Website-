@@ -1,0 +1,10 @@
+import { readFileSync, writeFileSync } from 'node:fs';
+const WT = 'wt-stress/';
+const P = 'Gabe grew up in a small town outside Philadelphia and spent years learning to produce in a bedroom studio, stacking drum samples, layering synth lines and writing verses at two in the morning between shifts, and none of it was easy, and all of it was worth it. ';
+let a = readFileSync(WT + 'src/pages/about/index.astro', 'utf8').replace(/\r\n/g, '\n');
+const n = a.replace(/<div class="bio">[\s\S]*?<\/div>\n      <div class="push-actions about-actions">/, `<div class="bio"><p class="bio-lead">${P.repeat(2)}https://www.instagram.com/glucakofficial/reel/Dd6keDDDefE-a-very-long-unbroken-link-in-the-text-of-a-paragraph/</p><p>${P.repeat(3)}</p><p>${P.repeat(2)}</p></div>\n      <div class="push-actions about-actions">`);
+console.log(n !== a);
+writeFileSync(WT + 'src/pages/about/index.astro', n);
+let h = readFileSync(WT + 'src/pages/index.astro', 'utf8');
+h = h.replace(/(<p class="bio-lead v2-bio">)[^<]*/, `$1${P.repeat(2)}`);
+writeFileSync(WT + 'src/pages/index.astro', h);

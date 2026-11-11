@@ -399,13 +399,13 @@ html[data-shows='none'] .quote-live { display: none; }
 }
 .ph-chip-dark { top: -0.85rem; bottom: auto; }
 .row {
-  display: grid; grid-template-columns: 4.5rem 1fr auto; gap: 0 var(--space-s); align-items: center;
+  display: grid; grid-template-columns: 4.5rem minmax(0, 1fr) auto; gap: 0 var(--space-s); align-items: center;
   min-height: 60px; padding-block: 0.3rem; border-bottom: 2px solid var(--line);
 }
 .row-date { font-family: var(--font-display); font-weight: 900; font-size: 1.375rem; line-height: 1; text-transform: uppercase; }
 .row-text { display: grid; line-height: 1.25; }
-.row-place { font-weight: 700; }
-.row-kind { color: var(--muted); font-size: var(--step--1); }
+.row-place { font-weight: 700; overflow-wrap: anywhere; }
+.row-kind { color: var(--muted); font-size: var(--step--1); overflow-wrap: anywhere; }
 .row-date { white-space: nowrap; }
 .text-link { display: inline-flex; align-items: center; min-height: 48px; font-weight: 700; text-underline-offset: 3px; }
 
@@ -440,8 +440,8 @@ html[data-shows='none'] .quote-live { display: none; }
 .push-title .phrase { position: relative; z-index: 2; }
 .band-push .tab { z-index: 3; }
 .push-body { display: grid; gap: var(--space-m); margin-top: var(--space-m); }
-.bio { display: grid; gap: var(--space-xs); }
-.bio-lead { font-size: var(--step-0); line-height: 1.4; font-weight: 500; }
+.bio { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xs); overflow-wrap: anywhere; }
+.bio-lead { font-size: var(--step-0); line-height: 1.4; font-weight: 500; overflow-wrap: anywhere; }
 .push-actions { display: flex; flex-wrap: wrap; gap: var(--space-s); }
 /* About from 900px (DESIGN 20c): the right column opens with a setlist of actions, no fill (the header's LISTEN is the
    view's one accent). Phones keep the solid Patreon button. */
@@ -713,7 +713,7 @@ html[data-hero='ab'] .slot { display: none; }
    The whole tile is one link (to the release's smart link, or its pre-save while it's coming). */
 .crate { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-l) var(--space-m); margin-top: var(--space-m); }
 .tile { min-width: 0; }
-.tile-link { display: grid; align-content: start; height: 100%; text-decoration: none; }
+.tile-link { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; height: 100%; text-decoration: none; }
 .tile-link:focus-visible { outline-offset: 4px; }
 .tile-art { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; background: var(--bg-2); }
 /* No art yet (a coming single, or a cover file still missing): the hatch ("nothing real here yet", as in the shop) with
@@ -729,9 +729,9 @@ html[data-hero='ab'] .slot { display: none; }
 }
 /* The text under the cover. Inset by 0.5rem of padding and pulled back by the same margin, so at rest it lines up with
    the cover's edges and when pressed the inverted block has air around the words. */
-.tile-text { display: grid; gap: 0.3rem; justify-items: start; margin-inline: -0.5rem; padding: 0.6rem 0.5rem 0.5rem; }
+.tile-text { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.3rem; justify-items: start; margin-inline: -0.5rem; padding: 0.6rem 0.5rem 0.5rem; }
 .tile-title { font-family: var(--font-display); font-weight: 900; font-size: 1.375rem; line-height: 1; text-transform: uppercase; text-wrap: balance; overflow-wrap: anywhere; }
-.tile-artists { color: var(--muted); font-size: var(--step--1); line-height: 1.25; }
+.tile-artists { color: var(--muted); font-size: var(--step--1); line-height: 1.25; overflow-wrap: anywhere; }
 .tile-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.5rem; color: var(--muted); font-size: var(--step--1); line-height: 1.25; font-variant-numeric: tabular-nums; }
 .tile[data-state='coming'] .tile-meta { color: var(--text); font-weight: 700; }
 /* Album / EP only (singles are most of the grid, so the word marks the exception). A plain word, no fill (DESIGN 19a):
@@ -1041,11 +1041,11 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 .v2-videos { margin-top: var(--space-l); }
 .v2-vrow { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 82%; gap: var(--space-m); overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; padding-bottom: var(--space-xs); }
 .v2-vid { min-width: 0; scroll-snap-align: start; }
-.v2-vid a { display: grid; gap: 0.4rem; text-decoration: none; }
+.v2-vid a { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.4rem; text-decoration: none; }
 .v2-vid iframe.yt { display: block; }
 .v2-thumb { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--bg-2); border: 2px solid var(--line); }
 .v2-thumb .yt-play { top: 50%; width: 56px; height: 56px; }
-.v2-vtitle { font-weight: 700; font-size: var(--step--1); line-height: 1.3; }
+.v2-vtitle { font-weight: 700; font-size: var(--step--1); line-height: 1.3; overflow-wrap: anywhere; }
 @media (hover: hover) { .v2-vid a:hover .v2-vtitle { text-decoration: underline; text-underline-offset: 3px; } }
 .v2-vid a:active .v2-thumb { border-color: var(--text); }
 .v2-vid a:active .v2-vtitle { background: var(--text); color: var(--bg); }
