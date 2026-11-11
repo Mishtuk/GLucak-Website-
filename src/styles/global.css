@@ -1127,7 +1127,7 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 .v2-push .v2-push-body { display: contents; }
 .band-push.v2-push > .wrap.v2-split { grid-template-columns: minmax(0, 1fr) 30%; grid-template-areas: 'side p1' 'bio bio' 'act act'; }
 .v2-push .v2-side { grid-area: side; }
-@media (max-width: 899px) { .v2-push .v2-belt { align-self: stretch; height: 0; min-height: 100%; object-fit: cover; object-position: 50% 22%; } }
+@media (max-width: 899px) { .v2-push .v2-belt { align-self: stretch; height: 0; min-height: 100%; object-fit: cover; object-position: 50% 0%; } }
 @media (min-width: 900px) {
   .band-push.v2-push > .wrap.v2-split { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: 'side bio' 'p1 bio' 'p1 act' 'p1 p2'; grid-template-rows: auto auto auto 1fr; row-gap: var(--space-l); }
   .v2-push .v2-slot { width: min(100%, 22rem); }

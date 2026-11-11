@@ -172,29 +172,37 @@ async function night() {
 // One ink, paper-white, on black stock, a 30-degree line screen: the stage lights and his white shirt become thick lines,
 // the dark room the stock. Screened at each file's own size.
 async function stageLines() {
-  for (const [w, h, pitch, seed] of [[634, 1128, 4.6, 81], [360, 640, 3.4, 82]]) {
+  for (const [w, h, pitch, seed] of [[634, 1128, 3.8, 81], [360, 640, 2.8, 82]]) {
     const img = await load(STAGE, null, w, h);
-    const T = levels(await blurField(field(img, (r, g, b) => 0.3 * Math.max(r, g, b) + 0.7 * lum(r, g, b)), w, h, pitch * 0.3), 0.04, 0.999);
-    const dW = T.map(t => smooth(0.05, 1.0, t) ** 1.05 * 0.84);
+    const base = await blurField(field(img, (r, g, b) => 0.3 * Math.max(r, g, b) + 0.7 * lum(r, g, b)), w, h, pitch * 0.3), wide = await blurField(base, w, h, 9 * w / 634);
+    // local contrast first (his face sits in the dark beside the stage lights), then the curve, so face and glasses survive the lines
+    const T = levels(base.map((v, i) => v + 0.25 * (v - wide[i])), 0.04, 0.985);
+    const dW = T.map(t => smooth(0.02, 0.9, t ** 1.4) * 0.88);
     const out = await stock(w, h, seed, BG, 1.7);
     inkOver(out, await plate(dW, w, h, { pitch, angle: -30, spot: lineAt, seed: seed + 1, rough: 0.05, floor: 0.06 }), TEXT, 0.94);
     await save(out, `v2/stage-lines-${w}`, 'lossless');
   }
 }
 
-// ======================= garage: Rise side photo (from 900px), photocopy toner =======================
-// No screen at all: toner. A copier's hard curve, then toner that lands where the tone and a clumped grain agree, so the
-// mid-tones break into speckle (the grain-only member of the family). Black (bg) on paper (text).
+// ======================= garage: Rise side photo (from 900px), photocopy halftone =======================
+// A photocopier's coarse screen, not a hard threshold: the frame is cropped to Gabe (the 874px source is cut to its right
+// 640px, shipped at native size: no upscale), the pale wall is keyed toward paper by colour (blue leads red) so it prints as
+// a few flecks, and local contrast is added before the curve so his glasses, face and the white shirt against the dark
+// jacket keep an edge. The tone is then printed as a coarse clustered dot with a clumped toner grain on top, black (bg)
+// on paper (text). Global per pixel: no fill, no AI.
 async function garageToner() {
-  for (const [w, h, seed] of [[874, 492, 91], [480, 270, 92]]) {
-    const img = await load(GARAGE, null, w, h), k = w / 874;
-    const T = levels(await blurField(field(img, lum), w, h, 0.5), 0.02, 0.995);
-    const n1 = await noise(w, h, seed, 1.4 * k + 0.3), n2 = await noise(w, h, seed + 1, 0.4);
-    const ink = new Float32Array(w * h);
-    for (let i = 0; i < ink.length; i++) { const d = (1 - T[i]) ** 0.7; ink[i] = d - 0.5 + 0.17 * n1[i] + 0.05 * n2[i] > 0 ? 1 : 0; }
+  const reg = { left: 234, top: 0, width: 640, height: 360 };
+  for (const [w, h, pitch, seed] of [[640, 360, 3.2, 91], [480, 270, 2.6, 92]]) {
+    const img = await load(GARAGE, reg, w, h), k = w / 640;
+    const L0 = await blurField(field(img, lum), w, h, 0.5), Lb = await blurField(field(img, lum), w, h, 7 * k);
+    const wallness = await blurField(field(img, (r, g, b) => smooth(0.08, 0.3, b - r) * smooth(0.35, 0.7, lum(r, g, b))), w, h, 2 * k);
+    const raw = L0.map((v, i) => v + 0.9 * (v - Lb[i]));
+    const T = levels(raw, 0.02, 0.995).map((t, i) => { const c = clamp(t) ** 1.25; return c + (0.93 - c) * wallness[i] * 0.95; });
+    const dens = T.map(t => smooth(0.16, 0.8, 1 - t) * 0.97);
+    const ink = await plate(dens, w, h, { pitch, angle: 45, seed, rough: 0.12, gain: 1, floor: 0.07 });
     const out = await stock(w, h, seed + 2, TEXT);
     inkOn(out, ink, BG, 0.97);
-    await save(out, `v2/garage-toner-${w}`, 'lossless');
+    await save(out, `v2/garage-toner-${w === 640 ? 874 : 480}`, 'lossless');
   }
 }
 
