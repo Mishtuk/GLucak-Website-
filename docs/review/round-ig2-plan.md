@@ -5,8 +5,9 @@ Inputs: `docs/review/ig-round/eval.md` (4.0/5, D73), DESIGN.md 1 / 9 / 19, D6 / 
 Decisions for this round: **D75, D77** (DECISIONS.md). D69 still holds: the Laptop builds in `src/`, never `server.js` or `src/lib/`.
 
 ## 1. Goal
-**Task:** a fan on a phone can press Spotify's Play on the first 390x660 screen, the section labels stop reading as a template,
-and About ends in an action at 1280, with no new motion and Home no taller; then the advisor scores it again.
+**Task (after the gate, D79-D85):** the section labels stop reading as a template (20a = direction 2), About ends in an action
+at 1280 (20c), no middle-dot meta lines (20d), with no new motion and Home no taller; then the advisor scores it again. Play on
+screen one (20b) is HELD for the owner / Gabe (D81): it would replace the playlist player Gabe asked for.
 **Done when:** slices A, 1, 2 meet their "done when", the advisor's scored review (slice 3) is saved to
 `docs/review/ig-round2/eval.md`, `npm test` passes, nothing was published (incl. the Pages preview), paid for or sent to Gabe.
 
@@ -17,7 +18,8 @@ and About ends in an action at 1280, with no new motion and Home no taller; then
   transition, animation or transform of any kind this round. Nothing can flash.
 - Home height, quotes off, 390x660: **at most 3631px** (D77; moving the player up removes space, it never needs more).
 - Viewport shots (not full page) at 390x660 and 1280x800 of each changed view into `docs/review/ig-round2/after/`. "Before" is
-  `docs/review/ig-round/after/` (Spotify blocked) plus slice A's unblocked Home 390 shot.
+  `docs/review/ig-round/after/` (labelled "blocked", but Spotify loaded: D85) plus slice A's unblocked Home 390 shot. Block
+  Spotify per D85 (`--host-resolver-rules`), never `Network.setBlockedURLs`; name blocked / unblocked in every shot note.
 - Gabe's words untouched (slogan with its period, quotes, bio); no new facts; no new words unless the boss approved them at the gate.
 
 ## 2. Slices (ranked)
@@ -25,7 +27,7 @@ and About ends in an action at 1280, with no new motion and Home no taller; then
 | # | Slice (eval fix) | Changes | Files | Who | Done when (plus STD) |
 |---|---|---|---|---|---|
 | A | Design pass | DESIGN.md section 20: 20a label, 4 directions; 20b first-screen Play; 20c About 1280; 20d meta lines | `DESIGN.md`, `docs/review/ig-round2/design/` | designer | 4-direction sheet saved; 20a-20d with exact CSS / markup deltas and measured numbers; boss picks 20a and approves before slice 1 |
-| 1 | Play on screen one (fix 1) + label (fix 2, per D75) | 20a + 20b built | `src/styles/global.css`, `Hero.astro`, `RiseBand.astro`, `src/pages/index.astro`, `src/pages/{music,shows,about,shop}/index.astro`, `src/pages/404.astro` (markup only if 20a needs it) | coder | Unblocked 390x660 shot: Spotify's whole round Play button above the tab bar's top edge; iframe top <= 20b's number; label still the exact nav word, >= 16px, >= 4.5:1, inside the same heading (D6) |
+| 1 | The label (fix 2, D75 / D79). 20b HELD (D81) | 20a direction 2 built, CSS only | `src/styles/global.css` only (20a has no markup change) | coder | Label the exact nav word, 17px `text` 700, no fill, on the 4px rule, inside the same heading (D6), >= 4.5:1; sub pages show the first band's rule; 404 `.tab-blank` 24px on its band; Home 390x660 quotes off 3621px (+-2); no 20b rule in the CSS |
 | 2 | About ends in an action (fix 3) + no middle-dot meta lines | 20c + 20d built | `src/pages/about/index.astro`, `RiseBand.astro`, `src/pages/index.astro`, `src/pages/music/index.astro`, `src/styles/global.css` | coder | About 1280x800 first screen shows the 20c actions in the right column; `grep -rn "&middot;\|·" src/components src/pages --include=*.astro` finds nothing outside `src/pages/v2/`; both lines still read alone |
 | 3 | Independent evaluator (D73) | Scored review of the round | report -> `docs/review/ig-round2/eval.md` (main session saves it) | advisor | 4 criteria scored with reasons, hard-rule check, Play position measured unblocked, at most 3 ranked fixes |
 
@@ -64,13 +66,16 @@ italic accent words, new colours or fonts, any motion. May touch: `DESIGN.md` (n
 Out of scope: `src/`, the prototype, footer, buttons, the glow, copy changes. Done when: the sheet exists and 20a-20d have exact
 deltas a coder can paste, each with its measured px.
 
-**Slice 1, glucak-coder (Sonnet). Port 8853, outDir `dist-coder`.** Task: build DESIGN 20a (the boss's pick) and 20b exactly. May touch:
-`src/styles/global.css`, `src/components/{Hero,RiseBand}.astro`, `src/pages/index.astro`, `src/pages/{music,shows,about,shop}/index.astro`,
-`src/pages/404.astro`, and tests that assert the old markup. Keep `<!--gl:now-->` and every `<!--gl:*-->` marker exactly (server.js
-fills them). Out of scope: `src/pages/v2/`, words, any style not in 20a/20b, `server.js`, `src/lib/`. Done when: STD plus the slice 1
-row; write iframe top, Play's box, bar top and Home height to `docs/review/ig-round2/after/play.txt`.
+**Slice 1, glucak-coder (Sonnet). Port 8853, outDir `dist-coder`.** Task: build DESIGN 20a direction 2 exactly (D79): line 51
+`--tab-h: 1.5rem`, lines 301-308 replaced by 20a's block, line 536 deleted (line numbers at 334b539; find them by content if they
+moved). May touch: `src/styles/global.css`, and tests that assert the old tab. Out of scope: **all of 20b** (no 80px player, no
+`@media (max-width: 699px)` spacing block: D81), markup, `src/pages/v2/`, words, any other style, `server.js`, `src/lib/`. Done
+when: STD plus the slice 1 row; viewport shots of Home, /music/, /shows/, /about/, /shop/, /404 at 390x660 and 1280x800; write
+Home height, the label's box and its worst-pixel contrast at 390 and 1280, and (unblocked, for the record) the iframe top and
+Play's box at 390x660 to `docs/review/ig-round2/after/label.txt`.
 
-**Slice 2, glucak-coder (Sonnet), after slice 1. Same port and outDir.** Task: build DESIGN 20c and 20d exactly. May touch:
+**Slice 2, glucak-coder (Sonnet), after slice 1. Same port and outDir.** Task: build DESIGN 20c (the setlist, not the button
+fallback) and 20d exactly (D83). May touch:
 `src/pages/about/index.astro`, `src/components/RiseBand.astro`, `src/pages/index.astro`, `src/pages/music/index.astro`,
 `src/styles/global.css`, tests that pin the old strings. Out of scope: new words, the footer, the Patreon link target, anything
 else. Done when: STD plus the slice 2 row; About's scrollHeight at 390x660 not higher than before your edit (measure it first),
@@ -82,7 +87,9 @@ blocked and Home 390 once unblocked; compare with `docs/review/ig-round/after/`.
 originality (x2), craft, function. Calibration: 2 = "dark gradient hero, centred headline, filled pill tags, three icon cards, grey
 on grey"; 4 = round IG as scored in `docs/review/ig-round/eval.md`; 5 = "GLUCAK over Gabe's own graded photo, Spotify's Play pressable
 on the first phone screen, a real show under it, labels that read as his and not a template, every page ending in an action".
-Check hard rule 1 (one animation with motion on, zero reduced) and Home quotes-off <= 3631px at 390x660. Out of scope: editing
+Check hard rule 1 (one animation with motion on, zero reduced) and Home quotes-off <= 3631px at 390x660. Block Spotify per D85
+(`--host-resolver-rules`). 20b was held by the boss (D81: Play on screen one would replace Gabe's playlist player): measure and
+report Play's position, but don't rank it as a fix; note it as the open owner call. Out of scope: editing
 anything, new research. Done when: the report has scores, the hard-rule and height checks, Play's measured position and at most 3
 ranked fixes; the main session saves it.
 
@@ -100,3 +107,5 @@ first; extra work is dropped.
 - **D75:** the section label stays a plain word on every page (D6); its filled-tab form is decided by the 4-direction sheet at the gate.
 - **D77:** round IG2 scope: eval fixes 1 and 3, the label per D75, middle dots out; footer periods, ghost buttons, the glow and the
   chip cut; Home bar stays 3631px quotes off; Play's position is measured with Spotify unblocked.
+- **Gate (`docs/review/ig-round2/gate.md`):** D79 label = direction 2; D81 20b held for the owner / Gabe (amends D77); D83 20c
+  setlist + 20d two spans approved; D85 block Spotify with `--host-resolver-rules`, not `Network.setBlockedURLs`.

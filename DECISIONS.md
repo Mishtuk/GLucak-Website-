@@ -282,3 +282,28 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   component and the named-defaults "never" list in every designer brief; palette directions wait on Gabe's colours (D35). Home
   stays at most 3631px quotes off at 390x660. **Why:** at most 3 visible changes per round keeps the evaluator's before/after
   readable (`ai-design-workflow.md` 3.12); listen is main action 1 and most fans arrive on phones.
+- **D79** (2026-11-10, Laptop boss, round IG2 gate, `docs/review/ig-round2/gate.md`; D75): Which section label? **Ruling:**
+  direction 2 of the sheet (`docs/review/ig-round2/design/labels-sheet.png`): the exact nav word, `text` 700, 17px, no fill,
+  standing on the band's 4px rule, inside the same heading (D6); `--tab-h` 34 -> 24px; sub pages show their first band's rule.
+  Built exactly as DESIGN 20a. Rejected: 3 (Home 3714px, over the bar; 4.05:1 on About's photo, an eyebrow), 4 (3.80:1 on
+  About's photo, read sideways, phrases 7% smaller). **Why:** the only direction that beats the control on all three gate tests:
+  same D6 terms, 10px back (Home 3621), no filled block, worst pixel 14.3:1. Supersedes DESIGN 1 item 2's white tab.
+- **D81** (2026-11-10, Laptop boss, round IG2 gate; amends D77): Spotify's Play on the first 390x660 screen (DESIGN 20b)?
+  **Ruling:** HELD as an owner / Gabe option, not built this round. Neither the player swap nor 20b's spacing cuts go in (the
+  cuts only serve Play). Shots kept: `20b-home-390-before-unblocked.png` (today) vs `20b-home-390-rec.png` (80px player).
+  **Why:** the measurements leave no version that keeps the playlist as Gabe asked for it ("embedded Spotify playlist player near
+  the top, like Thousand Foot Krutch", CONTEXT): with the 352px player Play needs 142px and every listed source together gives
+  138.8, and Spotify's current 152px compact player also drops the track list and still misses. The 80px player is a client-facing
+  change to a named request, made while the owner is away, at a size Spotify's generator no longer offers, with a 28px Play (under
+  our 48px floor) that still misses 320x568. The owner decides, with Gabe if he wants.
+- **D83** (2026-11-10, Laptop boss, round IG2 gate): About from 900px and the middle-dot lines (DESIGN 20c, 20d)? **Ruling:**
+  approve both exactly as written: the setlist (Listen / Shows / Patreon, three 2px-ruled rows in the display face, no fill;
+  phones keep the solid Patreon button), not the outlined-button fallback; the two meta lines become two spans (word `text` 700,
+  date `muted`, a literal space between). No new words. **Why:** the setlist makes the header's LISTEN the view's one accent fill,
+  uses the site's own ruled-list language instead of a CTA stack, and costs phones nothing; 20d removes the meta-string tell and
+  makes the release kicker one line at 390.
+- **D85** (2026-11-10, Laptop boss, round IG2 gate): How are "Spotify blocked" shots taken? **Ruling:** not with
+  `Network.setBlockedURLs` (the embed is an out-of-process frame and loads anyway, the designer found). Launch Chrome with
+  `--host-resolver-rules="MAP open.spotify.com ~NOTFOUND, MAP *.spotify.com ~NOTFOUND, MAP *.scdn.co ~NOTFOUND"` for blocked
+  shots and without it for unblocked ones; say which in every shot note. Earlier "blocked" shots had Spotify loading. **Why:** the
+  heights don't change (the box is reserved), but the evaluator's before/after must show what a fan sees in each case.

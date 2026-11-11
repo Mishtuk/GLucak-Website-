@@ -15,7 +15,7 @@
   player note (595f2ca); no filled tag pills, Album/EP plain bold, `--tint: 0%` token, two redundant rules out (85fb607, ef2fe8b).
   `npm test` 171/171, a11y200 0 issues, Home 3631px quotes off at 390 (Laptop baseline 3633). Advisor score **4.0/5**, hard rule 1
   PASS (`docs/review/ig-round/eval.md`); its 3 fixes (Spotify Play in screen one at 390; flatten white `.tab` labels; About
-  1280 right column) are the next round. **Owner:** pick the tint 0 / 5 / 10% from `docs/review/ig-round/design/tint-sheet.png`
+  1280 right column) are the next round. **Owner:** (a) on phones keep the full Spotify playlist player on Home or switch to the 80px compact one so Play is on screen one (D81, docs/review/ig-round2/gate.md); (b) pick the tint 0 / 5 / 10% from `docs/review/ig-round/design/tint-sheet.png`
   (designer recommends 5%). Claims stay on the same files for the next round (below).
 - **Laptop 2026-11-10 claim (next round, same files):** `DESIGN.md`, `src/styles/global.css`,
   `src/components/{Hero,Quote,VideoBlock,Signup,RiseBand}.astro`, `src/pages/index.astro`, `src/pages/{music,shows,about,shop}/`, `src/pages/404.astro`,

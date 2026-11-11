@@ -1611,6 +1611,8 @@ point 2's tab (the word stays, the block goes) and 19c's line-297 ruling (the ru
 **If the boss keeps the control:** no 20a change; use 20b's "control" column.
 
 ### 20b. Spotify's Play on the first 390x660 screen
+**Boss gate: HELD, not built (D81).** The 80px player replaces the playlist player Gabe asked for by name; it waits for the owner
+(and Gabe). Do not build any of this section, the spacing block included, until D81 is re-ruled. The numbers stand for that call.
 **Measured (Spotify unblocked, 390x660, the embed 325px wide in the card):** Play is a white disc at **offset 140-184px inside
 the 352px embed** (44px, x 296-339; `20b-play-offset-352.png`). The iframe's top today is **555.9**; the phone bar's top is
 **598** (660 - 62). So with the 352 embed the target would be **iframe top <= 414**: **142px** to find.
@@ -1738,6 +1740,7 @@ Tests: `test/v2port.test.js:76` still finds the kicker and its no-break date. Sl
 outside `src/pages/v2/`.
 
 ### 20e. Visible changes this round (ai-design-workflow 3.12: at most 3)
+**Boss gate (D79-D83):** with 20b held, the round ships two visible changes (items 2 and 3) plus the 20d detail.
 1. Home on phones: Spotify's 80px player with Play on screen one (the page 334px shorter). 2. The section word loses its white
 block (20a = 2) and sub pages show their top rule. 3. About from 900px opens with the setlist. 20d is a detail inside existing
 lines (one line shorter at 390).
