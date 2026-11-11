@@ -10,6 +10,7 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
+- **Laptop 2026-11-11 plan:** `docs/review/laptop-plan-2026-11-11.md`: next round IG4 (last AI-default clichés: hero glow, ghost SHOWS button, white band rules, 17px section word, footer periods), then Nov 13 Who I Am republish, M1 menu motion, owner picks D81 + tint, then src/lib launch blockers (needs owner OK, Desktop silent).
 - **Laptop 2026-11-11 status (owner asleep, working autonomously).** Rounds IG2 (7e9c62a: section word on the rule, About
   setlist, no middle dots) and IG3 (2795c0f, D87: ledge, setlist arrows, chip on the footer rule) done; each scored 4.0 by the
   advisor, who calls visual polish at diminishing returns (`docs/review/ig-round3/eval.md`). Then round R1 (robustness):
