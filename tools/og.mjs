@@ -1,5 +1,5 @@
 // Share images (1200x630) for each page -> public/media/og/<page>.png. Node 22+ and Chrome, no dependencies beyond sharp.
-//   node tools/og.mjs [--era src/eras/placeholder.json]
+//   node tools/og.mjs [--era src/eras/identity.json]
 import { spawn } from 'node:child_process';
 import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -10,7 +10,7 @@ import sharp from 'sharp';
 const ROOT = join(import.meta.dirname, '..');
 const PUB = join(ROOT, 'public');
 const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const eraPath = process.argv.includes('--era') ? process.argv[process.argv.indexOf('--era') + 1] : join(ROOT, 'src/eras/placeholder.json');
+const eraPath = process.argv.includes('--era') ? process.argv[process.argv.indexOf('--era') + 1] : join(ROOT, 'src/eras/identity.json');
 const era = JSON.parse(readFileSync(eraPath, 'utf8'));
 const C = era.colors;
 const u = (p) => pathToFileURL(join(PUB, p)).href;
