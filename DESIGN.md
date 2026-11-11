@@ -1744,3 +1744,148 @@ outside `src/pages/v2/`.
 1. Home on phones: Spotify's 80px player with Play on screen one (the page 334px shorter). 2. The section word loses its white
 block (20a = 2) and sub pages show their top rule. 3. About from 900px opens with the setlist. 20d is a detail inside existing
 lines (one line shorter at 390).
+
+## 21. Round IG3: the section word as a crate divider, setlist link cue, the placeholder chip off screen one (Laptop designer, 2026-11-11)
+Sources: `docs/review/ig-round2/eval.md` fixes 1-3, D6, D35, D47, D75-D85, 18c, 19, 20, the ban list in
+`docs/research/ai-design-workflow.md` 5. **Specified against the build** (repo at 59ebe34, `npx astro build --outDir SCRATCH\dist-d21`,
+`node server.js` on port 8861, empty `DATA_DIR`). Every look was injected over CDP (no `src/` edit). **Spotify and YouTube blocked
+at the resolver** (`--host-resolver-rules`, D85) in every shot and number; the grey boxes are the blocked embeds. Reduced motion
+unless said. Line numbers are `src/styles/global.css` at 59ebe34. Shots and sheets: `docs/review/ig-round3/design/` (13 PNGs).
+Scripts: `SCRATCH\d21\` (`dirs.mjs` / `opts.mjs` the deltas, `m21a.mjs`, `m21bc.mjs`, `states.mjs`, `rec.mjs`, `sheets.mjs`).
+
+**Hard rules held:** no transition, animation or transform added (`clip-path` and `mask` are static); nothing can flash; no new
+colour (only `text` / `currentColor`), no new font. With all three recommendations injected: Home 390x660 quotes off **3601px
+reduced / 3553 motion on** (bar 3601, unchanged); 1280 4277; Music 390 3224, 1280 2867; About 1280 1906, 900 1913, 390 2159;
+`document.getAnimations()` = **1** on Home with motion on (the glow), 0 on About / Music / Shows, 0 everywhere reduced.
+
+**Generic defaults in my first plan, and what replaced each (ai-design-workflow 5):**
+| Default I reached for | Why it is the template look | Instead |
+|---|---|---|
+| 21a: the word in small caps, tracked out, maybe with a short rule above it | The eyebrow / kicker (banned); a rule over a label is the editorial-template version | The band's own rule bends up into the divider's tab round the word; the word stays the nav word, in nav case |
+| 21a: a rectangular outline box round the word | An outlined ghost button / tag, the tell the eval named | Open at the bottom (it *is* the rule), slanted sides like a crate divider's tab |
+| 21b: "Listen →" in the body face after the word | The "Learn more →" link; the arrow glued to the word | One arrow per row at the row's right end, drawn in the rules' 4px stroke, so the whole 72px row reads as the target |
+| 21b: a chevron that slides right on hover | Motion on hover (D47: only the two motions) | Static; hover adds the underline that is already built |
+| 21c: fade the chip to 50% or shrink it | Still on screen one, now also unreadable | Off the hero, onto the footer's rule, shown only while the era is the placeholder |
+
+### 21a. The section word: three directions and the control (eval fix 1)
+Sheet: **`21a-sheet.png`** (columns: control, 1, 2, 3; rows: the Music word at 3x, Home 390x660 top, Music 390x660 top, Home
+1280x800 scrolled to RISE at 50%, Music 1280x800 top at 50%). All four keep D6 / D79: the nav word, 17px or more, in the same
+`<h1>`/`<h2>` as the phrase, no fill behind the word, the 24px reserve unchanged (Home 3601 for every one).
+**Worst pixel** = WCAG 2 of the word's colour against the lowest-contrast pixel under its glyphs (shot with the word shown and
+the decoration hidden, then all hidden; ink = the pixels that change, plus 1px). Home = the lowest of its four words. The grain
+moves these numbers by about 0.5 between runs, so differences under 1 are noise.
+| Direction | Home 390 | Home 1280 | Music 390 | Music 1280 | Clear under the header line (sub pages) | Reads as |
+|---|---|---|---|---|---|---|
+| 0. Control (as built, D79) | 12.63 | 10.62 | 17.32 | 17.32 | word box 2px | a caption / breadcrumb (the eval) |
+| 1. The ledge: the rule steps up 4px under the word (solid trapezoid) | 12.46 | 10.62 | 17.32 | 17.32 | 2px | a pedestal; at 17px close to a thick underline, so close to the nav's current-page mark |
+| **2. The tab line: the 4px rule bends up into an open divider tab round the word** | **12.11** | **10.62** | **17.32** | **17.32** | **4px** (outline top) | the divider sticking up out of the crate, its label printed on it |
+| 3. The display word: Big Shoulders 900, 28px, nav case | 12.11 | 10.62 | **7.88** | **7.88** | **1px**: its caps touch the header line | part of the heading; on sub pages squeezed between two rules |
+
+**Recommendation: 2, the tab line.** It is the white tab's idea (the crate divider standing on the band's top edge, section 1
+item 2) without its fill: the band's 4px rule rises at a slight slant, runs over the word and comes back down, so the word is
+printed on a divider and belongs to the band below, not to the header above. This answers the eval's "floats under the header
+like a breadcrumb". 4px clear of the header line on sub pages (direction 3 has 1px). Contrast is the control's (the outline sits
+beside the glyphs, never under them). Costs: it is the one direction that draws a new shape on every page; a trapezoid is also
+the shape of a browser tab, so someone could try to tap it (nothing happens; it sits on the section they are already in).
+**If the boss keeps the control:** no 21a change.
+Singles: `21a-tabline-music-1280.png`, `21a-tabline-home-1280-shows.png` (Home's Shows word at 1280),
+`21a-tabline-404-390.png` (the 404's blank divider). Home 390 with it: `21-all-home-390.png`.
+
+**CSS (global.css, exact), direction 2:**
+- Lines 301-309 (the comment, `.spine` and the `.tab` rule) become:
+  ```css
+  /* The section word (DESIGN 21a): the exact nav word on a crate divider. The band's 4px rule bends up into the divider's tab
+     round the word (3px text, slanted sides, open into the rule, no fill) and comes back down. Inside the 24px reserve. */
+  .spine { position: static; font-weight: 400; }
+  .tab {
+    position: absolute; left: max(var(--gutter), calc((100% - var(--container)) / 2)); top: calc(-1 * var(--tab-h) - 4px); height: var(--tab-h);
+    display: inline-flex; align-items: flex-end; padding: 0 1rem;
+    color: var(--text);
+    font-family: var(--font-body); font-size: 1.0625rem; font-weight: 700; line-height: 1;
+  }
+  .tab::before {
+    content: ''; position: absolute; inset: auto 0 0; height: calc(var(--tab-h) - 0.125rem); background: currentColor;
+    clip-path: polygon(0 100%, 0.375rem 0, calc(100% - 0.375rem) 0, 100% 100%, calc(100% - 3px) 100%, calc(100% - 0.375rem - 2.3px) 3px, calc(0.375rem + 2.3px) 3px, 3px 100%);
+  }
+  ```
+  (The divider's foot lines up with the content edge, so the word sits 16px in from RISE's left edge. Heights are in rem, so at
+  200% text the tab grows with the reserve: checked at a 32px root, a 44px outline round a 34px word, 2px under the header line.)
+- Lines 787-788 (`.tab-blank` and its comment) become:
+  ```css
+  /* An empty crate divider: the tab line with nothing written on it. Decorative (aria-hidden). */
+  .tab-blank { width: 4.5rem; }
+  ```
+- No markup change, no hover or pressed state (not a link). `test/ig2.test.js:12-14` still passes (no `background` in the
+  `.tab` block; the outline is the separate `::before` rule). Slice test idea: `.tab::before` has `clip-path` and no `animation`.
+**Supersedes** 20a's CSS for `.tab` and the 404's hatched blank tab (16d).
+
+### 21b. About's setlist rows read as links at rest (eval fix 2)
+Sheet: **`21b-sheet.png`** (About 1280x800, the right column at rest, four options). Every option keeps the header's LISTEN as
+the view's one accent fill (D83; measured: 1 at 1280 and 1 at 900) and changes no height.
+| Option | At rest | Ruling |
+|---|---|---|
+| 0. As built | nothing (hover-only underline) | the eval's dock |
+| 1. Permanent underline (3px, offset 6) | three heavy underlines under 56px caps | reads as document links; hover has nothing left to add |
+| **2. Arrow at the row end** | a 4px-stroke arrow at the right end of each ruled row; Patreon (new tab) the diagonal one | **recommended** |
+| 3. The same arrows beside the word | "LISTEN →" | the "Learn more →" look; the row's right half stays empty |
+
+**Recommendation: 2.** The arrow is drawn in the band rules' stroke (4px at 56px), sits at the row's end like Tickets on a show
+row, and makes each 72px ruled row read as one target; Patreon's diagonal says it leaves the site (it already opens a new tab,
+`target="_blank"`, with the visually hidden "(opens in a new tab)"). States (`21b-about-1280-states.png`, forced over CDP): **rest**
+word + arrow; **hover** (pointer devices; Listen in the shot) the built 3px underline on the word, arrow unchanged; **focus**
+(Shows) the global 3px `text` outline round the whole row, arrow unchanged; **pressed** (Patreon) 16e's instant swap: row `text`
+ground, word and arrow `bg`, because the arrow is `currentColor`; no transition. Phones: unchanged (the list is not shown under
+900px). Singles: `21b-about-1280-rec.png`, `21b-about-900-rec.png`.
+
+**CSS (global.css, exact):** inside the existing `@media (min-width: 900px)` block, after line 450 (`.about-set a { … }`), add:
+```css
+  /* DESIGN 21b: the link cue at rest. An arrow in the rules' 4px stroke at the row's end, currentColor (so 16e's pressed swap
+     inverts it); the diagonal for the new-tab row. Static: no transition, no transform. */
+  .about-set a::after {
+    content: ''; flex: none; width: 0.7em; height: 0.56em; margin-left: auto; background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M0 16H35M23 4l12 12-12 12' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M0 16H35M23 4l12 12-12 12' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  .about-set a[target='_blank']::after {
+    width: 0.56em;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 28L26 6M9 5h18v18' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 28L26 6M9 5h18v18' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E");
+  }
+```
+Line 452 (hover underline) and line 810 (`.about-set a:active` in 16e) stay as they are. The CSP allows it (`img-src 'self' data:`).
+The `target` attribute comes from server.js's `externalize`; in plain `dist/` HTML before the server, Patreon shows the straight
+arrow (harmless). No markup change. `test/ig2.test.js:25` (no motion on the setlist) still passes.
+
+### 21c. The "Placeholder colors" chip leaves screen one (eval fix 3)
+| Option | Screen one | Height on Home 390 | Team still sees it | Ruling |
+|---|---|---|---|---|
+| Keep (as built, `Hero.astro:37`) | chip beside the Music word | 0 | yes | the eval's dock (`21c-home-390-before.png`) |
+| A words line in the footer credits ("Colors: placeholder.") | clear | **+24 (3625, over 3601)** | yes | out on height |
+| Hide under a build / env flag | clear | 0 | only in builds that set it; the owner's preview would show the placeholder as if it were Gabe's | out (D35: nothing passes a guess off as his colours) |
+| **Move it onto the footer's top rule, right end, while the era is the placeholder** | **clear** | **0** (absolute) | yes, on every page | **recommended** |
+
+**Recommendation: the footer rule.** Same dashed chip, same words, sitting on the footer's 4px rule at the content's right edge
+(the poster chip's `.ph-chip-dark` pattern): 10px above the rule to 16px below it, 12px clear of the footer's first line on Home
+and of the sign-up line on sub pages. It renders only while the build's era is the placeholder (`era.name === 'Placeholder'`), so
+it goes by itself the day Gabe's colours replace that file (D35), with no flag to remember. Shots: `21c-home-390-after.png`,
+`21c-footer-390.png`, `21c-footer-1280.png`.
+
+**Markup:**
+- `src/components/Hero.astro:37`: delete `<p class="ph-chip hero-chip">Placeholder colors</p>`.
+- `src/components/Footer.astro` (**not in the Laptop's current claim: claim it first**; the Desktop holds only server.js and
+  `src/lib/`): import `era` beside `SOCIALS` (`import { SOCIALS, era } from './content.js';`) and make the first child of
+  `<footer class="site-footer" id="footer">`, before `<div class="wrap">`:
+  `{era.name === 'Placeholder' && <p class="ph-chip footer-chip">Placeholder colors</p>}`
+
+**CSS (global.css, exact):**
+- Line 284 `.hero-chip { bottom: 0.35rem; }` becomes:
+  `.footer-chip { top: -0.85rem; bottom: auto; right: max(var(--gutter), calc((100% - var(--container)) / 2)); }`
+  (`.site-footer` is already `position: relative`; `.ph-chip` gives the rest.)
+- Line 145, the comment, becomes `/* Placeholder marks: visible on purpose, off the first screen. Each goes when its real content arrives. */`
+Test idea: built `index.html` has no `hero-chip`; every built page's footer has `footer-chip` while `placeholder.json` is the era.
+**Supersedes** 19c's line-147 row only in where the chip sits.
+
+### 21d. Visible changes this round (ai-design-workflow 3.12: at most 3)
+1. Every section word stands in a divider tab drawn by its band's rule (the 404's blank tab is the empty outline).
+2. About from 900px: an arrow at the end of each setlist row.
+3. Home's first screen loses the chip; it sits on the footer rule on every page.

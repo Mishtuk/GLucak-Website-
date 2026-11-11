@@ -307,3 +307,11 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   `--host-resolver-rules="MAP open.spotify.com ~NOTFOUND, MAP *.spotify.com ~NOTFOUND, MAP *.scdn.co ~NOTFOUND"` for blocked
   shots and without it for unblocked ones; say which in every shot note. Earlier "blocked" shots had Spotify loading. **Why:** the
   heights don't change (the box is reserved), but the evaluator's before/after must show what a fan sees in each case.
+
+## D87 (Laptop, 2026-11-11): Round IG3 gate (DESIGN 21)
+- **21a: direction 1, "the ledge"** (the rule steps up 4px under the word as a solid trapezoid), not the designer's recommended
+  direction 2. Why: at 390 the open outlined "tab line" reads as an outlined, tappable button sitting beside the outlined
+  placeholder chip: the same box/pill tell rounds IG and IG2 removed. The ledge ties the word to the rule with no box and no
+  tap affordance; contrast within the control's (12.46 / 10.62 / 17.32). Zero height, no motion.
+- **21b approved** (rules-stroke arrow per setlist row, diagonal arrow for Patreon, existing hover underline / focus ring /
+  pressed swap). **21c approved** (chip moves to the footer's top rule, only while the era is Placeholder); Footer.astro claimed.
