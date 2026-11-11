@@ -1,8 +1,10 @@
 ---
 import { BOOKING_EMAIL } from '../lib/shows.js';
+const { photo = false } = Astro.props; // DESIGN 25f: Shows only
 // DESIGN 24b: the booker's block. Words: docs/copy/ig5.md 1. No address yet = no button and no chip: it ends on Listen.
 ---
 <div class="venues">
+  {photo && <img class="venues-photo" src="/media/cd-live-640.webp" srcset="/media/cd-live-640.webp 640w, /media/cd-live-1280.webp 1280w" sizes="(min-width: 72rem) 34rem, 100vw" width="1280" height="640" alt="GLucak singing live in purple light" loading="lazy" />}
   <h2>Book GLucak</h2>
   <p class="venues-line">Horsham-based producer-rapper and DJ. Open mics and full shows, often with guitarist Fran Carroll.</p>
   <p class="venues-act">

@@ -69,7 +69,7 @@
       status.textContent = 'Sending…';
       try {
         const res = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' }, body: new URLSearchParams({ email: value, website: form.elements.website?.value ?? '' }) });
-        if (res.ok) { status.textContent = "You're on the list."; form.reset(); }
+        if (res.ok) { status.textContent = form.dataset.ok || "You're on the list."; form.reset(); }
         else if (res.status === 400 || res.status === 422) bad('Enter an email like name@example.com.');
         else status.textContent = "That didn't go through. Try again.";
       } catch { status.textContent = "That didn't go through. Try again."; }

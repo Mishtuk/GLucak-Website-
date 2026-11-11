@@ -54,7 +54,8 @@ test('24d: the 404 heading reads Wrong turn with no period and no blank ledge', 
 test('24a: grounds are on 404, Music and Shows only; Home carries none of the new classes', () => {
   assert.match(page('404.html'), /class="band band-lost lost has-ground ground-turns"/);
   assert.match(page('music/index.html'), /class="band band-rise has-ground ground-grooves"/);
-  assert.match(page('shows/index.html'), /class="band band-live has-ground ground-wall"/);
+  assert.match(page('shows/index.html'), /class="band band-live"/);
+  assert.ok(!/class="[^"]*has-ground/.test(page('shows/index.html')), 'D93: Shows drops the Kealey wall strip');
   assert.ok(!/class="[^"]*has-ground/.test(page('about/index.html')), 'no ground on About');
   const home = page('index.html');
   for (const w of ['has-ground', 'venues', 'start-line']) assert.ok(!new RegExp(`class="[^"]*\\b${w}\\b`).test(home), `Home has no ${w} element`);

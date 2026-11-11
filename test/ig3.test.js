@@ -23,12 +23,12 @@ test('21b: each setlist row gets an arrow from 900px; the new-tab row the diagon
   assert.ok(!/transition|animation|transform/.test(arrow) && /currentColor/.test(arrow));
 });
 
-test('21c: the placeholder chip is off the hero and on every page footer while the era is Placeholder', () => {
+test('21c: the placeholder chip is off the hero and off every page footer now the era is IDENTITY (D93)', () => {
   assert.ok(!readFileSync(join(DIST, 'index.html'), 'utf8').includes('hero-chip'));
   assert.ok(!css.includes('.hero-chip'));
   for (const f of htmlFiles(DIST)) {
     const h = readFileSync(f, 'utf8');
     if (!h.includes('class="site-footer"')) continue;
-    assert.match(h, /<footer class="site-footer" id="footer">\s*<p class="ph-chip footer-chip">Placeholder colors<\/p>/, f);
+    assert.ok(!h.includes('ph-chip footer-chip'), `${f}: no Placeholder chip with the IDENTITY era`);
   }
 });

@@ -89,7 +89,9 @@ test('edit page: noindex, external script only, not linked from the site', () =>
 
 test('port notes: no quote text, mark in header, one hero image, credits, no EXIF-bearing originals', () => {
   const h = html('/');
-  assert.ok(!h.includes('From Gabe') && !h.includes('Trust me, I know'), 'quotes are off until Gabe OKs');
+  assert.ok(!h.includes('From Gabe') && !h.includes('Hope to see you there'), 'D67: the live quote is not on Home');
+  assert.equal((h.match(/<figure class="quote/g) ?? []).length, 1, 'D67: Home keeps ONE quote');
+  assert.ok(h.includes('Trust me, I know') && h.includes('href="https://www.instagram.com/p/Dd6keDDDefE/"'), 'the RISE quote, word for word, with its post link (Gabe OK 2026-11-11)');
   assert.match(h, /<a class="brand"[^>]*><img class="mark mark-head"[^>]*><span class="brand-word">GLUCAK<\/span><\/a>/);
   assert.match(h, /Play full songs on Spotify/);
   assert.ok(!h.includes('Open in Spotify') && !h.includes('mission statement has always'));
@@ -106,16 +108,17 @@ test('approved copy is on each page verbatim; no ASK GABE; no quote ships', () =
     'Two albums and numerous singles and EPs into the biz and with no plans to slow down, GLucak has been running at a ferocious pace crafting brand-new content and music for 2026 and 2027.',
     'Nevertheless, no matter the musical style or genre, be it his debut single or his upcoming 3rd album (rumored to be his best work yet), the mission statement has always been the same: Rise, Live It Loud, Push Past Fear, The Time Is Now.'];
   const want = {
-    '/': ['Live It Loud', bio[0], 'Get the next show and every new song first.'],
-    '/music/': ['Releases', 'Hear more on SoundCloud', 'Pre-save'],
+    '/': ['Live It Loud', bio[0], 'Join the list. Scenic Route is coming Jan 15, and the first listen will be yours.', 'Back my projects and merch. Get early access to songs only the inner circle knows exist.'],
+    '/music/': ['Releases', 'Hear more on SoundCloud', 'Pre-save', 'IDENTITY tracklist', 'All songs written, recorded, produced, mixed and mastered by Gabriel Lucak', 'Remix album', 'Follow on Spotify'],
     '/shows/': ['Live It Loud', 'Book GLucak'],
-    '/about/': [...bio, 'Find GLucak', 'Book GLucak', 'Photo credits', 'Photo: Alexander Kealey'],
+    '/about/': [...bio, 'Find GLucak', 'Book GLucak', 'Epilepsy survivor', 'Healed by Christ since 2009', 'Back my projects and merch.', '>Credits<', 'Photo: Alexander Kealey'],
   };
   for (const [p, texts] of Object.entries(want)) for (const t of texts) assert.ok(html(p).includes(t), `${p}: ${t}`);
   for (const p of Object.keys(pages)) {
     const h = html(p);
     assert.ok(!h.includes('ASK GABE'), p);
-    for (const q of ['Trust me, I know', 'Hope to see you there', 'From Gabe']) assert.ok(!h.includes(q), `${p}: quote ${q}`);
+    for (const q of ['Hope to see you there', 'From Gabe']) assert.ok(!h.includes(q), `${p}: quote ${q}`);
+    assert.ok((h.match(/<figure class="quote/g) ?? []).length <= 1, `${p}: at most one quote (D67)`);
   }
 });
 

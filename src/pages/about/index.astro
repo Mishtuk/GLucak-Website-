@@ -2,11 +2,11 @@
 import Base from '../../layouts/Base.astro';
 import PushPhoto from '../../components/PushPhoto.astro';
 import ForVenues from '../../components/ForVenues.astro';
-import { PATREON, PHOTO_CREDITS as C, SOCIALS } from '../../components/content.js';
+import { PATREON, PATREON_LINE, PHOTO_CREDITS as C, SOCIALS } from '../../components/content.js';
 const ORDER = ['spotify', 'youtube', 'instagram', 'soundcloud', 'threads', 'x', 'patreon'];
 const links = ORDER.map((id) => SOCIALS.find((s) => s.id === id));
 ---
-<Base image="about" title="About | GLucak" current="about" credits={[C.kealey]} description="GLucak: Epilepsy survivor, Producer-Rapper/DJ, making energetic music with faith.">
+<Base image="about" title="About | GLucak" current="about" credits={[C.kealey, C.cd]} description="GLucak: Epilepsy survivor, Producer-Rapper/DJ, making energetic music with faith.">
   <section class="band band-push" aria-labelledby="h-push">
     <div class="push-head">
       <PushPhoto eager />
@@ -14,8 +14,9 @@ const links = ORDER.map((id) => SOCIALS.find((s) => s.id === id));
         <h1 class="spine" id="h-push"><span class="tab">About</span> <span class="phrase fit lock-push"><span class="ln ln-push1">Push Past</span> <span class="ln ln-push2">Fear</span></span></h1>
       </div>
     </div>
-    <div class="wrap push-body">
+    <div class="wrap push-body about-body">
       <div class="bio">
+        <p class="epi"><span class="epi-head">Epilepsy survivor</span> <span class="epi-sub">Healed by Christ since 2009</span></p>
         <p class="bio-lead">Despite facing various difficulties and struggles over the years, Epilepsy survivor and Producer-Rapper/DJ GLucak has shown no intent to give up on either his Faith in God or his mission in creating energetic music to bring others to Christ.</p>
         <p>Two albums and numerous singles and EPs into the biz and with no plans to slow down, GLucak has been running at a ferocious pace crafting brand-new content and music for 2026 and 2027.</p>
         <p>Nevertheless, no matter the musical style or genre, be it his debut single or his upcoming 3rd album (rumored to be his best work yet), the mission statement has always been the same: Rise, Live It Loud, Push Past Fear, The Time Is Now.</p>
@@ -26,7 +27,9 @@ const links = ORDER.map((id) => SOCIALS.find((s) => s.id === id));
           <li><a href="/shows/">Shows</a></li>
           <li><a href={PATREON} rel="noopener">Patreon</a></li>
         </ul>
+        <p class="patreon-line">{PATREON_LINE}</p>
         <a class="btn btn-solid about-patreon" href={PATREON} rel="noopener">Patreon</a>
+        <img class="about-photo" src="/media/cd-studio-480.webp" srcset="/media/cd-studio-480.webp 480w, /media/cd-studio-960.webp 960w" sizes="(min-width: 900px) 38vw, (min-width: 34rem) 30rem, 100vw" width="960" height="960" alt="GLucak in his home studio, headphones on, his gear on the floor around him" loading="lazy" />
       </div>
     </div>
     <div class="wrap prose">
@@ -35,9 +38,9 @@ const links = ORDER.map((id) => SOCIALS.find((s) => s.id === id));
       <ul class="links links-lg">
         {links.map((s) => <li class={s.id === 'patreon' ? 'links-wide' : undefined}><a href={s.href} rel="noopener"><svg aria-hidden="true"><use href={`#i-${s.id}`} /></svg><span>{s.name}</span></a></li>)}
       </ul>
-      <h2>Photo credits</h2>
+      <h2>Credits</h2>
       <ul class="credit-list">
-        {[C.kealey].map((c) => <li>{c.replace(/\.$/, '')}</li>)}
+        {[C.kealey, C.cd].map((c) => <li>{c.replace(/\.$/, '')}</li>)}
       </ul>
     </div>
   </section>

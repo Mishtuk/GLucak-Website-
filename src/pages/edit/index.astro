@@ -15,7 +15,7 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
     <meta name="robots" content="noindex, nofollow" />
     <title>Edit the site | GLucak</title>
     <link rel="icon" href="data:," />
-    <style set:html={`:root{${eraCss}}`}></style>
+    <style set:html={`html:root{${eraCss}}`}></style>
     <script is:inline src="/js/edit.js" defer></script>
   </head>
   <body class="ed-body">

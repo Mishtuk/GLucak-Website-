@@ -32,7 +32,7 @@ test('Home: no image src repeats, and the credits cover the photos shown', () =>
   const h = home();
   const srcs = [...h.matchAll(/<img [^>]*?\bsrc="([^"]+)"/g)].map((m) => m[1]).filter((s) => !s.startsWith('data:') && !s.endsWith('.svg') && !/mark-identity/.test(s));
   assert.equal(new Set(srcs).size, srcs.length, `repeats: ${srcs.join(' ')}`);
-  assert.ok(h.includes('Photo: Alexander Kealey.') && h.includes('Video still: Joseph Lucak.') && h.includes('Video stills: GLucak on YouTube.') && h.includes('IDENTITY art: from'));
+  assert.ok(h.includes('Photo: Alexander Kealey.') && h.includes('Video still: Joseph Lucak.') && h.includes('Video stills: GLucak on YouTube.') && h.includes('IDENTITY cover: GLucak.') && h.includes('Photos: from the IDENTITY CD.'));
   assert.ok(!h.includes('d-crowd'), 'the crowd photo is gone from Home');
 });
 
@@ -50,7 +50,7 @@ test('phrase beside its content: 5 : 7 grid from 900px, phones stacked', () => {
 
 test('credits match the images each page shows; clamp gone; focusin handler; 200% Now-line rule', () => {
   const content = readFileSync(join(ROOT, 'src/components/content.js'), 'utf8');
-  const CREDIT_FOR = [[/\/media\/v2\/(belt|stage)-/, 'Video stills: GLucak on YouTube.'], [/identity-art-/, 'IDENTITY art: from'], [/\/media\/v2\/garage-|videos\/K-OZiNvQB14-/, 'Video still: Joseph Lucak.'], [/a-era-grade/, 'Photo: Alexander Kealey.']];
+  const CREDIT_FOR = [[/\/media\/v2\/(belt|stage)-/, 'Video stills: GLucak on YouTube.'], [/covers\/identity/, 'IDENTITY cover: GLucak.'], [/\/media\/cd-/, 'Photos: from the IDENTITY CD.'], [/\/media\/v2\/garage-|videos\/K-OZiNvQB14-/, 'Video still: Joseph Lucak.'], [/a-era-grade/, 'Photo: Alexander Kealey.']];
   assert.ok(content.includes('CREDIT_FOR'));
   for (const page of ['index.html', 'shows/index.html', 'about/index.html', 'music/index.html']) {
     const h = readFileSync(join(ROOT, 'dist', page), 'utf8');

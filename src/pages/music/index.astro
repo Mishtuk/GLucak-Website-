@@ -2,12 +2,14 @@
 import Base from '../../layouts/Base.astro';
 import RiseBand from '../../components/RiseBand.astro';
 import NoCover from '../../components/NoCover.astro';
-import { crate, era, SOUNDCLOUD, START, identity, dateLine, credit, TYPE_TAG } from '../../components/content.js';
+import Quote from '../../components/Quote.astro';
+import { crate, era, SOUNDCLOUD, START, identity, favorite, dateLine, credit, typeTag, tileAction, PHOTO_CREDITS as C, IDENTITY_TRACKS, IDENTITY_TRACKS_HEADING, IDENTITY_CREDIT } from '../../components/content.js';
 const idn = identity();
+const fav = favorite();
 const tiles = crate(); // all releases but IDENTITY (its own block below), newest first
 const shortDate = (d) => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 ---
-<Base image="music" title="Music | GLucak" current="music" description="Listen to GLucak: the playlist, every release, and IDENTITY.">
+<Base image="music" title="Music | GLucak" current="music" credits={[C.identity]} description="Listen to GLucak: the playlist, every release, and IDENTITY.">
   <RiseBand h1 release={false} ground />
   <section class="band releases-band" id="releases" aria-labelledby="h-releases">
     <div class="wrap">
@@ -26,23 +28,34 @@ const shortDate = (d) => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', 
                 <span class="tile-text">
                   <h3 class="tile-title">{r.title}</h3>
                   {credit(r) && <span class="tile-artists">{credit(r)}</span>}
-                  <span class="tile-meta">{TYPE_TAG[r.type] && r.type !== 'single' && <span class="tile-type">{TYPE_TAG[r.type]}</span>}{r.coming ? `Out ${dateLine(r.date)}` : dateLine(r.date)}</span>
-                  <span class="tile-go">{r.coming ? 'Pre-save' : 'Listen'}</span>
+                  <span class="tile-meta">{typeTag(r) && r.type !== 'single' && <span class="tile-type">{typeTag(r)}</span>}{r.coming ? `Out ${dateLine(r.date)}` : dateLine(r.date)}</span>
+                  <span class="tile-go">{tileAction(r)}</span>
                 </span>
               </a>
             </li>
           ))}
         </ul>
       )}
-      {idn.date ? (
-          <div class="identity-state">
-            {era.mark && <img class="mark mark-identity" src={era.mark} alt="" width="300" height="96" loading="lazy" />}<p class="identity identity-lg">IDENTITY</p>
-            {idn.out
-              ? <p class="identity-when">Out now. <a class="text-link" href={idn.link} rel="noopener" aria-label="Listen to IDENTITY">Listen</a></p>
-              : <><p class="identity-when identity-count"><time class="identity-date" datetime={idn.date}>{idn.pretty}</time>{' '}<span>{idn.days} {idn.days === 1 ? 'day' : 'days'} to go</span></p>
-                 <a class="btn btn-line" href={idn.link} rel="noopener" aria-label="Pre-save IDENTITY">Pre-save</a></>}
-          </div>
-        ) : <div class="identity-state">{era.mark && <img class="mark mark-identity" src={era.mark} alt="" width="300" height="96" loading="lazy" />}<p class="identity identity-lg">IDENTITY</p></div>}
+      <Quote band="who" class="quote-who" />
+      <div class="idn">
+        <img class="idn-cover" src="/media/covers/identity-320.webp" srcset="/media/covers/identity-320.webp 320w, /media/covers/identity.webp 640w, /media/covers/identity-960.webp 960w" sizes="(min-width: 900px) 26rem, 42vw" width="640" height="640" alt="IDENTITY cover art: GLucak in blue light, the IDENTITY logo under the title" loading="lazy" />
+        <div class="identity-state">
+          {era.mark && <img class="mark mark-identity" src={era.mark} alt="" width="300" height="96" loading="lazy" />}<p class="identity identity-lg">IDENTITY</p>
+          {idn.date && (idn.out
+            ? <p class="identity-when">Out now. <a class="text-link" href={idn.link} rel="noopener" aria-label="Listen to IDENTITY">Listen</a></p>
+            : <><p class="identity-when identity-count"><time class="identity-date" datetime={idn.date}>{idn.pretty}</time>{' '}<span>{idn.days} {idn.days === 1 ? 'day' : 'days'} to go</span></p>
+               <a class="btn btn-line" href={idn.link} rel="noopener" aria-label="Pre-save IDENTITY">Pre-save</a></>)}
+        </div>
+        <h3 class="tracks-h">{IDENTITY_TRACKS_HEADING}</h3>
+        <ol class="tracks" aria-label={IDENTITY_TRACKS_HEADING}>
+          {IDENTITY_TRACKS.map((t, i) => t === 'Scenic Route'
+            ? <li class="track track-fav"><span class="track-n">{i + 1}</span>{fav
+                ? <><a class="go" href={fav.link} rel="noopener" aria-label={fav.label}>{t}</a><span class="track-note">{fav.tag}</span></>
+                : <span class="track-title">{t}</span>}</li>
+            : <li class="track"><span class="track-n">{i + 1}</span><span class="track-title">{t}</span></li>)}
+        </ol>
+        <p class="tracks-credit">{IDENTITY_CREDIT}</p>
+      </div>
       <p class="under-player"><a class="text-link" href={SOUNDCLOUD} rel="noopener">Hear more on SoundCloud</a></p>
     </div>
   </section>

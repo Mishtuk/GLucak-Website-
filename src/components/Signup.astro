@@ -1,8 +1,10 @@
 ---
+import { signupCopy } from './content.js';
+const copy = signupCopy(); // copy ig6 1a: Scenic Route heads-up until Jan 15
 // Posts to our own server (CSP form-action 'self'); server.js -> src/lib/signup.js -> Kit. `website` is a honeypot.
 ---
-<form class="signup" id="signup" action="/api/signup" method="post">
-  <label for="email">Get the next show and every new song first.</label>
+<form class="signup" id="signup" action="/api/signup" method="post" data-ok={copy.ok}>
+  <label for="email">{copy.label}</label>
   <div class="signup-row">
     <input id="email" name="email" type="email" autocomplete="email" required aria-describedby="signup-status" placeholder="you@example.com" />
     <button class="btn btn-solid" type="submit">Join</button>

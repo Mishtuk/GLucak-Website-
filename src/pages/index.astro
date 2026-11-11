@@ -4,9 +4,8 @@ import Hero from '../components/Hero.astro';
 import RiseBand from '../components/RiseBand.astro';
 import VideoBlock from '../components/VideoBlock.astro';
 import Signup from '../components/Signup.astro';
-import Quote from '../components/Quote.astro';
 import PushPhoto from '../components/PushPhoto.astro';
-import { PATREON, PHOTO_CREDITS as C, SITE_URL, SOCIALS, era, identity } from '../components/content.js';
+import { PATREON, PATREON_LINE, PHOTO_CREDITS as C, SITE_URL, SOCIALS, era, identity } from '../components/content.js';
 const idn = identity();
 
 // MusicGroup + WebSite JSON-LD (data, not script: CSP ignores it). '<' escaped so nothing can close the tag.
@@ -18,7 +17,7 @@ const ld = JSON.stringify([
 
 const HERO = 'ab'; // D34: A (GLUCAK over the photo) under 900px, B (photo in the name, riso) from 900px up; 'a' / 'b' still work
 ---
-<Base title="GLucak" home hero={HERO} credits={[C.kealey, C.joseph, C.yt, C.identity, ...(HERO === 'b' ? [C.mccc] : [])]}>
+<Base title="GLucak" home hero={HERO} credits={[C.kealey, C.joseph, C.yt, C.cd, C.identity, ...(HERO === 'b' ? [C.mccc] : [])]}>
   <script type="application/ld+json" slot="head" set:html={ld}></script>
   <div class="top">
     <Hero variant={HERO} />
@@ -33,7 +32,6 @@ const HERO = 'ab'; // D34: A (GLUCAK over the photo) under 900px, B (photo in th
       </div>
       <div class="v2-main">
         <div id="shows-mount"><Fragment set:html="<!--gl:shows-->" /></div>
-        <Quote band="live" class="quote-live" />
         <VideoBlock />
       </div>
     </div>
@@ -46,9 +44,10 @@ const HERO = 'ab'; // D34: A (GLUCAK over the photo) under 900px, B (photo in th
       </div>
       <div class="v2-main v2-push-body">
         <img class="v2-photo v2-belt" src="/media/v2/belt-plates-320.webp" srcset="/media/v2/belt-plates-320.webp 320w, /media/v2/belt-plates-634.webp 634w" sizes="(min-width: 900px) 40vw, 30vw" width="634" height="1128" alt="GLucak live at Crooked Eye Brewery, arm raised" loading="lazy" />
-        <div class="v2-slot v2-wide-only" role="img" aria-label="Empty photo slot: crowd shot, waiting on Gabe's OK"><span>Photo slot: crowd shot. Waiting on Gabe's OK.</span></div>
+        <img class="v2-photo v2-wide-only v2-jump" src="/media/cd-jump-352.webp" srcset="/media/cd-jump-352.webp 352w, /media/cd-jump-704.webp 704w" sizes="22rem" width="704" height="880" alt="GLucak mid-jump under a park shelter" loading="lazy" />
         <p class="bio-lead v2-bio">Despite facing various difficulties and struggles over the years, Epilepsy survivor and Producer-Rapper/DJ GLucak has shown no intent to give up on either his Faith in God or his mission in creating energetic music to bring others to Christ.</p>
         <div class="push-actions">
+          <p class="patreon-line">{PATREON_LINE}</p>
           <a class="btn btn-solid" href={PATREON} rel="noopener">Patreon</a>
           <a class="go" href="/about/">Full bio</a>
         </div>
@@ -64,7 +63,7 @@ const HERO = 'ab'; // D34: A (GLUCAK over the photo) under 900px, B (photo in th
       <div class="v2-main now-grid">
         <Signup />
         <div class="v2-identity">
-          <img class="v2-photo" src="/media/v2/identity-art-240.webp" srcset="/media/v2/identity-art-240.webp 240w, /media/v2/identity-art-480.webp 480w" sizes="(min-width: 900px) 12rem, 26vw" width="480" height="597" alt="IDENTITY artwork: GLucak in blue light" loading="lazy" />
+          <img class="v2-photo" src="/media/covers/identity-320.webp" srcset="/media/covers/identity-320.webp 320w, /media/covers/identity.webp 640w" sizes="(min-width: 900px) 12rem, 26vw" width="640" height="640" alt="IDENTITY cover art" loading="lazy" />
           <div class="identity-state">
             {era.mark && <img class="mark mark-identity" src={era.mark} alt="" width="300" height="96" loading="lazy" />}
             <p class="identity">IDENTITY</p>

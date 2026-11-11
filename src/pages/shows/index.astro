@@ -4,16 +4,16 @@ import VideoBlock from '../../components/VideoBlock.astro';
 import ForVenues from '../../components/ForVenues.astro';
 import { PHOTO_CREDITS as C } from '../../components/content.js';
 ---
-<Base image="shows" title="Shows | GLucak" current="shows" credits={[C.kealey, C.joseph]} description="Upcoming GLucak shows and open mics, and where he has played.">
+<Base image="shows" title="Shows | GLucak" current="shows" credits={[C.kealey, C.joseph, C.cd]} description="Upcoming GLucak shows and open mics, and where he has played.">
   <Fragment slot="head" set:html="<!--gl:shows-ld-->" />
-  <section class="band band-live has-ground ground-wall" aria-labelledby="h-live">
+  <section class="band band-live" aria-labelledby="h-live">
     <div class="wrap">
       <h1 class="spine" id="h-live"><span class="tab">Shows</span> <span class="phrase fit"><span class="ln ln-live">Live It Loud</span></span></h1>
       <div class="shows-grid">
         <div>
           <div id="shows-mount"><Fragment set:html="<!--gl:shows-->" /></div>
         </div>
-        <div class="shows-side"><VideoBlock h1 /><ForVenues /></div>
+        <div class="shows-side"><VideoBlock h1 /><ForVenues photo /></div>
       </div>
     </div>
   </section>
