@@ -1889,3 +1889,155 @@ Test idea: built `index.html` has no `hero-chip`; every built page's footer has 
 1. Every section word stands in a divider tab drawn by its band's rule (the 404's blank tab is the empty outline).
 2. About from 900px: an arrow at the end of each setlist row.
 3. Home's first screen loses the chip; it sits on the footer rule on every page.
+
+## 22. No-cover release: the sleeve card (Laptop designer, 2026-11-11)
+Sources: `docs/review/ig-round3/eval.md` fix 2, D51, D53, D83, D85, 16a, 19a, 20d, 21a, the ban list in
+`docs/research/ai-design-workflow.md` 5. **Specified against the build** (repo at d4fbfe3, `npx astro build --outDir SCRATCH\dist-d22`,
+`node server.js` on port 8873, empty `DATA_DIR`). Every look injected over CDP (no `src/` edit). **Spotify and YouTube blocked at the
+resolver** (D85) in every shot: the grey boxes are the blocked embeds. Reduced motion. "Who I Am as latest" (it flips on Nov 13) is
+injected into today's Home card (kicker, title, Listen label, Now line). Line numbers are `src/styles/global.css` at d4fbfe3.
+Shots and sheets: `docs/review/r1-nocover/` (7 PNGs). Scripts: `SCRATCH\d22\` (`dirs.mjs` the deltas, `shots.mjs`, `stress.mjs`,
+`rec.mjs`, `sheets.mjs`).
+
+**The problem.** A release with `cover: null` gets two different stand-ins: on Music the hatched slot with a date sticker
+(`.tile-art-none`, 16a), on Home the grey X file (`public/media/placeholder-cover.svg`, swapped in by `releases()` in
+`src/components/content.js` 60-61) plus a dashed "Placeholder cover" chip. From Nov 13 the X is Home's latest single.
+
+**Hard rules held:** no transition, animation or transform; nothing can flash (`getAnimations()` 0, reduced); no new colour
+(`bg`, `bg-2`, `line`, `text` only); no new font; no image file, no generated art. Heights: Music 390 **3224**, 1280 **2867**
+(unchanged); Home 1280 **4277** (unchanged); Home 390 with Who I Am latest **3605 -> 3565** (the chip goes). No sideways scroll at
+320 (Home card 92px, Music tile 132px).
+
+**Generic defaults in my first plan, and what replaced each (ai-design-workflow 5):**
+| Default I reached for | Why it is the template look | Instead |
+|---|---|---|
+| A gradient or duotone square from the era accent, "art" behind the title | Generated imagery; a fan would take it for the cover (D51: never a cover we made) | Flat ground, type only |
+| "SINGLE" in tracked-out caps above the title | The eyebrow (banned) | The type word in body 700, sentence case, under the rule |
+| Title centred in the box | The SaaS empty-state card / "coming soon" tile | Flush left, standing on the rule: the bands' word-on-rule (21a), so it reads as the site's own furniture |
+| "Artwork coming soon" with a music-note icon | Stock empty-state copy + icon; promises a date we don't have | No icon, no new words: title, type word, the release date while it's coming |
+| "Single · Nov 13" | The middle-dot meta string (20d) | Two spans set apart across the rule's width |
+| An accent rule | A second accent beside the header's LISTEN (D83: one accent fill per view) | The rule in `text` |
+
+### 22a. Three directions and the control (sheets `22-music-390.png`, `22-music-1280.png`, `22-home-390.png`, `22-home-1280.png`)
+Same markup in all three (title, one rule, type word; on Music the coming date at the rule's right end), same size formula (22c).
+- **Control (today).** Music: hatch + date sticker; reads "slot", not "release". Home: the grey X and a dashed chip, the most
+  unfinished thing on Home from Nov 13; two different stand-ins for one state.
+- **1. Sleeve card (recommended).** `bg-2` ground (on Home's `bg-2` card: `bg`), the 2px `line` edge today's slot already has,
+  title flush left standing on a `text` rule, type word under it. Quiet beside real covers at 390 and 1280; the edge says "site",
+  because covers are never bordered (16, D51).
+- **2. White label.** The promo pressing with no art: `text` ground, `bg` ink, title stamped top left. The strongest "intended"
+  look and a real DJ convention, but at 390 the two white squares are the brightest thing on Music (louder than the real covers
+  below), and black-on-white type is the most likely to pass for a real minimal cover. It also adds the white mass the IG3 eval
+  docked ("heavy white band rules"). Rejected.
+- **3. Sticker on the sleeve.** Today's hatch kept, a `bg` sticker carries the card. The most explicit "nothing real yet", but two
+  framing devices (hatch + box) and a filled label, the tell rounds IG / IG2 removed; at 92px the title drops to 11px. Rejected.
+
+### 22b. Why 1 is not "a cover we made" (D51)
+It is the title card the site prints for any release, in the site's own UI (rule, edge, the two fonts), built from the release's
+data. It is HTML, never an image file: it cannot be saved, shared, crawled as an image or end up in a share card. It is bordered
+(covers never are). It goes the moment a cover file exists. Its accessible name says there is no art (22d).
+
+### 22c. Spec (paste-ready)
+**Renders in:** a new `src/components/NoCover.astro`, used by `src/pages/music/index.astro` (the crate) and
+`src/components/RiseBand.astro` (Home card). All Laptop-claimed or new files; **nothing in `src/lib/` or `server.js`**: the size is
+computed at build in the component's frontmatter. `content.js` keeps `placeholder: true` and the SVG path (the unlinked `/v2/` page
+still uses it; port there too if wanted).
+
+`src/components/NoCover.astro` (new):
+```astro
+---
+// DESIGN 22: the title card for a release with no cover file. Built from the release's own data; HTML only, never an
+// image file and never in a share card (D51). Goes as soon as `cover` is set.
+import { TYPE_TAG } from './content.js';
+interface Props { title: string; type?: string; when?: string; label?: string; class?: string }
+const { title, type, when, label, class: cls } = Astro.props;
+// Size from the title alone, in cqi of the card's content box: the longest word fits the width (0.55em a letter, worst case
+// in Big Shoulders 900 caps), the whole title fits ~2/3 of the height (0.414em a character on average), capped at 40.
+const longest = Math.max(...title.split(/\s+/).map((w) => w.length));
+const fs = Math.min(100 / (longest * 0.55), Math.sqrt((100 * 68 * 0.7) / (title.length * 0.414)), 40).toFixed(1);
+const a11y = label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': 'true' };
+---
+<span class:list={['nocover', cls]} style={`--nc-fs: ${fs}cqi`} {...a11y}>
+  <span class="nocover-title" aria-hidden="true">{title}</span>
+  <span class="nocover-type" aria-hidden="true"><span>{TYPE_TAG[type] ?? 'Release'}</span>{when && <span>{when}</span>}</span>
+</span>
+```
+
+`src/pages/music/index.astro` line 21 (the `tile-art-none` span) becomes (import `NoCover from '../../components/NoCover.astro'`):
+```astro
+: <NoCover class="tile-art" title={r.title} type={r.type} when={r.coming ? shortDate(r.date) : undefined} />}
+```
+Decorative here, as the real covers on Music are (`alt=""`): the tile's link already reads title, date and Pre-save / Listen.
+
+`src/components/RiseBand.astro` line 32 becomes:
+```astro
+{r.placeholder
+  ? <NoCover class="v2-cover" title={r.title} type={r.type} label={`${r.title}: no cover art yet`} />
+  : <img class="v2-cover" src={r.cover} alt={`${r.title} cover art`} width="400" height="400" />}
+```
+and line 39 (`{r.placeholder && <p class="ph-chip inline">Placeholder cover</p>}`) is deleted: the card is the designed state;
+the footer chip still marks the placeholder era (21c).
+
+`src/styles/global.css`: delete lines 719-729 (`.tile-art-none`, `.tile-when` and their comment; `--hatch` stays, the shop uses
+it) and add **after** line 1030 (it must come after `.tile-art` 718 and `.v2-cover` 1024, which set `display: block`):
+```css
+/* ---------- 22. No cover yet: the sleeve card ---------- */
+/* A release with no cover file: its title standing on a rule, the type word under it (and the date while it's coming).
+   The site's own furniture, not art: bordered (covers never are), our two fonts, era tokens only, no image file (D51). */
+.nocover {
+  container-type: inline-size; display: grid; grid-template-rows: minmax(0, 1fr) auto; box-sizing: border-box;
+  width: 100%; height: auto; aspect-ratio: 1; padding: 8%;
+  background: var(--bg-2); border: 2px solid var(--line); color: var(--text);
+}
+.v2-card .nocover { background: var(--bg); } /* one step off the ground it sits on */
+.nocover-title {
+  align-self: end; padding-bottom: 5cqi;
+  font-family: var(--font-display); font-weight: 900; font-size: var(--nc-fs); line-height: 0.88; text-transform: uppercase;
+  text-wrap: balance; overflow-wrap: anywhere;
+}
+.nocover-type {
+  display: flex; flex-wrap: wrap; justify-content: space-between; column-gap: 0.5em;
+  border-top: clamp(2px, 1.4cqi, 4px) solid currentColor; padding-top: 4cqi;
+  font-family: var(--font-body); font-weight: 700; font-size: clamp(0.75rem, 9cqi, 1.125rem); line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+```
+**States:** coming (Music: type word + "Nov 13" across the rule) / released without a cover (type word only) / Home card (always
+released: type word only, `bg` ground) / pressed on Music (the existing `.tile-link:active .tile-art` 4px outline, unchanged) /
+hover (the title under the tile underlines, unchanged) / cover arrives (the `img` replaces the card; nothing else moves).
+**Text-size exception:** the type word can drop to 12px (92px Home card at 320). It is lettering inside a picture (`aria-hidden`,
+or a child of the `role="img"`), like a cover's own type, and never the only place it appears: the kicker / meta beside it carries
+the same words at 16px.
+
+### 22d. Alt text
+- Home card (no cover): `role="img"`, `aria-label="Who I Am: no cover art yet"`. True whether the art is unreleased or only
+  missing from the site; claims no art. Replaces today's "Placeholder for the Who I Am cover art". With a cover, unchanged:
+  "Who I Am cover art".
+- Music tile: `aria-hidden`, as the real covers there are `alt=""` (the link names the release).
+- Never call the card "artwork", "design" or "cover": it is not one.
+
+### 22e. Open Graph and share images
+- `tools/og.mjs` builds Music's share card from a fixed list of 8 real cover files (line 18); a release with no cover file cannot
+  appear, and the sleeve card is HTML, so there is nothing to pick up. Every page's `og:image` is the static
+  `/media/og/{page}.png` (Base.astro 11). **Safe today.**
+- Rules for later (D53's per-release share cards, or a JSON-LD `image` per release): take the image only from a real `cover`
+  file; a release without one uses `/media/og/music.png`; **never** rasterise the sleeve card into a share image, and never use
+  `releases()[0].cover` unchecked (with `placeholder: true` it is the grey X).
+
+### 22f. Measured (CDP, `SCRATCH\d22\stress.mjs`, sheet `22-stress.png`, `22-rec-320.png`)
+- Sizes on the real pages: Home card **92px** at 320, **117** at 390, **253** at 1280; Music tile **132** at 320, **166** at 390,
+  **283** at 1280.
+- Titles of 2 ("Go"), 8 ("Who I Am", "IDENTITY"), 24 ("Duck, Dodge, Jump, Fight"), 39 ("Fall Down 7, Stand Up 8 (A Remix
+  Album)") and 40 characters with two 12-letter words ("Supernatural Breakthrough (Extended Mix)"): **no overflow, no broken word,
+  title never above the card's top** at 92 / 117 / 166 / 283. Title size 92px -> 283px: Go 29 -> 94, Who I Am 28 -> 89, the
+  39-character title 13 -> 40, the 40-character one 11 -> 36.
+- One miss, not reachable: a coming date at 92px wraps the type row (only Home's card is that small, and it never shows a date).
+- Contrast: title and rule `text` on `bg-2` **14.8:1**, on `bg` (Home card) **17.3:1**; IDENTITY guess (3c) ~15:1. Re-skin:
+  `22-rec-identity-guess-390.png` (era tokens swapped at `:root`, nothing else).
+- Tests to update: `test/round2.test.js` 75 expects `tile-art-none` / `tile-when">Jan 15<`; it becomes `nocover tile-art` ...
+  `<span>Jan 15</span>`. New test idea: with a `cover: null` release as latest, built `index.html` has
+  `role="img" aria-label="{title}: no cover art yet"`, no `placeholder-cover.svg` in `.v2-rel` and no "Placeholder cover" chip.
+
+### 22g. Visible changes (at most 3)
+1. Music: Scenic Route and Who I Am become sleeve cards (title on the rule, Single, the date) instead of hatched date stickers.
+2. Home from Nov 13: Who I Am's sleeve card instead of the grey X; the dashed chip goes.
