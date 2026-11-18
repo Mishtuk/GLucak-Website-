@@ -14,7 +14,7 @@ import { signup } from './src/lib/signup.js';
 import { allow, checkLogin, clearFailures, cookieHeader, locked, parseEditors, readCookie, recordFailure, sameOrigin, signSession, verifySession, SESSION_DAYS, USER_LOCK } from './src/lib/auth.js';
 import { checkSite, fillSite } from './src/lib/site.js';
 import { checkReleases, fillReleases } from './src/lib/releases.js';
-import { checkShows, listVersion, readList, readShows, saveList } from './src/lib/store.js';
+import { checkShows, listVersion, readList, readShows, readSignouts, saveList, saveSignouts } from './src/lib/store.js';
 import { checkProducts, productsHtml, shopLinks } from './src/lib/products.js';
 import { externalize } from './src/lib/ext.js';
 import { MAX_BYTES, TYPES as IMAGE_TYPES, UPLOAD_NAME, toWebp } from './src/lib/upload.js';
@@ -34,6 +34,7 @@ const DATA = env.DATA_DIR || join(ROOT, '.data');
 const UPLOADS = join(DATA, 'uploads');
 const shopOn = () => env.SHOP_ENABLED === '1'; // read per request; the owner flips it with a restart, no rebuild
 const EDITORS = parseEditors(env.EDITOR_USERS);
+const SIGNOUTS = readSignouts(DATA); // name -> last sign-out ms; ends that editor's older cookies on every device
 // Production needs a real SESSION_SECRET (32+ characters) or the edit routes stay off (503). Dev: a new secret each start.
 const SECRET = env.SESSION_SECRET?.length >= 32 ? env.SESSION_SECRET : PROD ? null : randomBytes(32).toString('hex');
 if (!SECRET) console.error('Edit screen off: set SESSION_SECRET (32+ characters) to turn it on.');
@@ -169,7 +170,7 @@ const LISTS = {
 /** The signed-in editor, or null. DEV_EDITOR=1 works only off production, on a localhost URL, from this machine. */
 function editor(req, url) {
   if (env.DEV_EDITOR === '1' && !PROD && ['localhost', '127.0.0.1'].includes(url.hostname) && LOOPBACK.has(req.socket.remoteAddress)) return 'dev';
-  return verifySession(readCookie(req.headers.cookie), SECRET, EDITORS);
+  return verifySession(readCookie(req.headers.cookie), SECRET, EDITORS, Date.now(), SIGNOUTS);
 }
 
 /** The body bytes up to `max`, or null when bigger (the excess is read and dropped; 1 MB past `max` the socket is cut).
@@ -259,7 +260,11 @@ async function handleEdit(req, res, url) {
 
   const who = editor(req, url);
   if (!who) return json(401, { error: 'signed_out' });
-  if (p === '/edit/logout') return json(200, { ok: true }, { 'Set-Cookie': cookieHeader('', { secure: PROD || isHttps(req), maxAge: 0 }) });
+  if (p === '/edit/logout') {
+    SIGNOUTS.set(who, Date.now());
+    try { saveSignouts(DATA, SIGNOUTS); } catch (e) { console.error('could not save signouts.json:', e.message); } // still signed out until restart
+    return json(200, { ok: true }, { 'Set-Cookie': cookieHeader('', { secure: PROD || isHttps(req), maxAge: 0 }) });
+  }
   if (list) {
     // JSON only: a cross-site HTML form can't send this content type (one more wall on top of SameSite and Origin).
     if (!/^application\/json\b/.test(req.headers['content-type'] ?? '')) return json(415, { error: 'json_only' });

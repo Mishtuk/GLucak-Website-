@@ -11,7 +11,7 @@ The screenshots use made-up sample shows and products. Your page will show your 
 
 ![Sign in](shots/01-sign-in-390.webp)
 
-You stay signed in for 7 days on that phone or computer. Press **Sign out** at the top when you use someone else's device.
+You stay signed in for 7 days on that phone or computer. Press **Sign out** at the top when you use someone else's device. Signing out ends your sign-in on every phone and computer you used, so you sign in again wherever you want to edit.
 
 **If it says "That name and password don't match. Check them and try again."** Look at the spelling and capital letters and try again.
 

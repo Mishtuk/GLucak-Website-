@@ -18,8 +18,9 @@ export const signSession = (name, exp, secret, hash = '') => {
 };
 
 /** The signed-in name, or null if the cookie is missing, forged, expired, from an old password, or the editor was removed.
- *  `users`: Map name -> stored hash (from parseEditors). */
-export function verifySession(value, secret, users, now = Date.now()) {
+ *  `users`: Map name -> stored hash (from parseEditors). `signouts`: Map name -> ms of that editor's last sign-out;
+ *  a cookie issued (exp minus the session length) at or before it is refused. */
+export function verifySession(value, secret, users, now = Date.now(), signouts = new Map()) {
   const [data, sig, extra] = String(value ?? '').split('.');
   if (!data || !sig || extra !== undefined || !secret) return null;
   const want = mac(secret, data);
@@ -30,6 +31,7 @@ export function verifySession(value, secret, users, now = Date.now()) {
   const exp = Number(parts.pop());
   const name = parts.join('.');
   if (!(exp > now) || !users.has(name)) return null;
+  if (exp - SESSION_DAYS * 864e5 <= (signouts.get(name) ?? -Infinity)) return null;
   return version === versionOf(users.get(name)) ? name : null;
 }
 

@@ -65,4 +65,13 @@ export function saveList(dataDir, rows, fallback, name = 'shows.json') {
     renameSync(tmp, file);
   } catch (e) { rmSync(tmp, { force: true }); throw e; } // no stray .tmp after a failed save
 }
+/** DATA/signouts.json: { name: ms of that editor's last sign-out }. Missing, corrupt or odd entries mean nobody is signed out. */
+export function readSignouts(dataDir) {
+  try {
+    const o = JSON.parse(readFileSync(join(dataDir, 'signouts.json'), 'utf8'));
+    if (!o || typeof o !== 'object' || Array.isArray(o)) return new Map();
+    return new Map(Object.entries(o).filter(([, t]) => Number.isFinite(t)));
+  } catch { return new Map(); }
+}
+export const saveSignouts = (dataDir, map) => saveList(dataDir, Object.fromEntries(map), null, 'signouts.json');
 export const saveShows = (dataDir, rows, fallback) => saveList(dataDir, rows, fallback, 'shows.json');
