@@ -115,16 +115,17 @@ test('port notes: no quote text, mark in header, one hero image, credits, no EXI
 });
 
 test('approved copy is on each page verbatim; no ASK GABE; no quote ships', () => {
-  const bio = ['Despite facing various difficulties and struggles over the years, Epilepsy survivor and Producer-Rapper/DJ GLucak has shown no intent to give up on either his Faith in God or his mission in creating energetic music to bring others to Christ.',
-    'Two albums and numerous singles and EPs into the biz and with no plans to slow down, GLucak has been running at a ferocious pace crafting brand-new content and music for 2026 and 2027.',
+  const bio = ['The hours in the studio. The energetic live performances. The time spent tweaking everything to hit just right. It’s more than a hobby.',
+    'Despite facing various difficulties and struggles over the years, Epilepsy survivor and Producer-Rapper/DJ GLucak has shown no intent to give up on either his Faith in God or his mission in creating energetic music to bring others to Christ.',
     'Nevertheless, no matter the musical style or genre, be it his debut single or his upcoming 3rd album (rumored to be his best work yet), the mission statement has always been the same: Rise, Live It Loud, Push Past Fear, The Time Is Now.'];
   const want = {
-    '/': ['Live It Loud', bio[0], SIGNUP, 'Back my projects and merch. Get early access to songs only the inner circle knows exist.'],
+    '/': ['Live It Loud', bio[1], SIGNUP, 'Back my projects and merch. Get early access to songs only the inner circle knows exist.'],
     '/music/': ['Releases', 'Hear more on SoundCloud', 'Pre-save', 'IDENTITY tracklist', 'All songs written, recorded, produced, mixed and mastered by Gabriel Lucak', 'Remix album'],
     '/shows/': ['Live It Loud', 'Book GLucak'],
     '/about/': [...bio, 'Find GLucak', 'Book GLucak', 'Epilepsy survivor', 'Healed by Christ since 2009', 'Back my projects and merch.', '>Credits<', 'Photo: Alexander Kealey'],
   };
   for (const [p, texts] of Object.entries(want)) for (const t of texts) assert.ok(html(p).includes(t), `${p}: ${t}`);
+  assert.ok(!html('/about/').includes('Two albums'), 'C17: the stale "Two albums" paragraph is gone');
   for (const p of Object.keys(pages)) {
     const h = html(p);
     assert.ok(!h.includes('ASK GABE'), p);
