@@ -5,7 +5,7 @@ Voice: `admin.md` (plain, short, true, phone first). Built from `round2.md` sect
 | String | Words | Chars |
 |---|---|---|
 | Link | **Download a backup** | 17 |
-| Hint | **One file with your shows, products and photos. Keep it somewhere safe.** | 71 |
+| Hint | **One file with your shows, products, photos and bio. Keep it somewhere safe.** | 77 |
 | Link fails: signed out | **You were signed out. Sign in above, then download again.** | 56 |
 
 Why: the link says what pressing it does (it downloads, it does not save edits). The hint says what is inside (photos are in the file:

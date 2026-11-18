@@ -79,7 +79,7 @@ function inject(html, path) {
   }
   let site = null; // Gabe's bio and IDENTITY (site.json): filled per visit, so the days to go are always today's
   if (/<!--gl:(bio|home-bio|identity)-->/.test(html) || html.includes('<!--gl:now-->')) {
-    try { site = readList(DATA, SITE, 'site.json'); if (!checkSite(site).rows) site = null; } catch (e) { console.error('site.json unreadable, using the built page', e.message); }
+    try { site = checkSite(readList(DATA, SITE, 'site.json')).rows ?? null; } catch (e) { console.error('site.json unreadable, using the built page', e.message); }
     if (site) html = fillSite(html, site, etDay());
   }
   const shows = html.includes('<!--gl:shows-->'), ld = html.includes('<!--gl:shows-ld-->'), now = html.includes('<!--gl:now-->');

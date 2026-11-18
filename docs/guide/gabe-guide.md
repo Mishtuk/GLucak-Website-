@@ -101,7 +101,7 @@ Shows with a past date sit in a folded **Played** list under your upcoming shows
 
 ## 6. Download a backup
 
-At the bottom of the page press **Download a backup**. It makes one file with your shows, products and photos and says **Done. Look for it in your downloads.**
+At the bottom of the page press **Download a backup**. It makes one file with your shows, products, photos and bio and says **Done. Look for it in your downloads.**
 
 ![Download a backup](shots/10-backup-390.webp)
 
