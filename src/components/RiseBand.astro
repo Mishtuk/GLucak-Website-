@@ -1,7 +1,7 @@
 ---
 import Quote from './Quote.astro';
 import NoCover from './NoCover.astro';
-import { credit, dateLine, releases, SPOTIFY_EMBED, SPOTIFY_PLAYLIST } from './content.js';
+import { credit, dateLine, PLATFORMS, releases, SPOTIFY_EMBED, SPOTIFY_PLAYLIST } from './content.js';
 // Home (release): one panel with the cover, title, Listen and the player; a garage still beside it from 900px (v2 port).
 // The player is first in the DOM (phones: first on screen, and Tab reaches it before Listen); from 900px CSS order puts the cover row first.
 // release={false} on /music/: the player alone (the crate's first released tile is that release); Rise is its h1 (release title drops to h2).
@@ -24,9 +24,8 @@ const r = releases()[0];
         </div>
         <p class="under-player" id="after-player">
           <a class="btn btn-line btn-small" href={SPOTIFY_PLAYLIST} rel="noopener">Play full songs on Spotify</a>
-          {release
-            ? r.soundcloud && <a class="under-link" href={r.soundcloud} rel="noopener">SoundCloud</a>
-            : <a class="under-link" href={r.link} rel="noopener" aria-label={`Listen everywhere: ${r.title}`}>Listen everywhere</a>}
+          {PLATFORMS.map((p) => <a class="under-link" href={p.href} rel="noopener">{p.name}</a>)}
+          {!release && <a class="under-link" href={r.link} rel="noopener" aria-label={`Listen everywhere: ${r.title}`}>Listen everywhere</a>}
         </p>
       </div>
       {release && <article class="v2-rel">

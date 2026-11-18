@@ -52,6 +52,7 @@ export function signupCopy() {
 export const START = { title: 'Go', link: GO }; // DESIGN 24c, Q44: the "New here?" pick (variant: the playlist)
 export const SOUNDCLOUD = 'https://soundcloud.com/glucak';
 export const PATREON = 'https://patreon.com/GLucakMusic';
+export const APPLE_MUSIC = 'https://music.apple.com/us/artist/glucak/1732285138'; // artist page, never stale (verified 2026-11-17)
 export const YOUTUBE = 'https://www.youtube.com/channel/UCha7GtkOI9A0dzbTG3igbLg';
 export const SHORTS = `${YOUTUBE}/shorts`; // DESIGN 26: the Videos page links here instead of listing Shorts
 // id = the icon symbol (Icons.astro). Order is the footer's (DESIGN 16b).
@@ -156,3 +157,5 @@ export function identity() {
   const pretty = new Date(`${r.date}T12:00:00Z`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
   return { label: 'IDENTITY', date: r.date, pretty, days, out: days <= 0, link: r.link };
 }
+/** Listen-everywhere row under the Spotify button (DESIGN 27c): artist pages only; Spotify is the button above. */
+export const PLATFORMS = [{ name: 'Apple Music', href: APPLE_MUSIC }, { name: 'YouTube', href: YOUTUBE }, { name: 'SoundCloud', href: SOUNDCLOUD }];

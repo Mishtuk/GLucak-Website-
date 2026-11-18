@@ -104,3 +104,16 @@ test('27a phone bar held still in the view transition', () => {
   assert.ok(css.includes('.phone-bar { view-transition-name: phone-bar; }'));
   assert.ok(css.includes('::view-transition-group(phone-bar), ::view-transition-old(phone-bar), ::view-transition-new(phone-bar) { animation: none; }'));
 });
+
+// ---------- 27c ----------
+test('27c platform row under the Spotify button on Home and Music', () => {
+  const want = ['https://music.apple.com/us/artist/glucak/1732285138', 'https://www.youtube.com/channel/UCha7GtkOI9A0dzbTG3igbLg', 'https://soundcloud.com/glucak'];
+  for (const f of ['dist/index.html', 'dist/music/index.html']) {
+    const h = read(f);
+    const under = h.slice(h.indexOf('id="after-player"'), h.indexOf('</p>', h.indexOf('id="after-player"')));
+    const links = [...under.matchAll(/<a class="under-link" href="([^"]+)"([^>]*)>([^<]+)<span class="vh"> \(opens in a new tab\)<\/span><\/a>/g)];
+    assert.deepEqual(links.slice(0, 3).map((m) => m[1]), want, f);
+    for (const m of links.slice(0, 3)) assert.ok(m[2].includes('target="_blank"') && !m[2].includes('aria-label'), `${f} ${m[1]}`);
+    if (f.includes('music')) assert.ok(under.indexOf('Listen everywhere') > under.indexOf('soundcloud.com'), 'Listen everywhere stays last');
+  }
+});
