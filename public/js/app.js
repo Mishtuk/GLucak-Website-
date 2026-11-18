@@ -118,6 +118,19 @@
     if (videoOk(a.dataset.yt)) a.replaceWith(makeButton(a));
   });
 
+  /* Share a show (DESIGN 28c, D104): the phone's own share sheet; else copy the link; else show it. Same-origin, no motion. */
+  const nav = globalThis.navigator;
+  if (nav?.share || nav?.clipboard?.writeText) document.querySelectorAll('[data-share]').forEach((b) => {
+    b.hidden = false;
+    b.addEventListener('click', async () => {
+      const url = new URL(b.dataset.share, location.origin).href, msg = b.closest('li')?.querySelector('.share-msg');
+      document.querySelectorAll('.share-msg').forEach((m) => { m.textContent = ''; }); // one message on the page at a time
+      if (nav.share) { try { await nav.share({ title: b.dataset.title, text: b.dataset.text, url }); return; } catch (e) { if (e.name === 'AbortError') return; } }
+      try { await nav.clipboard.writeText(url); if (msg) msg.textContent = 'Link copied'; }
+      catch { if (msg) msg.textContent = `Copy this link: ${url}`; }
+    });
+  });
+
   /* Swipe row: a focused card scrolls fully into view (instant, no smooth motion) */
   document.querySelectorAll('.v2-vrow').forEach((r) => r.addEventListener('focusin', (e) => e.target.closest('.v2-vid')?.scrollIntoView({ block: 'nearest', inline: 'nearest' })));
 
