@@ -79,6 +79,9 @@ const SHARE_MSG = '<span class="share-msg" role="status"></span>';
 
 const action = (r) => r.link ? `<a class="btn btn-show" href="${esc(r.link)}" rel="noopener">${r.type === 'show' ? 'Tickets' : 'Details'}</a>` : '';
 const place = (r) => [r.venue, r.city?.trim()].filter(Boolean).map((x) => esc(curly(x))).join(', ');
+// Gabe OK'd street addresses (2026-11-18): a plain Google Maps search link, no key, no embed, no script. Every value escaped.
+const mapHref = (r) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${r.venue}, ${r.address.trim()}`)}`;
+const addr = (r) => r.address?.trim() ? `<a class="map-link" href="${esc(mapHref(r))}" rel="noopener">${esc(curly(r.address.trim()))}</a>` : '';
 const dateTag = (r) => `<time datetime="${esc(r.date)}${r.time ? `T${esc(r.time)}` : ''}">${esc(fmtDate(r.date))}</time>`;
 
 /** Markup per DESIGN.md (classes from prototype/styles.css). A poster is only ever a full show, never an open mic. */
@@ -93,12 +96,12 @@ export function posterHtml(r, { today, lead: isLead = false, art = false } = {})
   const full = r.type === 'show';
   const meta = lead(r, today, [plain && 'Open mic', r.time && fmtTime(r.time), r.with && `With ${r.with}`, costOf(r)], full);
   const date = isLead ? `<p class="poster-date fit"><span class="ln ln-date">${dateTag(r)}</span></p>` : `<p class="poster-date"><span class="date-sm">${dateTag(r)}</span></p>`;
-  return `<li class="poster${plain ? ' is-plain' : ''}" id="s-${showId(r)}">${art && !plain ? POSTER_ART : ''}${date}<span class="poster-tools">${cal(r, true)}${shareBtn(r, true)}</span><p class="poster-place">${place(r)}</p>${meta ? `<p class="poster-meta">${meta}</p>` : ''}<div class="poster-foot">${action(r)}${SHARE_MSG}</div></li>`;
+  return `<li class="poster${plain ? ' is-plain' : ''}" id="s-${showId(r)}">${art && !plain ? POSTER_ART : ''}${date}<span class="poster-tools">${cal(r, true)}${shareBtn(r, true)}</span><p class="poster-place">${place(r)}${addr(r) ? `<span class="addr-line">${addr(r)}</span>` : ''}</p>${meta ? `<p class="poster-meta">${meta}</p>` : ''}<div class="poster-foot">${action(r)}${SHARE_MSG}</div></li>`;
 }
 /** `past` rows (Played) get no calendar link, share button or id: past shows have no .ics and are not shared. */
 export function rowHtml(r, { past = false, today } = {}) {
   const extra = lead(r, past ? null : today, [r.type === 'open-mic' ? 'Open mic' : 'Show', r.time && fmtTime(r.time), r.with && `With ${r.with}`, costOf(r)]);
-  return `<li class="row"${past ? '' : ` id="s-${showId(r)}"`}><span class="row-date">${dateTag(r)}</span>${past ? '' : cal(r, false) + shareBtn(r, false)}<span class="row-text"><span class="row-place">${place(r)}</span><span class="row-kind">${extra}</span></span>${action(r)}${past ? '' : SHARE_MSG}</li>`;
+  return `<li class="row"${past ? '' : ` id="s-${showId(r)}"`}><span class="row-date">${dateTag(r)}</span>${past ? '' : cal(r, false) + shareBtn(r, false)}<span class="row-text"><span class="row-place">${place(r)}</span><span class="row-kind">${extra}</span>${!past && addr(r) ? `<span class="addr-line">${addr(r)}</span>` : ''}</span>${action(r)}${past ? '' : SHARE_MSG}</li>`;
 }
 // Kept for callers that want one plain row.
 export const showHtml = rowHtml;

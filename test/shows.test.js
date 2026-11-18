@@ -239,15 +239,19 @@ test('address validation: trim, 120, one line, empty unset, type', () => {
   assert.equal(checkShows([row({ address: ' 12 Main St ' })]).rows[0].address, '12 Main St');
   assert.equal(checkShows([row({ address: 'a\nb' })]).errors[0].message, 'Show 1: Put the address on one line.');
 });
-test('address never in public HTML; JSON-LD streetAddress only when set', () => {
+test('address: map link on upcoming only, escaped and inert; JSON-LD streetAddress only when set', () => {
   const r = row({ address: HOST });
-  assert.ok(!showsHtml([r], NOW, { past: true }).includes('script>x') && !showsHtml([r], NOW).includes('Main'));
-  assert.ok(!showsHtml([row({ address: '12 Main St' })], NOW).includes('12 Main'));
+  const h = showsHtml([r], NOW, { past: true });
+  assert.ok(!h.includes('<script>x') && !h.includes("' OR"), 'hostile address is escaped');
+  assert.ok(h.includes('href="https://www.google.com/maps/search/?api=1&amp;query=V%2C%20%3Cscript%3Ex%3C%2Fscript%3E'), 'query is encoded');
+  const m = showsHtml([row({ address: '12 Main St' })], NOW);
+  assert.ok(m.includes('query=V%2C%2012%20Main%20St" rel="noopener">12 Main St</a>'));
+  assert.ok(!showsHtml([row()], NOW).includes('maps'));
   const ld = showsLdHtml([row({ address: '12 Main St' })], NOW);
   assert.equal(JSON.parse(ld.replace(/^<script[^>]*>|<\/script>$/g, ''))[0].location.address.streetAddress, '12 Main St');
   assert.ok(!showsLdHtml([row()], NOW).includes('streetAddress'));
-  const h = showsLdHtml([r], NOW);
-  assert.ok(!h.slice(1, -9).includes('<script'), 'hostile address cannot close the tag');
+  const hl = showsLdHtml([r], NOW);
+  assert.ok(!hl.slice(1, -9).includes('<script'), 'hostile address cannot close the tag');
 });
 test('.ics LOCATION uses the address, escaped', () => {
   const loc = (r) => icsFor(r, NOW).replace(/\r\n /g, '').split('\r\n').filter((l) => l.startsWith('LOCATION:'));
@@ -258,7 +262,7 @@ test('.ics LOCATION uses the address, escaped', () => {
 });
 test('edit.js has the address label, hint and placeholder', () => {
   const js = readFileSync(new URL('../public/js/edit.js', import.meta.url), 'utf8');
-  for (const t of ['Street address (optional)', 'Helps maps and Google find the place. Not shown on the site; it goes in the calendar file.', '12 Main St']) assert.ok(js.includes(t), t);
+  for (const t of ['Street address (optional)', 'Shown on the show as a map link, and goes in the calendar file.', '12 Main St']) assert.ok(js.includes(t), t);
 });
 
 test('D63 F5: a C1 control (NEL) in the address is refused like a line break', () => {

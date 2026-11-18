@@ -126,7 +126,7 @@
     const withIn = el('input', { maxLength: 300, value: s.with ?? '' });
     const link = el('input', { type: 'url', inputMode: 'url', maxLength: 300, value: s.link ?? '', placeholder: 'https://' });
     box.form.append(el('div', { class: 'ed-two' }, field('Date', date), field('Time (optional)', time)),
-      field('Type', type), field('Venue', venue), field('City (optional)', city), field('Street address (optional)', address, 'Helps maps and Google find the place. Not shown on the site; it goes in the calendar file.'),
+      field('Type', type), field('Venue', venue), field('City (optional)', city), field('Street address (optional)', address, 'Shown on the show as a map link, and goes in the calendar file.'),
       field('With (optional)', withIn, 'Another act on the bill'), field('Link (optional)', link, 'Tickets or details page'), field('Cost (optional)', cost, 'Shown after the time, like "Free" or "$10"'));
     box.form.append(box.delBar);
     box.read = () => ({ date: date.value, time: time.value, type: type.value, venue: venue.value, city: city.value, address: address.value, with: withIn.value, link: link.value, cost: cost.value });

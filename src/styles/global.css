@@ -442,6 +442,8 @@ html[data-shows='none'] .quote-live { display: none; }
 .row-text { display: grid; line-height: 1.25; }
 .row-place { font-weight: 700; overflow-wrap: anywhere; }
 .row-kind { color: var(--muted); font-size: var(--step--1); overflow-wrap: anywhere; }
+.addr-line { display: block; font-weight: 400; font-size: var(--step--1); }
+.map-link { display: inline-flex; align-items: center; min-height: 44px; color: inherit; text-underline-offset: 3px; }
 .row-soon { color: var(--text); font-weight: 700; }
 .poster .row-soon { color: inherit; }
 .row-date { white-space: nowrap; }
