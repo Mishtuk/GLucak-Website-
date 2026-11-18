@@ -336,13 +336,6 @@ html[data-hero='b'] .slot img { width: 100%; height: 100%; object-fit: cover; ob
 .ln-now1 { font-size: calc(100cqi / var(--w-now1)); }
 .ln-now2 { font-size: calc(100cqi / var(--w-now2)); margin-top: 0.06em; }
 
-@media (prefers-reduced-motion: no-preference) {
-  /* app.js adds .fade-wait, and only to headings below the first screen at load: no JS, no blank phrases (D47). */
-  html[data-motion='on'] .fade.fade-wait .phrase { opacity: 0; transition: opacity 0.6s ease-out; }
-  html[data-motion='on'] .fade.fade-wait.seen .phrase { opacity: 1; }
-}
-@media print { .fade .phrase { opacity: 1 !important; transition: none !important; } }
-
 /* ---------- Rise ---------- */
 .rise-player { margin-top: var(--space-s); }
 .player-box { position: relative; display: block; width: 100%; height: auto; min-height: 352px; overflow: hidden; border-radius: 12px; background: color-mix(in srgb, var(--bg) 78%, var(--text)); }
@@ -1025,7 +1018,6 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 /* (1) Release card: cover, title, Listen and the player in one panel. Panels allowed (2px corners), no shadow.
    Phones: the PLAYER comes first (owner pick), so its top stays on the first phone screen; from 900px the cover row leads. */
 .v2-card { display: grid; gap: var(--space-s); padding: var(--space-s); background: var(--bg-2); border-radius: var(--radius-s); align-content: start; }
-@media (min-width: 900px) { .v2-card > .v2-rel { order: -1; } }
 .rise-play { display: grid; gap: var(--space-s); }
 .rise-play .under-player { margin-top: 0; }
 .v2-rel { display: grid; grid-template-columns: 36% minmax(0, 1fr); gap: var(--space-m); align-items: end; }

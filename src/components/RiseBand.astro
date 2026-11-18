@@ -3,7 +3,7 @@ import Quote from './Quote.astro';
 import NoCover from './NoCover.astro';
 import { credit, dateLine, PLATFORMS, releases, SPOTIFY_EMBED, SPOTIFY_PLAYLIST } from './content.js';
 // Home (release): one panel with the cover, title, Listen and the player; a garage still beside it from 900px (v2 port).
-// The player is first in the DOM (phones: first on screen, and Tab reaches it before Listen); from 900px CSS order puts the cover row first.
+// The player is first in the DOM (phones: first on screen, and Tab reaches it before Listen); player first at every width (DESIGN 28h).
 // release={false} on /music/: the player alone (the crate's first released tile is that release); Rise is its h1 (release title drops to h2).
 const { h1 = false, release = true, ground = false } = Astro.props;
 const H = h1 ? 'h1' : 'h2', T = h1 ? 'h2' : 'h3';

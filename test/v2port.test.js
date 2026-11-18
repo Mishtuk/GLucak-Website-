@@ -8,12 +8,11 @@ const ROOT = join(import.meta.dirname, '..');
 const home = () => readFileSync(join(ROOT, 'dist/index.html'), 'utf8');
 const css = readFileSync(join(ROOT, 'src/styles/global.css'), 'utf8');
 
-test('release card: cover, Listen and the player in one panel; the player leads on phones (CSS order under 900px)', () => {
+test('release card: cover, Listen and the player in one panel; the player leads at every width', () => {
   const h = home();
   const card = h.slice(h.indexOf('class="v2-card"'));
   assert.ok(card.indexOf('class="player"') < card.indexOf('v2-cover'), 'DOM: player first, so Tab reaches it before Listen on phones');
   assert.ok(card.indexOf('class="player"') < card.indexOf('>Listen<'));
-  assert.match(css, /@media \(min-width: 900px\) \{ \.v2-card > \.v2-rel \{ order: -1; \} \}/);
 });
 
 test('video row: latest + 2 featured, local thumbnails that exist, facade kept, 3 across from 700px', () => {
