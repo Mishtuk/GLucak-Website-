@@ -35,6 +35,6 @@ test('narrow card stacks the poster and rows; the first-pass block is gone', () 
 test('skip link hides above the page; gutter in px; editor tabs wrap', () => {
   assert.match(css, /\.skip \{ top: -100vh; \}/);
   assert.match(css, /--gutter: clamp\(20px, 12\.8px \+ 2vw, 40px\)/);
-  assert.match(ed, /\.ed-tabs \{ display: flex; flex-wrap: wrap;/);
-  assert.match(ed, /\.ed-tab \{ flex: 1 1 0%;/);
+  assert.match(ed, /\.ed-tabs \{ display: grid; grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/); // 28i: 2 x 2 on phones, one per row under 17rem
+  assert.match(ed, /@container \(width < 17rem\) \{ \.ed-tabs \{ grid-template-columns: minmax\(0, 1fr\); \} \}/);
 });

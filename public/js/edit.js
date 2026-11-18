@@ -1,19 +1,36 @@
-// Gabe's edit screen: Shows | Products tabs. Builds every row with createElement and sets data only through
-// textContent / value. Talks to /edit/login, /edit/logout, /edit/api/shows, /edit/api/products and /edit/api/upload
+// Gabe's edit screen: Shows | IDENTITY | Bio | Products tabs. Builds every row with createElement and sets data only through
+// textContent / value. Talks to /edit/login, /edit/logout, /edit/api/shows, /edit/api/site, /edit/api/products and /edit/api/upload
 // (same origin, session cookie on Path=/edit).
 (() => {
   const $ = (id) => document.getElementById(id);
   const login = $('login'), editor = $('editor'), loginMsg = $('login-msg');
   const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
   // state: dirty | busy | ok | error. CSS draws a glyph for each, never colour alone.
-  const say = (el, text, state = '') => { el.textContent = text; if (state) el.dataset.state = state; else delete el.dataset.state; };
+  // A save bar's "See it on the site" link shows only while its message says Saved.
+  const say = (el, text, state = '') => {
+    el.textContent = text; if (state) el.dataset.state = state; else delete el.dataset.state;
+    const see = el.closest('.ed-say')?.querySelector('.ed-see'); if (see) see.hidden = state !== 'ok';
+  };
   let loaded = false, uid = 0;
   // Per tab: its list, message line, unsaved flag and the version it loaded (sent back on save -> 409 if stale).
   const T = {
     shows: { list: $('list'), msg: $('msg'), dirty: false, version: null, noun: ['show', 'shows'], label: 'Show' },
     products: { list: $('p-list'), msg: $('p-msg'), dirty: false, version: null, noun: ['product', 'products'], label: 'Product' },
+    // IDENTITY and Bio are fields, not rows. Both save into site.json: one shared version (siteVersion), kept from every reply.
+    identity: { msg: $('i-msg'), dirty: false },
+    bio: { msg: $('b-msg'), dirty: false },
   };
-  const anyDirty = () => T.shows.dirty || T.products.dirty;
+  T.shows.played = $('played-list');
+  let siteVersion = null;
+  const anyDirty = () => Object.values(T).some((t) => t.dirty);
+  // The tab wears a ring and a hidden " (not saved)" while its tab has unsaved changes.
+  function setDirty(kind, on) {
+    T[kind].dirty = on;
+    const tab = $(`tab-${kind}`);
+    tab.toggleAttribute('data-dirty', on);
+    tab.querySelector('.vh')?.remove();
+    if (on) tab.append(el('span', { class: 'vh', textContent: ' (not saved)' }));
+  }
 
   const api = (path, body) => fetch(path, {
     method: body === undefined ? 'GET' : 'POST', credentials: 'same-origin',
@@ -47,8 +64,9 @@
     return s;
   };
 
-  function changed(kind) { T[kind].dirty = true; say(T[kind].msg, 'Not saved yet.', 'dirty'); }
-  const rows = (kind) => [...T[kind].list.children];
+  function changed(kind) { setDirty(kind, true); say(T[kind].msg, 'Not saved yet.', 'dirty'); }
+  const lists = (kind) => (kind === 'shows' ? [T.shows.list, T.shows.played] : [T[kind].list]);
+  const rows = (kind) => lists(kind).flatMap((l) => [...l.children]); // shows: upcoming, then Played (one array, so error row numbers match)
   const EMPTY = { shows: 'No shows yet. Press Add show.', products: 'No products yet. Press Add product.' };
   function number(kind) {
     const list = rows(kind), t = T[kind];
@@ -57,29 +75,38 @@
       say(r.legend, `${t.label} ${i + 1}`);
       if (r.up) { r.up.disabled = i === 0; r.down.disabled = i === list.length - 1; } // no button that does nothing
     });
+    if (kind === 'shows') { // the Played fold: shown only when there are past rows
+      const n = T.shows.played.children.length;
+      $('played').hidden = !n;
+      $('played').querySelector('summary').textContent = `Played (${n})`;
+    }
     // The empty-list line sits just before the list and shows only while the list has no rows.
     t.empty ??= t.list.insertAdjacentElement('beforebegin', el('p', { class: 'ed-help ed-empty', textContent: EMPTY[kind] }));
     t.empty.hidden = list.length > 0;
   }
 
   // A collapsed row: head (number, title, meta, error) + actions; Edit opens the form under it.
-  function shell(thumb) {
+  function shell(thumb, noun) {
     const li = el('li', { class: 'ed-row' });
-    const num = el('p', { class: 'ed-row-num' }), ttl = el('p', { class: 'ed-row-title' }), mt = el('p', { class: 'ed-row-meta' });
+    const num = el('p', { class: 'ed-row-num vh' }), ttl = el('p', { class: 'ed-row-title' }), mt = el('p', { class: 'ed-row-meta' });
     const err = el('p', { class: 'ed-err', role: 'alert' });
     const lead = thumb ?? el('p', { class: 'ed-row-date' });
     const legend = el('legend', { class: 'vh' });
     const form = el('fieldset', { class: 'ed-form', hidden: true, id: `form-${++uid}` }, legend);
     const edit = el('button', { type: 'button', class: 'ed-btn ed-edit', textContent: 'Edit' });
+    const delBar = el('div', { class: 'ed-delete' }); // the form ends with it: Delete is never next to Edit
     edit.setAttribute('aria-expanded', 'false');
     edit.setAttribute('aria-controls', form.id);
-    const del = el('button', { type: 'button', class: 'ed-btn ed-del', textContent: 'Delete' });
-    const actions = el('div', { class: 'ed-actions' });
-    li.append(el('div', { class: 'ed-row-head' }, lead, el('div', { class: 'ed-row-text' }, num, ttl, mt), err), actions, form);
-    Object.assign(li, { num, legend, err, form, edit, del, actions, lead });
+    const del = el('button', { type: 'button', class: 'ed-btn ed-plain ed-del', textContent: `Delete this ${noun}` });
+    delBar.append(del);
+    li.append(el('div', { class: 'ed-row-head' }, lead, el('div', { class: 'ed-row-text' }, num, ttl, mt), edit, err), form);
+    Object.assign(li, { num, legend, err, form, edit, del, delBar, lead });
     li.setTitle = (t) => say(ttl, t);
     li.setMeta = (...parts) => mt.replaceChildren(...parts);
-    li.open = (on) => { form.hidden = !on; edit.setAttribute('aria-expanded', String(on)); li.classList.toggle('is-open', on); };
+    li.open = (on) => {
+      form.hidden = !on; edit.setAttribute('aria-expanded', String(on)); edit.textContent = on ? 'Close' : 'Edit'; li.classList.toggle('is-open', on);
+      if (on) form.scrollIntoView({ block: 'nearest' }); // instant; the page's scroll-padding keeps it clear of the save bar
+    };
     edit.addEventListener('click', () => { const on = form.hidden; li.open(on); if (on) form.querySelector('input,select,textarea')?.focus(); });
     return li;
   }
@@ -87,7 +114,7 @@
   // ---------- Shows ----------
   const shortDate = (d) => { if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return ''; const [y, m, day] = d.split('-').map(Number); return new Date(Date.UTC(y, m - 1, day)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }); };
   function showRow(s = {}) {
-    const box = shell();
+    const box = shell(null, 'show');
     const date = el('input', { type: 'date', required: true, value: s.date ?? '' });
     const time = el('input', { type: 'time', value: s.time ?? '' });
     const type = select([['show', 'Show'], ['open-mic', 'Open mic']], s.type);
@@ -100,7 +127,7 @@
     box.form.append(el('div', { class: 'ed-two' }, field('Date', date), field('Time (optional)', time)),
       field('Type', type), field('Venue', venue), field('City', city), field('Street address (optional)', address, 'Helps maps and Google find the place. Not shown on the site; it goes in the calendar file.'),
       field('With (optional)', withIn, 'Another act on the bill'), field('Link (optional)', link, 'Tickets or details page'), field('Cost (optional)', cost, 'Shown after the time, like "Free" or "$10"'));
-    box.actions.append(box.edit, box.del);
+    box.form.append(box.delBar);
     box.read = () => ({ date: date.value, time: time.value, type: type.value, venue: venue.value, city: city.value, address: address.value, with: withIn.value, link: link.value, cost: cost.value });
     const mark = () => {
       say(box.lead, shortDate(date.value));
@@ -127,9 +154,10 @@
     const t = today();
     const up = shows.filter((s) => s.date >= t).sort((a, b) => `${a.date} ${a.time ?? ''}`.localeCompare(`${b.date} ${b.time ?? ''}`));
     const past = shows.filter((s) => s.date < t).sort((a, b) => b.date.localeCompare(a.date));
-    T.shows.list.replaceChildren(...[...up, ...past].map(showRow));
+    T.shows.list.replaceChildren(...up.map(showRow));
+    T.shows.played.replaceChildren(...past.map(showRow));
     number('shows');
-    T.shows.dirty = false;
+    setDirty('shows', false);
   };
 
   // ---------- Products ----------
@@ -155,7 +183,7 @@
 
   function productRow(p = {}) {
     const thumb = el('img', { class: 'ed-thumb', alt: '', width: 64, height: 64 });
-    const box = shell(thumb);
+    const box = shell(thumb, 'product');
     const name = el('input', { required: true, maxLength: 120, value: p.name ?? '' });
     const id = el('input', { required: true, maxLength: 60, value: p.id ?? '', autocapitalize: 'none', spellcheck: false });
     let autoId = !p.id; // a new product’s ID follows its name until edited by hand
@@ -205,8 +233,8 @@
       field('Sizes (optional)', sizes, 'Separate with commas, like S, M, L, XL.'));
     const up = el('button', { type: 'button', class: 'ed-btn', textContent: 'Move up' });
     const down = el('button', { type: 'button', class: 'ed-btn', textContent: 'Move down' });
-    box.actions.append(up, down, box.edit, box.del);
-    box.actions.classList.add('ed-actions-4');
+    box.form.prepend(el('div', { class: 'ed-move' }, up, down));
+    box.form.append(box.delBar);
     Object.assign(box, { up, down });
     box.read = (i) => ({
       id: id.value, name: name.value, type: type.value, price: cents(price.value), image: image.value, description: desc.value,
@@ -246,11 +274,30 @@
   T.products.render = (products) => {
     T.products.list.replaceChildren(...[...products].sort((a, b) => a.order - b.order).map(productRow));
     number('products');
-    T.products.dirty = false;
+    setDirty('products', false);
   };
 
+  // ---------- IDENTITY and Bio (site.json) ----------
+  const F = { date: $('i-date'), link: $('i-link'), home: $('b-home'), bio: $('b-bio') };
+  const longDate = (d) => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+  function idToday() { // "On the site today: August 13, 2027, 268 days to go", recomputed as the date changes
+    const d = F.date.value;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return say($('i-today'), '');
+    const days = Math.round((Date.parse(d) - Date.parse(today())) / 864e5);
+    say($('i-today'), `On the site today: ${longDate(d)}, ${days <= 0 ? 'Out now' : `${days} ${days === 1 ? 'day' : 'days'} to go`}`);
+  }
+  F.date.addEventListener('input', idToday);
+  // Fill one tab's fields from the saved site; the other tab's unsaved edits are never touched.
+  function fillSite(site, kind) {
+    if (kind === 'identity') { F.date.value = site.identity?.date ?? ''; F.link.value = site.identity?.link ?? ''; idToday(); }
+    else { F.home.value = site.homeBio ?? ''; F.bio.value = site.bio ?? ''; }
+    setDirty(kind, false);
+  }
+  const SITE_PART = { identity: () => ({ identity: { date: F.date.value, link: F.link.value } }), bio: () => ({ homeBio: F.home.value, bio: F.bio.value }) };
+  for (const k of ['identity', 'bio']) $(`panel-${k}`).addEventListener('input', () => changed(k));
+
   // ---------- Tabs ----------
-  const tabs = ['shows', 'products'];
+  const tabs = ['shows', 'identity', 'bio', 'products'];
   function pick(kind, focus = false) {
     for (const k of tabs) {
       const tab = $(`tab-${k}`), on = k === kind;
@@ -263,8 +310,11 @@
   for (const k of tabs) {
     $(`tab-${k}`).addEventListener('click', () => pick(k));
     $(`tab-${k}`).addEventListener('keydown', (e) => {
-      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-      pick(tabs[(tabs.indexOf(k) + 1) % tabs.length], true); // two tabs: either arrow goes to the other
+      const i = tabs.indexOf(k), n = tabs.length;
+      const to = { ArrowLeft: (i + n - 1) % n, ArrowRight: (i + 1) % n, Home: 0, End: n - 1 }[e.key];
+      if (to === undefined) return;
+      e.preventDefault();
+      pick(tabs[to], true);
     });
   }
 
@@ -274,20 +324,23 @@
     editor.hidden = false;
     say($('who'), `Signed in as ${name}`);
     if (data) {
-      for (const k of tabs) if (data[k]) T[k].render(data[k]);
+      for (const k of ['shows', 'products']) if (data[k]) T[k].render(data[k]);
+      if (data.site) { fillSite(data.site, 'identity'); fillSite(data.site, 'bio'); }
       loaded = true;
     }
   }
 
   async function load() {
-    let r, p;
-    try { [r, p] = await Promise.all([api('/edit/api/shows'), api('/edit/api/products')]); } catch { login.hidden = false; return say(loginMsg, "Can’t reach the site. Check your connection and reload.", 'error'); }
+    let r, p, q;
+    try { [r, p, q] = await Promise.all([api('/edit/api/shows'), api('/edit/api/products'), api('/edit/api/site')]); } catch { login.hidden = false; return say(loginMsg, "Can’t reach the site. Check your connection and reload.", 'error'); }
     const b = await reply(r);
     if (r.ok) {
       const pb = await reply(p);
       T.shows.version = b.version;
       if (p.ok) T.products.version = pb.version; else say(T.products.msg, "Couldn’t load the products. Reload the page.", 'error');
-      return signedIn(b.editor, { shows: b.shows, products: p.ok ? pb.products : null });
+      const qb = q.ok ? await reply(q) : {};
+      if (q.ok) siteVersion = qb.version; else for (const k of ['identity', 'bio']) say(T[k].msg, "Couldn’t load this. Reload the page.", 'error');
+      return signedIn(b.editor, { shows: b.shows, products: p.ok ? pb.products : null, site: q.ok ? qb.site : null });
     }
     login.hidden = false;
     if (r.status === 503) say(loginMsg, b.message || "The edit screen isn’t switched on yet. Tell the person who runs the site.", 'error');
@@ -302,7 +355,7 @@
     if (!r.ok) return say(loginMsg, b.message || "That didn’t go through. Try again.", 'error');
     $('password').value = '';
     say(loginMsg, '');
-    if (loaded) { signedIn(b.editor); for (const k of tabs) if (T[k].dirty) say(T[k].msg, 'Signed in again. Press Save.', 'ok'); return; } // keep unsaved edits
+    if (loaded) { signedIn(b.editor); for (const k of tabs) if (T[k].dirty) say(T[k].msg, 'Signed in again. Press Save.', 'dirty'); return; } // keep unsaved edits
     load();
   });
 
@@ -314,7 +367,7 @@
   $('out-yes').addEventListener('click', () => signOut());
   async function signOut() {
     try { await api('/edit/logout', {}); } catch { /* the cookie ends anyway after 7 days */ }
-    T.shows.dirty = T.products.dirty = false;
+    for (const t of Object.values(T)) t.dirty = false;
     location.reload();
   }
 
@@ -336,7 +389,8 @@
     row.form.querySelector('input').focus();
   });
 
-  for (const k of tabs) T[k].list.addEventListener('input', (e) => { if (e.target.type !== 'file') changed(k); }); // uploads mark it on success
+  for (const k of ['shows', 'products']) T[k].list.addEventListener('input', (e) => { if (e.target.type !== 'file') changed(k); }); // uploads mark it on success
+  T.shows.played.addEventListener('input', () => changed('shows'));
 
   const saving = { shows: false, products: false };
   async function save(kind) {
@@ -346,9 +400,9 @@
     for (const r of list) { say(r.err, ''); r.classList.remove('bad'); }
     saving[kind] = true;
     btn.setAttribute('aria-disabled', 'true');
-    t.list.inert = true; add.disabled = true; // edits made now would be replaced by the reply
+    for (const l of lists(kind)) l.inert = true; add.disabled = true; // edits made now would be replaced by the reply
     say(t.msg, 'Saving…', 'busy');
-    try { await send(kind, t, list); } finally { saving[kind] = false; btn.removeAttribute('aria-disabled'); t.list.inert = false; add.disabled = false; }
+    try { await send(kind, t, list); } finally { saving[kind] = false; btn.removeAttribute('aria-disabled'); for (const l of lists(kind)) l.inert = false; add.disabled = false; }
   }
   async function send(kind, t, list) {
     let r;
@@ -360,13 +414,34 @@
     const errs = b.errors ?? [];
     for (const x of errs) {
       const row = list[x.row];
-      if (row) { say(row.err, x.message); row.classList.add('bad'); row.open(true); }
+      if (row) { say(row.err, x.message); row.classList.add('bad'); row.closest('details')?.setAttribute('open', ''); row.open(true); } // a bad row in the closed Played fold opens it
     }
     const general = errs.filter((x) => !list[x.row]).map((x) => x.message).join(' ');
     say(t.msg, general || (errs.length ? `Not saved. Fix the ${errs.length === 1 ? t.noun[0] : `${errs.length} ${t.noun[1]}`} marked with !, then press Save.` : "That didn’t save. Try again."), 'error');
     list[errs[0]?.row]?.form.querySelector('input')?.focus();
   }
+  // One save for IDENTITY and Bio: sends only that tab's fields on the shared version; the reply's version feeds the other tab.
+  const siteSaving = { identity: false, bio: false };
+  async function saveSite(kind) {
+    if (siteSaving[kind]) return;
+    const t = T[kind], btn = $(kind === 'identity' ? 'i-save' : 'b-save'), panel = $(`panel-${kind}`);
+    siteSaving[kind] = true;
+    btn.setAttribute('aria-disabled', 'true');
+    panel.inert = true;
+    say(t.msg, 'Saving…', 'busy');
+    try {
+      let r;
+      try { r = await api('/edit/api/site', { version: siteVersion, site: SITE_PART[kind]() }); } catch { return say(t.msg, "That didn’t save. Check your connection and try again.", 'error'); }
+      const b = await reply(r);
+      if (r.ok) { siteVersion = b.version; fillSite(b.site, kind); return say(t.msg, b.message || "Saved. It’s on the site now.", 'ok'); }
+      if (r.status === 401) { login.hidden = false; $('username').focus(); return say(t.msg, 'You were signed out. Sign in above, then press Save again. Your changes are still here.', 'error'); }
+      if (r.status === 409) return say(t.msg, b.message || 'Someone else saved just now, so yours didn’t save. Reload the page to see their changes, but write down what you changed first.', 'error');
+      say(t.msg, (b.errors ?? []).map((x) => x.message).join(' ') || "That didn’t save. Try again.", 'error');
+    } finally { siteSaving[kind] = false; btn.removeAttribute('aria-disabled'); panel.inert = false; }
+  }
   $('save').addEventListener('click', () => save('shows'));
+  $('i-save').addEventListener('click', () => saveSite('identity'));
+  $('b-save').addEventListener('click', () => saveSite('bio'));
   $('p-save').addEventListener('click', () => save('products'));
 
   // Backup: the plain <a download> still works without JS; with JS we fetch it so a 401 / 413 / 429 gets a message, not a saved error file.

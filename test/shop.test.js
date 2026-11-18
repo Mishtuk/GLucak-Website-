@@ -218,7 +218,7 @@ test('/edit/ L2: collapsed rows, radio statuses, Stay plain, no innerHTML / XHR 
   assert.ok(!/\.ed-row\.past[^{]*\{[^}]*opacity/.test(page), 'past rows: no opacity');
   assert.match(page, /\.ed-row\.past\{[^}]*border-style:dashed/);
   const js = await (await get('/js/edit.js')).text();
-  for (const t of ["'ed-row'", "'ed-row-head'", "'ed-actions'", "'ed-form'", 'hidden: true', "'aria-expanded'", "'aria-controls'", "type: 'radio'", "'ed-choice'", "'ed-file-input'", "'Uploading…'", "'Move up'", "'Edit'"]) assert.ok(js.includes(t), t);
+  for (const t of ["'ed-row'", "'ed-row-head'", "'ed-delete'", "'ed-form'", 'hidden: true', "'aria-expanded'", "'aria-controls'", "type: 'radio'", "'ed-choice'", "'ed-file-input'", "'Uploading…'", "'Move up'", "'Edit'"]) assert.ok(js.includes(t), t);
   assert.ok(!js.includes('innerHTML') && !js.includes('XMLHttpRequest') && !js.includes('onprogress'));
   assert.ok(js.includes('r.up.disabled = i === 0') && js.includes('r.down.disabled = i === list.length - 1'), 'ends disabled');
   assert.ok(js.includes("btn.setAttribute('aria-disabled', 'true')") && js.includes('if (saving[kind]) return'), 'Save guarded while saving');
@@ -228,9 +228,9 @@ test('F2 (D43): Save makes the rows inert and disables Add until the reply; Save
   const js = await (await get('/js/edit.js')).text();
   const fn = js.slice(js.indexOf('async function save(kind)'), js.indexOf('async function send('));
   const fin = fn.slice(fn.indexOf('finally'));
-  assert.ok(fn.includes('t.list.inert = true') && fn.includes('add.disabled = true'), 'locked while saving');
-  assert.ok(fin.includes('t.list.inert = false') && fin.includes('add.disabled = false'), 'cleared in finally');
-  assert.ok(fn.indexOf('t.list.inert = true') < fn.indexOf('await send('), 'set before the POST');
+  assert.ok(fn.includes('l.inert = true') && fn.includes('add.disabled = true'), 'locked while saving');
+  assert.ok(fin.includes('l.inert = false') && fin.includes('add.disabled = false'), 'cleared in finally');
+  assert.ok(fn.indexOf('l.inert = true') < fn.indexOf('await send('), 'set before the POST');
   assert.ok(fn.includes("uploads) { waitMsg = true; return say(t.msg, 'Wait for the photo to finish uploading, then press Save.', 'busy'); }"), 'upload guard (D57 string)');
   assert.ok(js.includes('uploads++') && js.includes('finally { uploads--;'), 'upload counter balanced even on a throw');
   assert.ok(js.includes("if (!uploads && waitMsg) { waitMsg = false; say(T.products.msg, ''); }"), 'wait message cleared when the upload ends');

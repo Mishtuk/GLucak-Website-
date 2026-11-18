@@ -88,6 +88,17 @@ If you press Save while a photo is still going up, it says **Wait for the photo 
 
 Photo problems: **Pick a JPG, PNG or WebP photo.** (wrong kind of file) or **That photo is over 5 MB. Pick a smaller one.**
 
+## 5b. IDENTITY and your bio
+
+Two more tabs sit next to Shows: **IDENTITY** and **Bio**. Each one saves on its own.
+
+- **IDENTITY:** the **Release date** and the **Pre-save link** (it has to start with https://). A line under them says what fans see today, like "August 13, 2027, 268 days to go". From release day the button says Listen. Press **Save IDENTITY**.
+- **Bio:** the **Home sentence** (one or two sentences, shows on Home) and the **About bio** (shows on the About page; leave an empty line between paragraphs). It is plain text, so links and bold don't work here. Press **Save bio**.
+
+After a save, **See it on the site** opens the page so you can check it. The change is live at once.
+
+Shows with a past date sit in a folded **Played** list under your upcoming shows. Press **Edit** on any row to open it; **Delete** is at the bottom of the open row.
+
 ## 6. Download a backup
 
 At the bottom of the page press **Download a backup**. It makes one file with your shows, products and photos and says **Done. Look for it in your downloads.**
