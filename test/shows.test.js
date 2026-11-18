@@ -160,8 +160,7 @@ test('28d: cost renders last in the meta line, escaped; a newline or 41 characte
   assert.ok(showsHtml([riv], noon('2026-12-01')).includes('6:00 PM, Free'));
   const saved = checkShows([row({ cost: '  Free  ' }), row({ cost: '' })]);
   assert.equal(saved.rows[0].cost, 'Free'); assert.ok(!('cost' in saved.rows[1]));
-  assert.match(checkShows([row({ cost: 'a
-b' })]).errors[0].message, /Put the cost on one line/);
+  assert.match(checkShows([row({ cost: 'a\nb' })]).errors[0].message, /Put the cost on one line/);
   assert.equal(bookingHref(), 'https://www.instagram.com/glucakofficial/');
   assert.equal(bookingHref('a@b.co'), 'mailto:a@b.co?subject=Booking%3A%20%5Bdate%20%2F%20venue%5D');
 });
