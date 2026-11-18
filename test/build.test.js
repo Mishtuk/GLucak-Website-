@@ -7,6 +7,17 @@ import { join } from 'node:path';
 const DIST = join(import.meta.dirname, '../dist');
 const pages = { '/': 'index.html', '/music/': 'music/index.html', '/shows/': 'shows/index.html', '/about/': 'about/index.html', '/privacy/': 'privacy/index.html' };
 const html = (p) => readFileSync(join(DIST, pages[p]), 'utf8');
+// The sign-up line flips after Scenic Route's day (content.js SCENIC_DAY); expected text follows the real New York day, not a fixed date.
+const SCENIC_DAY = /SCENIC_DAY = '([\d-]+)'/.exec(readFileSync(join(import.meta.dirname, '../src/components/content.js'), 'utf8'))[1];
+const NY_TODAY = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+const SIGNUP = NY_TODAY < SCENIC_DAY ? 'Join the list. Scenic Route is coming Jan 15, and the first listen will be yours.' : 'Get the next show and every new song first.';
+// Same function, source lifted out (content.js imports astro-side json), both sides of the day with an injected clock.
+const signupCopy = new Function('SCENIC_DAY', 'etDay', readFileSync(join(import.meta.dirname, '../src/components/content.js'), 'utf8').match(/function signupCopy[\s\S]*?\n\}/)[0].replace('function signupCopy', 'return function signupCopy'))(SCENIC_DAY, () => NY_TODAY);
+test('sign-up copy: Scenic Route line before its day, the plain line from the day on', () => {
+  assert.match(signupCopy('2027-01-14').label, /Scenic Route is coming Jan 15/);
+  assert.equal(signupCopy('2027-01-15').label, 'Get the next show and every new song first.');
+  assert.equal(signupCopy('2027-01-16').ok, 'You’re on the list.');
+});
 
 test('build output exists', () => assert.ok(existsSync(join(DIST, 'index.html')), 'run npm run build'));
 
@@ -108,7 +119,7 @@ test('approved copy is on each page verbatim; no ASK GABE; no quote ships', () =
     'Two albums and numerous singles and EPs into the biz and with no plans to slow down, GLucak has been running at a ferocious pace crafting brand-new content and music for 2026 and 2027.',
     'Nevertheless, no matter the musical style or genre, be it his debut single or his upcoming 3rd album (rumored to be his best work yet), the mission statement has always been the same: Rise, Live It Loud, Push Past Fear, The Time Is Now.'];
   const want = {
-    '/': ['Live It Loud', bio[0], 'Join the list. Scenic Route is coming Jan 15, and the first listen will be yours.', 'Back my projects and merch. Get early access to songs only the inner circle knows exist.'],
+    '/': ['Live It Loud', bio[0], SIGNUP, 'Back my projects and merch. Get early access to songs only the inner circle knows exist.'],
     '/music/': ['Releases', 'Hear more on SoundCloud', 'Pre-save', 'IDENTITY tracklist', 'All songs written, recorded, produced, mixed and mastered by Gabriel Lucak', 'Remix album'],
     '/shows/': ['Live It Loud', 'Book GLucak'],
     '/about/': [...bio, 'Find GLucak', 'Book GLucak', 'Epilepsy survivor', 'Healed by Christ since 2009', 'Back my projects and merch.', '>Credits<', 'Photo: Alexander Kealey'],

@@ -72,7 +72,9 @@ test('Music: single-link tiles with distinct names, newest first, hatched slot f
   }
   assert.equal(new Set(names).size, names.length, 'distinct names');
   assert.deepEqual(names.slice(0, 3), ['Scenic Route', 'Welcome Home', 'Who I Am']);
-  assert.match(tiles[0], /data-state="coming"[\s\S]*nocover tile-art[\s\S]*<span>Jan 15<\/span>[\s\S]*Out Jan 15, 2027[\s\S]*tile-go">Pre-save</);
+  const scenicOut = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date()) >= '2027-01-15';
+  if (scenicOut) assert.doesNotMatch(tiles[0], /data-state="coming"/);
+  else assert.match(tiles[0], /data-state="coming"[\s\S]*nocover tile-art[\s\S]*<span>Jan 15<\/span>[\s\S]*Out Jan 15, 2027[\s\S]*tile-go">Pre-save</);
   assert.match(tiles[3], /<img class="tile-art" src="\/media\/covers\/duck-dodge-jump-fight\.webp" alt=""[\s\S]*tile-go">Listen</);
   assert.ok(!h.includes('IDENTITY</h3>'), 'IDENTITY has its own block');
   assert.ok(!h.includes('class="release"') && !h.includes('Latest release. Listen on:'), 'RiseBand without its release block on Music');

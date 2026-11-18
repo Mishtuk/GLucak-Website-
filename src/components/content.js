@@ -42,10 +42,10 @@ export const IDENTITY_TRACKS = ['IDENTITY', 'ChurchBoy', 'Single Kids', 'WYLD LO
 export const IDENTITY_TRACKS_HEADING = 'IDENTITY tracklist';
 export const IDENTITY_CREDIT = 'All songs written, recorded, produced, mixed and mastered by Gabriel Lucak'; // the CD back, sentence case, no final period (copy ig6 5)
 export const PATREON_LINE = 'Back my projects and merch. Get early access to songs only the inner circle knows exist.'; // copy ig6 3, option A
-const SCENIC_DAY = '2027-01-15';
+export const SCENIC_DAY = '2027-01-15';
 /** Sign-up wording (copy ig6 1a): Kit is not set up, so only a heads-up is promised. After Scenic Route's day the old line returns. */
-export function signupCopy() {
-  return etDay() < SCENIC_DAY
+export function signupCopy(today = etDay()) {
+  return today < SCENIC_DAY
     ? { label: 'Join the list. Scenic Route is coming Jan 15, and the first listen will be yours.', ok: "You’re in. We’ll tell you the day Scenic Route lands." }
     : { label: 'Get the next show and every new song first.', ok: "You’re on the list." };
 }

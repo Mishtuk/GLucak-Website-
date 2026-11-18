@@ -38,7 +38,7 @@ test('25e: Music has the CD block: cover, 12 tracks in CD-back order, Scenic Rou
   assert.equal((m.match(/class="track track-fav"/g) ?? []).length, 1);
   const names = [...m.matchAll(/<li class="track[^"]*"><span class="track-n">(\d+)<\/span>(?:<span class="track-title">([^<]*)<\/span>|<a [^>]*>([^<]*)(?:<span class="vh">[^<]*<\/span>)?<\/a>)/g)].map((x) => `${x[1]} ${x[2] ?? x[3]}`);
   assert.deepEqual(names, ['1 IDENTITY', '2 ChurchBoy', '3 Single Kids', '4 WYLD LOVE', '5 Life Blood', '6 Mayday Mayday', '7 Light', '8 Mere Reflection', '9 Another Dimension', '10 Trenches', '11 Finish Strong', '12 Scenic Route']);
-  assert.match(m, /<a class="go" href="https:\/\/wingsmusic\.lnk\.to\/ScenicRoute"[^>]*>Scenic Route<span class="vh">[^<]*<\/span><\/a><span class="track-note">Out Jan 15<\/span>/);
+  assert.match(m, /<a class="go" href="https:\/\/wingsmusic\.lnk\.to\/ScenicRoute"[^>]*>Scenic Route<span class="vh">[^<]*<\/span><\/a><span class="track-note">Out (?:Jan 15|now)<\/span>/);
   assert.equal((m.match(/<ol class="tracks"[^>]*>[\s\S]*?<\/ol>/)[0].match(/<a /g) ?? []).length, 1, 'only Scenic Route is a link');
   assert.ok(m.includes('IDENTITY tracklist') && m.includes('All songs written, recorded, produced, mixed and mastered by Gabriel Lucak</p>'));
   assert.ok(m.includes('IDENTITY cover: GLucak. Logo: Dave Bahm.'), 'credit');
@@ -74,8 +74,9 @@ test("25b-d: Gabe's photos and the re-printed images are wired; every new file h
 
 test('copy ig6: sign-up now wording, About lines, Patreon line, credits heading', () => {
   const home = page('index.html');
-  assert.ok(home.includes('Join the list. Scenic Route is coming Jan 15, and the first listen will be yours.'));
-  assert.match(home, /data-ok="You’re in\. We’ll tell you the day Scenic Route lands\."/);
+  const before = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date()) < '2027-01-15'; // SCENIC_DAY, content.js
+  assert.ok(home.includes(before ? 'Join the list. Scenic Route is coming Jan 15, and the first listen will be yours.' : 'Get the next show and every new song first.'));
+  assert.match(home, before ? /data-ok="You’re in\. We’ll tell you the day Scenic Route lands\."/ : /data-ok="You’re on the list\."/);
   assert.ok(!/free download|check your inbox/i.test(home), 'no promise Kit cannot keep yet');
   assert.ok(src('public/js/app.js').includes('form.dataset.ok'));
   const about = page('about/index.html');
@@ -91,7 +92,8 @@ test('copy ig6: the remix album is labelled; every coming lnk.to tile reads Pre-
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
   const rel = JSON.parse(src('src/data/releases.json'));
   const smart = rel.filter((r) => r.type !== 'album' && r.date > today && /(^|\.)lnk\.to$/.test(new URL(r.link).hostname));
-  assert.ok(smart.length > 0);
+  // none left once every smart-link single is out; the tileAction cases below still cover the rule
+  if (smart.length === 0) assert.ok(!tile("Scenic Route")?.includes("tile-go\">Pre-save<"), "nothing coming, so no Pre-save");
   for (const r of smart) assert.ok(tile(r.title).includes('tile-go">Pre-save<'), `${r.title} reads Pre-save`);
   // content.js imports astro-side json, so lift the function out of the source instead of importing it
   const c = src('src/components/content.js'), at = c.indexOf('function tileAction');
