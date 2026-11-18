@@ -103,7 +103,7 @@ test('port notes: no quote text, mark in header, one hero image, credits, no EXI
   assert.ok(!h.includes('From Gabe') && !h.includes('Hope to see you there'), 'D67: the live quote is not on Home');
   assert.equal((h.match(/<figure class="quote/g) ?? []).length, 1, 'D67: Home keeps ONE quote');
   assert.ok(h.includes('Trust me, I know') && h.includes('href="https://www.instagram.com/p/Dd6keDDDefE/"'), 'the RISE quote, word for word, with its post link (Gabe OK 2026-11-11)');
-  assert.match(h, /<a class="brand"[^>]*><img class="mark mark-head"[^>]*><span class="brand-word">GLUCAK<\/span><\/a>/);
+  assert.match(h, /<a class="brand"[^>]*><img class="mark mark-head"[^>]*><span class="brand-word">GLUCAK<\/span><span class="brand-tag">[^<]*<\/span><\/a>/);
   assert.match(h, /Play full songs on Spotify/);
   assert.ok(!h.includes('Open in Spotify') && !h.includes('mission statement has always'));
   assert.equal((h.match(/fetchpriority="high"/g) ?? []).length, 1, 'only the chosen hero image is high priority');

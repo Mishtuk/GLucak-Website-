@@ -178,41 +178,60 @@ p { text-wrap: pretty; }
   position: fixed; inset: 0 0 auto; z-index: 50;
   background: transparent; border-bottom: 2px solid transparent;
 }
-.site-header.is-solid { background: var(--bg); border-color: var(--line); }
-.site-header:has(details[open]) { background: var(--bg); border-color: var(--line); }
+.site-header.is-solid { background: var(--bg) var(--texture); border-color: var(--line); }
+.site-header:has(details[open]) { background: var(--bg) var(--texture); border-color: var(--line); }
 .header-bar { display: flex; align-items: center; gap: var(--space-m); min-height: var(--header-h); }
 .brand {
   margin-right: auto; display: inline-flex; align-items: center; gap: 0.5rem; min-height: 48px;
   font-family: var(--font-display); font-weight: 900; font-size: 1.75rem; letter-spacing: 0.01em; text-decoration: none;
 }
+.brand-word { padding-left: 0.6rem; border-left: 2px solid var(--line); }
+.brand-tag { display: none; padding-left: 0.6rem; color: var(--muted); font: 700 1rem/1.2 var(--font-body); letter-spacing: 0; }
+@container (width >= 74rem) { .brand-tag { display: inline; } }
 /* Logo D, IDENTITY's mark (era file `mark`). A symbol beside the word, never instead of it. Solid dark ground only:
    its wings are 65% grey, so they need bg or bg-2 under them. Never on a photo, the accent or the poster paper. */
 .mark { display: block; width: auto; flex: none; }
-.mark-head { height: 30px; }
+.mark-head { height: 30px; box-sizing: content-box; padding: 0.25rem 0.35rem; background: var(--mark-ground); border-radius: var(--radius-s); } /* 30b: the plate keeps D25's dark ground in a light palette */
 /* D64: the brand is always visible, also over the Home hero. Over the photo (before the header turns solid) a bg scrim
    behind the bar keeps GLUCAK readable (>= 4.5:1, measured). */
 .site-header:not(.is-solid):not(:has(details[open])) { background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 88%, transparent), color-mix(in srgb, var(--bg) 55%, transparent)); }
-.nav-desktop { display: none; gap: 0.25rem; }
+.nav-desktop { display: none; align-self: stretch; gap: 0; }
 .nav-desktop a {
-  display: inline-flex; align-items: center; min-height: 48px; padding-inline: 0.6rem;
-  font-weight: 700; font-size: 1.0625rem; text-decoration: none;
+  position: relative; display: inline-flex; align-items: center; height: 100%; min-height: 48px; padding-inline: 0.75rem;
+  font: 900 1.375rem/1 var(--font-display); text-transform: uppercase; letter-spacing: 0.03em; text-decoration: none;
 }
-.nav-desktop a:hover { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 3px; }
-.header-listen { display: none; }
+/* 30b: the current page is a ledge on the bar's rule (no underline); hover shows a dimmer one. */
+.nav-desktop a::after { content: ''; position: absolute; left: 0.5rem; right: 0.5rem; bottom: -2px; height: 6px; clip-path: polygon(0 100%, 0.3rem 0, calc(100% - 0.3rem) 0, 100% 100%); }
+.nav-desktop a[aria-current='page']::after { background: var(--text); }
+@media (hover: hover) and (pointer: fine) { .nav-desktop a:hover::after { background: var(--line); } .nav-desktop a[aria-current='page']:hover::after { background: var(--text); } }
+.header-listen { display: none; gap: 0.45rem; }
+.btn-ico { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.25; stroke-linejoin: round; stroke-linecap: round; }
 .nav-mobile summary {
   display: inline-flex; align-items: center; min-height: 48px; padding-inline: 0.85rem; margin-right: -0.85rem;
-  font-weight: 700; font-size: 1.0625rem; list-style: none; cursor: pointer;
+  font: 900 1.375rem/1 var(--font-display); text-transform: uppercase; list-style: none; cursor: pointer;
 }
+.nav-mobile summary::before {
+  content: ''; width: 1.1rem; height: 0.7rem; margin-right: 0.45rem;
+  background: linear-gradient(currentColor 0 0) top / 100% 3px no-repeat, linear-gradient(currentColor 0 0) bottom / 100% 3px no-repeat;
+}
+.nav-mobile[open] .m-word:not(.m-close), .nav-mobile:not([open]) .m-close { display: none; }
 .nav-mobile summary::-webkit-details-marker { display: none; }
 .sheet {
   position: absolute; inset: 100% 0 auto; display: grid;
   padding: var(--space-s) var(--gutter) var(--space-l);
-  background: var(--bg); border-bottom: 2px solid var(--line);
+  height: calc(100dvh - var(--header-h) - var(--bar-h)); overflow-y: auto; align-content: start;
+  background: var(--bg) var(--texture); border-bottom: 2px solid var(--line);
 }
 .sheet a {
-  display: flex; align-items: center; min-height: 56px;
-  font-family: var(--font-display); font-weight: 900; font-size: 2.25rem; text-transform: uppercase; text-decoration: none;
+  display: flex; align-items: center; min-height: 64px; border-top: 2px solid var(--line);
+  font-family: var(--font-display); font-weight: 900; font-size: var(--step-3); text-transform: uppercase; text-decoration: none;
 }
+.sheet a::after { /* the setlist arrow (copy of .about-set a::after) */
+  content: ''; flex: none; width: 0.7em; height: 0.56em; margin-left: auto; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M0 16H35M23 4l12 12-12 12' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M0 16H35M23 4l12 12-12 12' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.sheet-slogan { margin-top: var(--space-l); color: var(--muted); font-size: var(--step--1); }
 @media (min-width: 700px) {
   .nav-desktop { display: flex; }
   .header-listen { display: inline-flex; }
@@ -528,14 +547,16 @@ html[data-shows='none'] .quote-live { display: none; }
   position: fixed; inset: auto 0 0; z-index: 60;
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
   padding-bottom: env(safe-area-inset-bottom);
-  background: var(--bg); border-top: 2px solid var(--text);
+  background: var(--bg-2) var(--texture); border-top: 2px solid var(--line);
 }
 .phone-bar a {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
   min-height: 60px; font-size: 1rem; font-weight: 700; line-height: 1.2; text-decoration: none;
 }
 .phone-bar svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.phone-bar a:first-child svg { stroke: var(--accent); } /* 30b: Listen's note in the accent */
 .phone-bar a:active { background: var(--accent); color: var(--accent-text); }
+.phone-bar a:first-child:active svg { stroke: currentColor; }
 @media (min-width: 700px) { .phone-bar { display: none; } }
 
 /* ---------- Wide screens ---------- */
@@ -578,7 +599,7 @@ iframe.yt { width: 100%; border: 0; }
 .identity-state:has(.identity-lg) { margin-top: var(--space-xl); } /* margin on the block, so the mark centres on the word */
 .prose h2, .prose-h { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); text-transform: uppercase; line-height: 1; }
 .footer-join { margin-bottom: var(--space-l); }
-.nav-desktop a[aria-current='page'], .sheet a[aria-current='page'] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 3px; }
+.sheet a[aria-current='page'] { box-shadow: inset 6px 0 0 var(--text); padding-left: 1rem; } /* 30b: an indicator bar */
 .phone-bar a[aria-current='page'] { box-shadow: inset 0 3px 0 var(--text); }
 .ph-chip.inline { position: static; display: inline-block; margin-top: var(--space-xs); }
 /* Sign-up honeypot: off-screen for people, still in the form for bots. */
@@ -896,11 +917,11 @@ html[data-motion='off']::view-transition-new(*) { animation: none !important; }
 .site-header { container-type: inline-size; }
 .brand { line-height: 1; font-size: min(1.75rem, 11.5cqi); }
 @container (width < 19rem) { .mark + .brand-word { display: none; } } /* owner D64: the logo always stays; the word gives way */
-@container (width < 42rem) { /* DESIGN 28e: was 44rem (26e); the nav is from 700px now and the links are tighter (0.6rem) */
+@container (width < 48rem) { /* DESIGN 30b: was 42rem (28e); the display-face nav and the Listen glyph need about 746px (measured, 30h-3) */
   .nav-desktop, .header-listen { display: none; }
   .nav-mobile { display: block; }
 }
-@container (width < 45rem) { /* with the Shop link on (SHOP_ENABLED=1) the row needs about 45rem */
+@container (width < 53rem) { /* with the Shop link on (SHOP_ENABLED=1) the row needs about 53rem */
   .header-bar:has(.nav-desktop a[href$='shop/']) :is(.nav-desktop, .header-listen) { display: none; }
   .header-bar:has(.nav-desktop a[href$='shop/']) .nav-mobile { display: block; }
 }
@@ -1006,7 +1027,7 @@ html[data-motion='off']::view-transition-new(*) { animation: none !important; }
 /* (5) Header. HEADER_STYLE in src/components/content.js sets <html data-header>. 'solid' = a solid bg band from the first
    paint; 'scrim' = the gradient above until you scroll. On phones the hero photo moves down one header height under 'solid',
    so his face sits between the band and the name. */
-html[data-header='solid'] .site-header { background: var(--bg) !important; border-color: var(--line) !important; }
+html[data-header='solid'] .site-header { background: var(--bg) var(--texture) !important; border-color: var(--line) !important; }
 @media (max-width: 899px) { html[data-header='solid']:root { --strip: calc(var(--header-h) * 2 + 1.25rem); } }
 @media (min-width: 700px) and (max-width: 899px) { html[data-header='solid']:root { --strip: calc(var(--header-h) * 2 + 11vw); } }
 
@@ -1458,3 +1479,11 @@ li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* 
 .pal-mood { color: var(--muted); font-size: var(--step--1); line-height: 1.25; }
 .pal-opt[aria-pressed='true'] { box-shadow: inset 4px 0 0 var(--text); }
 .pal-reset { min-height: 44px; margin-top: var(--space-xs); background: none; border: 2px solid var(--muted); color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
+
+/* 30b. Condense on scroll (900px up): instant, no transition; --header-h stays 72px so scroll padding still clears the bar. */
+@media (min-width: 900px) {
+  .is-condensed .header-bar { min-height: 56px; }
+  .is-condensed .mark-head { height: 24px; }
+  .is-condensed .brand { font-size: min(1.5rem, 11.5cqi); }
+  .is-condensed .header-listen { min-height: 44px; font-size: 1.125rem; }
+}

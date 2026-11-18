@@ -221,7 +221,7 @@ test('poster art: only the poster li has it, rows never', async () => {
   const mk = (d, venue) => ({ date: d, type: 'show', venue, city: 'X' });
   const out = showsHtml([mk('2030-01-01', 'A'), mk('2030-01-02', 'B'), mk('2030-01-03', 'C')], new Date('2029-12-01T12:00:00Z'));
   assert.equal(out.split('poster-art').length - 1, 1, 'DESIGN 29d: art on the first full show only');
-  assert.match(out, /<li class="poster" id="s-[^"]*"><picture><img class="poster-art graded"/);
+  assert.match(out, /<li class="poster" id="s-[^"]*"><picture><img class="poster-art graded print"/);
   assert.ok(!/<li class="row"[^>]*>[^]*?poster-art[^]*?<\/li>/.test(showsHtml([mk('2030-01-01', 'A'), { ...mk('2030-01-02', 'B'), type: 'open-mic' }], new Date('2029-12-01T12:00:00Z')).replace(/<li class="poster"[^>]*>[^]*?<\/li>/, '')));
 });
 

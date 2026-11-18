@@ -5,18 +5,19 @@ const { home = false, current } = Astro.props;
 // Shop joins the nav only with SHOP_ENABLED=1: server.js fills the gl:nav-shop marker (src/lib/products.js shopLinks).
 const nav = [['music', 'Music', '/music/'], ['shows', 'Shows', '/shows/'], ['videos', 'Videos', '/videos/'], ['about', 'About', '/about/']];
 ---
-{home && <div class="sentinel" aria-hidden="true"></div>}
+<div class="sentinel" aria-hidden="true"></div>
 <header class:list={['site-header', { 'is-solid': !home }]} data-overlay={home ? '' : undefined}>
   <div class="wrap header-bar">
-    <a class="brand" href="/" aria-label="GLucak home">{era.mark && <img class="mark mark-head" src={era.mark} alt="" width="300" height="96" />}<span class="brand-word">GLUCAK</span></a>
+    <a class="brand" href="/" aria-label="GLucak home">{era.mark && <img class="mark mark-head" src={era.mark} alt="" width="300" height="96" />}<span class="brand-word">GLUCAK</span><span class="brand-tag">Producer-rapper and DJ</span></a>
     <nav class="nav-desktop" aria-label="Main">
       {nav.map(([k, label, href]) => <a href={href} aria-current={current === k ? 'page' : undefined}>{label}</a>)}<Fragment set:html="<!--gl:nav-shop-->" />
     </nav>
-    <a class="btn btn-solid btn-small header-listen" href={home ? '#music' : '/music/'}>Listen</a>
+    <a class="btn btn-solid btn-small header-listen" href={home ? '#music' : '/music/'}><svg class="btn-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>Listen</a>
     <details class="nav-mobile">
-      <summary>Menu</summary>
+      <summary><span class="m-word">Menu</span><span class="m-word m-close">Close</span></summary>
       <nav class="sheet" aria-label="Main menu">
         {nav.map(([k, label, href]) => <a href={href} aria-current={current === k ? 'page' : undefined}>{label}</a>)}<Fragment set:html="<!--gl:nav-shop-->" />
+        <p class="sheet-slogan">Rise, Live It Loud, Push Past Fear, The Time Is Now.</p>
       </nav>
     </details>
   </div>

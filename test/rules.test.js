@@ -24,7 +24,7 @@ test('28g: btn-solid only on Listen, Pre-save, Tickets, Buy (every built page bu
   for (const p of walk(join(ROOT, 'dist'))) {
     if (p.includes(`${join('dist', 'edit')}`)) continue;
     const h = readFileSync(p, 'utf8');
-    for (const m of h.matchAll(/<(a|button)\b[^>]*class="[^"]*\bbtn-solid\b[^"]*"[^>]*>([^<]*)</g)) assert.match(m[2].trim(), /^(Listen|Pre-save|Tickets|Buy)$/, `${p}: btn-solid "${m[2]}"`);
+    for (const m of h.matchAll(/<(a|button)\b[^>]*class="[^"]*\bbtn-solid\b[^"]*"[^>]*>(?:<svg[^>]*>.*?<\/svg>)?([^<]*)</g)) assert.match(m[2].trim(), /^(Listen|Pre-save|Tickets|Buy)$/, `${p}: btn-solid "${m[2]}"`);
   }
 });
 
@@ -44,9 +44,9 @@ test('28g: the video play square is ink, not accent', () => {
   assert.ok(!/\.yt-play::before \{[^}]*--accent/.test(css));
 });
 
-test('28e: the nav, Listen and the lockups switch at 700px, the Menu fallback is 42rem; nothing is left at 900 for the nav', () => {
+test('28e: the nav, Listen and the lockups switch at 700px, the Menu fallback is 48rem (30b); nothing is left at 900 for the nav', () => {
   assert.match(css, /@media \(min-width: 700px\) \{\s*\.nav-desktop \{ display: flex; \}\s*\.header-listen \{ display: inline-flex; \}\s*\.nav-mobile \{ display: none; \}/);
-  assert.match(css, /@container \(width < 42rem\)/);
+  assert.match(css, /@container \(width < 48rem\)/);
   for (const m of css.matchAll(/@media \(min-width: 900px\) \{([^]*?)\n\}/g)) assert.ok(!/\.nav-desktop \{ display: flex/.test(m[1]), 'no 900px block holds the nav');
   const m700 = css.slice(css.indexOf('28e. Lockups'));
   assert.ok(m700.includes('.lock-push .ln') && m700.includes('.lock-now .ln') && m700.includes('(max-width: 899px)') && m700.includes('.hero-actions .btn'));

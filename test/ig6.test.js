@@ -12,7 +12,7 @@ const src = (p) => readFileSync(join(ROOT, p), 'utf8').replace(/\r\n/g, '\n');
 const era = JSON.parse(src('src/eras/identity.json'));
 
 test('25a: the era style wins over global.css :root (html:root is more specific), on every page and /edit/', () => {
-  assert.ok(src('src/layouts/Base.astro').includes('`html:root{${eraCss}}`') && src('src/pages/edit/index.astro').includes('`html:root{${eraCss}}`'));
+  assert.ok(src('src/layouts/Base.astro').includes('`html:root{${eraCss}}') && src('src/pages/edit/index.astro').includes('`html:root{${eraCss}}`'));
   for (const f of ['index.html', 'music/index.html', 'shows/index.html', 'about/index.html', '404.html']) {
     const h = page(f);
     assert.ok(h.includes(`html:root{--bg:${era.colors.bg};`), `${f}: era declared as html:root`);

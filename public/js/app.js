@@ -9,6 +9,7 @@
   if (header && sentinel && header.dataset.overlay != null) {
     new IntersectionObserver(([e]) => header.classList.toggle('is-solid', !e.isIntersecting)).observe(sentinel);
   }
+  if (header && sentinel) new IntersectionObserver(([e]) => header.classList.toggle('is-condensed', !e.isIntersecting)).observe(sentinel); // DESIGN 30b: 900px+ CSS shrinks the bar
   const menu = $('.nav-mobile');
   if (menu) {
     const summary = menu.querySelector('summary');
