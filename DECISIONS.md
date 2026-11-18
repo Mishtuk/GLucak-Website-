@@ -473,3 +473,10 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   accepted. 6 (belt and stage stills credited to Vladd) only if the coder confirms in `tools/photo` that both come from the Scenic Route
   live clip; otherwise the credit stays.
 - **Why:** each keeps the hard rules (real photos only, no re-grading Gabe's art) and removes a duplicate frame or a dead option.
+
+## D118 (Desktop boss, 2026-11-18, owner's request "shake it up ... don't be afraid to do major changes", reversible): DESIGN 30 "poster wall"
+- **Ruling:** DESIGN 30 is the spec for round PW: six palettes behind `?palettes` (IDENTITY stays the default for fans), a finished top
+  bar, staggered / asymmetric bands on every page. All 30z deviations accepted (Home cap 3861 -> 3920; hero B photo beside the name;
+  Logo D plate; header display-face nav + instant condense; two new colour roles; folder-tab section word; Print re-inked by filter
+  under a preview palette; shop touches; Shows two columns from 700px). 30g entrance motion waits for the owner's yes.
+- **Why:** the owner found the site "straight ... just a pattern" and asked for staggered panels, a better top bar and colours to try.

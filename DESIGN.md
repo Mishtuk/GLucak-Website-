@@ -3758,3 +3758,292 @@ Rows 1, 2 and 5 are the D98 reversal points: if the owner prefers the riso, the 
    only if the boss exempts his own grade from "magenta in no photo" (then: gallery items 4 and 5, Clean, credit IDENTITY CD).
 **Not done here:** the print files themselves (the coder runs `--only=o`; the c-poster-identity file, made by the same `poster()`,
 already passes the Print test at 99.6%, so the look is proven); the design-review skill (runs at the OV6 gate on the built shots).
+
+## 30. Round PW ("poster wall"): staggered layout, a finished top bar, palettes to cycle (Desktop designer, 2026-11-18)
+**Source:** the owner, 2026-11-18: "I don't really like how straight everything is ... mix up panels and like stagger them ... give
+me some different colors for the website to cycle through ... improve the top bar ... don't be afraid to do major changes."
+**Looked at:** `.work/loop5/` (Home 390 and 1280 full, the 1280 hero, Music, Shows, About, Videos and Shop at 1280) and `loop5-test.md`.
+**The problem:** every band on every page has the same shape. A 4px rule, the section word, the phrase in 5fr on the left, the
+content in 7fr on the right, one navy ground, edge to edge. From 900px Home is five of these in a row. This section gives each band
+its own composition, ground and edge, so the page reads as a poster wall instead of a list.
+**References (ideas only, nothing copied):** Oversight *Jewelcase* (IDENTITY as an object, here a flat paper sheet, no 3D), *Collage*
+(About's photos at staggered heights, gaps instead of hairlines), *Vinyl* (Music's grooves ground stays, no audio). Wix music
+templates (alternating light and dark bands, inset panels, a tour list beside a tall photo). Our own gig-poster kit (paper, ink,
+tape, tickets, the torn foot of the poster art).
+**Hard rules held:** nothing flashes, and no motion is added except the gated 30g. Real photos only, and covers and Gabe's graded
+photos are never tinted (D51). CSP unchanged: the switcher lives in `app.js` and `boot.js`. No new fonts. One click to every
+section. AA contrast (30c).
+
+### 30a. The kit (global.css, new block "30" at the END, after 29; all static: no transition, animation or scroll link)
+1. **Paper sheet** `.is-paper`: ink and paper swap inside it. Add to `:root` after `--line`: `--page-bg: var(--bg); --page-text: var(--text);`
+   (they resolve on `html`, so they inherit as hex). Then:
+   `.is-paper { --bg: var(--page-text); --text: var(--page-bg); --muted: var(--muted-inv); --bg-2: color-mix(in srgb, var(--page-bg) 7%, var(--page-text)); --line: color-mix(in srgb, var(--page-bg) 26%, var(--page-text)); position: relative; background: var(--bg) var(--texture); color: var(--text); }`
+   `.is-paper .btn-solid { border-color: var(--text); }` (ink frame on an accent button). Focus rings use `--text`: ink on paper.
+2. **Edges**: a pseudo-element ABOVE the band, in the band's ground. It never clips `.tab` and adds no height (it lies over the
+   previous band's bottom padding). The band must set `background-color`.
+   `.edge-angle, .edge-tear { border-top: 0; } :is(.edge-angle, .edge-tear) .tab { top: calc(-1 * var(--tab-h)); }`
+   `:is(.edge-angle, .edge-tear)::before { content: ''; position: absolute; left: 0; right: 0; bottom: 100%; background: inherit; pointer-events: none; }`
+   `.edge-angle::before { height: clamp(14px, 3vw, 44px); clip-path: polygon(0 100%, 100% 0, 100% 100%); }` (thin at the left, under the tab)
+   `.edge-tear::before { height: 12px; clip-path: polygon(0 100%, 0 45%, 3% 70%, 7% 20%, 12% 60%, 16% 10%, 22% 55%, 27% 25%, 33% 75%, 38% 15%, 44% 50%, 49% 5%, 55% 60%, 61% 30%, 66% 70%, 72% 10%, 78% 55%, 83% 20%, 89% 65%, 94% 15%, 100% 50%, 100% 100%); }`
+3. **Tape** `.taped` (on a `figure` or a sheet, never an `img`): `position: relative;`
+   `.taped::before, .taped::after { content: ''; position: absolute; z-index: 2; top: -0.7rem; width: clamp(3.5rem, 8vw, 6rem); height: 1.5rem; background: color-mix(in srgb, var(--muted) 60%, transparent); pointer-events: none; }`
+   `.taped::before { left: -1rem; rotate: -8deg; } .taped::after { right: -1rem; rotate: 6deg; }`
+4. **Ticket** `.ticket`: `padding: var(--space-s) calc(var(--space-m) + 12px); background: var(--bg-2) var(--texture);` and as `-webkit-mask` + `mask`:
+   `radial-gradient(circle 12px at 0 50%, #0000 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 12px at 100% 50%, #0000 97%, #000) right / 51% 100% no-repeat;`
+   On a bg-2 ground (footer) its ground is `var(--bg)`. Focus rings sit inside the padding, so the notches never cut them.
+5. **Stagger** `.stagger`: from 700px, `.stagger > :nth-child(even) { margin-top: var(--stg, 2rem); }`. Never on phone swipe rows.
+**Hover:** every new rule inside `@media (hover: hover) and (pointer: fine)`. `:is(.tile-link, .product-link, .v2-vid a, .gallery-grid a):hover :is(.tile-art, .product-media, .v2-thumb, img) { outline: 2px solid var(--text); outline-offset: 4px; }`
+Instant; nothing moves. Pressed stays 16e.
+
+### 30b. Top bar (`Header.astro`, `MobileBar.astro`, block 30)
+**Lockup:** Logo D on its plate, GLUCAK, then a descriptor from 74rem. Markup: after `.brand-word` add
+`<span class="brand-tag">Producer-rapper and DJ</span>` (the link's aria-label stays "GLucak home").
+- `.mark-head { box-sizing: content-box; padding: 0.25rem 0.35rem; background: var(--mark-ground); border-radius: var(--radius-s); }`
+  (invisible on dark palettes, a dark chip on Gig Poster; keeps D25's "dark ground only").
+- `.brand-word { padding-left: 0.6rem; border-left: 2px solid var(--line); }`
+- `.brand-tag { display: none; padding-left: 0.6rem; color: var(--muted); font: 700 1rem/1.2 var(--font-body); }` + `@container (width >= 74rem) { .brand-tag { display: inline; } }`
+**Ground:** `.site-header.is-solid, html[data-header='solid'] .site-header { background: var(--bg) var(--texture) !important; }`. Rule stays 2px `--line`.
+**Nav (700px up):** `.nav-desktop { align-self: stretch; gap: 0; }`
+`.nav-desktop a { position: relative; height: 100%; padding-inline: 0.75rem; font: 900 1.375rem/1 var(--font-display); text-transform: uppercase; letter-spacing: 0.03em; text-decoration: none; }`
+Current page = the section ledge on the bar's rule (no underline): `.nav-desktop a[aria-current='page'] { text-decoration: none; }`
+`.nav-desktop a::after { content: ''; position: absolute; left: 0.5rem; right: 0.5rem; bottom: -2px; height: 6px; clip-path: polygon(0 100%, 0.3rem 0, calc(100% - 0.3rem) 0, 100% 100%); }`
+`.nav-desktop a[aria-current='page']::after { background: var(--text); }`; fine-pointer hover `.nav-desktop a:hover::after { background: var(--line); }`.
+Delete the underline hover (line 199). The display face is wider, so re-measure the 42rem Menu fallback (28e) at 700, 768 and 900
+with the Listen glyph in; raise it if anything overlaps (30h-3).
+**Listen:** `.header-listen` gets the phone bar's note glyph first: `<svg class="btn-ico" viewBox="0 0 24 24" aria-hidden="true">` (same
+paths). `.btn-ico { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.25; } .header-listen { gap: 0.45rem; }`
+**Condense on scroll (900px up):** render `.sentinel` on every page (drop `home &&`). app.js keeps the overlay toggle and adds
+`if (header && sentinel) new IntersectionObserver(([e]) => header.classList.toggle('is-condensed', !e.isIntersecting)).observe(sentinel);`
+In `@media (min-width: 900px)`: `.is-condensed .header-bar { min-height: 56px; } .is-condensed .mark-head { height: 24px; }` (the D25 floor)
+`.is-condensed .brand { font-size: min(1.5rem, 11.5cqi); } .is-condensed .header-listen { min-height: 44px; font-size: 1.125rem; }`
+The swap is instant (a size change on scroll is motion). `--header-h` stays 72px, so scroll padding still clears the bar.
+**Phone menu (under 700px):**
+- Summary `<span class="m-word">Menu</span><span class="m-word m-close">Close</span>`, with `.nav-mobile[open] .m-word:not(.m-close), .nav-mobile:not([open]) .m-close { display: none; }`.
+  Font `900 1.375rem/1 var(--font-display)`, uppercase. Two-bar glyph `::before`: `width: 1.1rem; height: 0.7rem; margin-right: 0.45rem; background: linear-gradient(currentColor 0 0) top / 100% 3px no-repeat, linear-gradient(currentColor 0 0) bottom / 100% 3px no-repeat;`
+- Sheet `height: calc(100dvh - var(--header-h) - var(--bar-h)); overflow-y: auto; align-content: start; background: var(--bg) var(--texture);`
+  Rows `.sheet a { min-height: 64px; font-size: var(--step-3); border-top: 2px solid var(--line); }` with the setlist arrow (copy
+  `.about-set a::after`). Current row `box-shadow: inset 6px 0 0 var(--text); padding-left: 1rem;` (an indicator bar, not a shadow).
+  After the links, `<p class="sheet-slogan">Rise, Live It Loud, Push Past Fear, The Time Is Now.</p>` (muted, `--step--1`, margin-top `--space-l`).
+  The D89 open scale stays gated.
+**Phone bar (D8: always on, four items):** `background: var(--bg-2) var(--texture); border-top: 2px solid var(--line);`. The Listen
+glyph in the accent: `.phone-bar a:first-child svg { stroke: var(--accent); }` (accent on bg-2 is at least 3:1 in all six, 30c).
+Current item keeps its 3px inset ledge; targets stay 60px.
+
+### 30c. Palettes (`src/palettes.json`, new; the switcher is 30d)
+Liu's rule: a ground and an ink, plus one accent of the other temperature, filled only on Listen, Tickets, Pre-save and Buy (D98).
+`bg-2` and `line` stay derived (global.css 26-27, `--tint` 0%); the table shows their computed values. Every palette and every
+`src/eras/*.json` gains `muted-inv` (muted on a paper sheet) and `mark-ground` (Logo D's plate).
+| id / name | Mood | bg | bg-2 | text | muted | line | accent | accent-text | muted-inv | mark-ground |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `identity` IDENTITY (now) | Midnight navy and stage magenta, from the IDENTITY art | #05024c | #161359 | #f4f2ff | #b7b2e3 | #43407b | #d93cfb | #05024c | #4a4590 | #05024c |
+| `amber` Stage Amber | One warm spot on a cold, dark stage | #121418 | #222326 | #f5efe6 | #b4ab9e | #4d4d4e | #ffb000 | #121418 | #5c544a | #121418 |
+| `poster` Gig Poster (light) | Cream stock, black ink, one red stamp | #f2e9d8 | #e3daca | #17130f | #5e5246 | #b9b1a4 | #c8201a | #ffffff | #c9bca6 | #17130f |
+| `green` Green Room | Backstage green, chrome white, a coral pass | #062419 | #163228 | #e9f0ee | #a6bcb3 | #415950 | #ff7466 | #062419 | #3f5a50 | #062419 |
+| `steel` Steel Flare | Steel-blue night, one orange flare | #14283d | #23364a | #edf3f8 | #a8bbcd | #4c5d6e | #ff7a1a | #14283d | #4a5f74 | #14283d |
+| `redline` Redline (high energy) | Oxblood and ice: the loudest set | #2b0609 | #3a1619 | #fff1ea | #e2b0aa | #624344 | #3ce6d4 | #2b0609 | #7a3a3a | #2b0609 |
+
+**Measured** (WCAG 2.x; 30h-1 recomputes from the JSON). Floors: text 7, muted 4.5, accent-text on accent 4.5, focus and shape 3.
+| id | text/bg | text/bg-2 | muted/bg | muted/bg-2 | accent-text/accent | accent/bg (shape) | accent/bg-2 | muted-inv/text | focus (text/bg) |
+|---|---|---|---|---|---|---|---|---|---|
+| identity | 16.96 | 14.94 | 9.37 | 8.25 | 5.35 | 5.35 | 4.71 | 7.46 | 16.96 |
+| amber | 16.13 | 13.75 | 8.13 | 6.93 | 10.06 | 10.06 | 8.58 | 6.51 | 16.13 |
+| poster | 15.33 | 13.33 | 6.29 | 5.47 | 5.71 | 4.74 | 4.12 | 9.88 | 15.33 |
+| green | 14.26 | 11.94 | 8.21 | 6.88 | 6.23 | 6.23 | 5.22 | 6.51 | 14.26 |
+| steel | 13.41 | 11.06 | 7.61 | 6.27 | 5.75 | 5.75 | 4.74 | 5.90 | 13.41 |
+| redline | 16.79 | 14.54 | 9.73 | 8.42 | 11.88 | 11.88 | 10.29 | 7.63 | 16.79 |
+
+All six pass. Text over a Print photo with 15% ink under it (hero A's name zone): 8.65 (steel) to 12.12 (identity). Gig Poster's
+cream and red are both warm because the owner named that pairing; the cold ink keeps the 2 + 1 split. Accent as a shape on a paper
+sheet can fall to 1.4:1 (Redline), hence the ink frame in 30a.
+**JSON:** `[{ "id", "name", "mood", "light": false, "colors": { "bg", "text", "muted", "accent", "accent-text", "muted-inv", "mark-ground" } }, ...]`
+(bg-2 and line derive, so they are not stored). `identity.json` gains `"muted-inv": "#4a4590", "mark-ground": "#05024c"`;
+`placeholder.json` gains `"muted-inv": "#4d4d4d", "mark-ground": "#111111"` (7.75:1 on its text).
+**CSS from the JSON:** Base.astro appends to the existing inline `<style>`, for every entry except `identity` (ids checked
+`/^[a-z]+$/`, values through the existing `HEX` test):
+`html:root[data-palette='<id>']{--bg:..;--text:..;--muted:..;--accent:..;--accent-text:..;--muted-inv:..;--mark-ground:..}` and
+`html[data-palette='<id>'] img.print{filter:url(#print-<id>)}`. For `"light": true` also `html[data-palette='<id>'] .poster-art{mix-blend-mode:lighten}`
+(the poster's paper is dark there, so `darken` would erase the art). `html:root[...]` (0,2,1) beats the era's `html:root` (0,1,1).
+Without `data-palette`, everyone gets exactly today's colours.
+**Print photos follow the palette.** Print files hold exactly the era's bg and text (29a). Inside the existing `<svg class="defs">`,
+Base adds per non-identity palette `<filter id="print-<id>" color-interpolation-filters="sRGB">`: the `#duo` grey `feColorMatrix`, then
+`<feComponentTransfer>` with `feFuncR/G/B type="discrete" tableValues="<bg ch> <text ch>"` (0-1, 3 decimals). Grey under 0.5 maps to bg,
+the rest to text; the era bg greys to 0.043 and text to 0.957, so the swap is clean. Add `class="print"` to the six Print images:
+hero A `a-print-phone-800`, the B print (30e), `poster-art` (`src/lib/shows.js` 84), `v2/garage-toner`, `v2/stage-lines`, `v2/belt-print`.
+**What the owner will see that does not follow:** Clean photos (About's purple CD header, the gallery), covers, YouTube thumbnails,
+Logo D and the Spotify player (always Spotify's dark card). On Gig Poster the player is a dark block on cream; on Stage Amber and
+Redline, About's violet header is the one off-palette colour. Expected. Choosing a palette for real = re-run Print with the new
+bg/text (`tools/photo`, 29c), nothing else. `<meta name="theme-color">` follows (30d).
+
+### 30d. The switcher ("Colours", an owner preview tool, not a fan feature)
+**Markup** (`Footer.astro`, last child of `.footer-row`, built from `palettes.json`):
+`<details class="pal" id="pal" hidden><summary>Colours</summary><div class="pal-sheet" role="group" aria-label="Colour palettes">`, one per palette:
+`<button type="button" class="pal-opt" data-pal="<id>" aria-pressed="false" style="--s1:<bg>;--s2:<text>;--s3:<accent>"><span class="pal-sw" aria-hidden="true"></span><span class="pal-name"><name></span> <span class="pal-mood"><mood></span></button>`,
+then `<button type="button" class="pal-reset">Reset to IDENTITY</button></div></details>`. `hidden`: fans never see it, readers never read it.
+**CSS:** `.pal { position: fixed; left: 12px; bottom: calc(var(--bar-h) + 12px); z-index: 70; }`
+`.pal summary { display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.9rem; background: var(--bg-2); border: 2px solid var(--line); border-radius: var(--radius-s); font-weight: 700; font-size: var(--step--1); list-style: none; cursor: pointer; }`
+`.pal-sheet { position: absolute; left: 0; bottom: calc(100% + 6px); display: grid; width: min(20rem, calc(100vw - 24px)); max-height: 70dvh; overflow-y: auto; padding: var(--space-xs); background: var(--bg); border: 2px solid var(--line); }`
+`.pal-opt { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); column-gap: 0.6rem; align-items: center; min-height: 52px; padding: 0.35rem; text-align: left; background: none; border: 0; }`
+`.pal-sw { grid-row: span 2; height: 2.25rem; border: 2px solid var(--line); background: linear-gradient(90deg, var(--s1) 0 50%, var(--s2) 50% 75%, var(--s3) 75%); }`
+`.pal-name { font-weight: 800; } .pal-mood { color: var(--muted); font-size: var(--step--1); line-height: 1.25; } .pal-opt[aria-pressed='true'] { box-shadow: inset 4px 0 0 var(--text); }`
+`.pal-reset { min-height: 44px; margin-top: var(--space-xs); background: none; border: 2px solid var(--muted); font-weight: 700; }`
+Add `.pal-opt:active, .pal-reset:active, .pal summary:active` to the 16e pressed list. No transition anywhere.
+**boot.js** (head, before first paint, already external: no flash, no CSP change), inside the IIFE:
+`try { const p = localStorage.getItem('palette'); if (p && p !== 'identity' && /^[a-z]{1,16}$/.test(p)) root.dataset.palette = p; } catch { /* blocked storage: default colours */ }`
+**app.js**, after the Motion switch:
+```js
+/* Palettes (DESIGN 30d): the owner's preview. Shown with ?palettes, or on any page once a palette is stored. Instant swap. */
+const pal = $('#pal');
+if (pal) {
+  const read = () => { try { return localStorage.getItem('palette'); } catch { return null; } };
+  const write = (v) => { try { v ? localStorage.setItem('palette', v) : localStorage.removeItem('palette'); } catch { /* this page only */ } };
+  const sync = () => {
+    const cur = root.dataset.palette || 'identity';
+    pal.querySelectorAll('[data-pal]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.pal === cur)));
+    $('meta[name="theme-color"]')?.setAttribute('content', getComputedStyle(root).getPropertyValue('--bg').trim());
+  };
+  if (new URLSearchParams(location.search).has('palettes') || read()) { pal.hidden = false; sync(); }
+  pal.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-pal], .pal-reset');
+    if (!b) return;
+    const v = b.dataset.pal || null; // the reset button has no data-pal
+    if (v && v !== 'identity') root.dataset.palette = v; else delete root.dataset.palette;
+    write(v); sync();
+  });
+}
+```
+Choosing IDENTITY stores `identity`, so the control follows to every page; Reset forgets it (gone from the next page). Nothing
+animates (no colour transition; the D64 fade runs only on navigation). With no stored key, boot.js does nothing and `#pal` stays hidden.
+
+### 30e. Home (390 / 768 / 1280; "768" = the 700px rules)
+Five bands, five compositions; from 700px no two neighbours alike.
+| Band | Phones (<700) | 700-899 | 900+ | Ground / edge |
+|---|---|---|---|---|
+| Hero | A, as now | A, as now | **Poster**: GLUCAK whole across the top; slogan, actions, stub, sound in 7fr left; B print taped in 5fr right | wall, as now |
+| Rise | card full bleed | RISE right-aligned over the card | **Mirror**: card 7fr left, RISE + garage print right | bg, 4px rule |
+| Shows | phrase, list, swipe row | phrase full, list 7 cols + stage print | **Banner**: phrase full; list 7 cols, stage print 4 cols bled to the edge; Watch full width under | bg-2, `edge-angle` |
+| About | sheet flush left, inset right | sheet, photo 30% right | **Sheet**: inset, overlapping Shows by 2rem; belt print left 5fr, phrase + bio right | `is-paper` + `taped` |
+| Join | ticket | phrase full; ticket and IDENTITY side by side | **Split + ticket**: phrase 5fr, ticket 7fr, IDENTITY stepped in 4rem | bg, 4px rule |
+| Footer | as now | as now | as now | bg-2, `edge-tear` |
+
+**Hero (900+).** `Hero.astro`: delete `<span class="slot">...</span>` from `.name-row`; after `.sound` add
+`<figure class="hero-print taped" aria-hidden="true"><picture><source media="(min-width: 900px)" srcset="/media/b-print-600.webp 600w, /media/b-print-1000.webp 1000w" sizes="33vw"><img class="graded print" src={GIF} alt="" width="1000" height="706"></picture></figure>`.
+Delete global.css 698-710 (the `ab` slot) and 543-546 (one-line slogan): the slogan keeps its two fitted phone lines in its column.
+`@media (min-width: 900px) { .hero-inner { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: var(--space-xl); grid-template-areas: 'name name' 'slogan print' 'actions print' 'now print' 'sound print'; align-items: start; } }`
+`.name { grid-area: name; } .slogan { grid-area: slogan; } .hero-actions { grid-area: actions; } .now { grid-area: now; margin: var(--space-s) 0 0; } .sound { grid-area: sound; }`
+`.hero-print { display: none; } @media (min-width: 900px) { .hero-print { display: block; grid-area: print; justify-self: end; align-self: center; width: min(100%, 26rem); margin: var(--space-m) 0 0; rotate: -2deg; } .hero-print img { width: 100%; height: auto; } }`
+Also fixes loop5 P2 ("G LUCAK"): the name is whole. At 1280 the hero is about 690px (inside the first 800px screen).
+**Rise.** 900+: `.band-rise > .wrap.v2-split { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }`
+`.band-rise .v2-side { grid-column: 2; grid-row: 1; justify-items: end; text-align: end; } .band-rise .v2-split > :last-child { grid-column: 1; grid-row: 1; }`
+`.band-rise .v2-land { width: calc(100% + var(--gutter)); max-width: none; margin-right: calc(-1 * var(--gutter)); }` (runs off the
+right edge). `.tab` stays at the left gutter. 700-899: `.phrase-rise { text-align: end; }`. Phones:
+`.band-rise .v2-card { margin-inline: calc(-1 * var(--gutter)); border-radius: 0; padding-inline: var(--gutter); }` (the one edge-to-edge
+panel; same height, Spotify's top stays on screen one, D81).
+**Shows.** `index.astro`: `class="band band-live edge-angle"`; `.band-live.edge-angle { background-color: var(--bg-2); }` (`.v2-thumb`,
+`.nocover` inside use `--bg`). 700+: `.band-live > .wrap.v2-split { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--space-l); }`
+`.band-live .v2-side { display: contents; } .band-live .spine { grid-column: 1 / -1; } .band-live .v2-main { grid-column: 1 / span 7; grid-row: 2; }`
+`.band-live .v2-tall { display: block; grid-column: 9 / -1; grid-row: 2; align-self: start; width: calc(100% + var(--gutter)); max-width: none; margin-right: calc(-1 * var(--gutter)); }`
+900+ (Watch leaves the 7 columns): `.band-live .v2-main { display: contents; } #shows-mount { grid-column: 1 / span 7; grid-row: 2; } .band-live .v2-videos { grid-column: 1 / -1; grid-row: 3; }`
+Under 900 Watch stays under the list. Phones: unchanged except the edge.
+**About.** `index.astro`: `<div class="wrap v2-split is-paper taped">`. `.band-push.v2-push { border-top: 0; background: none; padding-block: 0 var(--space-xl); }`
+The tab hangs off the sheet's top like a folder tab: `.is-paper .tab { left: var(--space-m); color: var(--page-text); }` (on Shows'
+bg-2, at least 11:1; its ledge merges into the sheet in dark palettes).
+Phones: `.v2-push > .wrap.is-paper { width: auto; margin: 0.75rem var(--space-m) 0 0; padding: var(--space-m) var(--space-m) var(--space-m) var(--gutter); }`
+(flush left, 16px short of the right; the 0.75rem keeps the tab clear of Watch).
+700+: `width: min(100% - 2 * var(--gutter) - 6vw, var(--container) - 6vw); margin: -2rem 0 0 max(var(--gutter), calc((100% - var(--container)) / 2)); padding: var(--space-xl);`
+and Shows `padding-bottom: calc(var(--section) + 2rem)`, so the overlap only eats padding.
+900+: `grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: 'p1 side' 'p1 bio' 'p1 act';` (photo left, the
+mirror of today). The belt print is paper polarity, so its paper is the sheet: the photo reads as printed on it.
+**Join.** `Signup.astro`: `<form class="signup ticket">` everywhere (30a-4 flips the footer's ground). 700-899:
+`.band-now .now-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; }`. 900+: `.band-now .v2-identity { margin-left: 4rem; }`.
+**Footer.** `.site-footer` gets `edge-tear` (ground already bg-2); `.footer-join .ticket { background-color: var(--bg); }`.
+**Home height (D114 cap 3861 at 390x660).** At 390: sheet padding +32, band padding/margin -12, ticket padding +24, edges 0:
+about **+44, roughly 3903**. Proposed cap **3920 (5.94 screens)**, 30z-1. If the gate is over, trim in order: ticket padding to
+0.5rem (-8), sheet padding to 0.75rem (-8), `.band-push` bottom padding to `--space-l` (-12).
+
+### 30f. Other pages (900+ unless stated)
+**Music** (mirror, sheet, staggered grid).
+1. Rise: the 30e mirror (same RiseBand), player left, RISE right on the grooves.
+2. `.idn`: `is-paper` + `padding: var(--space-xl)`; `.idn-cover { margin-top: calc(-1 * var(--space-xl) - 2.5rem); align-self: start; }`
+   (the cover breaks the sheet's top; never rotated or framed, D51). `.mark` sits on its plate (30b). Phones: sheet full bleed
+   (`margin-inline: calc(-1 * var(--gutter)); padding: var(--space-m) var(--gutter)`), cover lift `-1.5rem`.
+3. `.crate` gets `stagger`: 900+ `--stg: 3rem` (four across, columns 2 and 4 drop); 700-899 `.stagger > :nth-child(3n+2)` with
+   `--stg: 2rem` (three across); phones `.crate > :nth-child(even) { margin-top: 1.5rem; }` (+24px on the last row).
+**Shows** (one band, keeps its 4px rule since it starts under the header). 700+: `.shows-grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }`
+(from 700, not 72rem). 900+: `.shows-side { margin-top: 6rem; }` (stepped down; the next show owns the top). The next show (first
+`.poster` or `.row` in `.shows`) gets `ticket` + `padding: var(--space-m) var(--space-l)`. The full-show poster `.poster:not(.is-plain)`
+breaks out with `margin-right: calc(-1 * var(--space-xl));`. `.venues` (Book GLucak) gets `is-paper taped` + `padding: var(--space-l)`.
+`.played { padding: var(--space-l); background: var(--bg-2); }`. Phones: next show as the ticket; Book GLucak a sheet flush right
+(`margin-inline: var(--space-m) calc(-1 * var(--gutter))`); Played full bleed.
+**About** (full-bleed photo, 7/4 split, collage, sheet). 900+: `.about-body { grid-template-columns: repeat(12, minmax(0, 1fr)); }`
+`.bio { grid-column: 1 / span 7; } .about-actions { grid-column: 9 / -1; position: sticky; top: calc(var(--header-h) + 1rem); }` (position, not motion).
+Gallery (Collage; fixes loop5 P1): `.gallery { grid-column: 1 / -1; } .gallery-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-m); align-items: start; }`
+`li:nth-child(1) { grid-column: 1 / span 5; } li:nth-child(2) { grid-column: 6 / span 3; margin-top: 5rem; } li:nth-child(3) { grid-column: 9 / -1; margin-top: -3rem; }`
+`li:nth-child(3) img { aspect-ratio: 634 / 1128; }`. `.prose` (Book GLucak, Credits): `is-paper`, `margin-left: 8vw; padding: var(--space-xl);`.
+700-899: gallery 2 across, `nth-child(2) { margin-top: 3rem; }`. Phones: gallery as now; `.prose` a sheet flush right as on Shows.
+**Videos.** Band 1 as now. `.band-mv`: `edge-tear`, `background-color: var(--bg-2)`. 900+ mosaic: `.vid-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }`
+`> :nth-child(1) { grid-column: 1 / span 7; grid-row: span 2; } > :nth-child(2), > :nth-child(3) { grid-column: 8 / -1; }`
+`> :nth-child(4) { grid-column: 2 / span 5; } > :nth-child(5) { grid-column: 7 / span 5; margin-top: 2.5rem; } > :nth-child(n+6) { grid-column: span 4; }`
+700-899: two across + `stagger` (`--stg: 2rem`). Phones: odd cards full bleed (`margin-inline: calc(-1 * var(--gutter))`, text
+`padding-inline: var(--gutter)`), even cards `margin-left: 12%`.
+**Shop.** `.shop-banner`: `taped`, `rotate: -1.5deg`. `.shop-grid`: `stagger`, `--stg: 2.5rem` (700-1099 three across: `:nth-child(3n+2)`). Nothing else (D49).
+**404, privacy, edit:** unchanged (the 404 inherits the new bar and footer).
+
+### 30g. Finished details and the optional entrance
+- **Type:** phrases alternate alignment (Rise right, Shows full, Join left); sheet phrases are ink on paper, the loudest contrast.
+  No kickers, eyebrows or gradient text (craft floor). **Depth** only from overlap (sheets, prints over edges, tape); no shadow,
+  glow or blur. **Texture:** grain on header, phone bar, sheets and tickets.
+- **Entrance (round 3, only after the owner opts in; D102 stands until then).** Only under `html[data-motion='on']` and
+  `@media (prefers-reduced-motion: no-preference)`. app.js after load: every `.band > .wrap > *`, `.crate > *`, `.vid-grid > *`
+  whose top is below `innerHeight` gets `rise-in`; one IntersectionObserver (`threshold: 0.15`) adds `is-in` and unobserves. CSS in
+  the media query: `html[data-motion='on'] .rise-in:not(.is-in) { opacity: 0; translate: 0 12px; } .rise-in { transition: opacity 320ms var(--ease), translate 320ms var(--ease); }`
+  Once per element, opacity and translate only, 320ms; nothing repeats, flashes or scrubs. No JS, Motion off or reduced: nothing hidden.
+
+### 30h. Tests (`test/pw.test.js`, new; real asserts)
+1. **Palettes:** 5-6 entries, first `identity` equal to `identity.json`; each has name, mood and the 7 roles as `#rrggbb`. Recompute
+   bg-2/line (sRGB 7% / 26%); assert text/bg and text/bg-2 >= 7, muted/bg and muted/bg-2 >= 4.5, accent-text/accent >= 4.5,
+   accent/bg and accent/bg-2 >= 3, muted-inv/text >= 4.5; mark-ground is bg (dark) or text (`light`).
+2. **No flash, no effect on fans:** built Home has one `html:root[data-palette='<id>']` and one `<filter id="print-<id>">` per
+   non-identity palette; `#pal` has `hidden`; boot.js reads only localStorage, never `?palettes`; app.js unhides only on
+   `has('palettes')` or a stored key. CDP: cleared storage = no `data-palette`; `localStorage.palette='poster'` = first-paint body
+   background `rgb(242, 233, 216)`; after each `.pal-opt` click `--bg` matches the JSON and `getAnimations().length` is 0.
+3. **Top bar:** at 700, 768, 900, 1280, 1600 no `.header-bar` children overlap and no horizontal overflow; one `aria-current` per
+   inner page; header and sheet links >= 44px; after `scrollTo(0, 200)` at 1280 the header has `is-condensed` and `.mark-head` is
+   24px; no `transition` on `.site-header` or its children in block 30.
+4. **Rhythm:** CDP at 768 and 1280, a signature per Home band (the `.wrap`'s grid-template-columns, background-color, `is-paper` /
+   `edge-*`) differs between neighbours; at 390 the About sheet's left is 0 and right under 390, the Rise card is 390 wide.
+5. **Hard rules:** Home 390x660 <= the 30z cap; 0 running animations at rest on every page (motion on and reduced); `.rise-in`
+   rules only under `data-motion='on'` + `no-preference`; every `img.print` is a Print file; no `filter` on covers, Clean `.graded`
+   or `.mark`; every block-30 `:hover` inside `(hover: hover) and (pointer: fine)`; CSP unchanged; every `<script>` still `src=`.
+
+### 30i. Build order and files
+- **Round 1, palettes + switcher + top bar:** `src/palettes.json` (new); `src/eras/identity.json`, `placeholder.json` (2 roles);
+  `src/layouts/Base.astro` (palette CSS, Print filters); `src/components/Footer.astro` (`#pal`); `public/js/boot.js`;
+  `public/js/app.js` (switcher, condense); `src/components/Header.astro` (tag, Listen glyph, sentinel everywhere, Menu words, sheet
+  slogan); `print` class in `Hero.astro`, `src/lib/shows.js` and 3 images in `src/pages/index.astro`; global.css 30a-1/2, 30b, 30d.
+  `MobileBar.astro` is CSS only. Tests 30h-1..3. Gate: design-review at 390 + 1280, plus each palette at 390 and 1280 (12 shots,
+  the owner's sheet).
+- **Round 2, Home:** `Hero.astro` (hero print), `index.astro` (classes), `Signup.astro` (`ticket`), `Footer.astro` (`edge-tear`);
+  global.css 30a-3..5 + 30e. Tests 30h-4, 30h-5. Gate at 320, 390, 768, 1280, 1600.
+- **Round 3, other pages:** classes in `music/`, `shows/`, `about/`, `videos/`, `shop/index.astro` and `ForVenues.astro`; global.css
+  30f; then 30g's entrance only if the owner says yes. Full 56-shot gate as loop 5.
+- **Coder:** delete the CSS this replaces instead of overriding it: the `ab` slot block, the one-line slogan, the nav underline
+  hover (199), the 72rem-only `.shows-grid` rule.
+
+### 30z. Deviations (for the boss)
+1. **D39 / D114 Home cap:** 3861 -> **3920** at 390x660 (5.94 screens), paying for the About sheet and Join ticket ("fleshed out").
+   Trim order in 30e if the gate wants 3861 back.
+2. **D34 hero B:** the photo leaves the name and becomes a taped print beside it; A under 900 unchanged. Clears loop5 P2.
+3. **D25 Logo D:** the mark gets a `--mark-ground` plate (invisible on dark palettes, a dark chip on Gig Poster), so "dark ground
+   only" holds in a light palette. The mark is never recoloured.
+4. **D64 / 28e header:** nav in the display face, a ledge marker instead of the underline, a descriptor from 74rem, an instant
+   condense from 900px.
+5. **D12 / D71 era file:** two new colour roles (`muted-inv`, `mark-ground`); `--tint` untouched.
+6. **D87 / D108 section word:** kept; on sheets the tab hangs off the sheet as a folder tab, in page text.
+7. **D98 / 29a Print:** under a preview palette a CSS filter re-inks Print images (bg and text only, still two colours, no accent).
+   Files unchanged; fans without a palette see the files exactly.
+8. **D102 motion:** 30g's entrance is specified but built only after the owner opts in.
+9. **D49 shop:** two static touches (taped banner, staggered grid) despite "no new shop work".
+10. **DESIGN 27e:** Shows' two columns start at 700px, not 72rem.
+Not overridden: D51 (the IDENTITY cover moves over the sheet edge but is never rotated, framed, filtered or overlaid), D8 (phone bar).
+**Not done here:** shots of the new layout (no `src/` edit in a design pass; the gates take them, with design-review). Gig Poster's
+hero A name zone must be measured on the built page (estimated 11.2:1 with 15% ink).
