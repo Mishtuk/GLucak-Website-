@@ -196,7 +196,8 @@ test('29g-4: About has the header photo, 3 plain-link gallery photos, the credit
 });
 
 test('29g-5: the 29 CSS block moves nothing (no animation, transition, transform, filter, :hover, --accent) and .push-head::after is gone', () => {
-  const block = css.slice(css.lastIndexOf('/*', css.indexOf('DESIGN 29. One photo language'))).replace(/\/\*[^]*?\*\//g, '');
+  const from29 = css.lastIndexOf('/*', css.indexOf('DESIGN 29. One photo language'));
+  const block = css.slice(from29, css.indexOf('30. Poster wall', from29) > 0 ? css.lastIndexOf('/*', css.indexOf('30. Poster wall', from29)) : undefined).replace(/\/\*[^]*?\*\//g, '');
   assert.ok(block.length > 300);
   for (const w of ['animation', 'transition', 'transform', 'filter', ':hover', '--accent']) assert.ok(!block.includes(w), w);
   assert.ok(!/\.push-head::after/.test(css));

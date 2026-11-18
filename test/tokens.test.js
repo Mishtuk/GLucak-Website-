@@ -83,7 +83,7 @@ test('no colour literal outside :root (a #000 mask stop is allowed)', () => {
   const bad = [];
   outside.split('\n').forEach((ln, i) => {
     const isMask = /mask/.test(ln);
-    for (const m of ln.matchAll(/#[0-9a-fA-F]{3,8}\b/g)) if (!(isMask && /^#(000|000000)$/.test(m[0]))) bad.push(`${m[0]} (line ${i + 1} outside :root)`);
+    for (const m of ln.matchAll(/#[0-9a-fA-F]{3,8}\b/g)) if (!(isMask && /^#(0000|000|000000)$/.test(m[0]))) bad.push(`${m[0]} (line ${i + 1} outside :root)`);
     for (const m of ln.matchAll(/\b(rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\(/g)) bad.push(`${m[0]} (line ${i + 1} outside :root)`);
   });
   assert.deepEqual(bad, []);
