@@ -147,15 +147,5 @@ export function favorite() {
   return { link: r.link, tag: out ? 'Out now' : `Out ${day}`, label: out ? 'Scenic Route: listen to the single' : 'Scenic Route: pre-save the single' };
 }
 
-/** IDENTITY block state (DESIGN.md section 7): no date -> just the name; date -> days left + pre-save; on/after the day -> Out now.
- *  ponytail: computed at build, so the day count and the release-day flip need a daily rebuild on the host. */
-export function identity() {
-  const r = (load('releases') ?? []).find((x) => x?.title === 'IDENTITY' && http(x.link));
-  if (!r?.date) return { label: 'IDENTITY', date: null };
-  const today = etDay();
-  const days = Math.round((Date.parse(r.date) - Date.parse(today)) / 864e5);
-  const pretty = new Date(`${r.date}T12:00:00Z`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
-  return { label: 'IDENTITY', date: r.date, pretty, days, out: days <= 0, link: r.link };
-}
 /** Listen-everywhere row under the Spotify button (DESIGN 27c): artist pages only; Spotify is the button above. */
 export const PLATFORMS = [{ name: 'Apple Music', href: APPLE_MUSIC }, { name: 'YouTube', href: YOUTUBE }, { name: 'SoundCloud', href: SOUNDCLOUD }];

@@ -6,6 +6,7 @@ import { lstatSync, mkdirSync, readFileSync, renameSync, rmSync, statSync, write
 import { randomBytes } from 'node:crypto';
 import { join } from 'node:path';
 import { checkShows, readList, saveList } from './store.js';
+import { checkSite } from './site.js';
 import { checkProducts } from './products.js';
 import { MAX_BYTES, UPLOAD_NAME, toWebp } from './upload.js';
 
@@ -18,7 +19,7 @@ const uploadsDir = (data) => join(data, 'uploads');
 const photoOf = (image) => String(image ?? '').match(/^\/media\/uploads\/(.+)$/)?.[1];
 
 /** The live data as a backup object, with only the photos the products use (orphan uploads are never shown).
- * `fallback`: { shows, products } shipped files, used until Gabe has saved. */
+ * `fallback`: { shows, products, site } shipped files, used until Gabe has saved. */
 export function makeBackup(data, fallback) {
   let products = readList(data, fallback.products, 'products.json'); // first: every photo it names is on disk by now
   if (!Array.isArray(products)) products = [];
@@ -28,7 +29,7 @@ export function makeBackup(data, fallback) {
     if (lstatSync(f, { throwIfNoEntry: false })?.isFile()) uploads[name] = readFileSync(f).toString('base64'); // not a symlink or folder
   }
   return { format: FORMAT, version: VERSION, created: new Date().toISOString(),
-    shows: readList(data, fallback.shows, 'shows.json'), products, uploads };
+    shows: readList(data, fallback.shows, 'shows.json'), products, site: readList(data, fallback.site, 'site.json'), uploads };
 }
 /** makeBackup as the bytes of one file. Callers refuse it over MAX_FILE (restore would): TOO_BIG. */
 export const backupBytes = (data, fallback) => Buffer.from(JSON.stringify(makeBackup(data, fallback)));
@@ -36,7 +37,7 @@ export const backupBytes = (data, fallback) => Buffer.from(JSON.stringify(makeBa
 const label = (name) => JSON.stringify(String(name).slice(0, 80)); // quoted and escaped: a hostile name can’t drive the terminal
 
 /** Check a backup file's text. `data`: DATA_DIR, where a product's photo may already be. Returns
- * { shows, products, uploads: Map<name, webp>, warnings: [message] } or { errors: [{ row, message }] }. */
+ * { shows, products, site, uploads: Map<name, webp>, warnings: [message] } or { errors: [{ row, message }] }. */
 export async function checkBackup(text, data) {
   const fail = (message) => ({ errors: [{ row: null, message }] });
   if (Buffer.byteLength(text) > MAX_FILE) return fail('The backup is bigger than 50 MB.');
@@ -47,7 +48,8 @@ export async function checkBackup(text, data) {
   const names = Object.keys(b.uploads);
   if (names.length > MAX_UPLOADS) return fail(`The backup has more than ${MAX_UPLOADS} photos.`);
   const s = checkShows(b.shows), p = checkProducts(b.products);
-  const errors = [...(s.errors ?? []), ...(p.errors ?? [])], uploads = new Map();
+  const st = b.site === undefined ? null : checkSite(b.site); // an older backup has no site: the saved bio stays. A site must be complete.
+  const errors = [...(s.errors ?? []), ...(p.errors ?? []), ...(st?.errors ?? [])], uploads = new Map();
   for (const name of names) {
     const v = b.uploads[name];
     const bad = (why) => errors.push({ row: null, message: `Photo ${label(name)}: ${why}` });
@@ -63,7 +65,7 @@ export async function checkBackup(text, data) {
     const up = photoOf(r.image);
     if (up && !uploads.has(up) && !onDisk(up)) warnings.push(`Product ${i + 1}: its photo ${label(up)} is not in the backup, so it will be missing on the Shop page.`);
   });
-  return errors.length ? { errors } : { shows: s.rows, products: p.rows, uploads, warnings };
+  return errors.length ? { errors } : { shows: s.rows, products: p.rows, site: st?.rows, uploads, warnings };
 }
 
 /** Write a checked backup: photos first (temp + rename), then shows.json and products.json (atomic, old one kept as .prev). */
@@ -75,4 +77,5 @@ export function writeBackup(data, r, fallback) {
   }
   saveList(data, r.shows, fallback.shows, 'shows.json');
   saveList(data, r.products, fallback.products, 'products.json');
+  if (r.site) saveList(data, r.site, fallback.site, 'site.json');
 }

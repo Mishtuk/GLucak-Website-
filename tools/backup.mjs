@@ -13,7 +13,7 @@ import { liveFile } from '../src/lib/store.js';
 const ROOT = join(import.meta.dirname, '..');
 const env = process.env;
 const DATA = resolve(env.DATA_DIR || join(ROOT, '.data'));
-const FALLBACK = { shows: env.SHOWS_FILE || join(ROOT, 'src/data/shows.json'), products: env.PRODUCTS_FILE || join(ROOT, 'src/data/products.json') };
+const FALLBACK = { shows: env.SHOWS_FILE || join(ROOT, 'src/data/shows.json'), products: env.PRODUCTS_FILE || join(ROOT, 'src/data/products.json'), site: env.SITE_FILE || join(ROOT, 'src/data/site.json') };
 const args = process.argv.slice(2), yes = args.includes('--yes');
 const [cmd, file] = args.filter((a) => a !== '--yes');
 const die = (msg) => { console.error(msg); process.exit(1); };
@@ -34,6 +34,7 @@ if (cmd === 'export') {
   console.log([`Data folder: ${DATA}`,
     `Shows: ${now('shows')} now, ${r.shows.length} in the backup (replaces ${liveFile(DATA, FALLBACK.shows, 'shows.json')})`,
     `Products: ${now('products')} now, ${r.products.length} in the backup (replaces ${liveFile(DATA, FALLBACK.products, 'products.json')})`,
+    `Bio and IDENTITY: ${r.site ? `replaced from the backup (${liveFile(DATA, FALLBACK.site, 'site.json')})` : 'not in the backup, so the saved ones stay'}`,
     `Photos: ${r.uploads.size} in the backup (${fresh} new, ${r.uploads.size - fresh} overwrite a photo with the same name; other photos are kept)`,
     ...r.warnings].join('\n'));
   if (!yes) {
@@ -51,7 +52,7 @@ if (cmd === 'export') {
       // a damaged list is a reason to restore: keep its raw bytes (and the .prev copies) aside before anything is written
       let kept;
       try {
-        kept = ['shows.json', 'products.json', 'shows.prev.json', 'products.prev.json']
+        kept = ['shows.json', 'products.json', 'site.json', 'shows.prev.json', 'products.prev.json', 'site.prev.json']
           .filter((n) => lstatSync(join(DATA, n), { throwIfNoEntry: false })?.isFile())
           .map((n) => { const to = join(DATA, `pre-restore-${stamp}.${n}`); copyFileSync(join(DATA, n), to, 1); return to; }); // 1: COPYFILE_EXCL
       } catch (e2) { die(`Not restored. Nothing was changed. The current lists couldn't be copied first (${e2.message}).`); }

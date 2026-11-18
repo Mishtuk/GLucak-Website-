@@ -79,7 +79,7 @@ test('Home shows the newest RELEASED release and the newest dated video', () => 
 
 test('IDENTITY block: real date from releases.json, pre-save before the day, Out now after', () => {
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
-  const idn = JSON.parse(readFileSync(new URL('../src/data/releases.json', import.meta.url), 'utf8')).find((r) => r.title === 'IDENTITY');
+  const idn = JSON.parse(readFileSync(new URL('../src/data/site.json', import.meta.url), 'utf8')).identity;
   for (const p of ['/', '/music/']) {
     const h = html(p);
     assert.ok(h.includes(`datetime="${idn.date}"`), `${p}: IDENTITY date`);

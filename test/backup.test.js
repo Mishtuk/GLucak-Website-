@@ -81,7 +81,7 @@ test('download: 401 signed out; signed in it is one attachment of the live data 
   assert.equal(r.headers.get('content-disposition'), `attachment; filename="glucak-backup-${etDay()}.json"`);
   assert.equal(r.headers.get('cache-control'), 'no-store');
   const b = await r.json();
-  assert.deepEqual(Object.keys(b), ['format', 'version', 'created', 'shows', 'products', 'uploads']);
+  assert.deepEqual(Object.keys(b), ['format', 'version', 'created', 'shows', 'products', 'site', 'uploads']);
   assert.equal(b.format, 'glucak-backup');
   assert.equal(b.version, 1);
   assert.ok(!Number.isNaN(Date.parse(b.created)));

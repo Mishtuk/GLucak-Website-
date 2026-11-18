@@ -9,8 +9,8 @@ export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&a
 export const curly = (s) => String(s ?? '').replace(/(^|[\s([{—-])"/g, '$1“').replace(/"/g, '”')
   .replace(/(^|[\s([{—-])'/g, '$1‘').replace(/'/g, '’');
 
-const validDate = (d) => { const t = new Date(`${d}T00:00:00Z`); return /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(t.getTime()) && t.toISOString().slice(0, 10) === d; };
-const httpUrl = (u) => { try { return ['http:', 'https:'].includes(new URL(u).protocol); } catch { return false; } };
+export const validDate = (d) => { const t = new Date(`${d}T00:00:00Z`); return /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(t.getTime()) && t.toISOString().slice(0, 10) === d; };
+export const httpUrl = (u) => { try { return ['http:', 'https:'].includes(new URL(u).protocol); } catch { return false; } };
 
 export const COST_LINE = 'Put the cost on one line.', COST_LONG = 'That cost is too long. 40 letters at most.';
 export const ADDR_LINE = 'Put the address on one line.', ADDR_LONG = 'That address is too long. 120 letters at most.';

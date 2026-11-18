@@ -12,6 +12,7 @@ import { etDay, icsById, nowHtml, showsHtml, showsLdHtml } from './src/lib/shows
 import { MAX_FILE, TOO_BIG, backupBytes } from './src/lib/backup.js';
 import { signup } from './src/lib/signup.js';
 import { allow, checkLogin, clearFailures, cookieHeader, locked, parseEditors, readCookie, recordFailure, sameOrigin, signSession, verifySession, SESSION_DAYS, USER_LOCK } from './src/lib/auth.js';
+import { checkSite, fillSite } from './src/lib/site.js';
 import { checkShows, listVersion, readList, readShows, saveList } from './src/lib/store.js';
 import { checkProducts, productsHtml, shopLinks } from './src/lib/products.js';
 import { externalize } from './src/lib/ext.js';
@@ -22,6 +23,7 @@ const env = process.env;
 const DIST = normalize(env.DIST_DIR || join(ROOT, 'dist')); // normalized, so forward slashes on Windows still match
 const SHOWS = env.SHOWS_FILE || join(ROOT, 'src/data/shows.json'); // the shipped list
 const RELEASES = env.RELEASES_FILE || join(ROOT, 'src/data/releases.json');
+const SITE = env.SITE_FILE || join(ROOT, 'src/data/site.json'); // the shipped bio + IDENTITY text
 const PRODUCTS = env.PRODUCTS_FILE || join(ROOT, 'src/data/products.json'); // the shipped SAMPLE products
 const PORT = Number(env.PORT) || 8080;
 const PROD = env.NODE_ENV === 'production' || Boolean(env.WEBSITE_SITE_NAME); // App Service sets WEBSITE_SITE_NAME
@@ -75,12 +77,18 @@ function inject(html, path) {
     const shop = productsHtml(products, { preview: !shopOn() });
     html = html.replace('<!--gl:shop-->', () => shop);
   }
+  let site = null; // Gabe's bio and IDENTITY (site.json): filled per visit, so the days to go are always today's
+  if (/<!--gl:(bio|home-bio|identity)-->/.test(html) || html.includes('<!--gl:now-->')) {
+    try { site = readList(DATA, SITE, 'site.json'); if (!checkSite(site).rows) site = null; } catch (e) { console.error('site.json unreadable, using the built page', e.message); }
+    if (site) html = fillSite(html, site, etDay());
+  }
   const shows = html.includes('<!--gl:shows-->'), ld = html.includes('<!--gl:shows-ld-->'), now = html.includes('<!--gl:now-->');
   if (!shows && !now && !ld) return externalize(html);
   const rows = readShows(DATA, SHOWS);
   if (now) { // D45: the dated line replaces the static one between the markers; '' leaves the static one
     let rel = [];
     try { rel = JSON.parse(readFileSync(RELEASES, 'utf8')); } catch { /* no releases file: shows only */ }
+    if (Array.isArray(rel) && site) rel = rel.map((r) => (r?.title === 'IDENTITY' ? { ...r, ...site.identity } : r)); // one IDENTITY date: the IDENTITY tab's
     const line = nowHtml(rows, new Date(), Array.isArray(rel) ? rel : []);
     if (line) html = html.replace(/<!--gl:now-->[\s\S]*?<!--\/gl:now-->/, () => line);
   }
@@ -144,6 +152,8 @@ const BODY_MAX = 32 * 1024;
 // Each list the edit screen saves, same model for both: validate all, version check -> 409, atomic write + .prev.
 const LISTS = {
   shows: { file: 'shows.json', fallback: SHOWS, check: checkShows, max: BODY_MAX, big: 'That list is too big to save. Delete some old shows.' },
+  // The Bio and IDENTITY tabs: one object, one version. A tab sends only its own fields; the server merges them onto the saved site.
+  site: { file: 'site.json', fallback: SITE, check: (x) => checkSite(x, readList(DATA, SITE, 'site.json')), max: BODY_MAX, big: 'That is too big to save. Shorten the bio.' },
   products: { file: 'products.json', fallback: PRODUCTS, check: checkProducts, max: 256 * 1024, big: 'That list is too big to save. Delete some products or shorten descriptions.' },
 };
 
@@ -193,7 +203,7 @@ async function handleEdit(req, res, url) {
   if (!SECRET) return json(503, { error: 'off', message: "The edit screen isn’t switched on yet. Tell the person who runs the site." });
   // belt and braces over SameSite=Strict: a browser that says the GET came from another site gets nothing
   if (req.method === 'GET' && p.startsWith('/edit/api/') && req.headers['sec-fetch-site'] === 'cross-site') return json(403, { error: 'origin', message: "That didn’t go through. Try again." });
-  const kind = p.match(/^\/edit\/api\/(shows|products)$/)?.[1], list = LISTS[kind];
+  const kind = p.match(/^\/edit\/api\/(shows|site|products)$/)?.[1], list = LISTS[kind];
   if (req.method === 'GET' && list) {
     const who = editor(req, url);
     if (!who) return json(401, { error: 'signed_out' });
@@ -203,7 +213,7 @@ async function handleEdit(req, res, url) {
     const who = editor(req, url);
     if (!who) return json(401, { error: 'signed_out' });
     if (!allow(`backup:${who}`, 10, 60 * 60e3)) return json(429, { error: 'slow_down', message: 'Too many backups. Wait an hour, then try again.' });
-    const body = backupBytes(DATA, { shows: SHOWS, products: PRODUCTS }); // ponytail: built in memory, fine under the 50 MB restore cap
+    const body = backupBytes(DATA, { shows: SHOWS, products: PRODUCTS, site: SITE }); // ponytail: built in memory, fine under the 50 MB restore cap
     if (body.length > MAX_FILE) { // restore would refuse it: say so now, not on the day it’s needed
       console.error(new Date().toISOString(), `backup refused for ${who}: ${body.length} bytes is over the ${MAX_FILE}-byte restore cap`);
       return json(413, { error: 'too_big', message: TOO_BIG });
@@ -254,7 +264,7 @@ async function handleEdit(req, res, url) {
     const version = () => listVersion(DATA, list.fallback, list.file);
     if (b?.version !== version()) return json(409, { error: 'stale', message: STALE(kind), errors: [{ row: null, message: STALE(kind) }] });
     saveList(DATA, r.rows, list.fallback, list.file);
-    console.log(new Date().toISOString(), `${kind} saved by ${who}: ${r.rows.length} rows`);
+    console.log(new Date().toISOString(), `${kind} saved by ${who}: ${Array.isArray(r.rows) ? `${r.rows.length} rows` : 'saved'}`);
     return json(200, { ok: true, [kind]: r.rows, version: version(), message: kind === 'products' && !shopOn() ? "Saved. The shop isn’t open to fans yet, so they won’t see it until it’s switched on." : "Saved. It’s on the site now." });
   }
   if (p === '/edit/api/upload') {
