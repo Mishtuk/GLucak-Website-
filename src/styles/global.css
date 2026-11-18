@@ -410,7 +410,7 @@ html[data-shows='none'] .quote-live { display: none; }
 .poster-art {
   grid-area: art; align-self: end; width: calc(100% + var(--space-m)); max-width: none; aspect-ratio: 1; height: auto;
   margin: 0 calc(-1 * var(--space-m)) calc(-1 * var(--space-m)) 0;
-  object-fit: cover; object-position: 50% 63%; mix-blend-mode: darken;
+  object-fit: cover; object-position: 50% 40%; mix-blend-mode: darken;
 }
 .poster-date { grid-area: date; margin-bottom: var(--space-s); }
 .ln-date { font-size: calc(100cqi / var(--w-date)); }
@@ -462,10 +462,7 @@ html[data-shows='none'] .quote-live { display: none; }
 /* No overflow clipping here: the About tab stands above this box on the band's edge (it was clipped before 2026-11-05).
    The photo is inset: 0 with object-fit, so nothing else can spill. */
 .push-head { position: relative; }
-.push-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 8% 50%; } /* (d) crowd, child out of frame */
-@media (min-width: 753px) { .push-photo { object-position: 50% 50%; } }
-.push-head::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 30%, transparent), color-mix(in srgb, var(--bg) 12%, transparent) 40%, color-mix(in srgb, var(--bg) 62%, transparent)); }
-.push-title { position: static; padding-block: 1.75rem 1.25rem; }
+.push-title { position: static; padding-block: var(--space-m) 0; }
 .push-title .phrase { position: relative; z-index: 2; }
 .band-push .tab { z-index: 3; }
 .push-body { display: grid; gap: var(--space-m); margin-top: var(--space-m); }
@@ -571,7 +568,6 @@ html:not([data-hero='b']) .credit-b { display: none; }
   .phrase-rise { font-size: clamp(8rem, 17vw, 20rem); }
   .cover { width: 160px; height: 160px; }
 
-  .push-title { padding-block: 5rem 2rem; }
   .push-body { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--space-xl); align-items: end; }
   .bio-lead { font-size: var(--step-2); line-height: 1.25; }
   /* The finale stays huge, and the sign-up sits beside it, in the first view of the band. */
@@ -1148,7 +1144,7 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 .v2-push .v2-side { grid-area: side; }
 @media (max-width: 899px) { .v2-push .v2-belt { align-self: stretch; height: 0; min-height: 100%; object-fit: cover; object-position: 50% 0%; } }
 @media (min-width: 900px) {
-  .band-push.v2-push > .wrap.v2-split { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: 'side bio' 'p1 bio' 'p1 act' 'p1 p2'; grid-template-rows: auto auto auto 1fr; row-gap: var(--space-l); }
+  .band-push.v2-push > .wrap.v2-split { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: 'side bio' 'p1 bio' 'p1 act'; grid-template-rows: auto auto 1fr; row-gap: var(--space-l); }
   .v2-push .v2-slot { width: min(100%, 22rem); }
 }
 /* D7 */
@@ -1294,17 +1290,6 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 28L26 6M9 5h18v18' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E");
 }
 /* ---------- DESIGN 25. IDENTITY era: Gabe's CD photos, the cover, the tracklist (IG6) ---------- */
-/* 25c: Home, Push Past Fear, from 900px: the jump photo takes the empty slot's place (same area, same 22rem width). */
-.v2-jump { grid-area: p2; aspect-ratio: 4 / 5; }
-@media (min-width: 900px) { .v2-push .v2-jump { width: min(100%, 22rem); } }
-/* 25c: About: the studio photo closes the actions column (phones: under the Patreon button, full width). As Gabe graded it. */
-.about-photo { display: block; flex: 1 1 100%; width: 100%; max-width: 30rem; height: auto; aspect-ratio: 1; background: var(--bg-2); }
-@media (min-width: 900px) {
-  .about-photo { margin-top: var(--space-l); max-width: none; }
-  .about-body { align-items: start; } /* the bio starts level with the setlist; with the photo the right column is the taller one */
-}
-/* 25c: Shows: the CD's live shot opens the For venues block (Shows only, ForVenues photo prop). */
-.venues-photo { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; margin-bottom: var(--space-xs); background: var(--bg-2); }
 /* 25e: Music: IDENTITY as the CD: the cover (front), the countdown, the tracklist (back). Never tinted (D51). */
 .idn { display: grid; grid-template-columns: minmax(0, 9fr) minmax(0, 11fr); grid-template-areas: 'cover state' 'tracks-h tracks-h' 'tracks tracks' 'credit credit'; gap: var(--space-m); align-items: center; margin-top: var(--section); }
 .idn > * { min-width: 0; }
@@ -1433,3 +1418,21 @@ li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* 
 .next-rel { font-size: var(--step-0); font-weight: 700; }
 .next-rel a { display: inline-block; padding-block: 10px; margin-block: -10px; text-underline-offset: 3px; } /* the .h-go tap trick: a 44-48px target at no height */
 .shows-intro { max-width: 34rem; margin-bottom: var(--space-s); }
+
+/* ---------- DESIGN 29. One photo language (OV6): About's header photo and the Photos gallery. Static: no transition,
+   animation, transform, filter or hover effect; nothing differs between motion on, off and reduced. ---------- */
+.push-photo { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; object-position: 40% 20%; background: var(--bg-2); }
+@media (min-width: 700px) { .push-photo { aspect-ratio: 5 / 2; object-position: 50% 15%; } }
+@media (min-width: 900px) { .push-photo { aspect-ratio: 3 / 1; max-height: 28rem; } }
+.gallery { max-width: 34rem; margin-top: var(--space-l); }
+.gallery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-xs); margin-top: var(--space-s); }
+.gallery-grid li { position: relative; }
+.gallery-grid li:nth-child(3) { grid-column: 2; grid-row: 1 / span 2; } /* the tall still beside the two squares */
+.gallery-grid a { display: block; height: 100%; }
+.gallery-grid img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; background: var(--bg-2); }
+.gallery-grid li:nth-child(3) img { position: absolute; inset: 0; height: 100%; aspect-ratio: auto; object-position: 50% 15%; }
+.gallery-grid a:active img { outline: 3px solid var(--text); outline-offset: -3px; } /* 16e: instant pressed */
+@media (min-width: 900px) {
+  .about-body > .bio { grid-row: span 2; }
+  .gallery { grid-column: 2; max-width: none; }
+}
