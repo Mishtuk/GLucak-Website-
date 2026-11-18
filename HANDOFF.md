@@ -13,6 +13,7 @@
 - **OVERNIGHT 2026-11-18 (owner asleep, no questions, 5 loops): follow `docs/review/overhaul/overnight-plan.md`.** Wake-up
   scheduled ~03:47 ET + hourly heartbeat 04:13-11:13 (session-only cron). Progress log: append one line per finished step below.
   - 03:50 boss plan `docs/review/overhaul/plan.md` (OV1-OV6, D98-D110) pushed; repo loop 1 research running; OV1 started.
+  - OV1 (quick technical wins) gated + pushed: titles / og, Spotify theme=0, /v2/ + 367 unused shots removed, Jan 15 date bombs fixed (suite green faked to Dec 18 / 19, Jan 16), ETag/304, boot warnings, Menu focus, deploy job (inert until RENDER_DEPLOY_HOOK secret), Astro 7.4.12 + engines >=22.23.4; audit 10 high build-time accepted (`ov1-gate.md`). Repo loop 1 + IG loop 1 research committed. DESIGN 28 (OV2-OV4 design) in progress.
 - **Desktop 2026-11-18: OVERHAUL in progress (owner: "deep dive review of the website in all aspects ... an overhaul";
   use the past emails `docs/research/email-thread-digest.md` + everything learned).** Reviews: `docs/review/overhaul/design-ux.md`
   (29/40 across all widths; direction "the gig poster that is always current"; top: shows in date order not poster-first, edit
