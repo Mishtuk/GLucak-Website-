@@ -1,17 +1,13 @@
 ---
 import Quote from './Quote.astro';
-import NoCover from './NoCover.astro';
-import { credit, dateLine, PLATFORMS, releases, SPOTIFY_EMBED, SPOTIFY_PLAYLIST, tileAction, upcoming } from './content.js';
+import { PLATFORMS, SPOTIFY_EMBED, SPOTIFY_PLAYLIST } from './content.js';
+import rows from '../data/releases.json';
+import { latestHtml, listenHtml } from '../lib/releases.js';
 // Home (release): one panel with the cover, title, Listen and the player; a garage still beside it from 900px (v2 port).
 // The player is first in the DOM (phones: first on screen, and Tab reaches it before Listen); player first at every width (DESIGN 28h).
 // release={false} on /music/: the player alone (the crate's first released tile is that release); Rise is its h1 (release title drops to h2).
 const { h1 = false, release = true, ground = false } = Astro.props;
-const H = h1 ? 'h1' : 'h2', T = h1 ? 'h2' : 'h3';
-const r = releases()[0];
-// DESIGN 28j: "Next: Welcome Home, Dec 18. Pre-save." from the soonest coming release that is not IDENTITY; Pre-save only for a smart link.
-const nx = upcoming().find((x) => x.title !== 'IDENTITY');
-const nxDay = nx && new Date(`${nx.date}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
-const nxPre = nx && tileAction({ ...nx, coming: true }) === 'Pre-save';
+const H = h1 ? 'h1' : 'h2'; // the release title below is an h3 (src/lib/releases.js); on /music/ (h1) there is no release block
 ---
 <section class:list={['band band-rise', ground && 'has-ground ground-grooves']} id="music" aria-labelledby="h-rise">
   <div class="wrap v2-split">
@@ -29,21 +25,10 @@ const nxPre = nx && tileAction({ ...nx, coming: true }) === 'Pre-save';
         <p class="under-player" id="after-player">
           <a class="btn btn-line btn-small" href={SPOTIFY_PLAYLIST} rel="noopener">Play full songs on Spotify</a>
           {PLATFORMS.map((p) => <a class="under-link" href={p.href} rel="noopener">{p.name}</a>)}
-          {!release && <a class="under-link" href={r.link} rel="noopener" aria-label={`Listen everywhere: ${r.title}`}>Listen everywhere</a>}
+          {!release && <Fragment set:html={listenHtml(rows)} />}
         </p>
       </div>
-      {release && <article class="v2-rel">
-        {r.placeholder
-          ? <NoCover class="v2-cover" title={r.title} type={r.type} label={`${r.title}: no cover art yet`} />
-          : <img class="v2-cover" src={r.cover} alt={`${r.title} cover art`} width="400" height="400" />}
-        <div class="v2-rel-text">
-          <p class="v2-kicker"><span class="v2-kicker-type">Latest {r.type ?? 'release'}</span>{r.date && <>{' '}<span>{dateLine(r.date).replaceAll(" ", " ")}</span></>}</p>
-          <T>{r.title}</T>
-          {credit(r) && <p class="credit">{credit(r)}</p>}
-          <a class="btn btn-solid" href={r.link} rel="noopener" aria-label={`Listen to ${r.title}`}>Listen</a>
-        </div>
-      </article>}
-      {release && nx && <p class="next-rel">Next: {nx.title}, {nxDay}.{nxPre && <>{' '}<a href={nx.link} rel="noopener" aria-label={`Pre-save ${nx.title}`}>Pre-save</a>.</>}</p>}
+      {release && <Fragment set:html={latestHtml(rows)} />}
       {release && <Quote band="rise" />}
     </div>
   </div>

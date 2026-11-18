@@ -77,7 +77,7 @@ const http = (u) => { try { return ['http:', 'https:'].includes(new URL(u).proto
 const newest = (rows) => [...rows].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '')); // undated sorts last
 
 export function releases() {
-  // Only what's out by build day (New York). Upcoming ones (Who I Am, Scenic Route, IDENTITY) are in upcoming().
+  // Only what's out by build day (New York). Upcoming ones are on the Music crate and the Next line (src/lib/releases.js).
   // ponytail: decided at build time, so a release-day flip needs a rebuild that day (daily rebuild on the host).
   const today = etDay();
   const rows = (load('releases') ?? []).filter((r) => r?.title && http(r.link) && r.date && r.date <= today);
@@ -86,20 +86,7 @@ export function releases() {
   return [{ title: 'Go', type: 'single', cover: '/media/placeholder-cover.svg', link: GO, soundcloud: SOUNDCLOUD, placeholder: true }];
 }
 
-/** "Sep 4, 2026" (music.md date line); '' with no date. */
-export const dateLine = (d) => (d ? new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : '');
-/** Spotify's credit line ("GLucak, J-BOY") only when it names someone besides GLucak. */
-export const credit = (r) => (r.artists && r.artists.trim() !== 'GLucak' ? r.artists : null);
-export const TYPE_TAG = { single: 'Single', ep: 'EP', album: 'Album' };
-/** The type tag on a crate tile: the remix album says so (answers row 8). */
-export const typeTag = (r) => (r.remix ? 'Remix album' : TYPE_TAG[r.type]);
-/** The tile button for a release: Listen when out; Pre-save only for a smart link (lnk.to); anything else coming points at Spotify (no pre-save exists). */
-export function tileAction(r) {
-  if (!r.coming) return 'Listen';
-  let host = '';
-  try { host = new URL(r.link).hostname; } catch { /* no link, no pre-save */ }
-  return /(^|\.)lnk\.to$/.test(host) ? 'Pre-save' : /(^|\.)spotify\.com$/.test(host) ? 'Follow on Spotify' : 'Listen';
-}
+export { dateLine } from '../lib/releases.js'; // the release helpers live in src/lib/releases.js (pure; the server uses them too)
 
 // Hard rule 1 (Gabe, 2026-11-06): these two have flashing lights and never show, even if a feed adds them.
 // The Earned Your Stripes MUSIC video is fine; only its Visualizer is out.
@@ -124,18 +111,6 @@ export function videoRow(n = 3) {
   if (!latest) return [];
   const feat = newest(videos().filter((v) => v.featured && /^[\w-]{11}$/.test(v.id ?? '') && v.id !== latest.id));
   return [latest, ...feat.slice(0, n - 1)];
-}
-
-/** Every release for the Music crate (DESIGN 16a): valid rows minus IDENTITY (its own block), newest date first, undated last. `coming` = after the New York day. */
-export function crate() {
-  const today = etDay();
-  return newest((load('releases') ?? []).filter((r) => r?.title && http(r.link) && r.title !== 'IDENTITY')).map((r) => ({ ...r, coming: Boolean(r.date) && r.date > today }));
-}
-
-/** Announced releases not out yet, soonest first (from his own posts, see docs/research/social-content.md). */
-export function upcoming() {
-  const today = etDay();
-  return (load('releases') ?? []).filter((r) => r?.title && http(r.link) && r.date && r.date > today).sort((a, b) => a.date.localeCompare(b.date));
 }
 
 /** Scenic Route's row on the tracklist (DESIGN 25e): pre-save until its day, then out now. null = plain text. */

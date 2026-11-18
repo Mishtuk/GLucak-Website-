@@ -1,14 +1,13 @@
 ---
 import Base from '../../layouts/Base.astro';
 import RiseBand from '../../components/RiseBand.astro';
-import NoCover from '../../components/NoCover.astro';
 import Quote from '../../components/Quote.astro';
-import { crate, era, SOUNDCLOUD, START, favorite, dateLine, credit, typeTag, tileAction, PHOTO_CREDITS as C, IDENTITY_TRACKS, IDENTITY_TRACKS_HEADING, IDENTITY_CREDIT } from '../../components/content.js';
+import { era, SOUNDCLOUD, START, favorite, PHOTO_CREDITS as C, IDENTITY_TRACKS, IDENTITY_TRACKS_HEADING, IDENTITY_CREDIT } from '../../components/content.js';
 import site from '../../data/site.json';
+import rows from '../../data/releases.json';
 import { identityHtml } from '../../lib/site.js';
+import { crateHtml } from '../../lib/releases.js';
 const fav = favorite();
-const tiles = crate(); // all releases but IDENTITY (its own block below), newest first
-const shortDate = (d) => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 ---
 <Base image="music" title="Music | GLucak" current="music" credits={[C.identity]} description="Listen to GLucak: the playlist, every release, and IDENTITY.">
   <RiseBand h1 release={false} ground />
@@ -34,25 +33,7 @@ const shortDate = (d) => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', 
         <h2 id="h-releases" class="prose-h">Releases</h2>
         <p class="start-line">New here? <a class="go" href={START.link} rel="noopener" aria-label={`Start with ${START.title}, on all platforms`}>Start with {START.title}</a></p>
       </div>
-      {tiles.length > 0 && (
-        <ul class="crate">
-          {tiles.map((r) => (
-            <li class="tile" data-state={r.coming ? 'coming' : undefined}>
-              <a class="tile-link" href={r.link} rel="noopener">
-                {r.cover
-                  ? <img class="tile-art" src={r.cover} alt="" width="300" height="300" loading="lazy" />
-                  : <NoCover class="tile-art" title={r.title} type={r.type} when={r.coming ? shortDate(r.date) : undefined} />}
-                <span class="tile-text">
-                  <h3 class="tile-title">{r.title}</h3>
-                  {credit(r) && <span class="tile-artists">{credit(r)}</span>}
-                  <span class="tile-meta">{typeTag(r) && r.type !== 'single' && <span class="tile-type">{typeTag(r)}</span>}{r.coming ? `Out ${dateLine(r.date)}` : dateLine(r.date)}</span>
-                  <span class="tile-go">{tileAction(r)}</span>
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
+      <Fragment set:html={crateHtml(rows)} />
       <Quote band="who" class="quote-who" />
       <p class="under-player"><a class="text-link" href={SOUNDCLOUD} rel="noopener">Hear more on SoundCloud</a></p>
     </div>

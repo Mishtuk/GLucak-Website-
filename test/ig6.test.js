@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import sharp from 'sharp';
+import { tileAction } from '../src/lib/releases.js';
 
 const ROOT = join(import.meta.dirname, '..');
 const page = (p) => readFileSync(join(ROOT, 'dist', p), 'utf8');
@@ -95,9 +96,6 @@ test('copy ig6: the remix album is labelled; every coming lnk.to tile reads Pre-
   // none left once every smart-link single is out; the tileAction cases below still cover the rule
   if (smart.length === 0) assert.ok(!tile("Scenic Route")?.includes("tile-go\">Pre-save<"), "nothing coming, so no Pre-save");
   for (const r of smart) assert.ok(tile(r.title).includes('tile-go">Pre-save<'), `${r.title} reads Pre-save`);
-  // content.js imports astro-side json, so lift the function out of the source instead of importing it
-  const c = src('src/components/content.js'), at = c.indexOf('function tileAction');
-  const tileAction = new Function(`${c.slice(at, c.indexOf('\n}', at) + 2)}; return tileAction;`)();
   assert.equal(tileAction({ coming: true, link: 'https://open.spotify.com/artist/x' }), 'Follow on Spotify');
   assert.equal(tileAction({ coming: true, link: 'https://wingsmusic.lnk.to/x' }), 'Pre-save');
 });

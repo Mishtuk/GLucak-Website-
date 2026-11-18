@@ -2,7 +2,7 @@
 // shows list into the HTML at the <!--gl:shows--> marker on every request (so past shows drop off by themselves), and
 // the shop at <!--gl:shop--> the same way. SHOP_ENABLED=1 adds Shop to the nav, phone bar and footer (D8, D36).
 // Gabe's edit screen lives under /edit/: sign-in, then GET/POST /edit/api/shows and /edit/api/products, and
-// POST /edit/api/upload for product images (served back from /media/uploads/), GET /edit/api/backup for a backup file. Node 22+ built-ins, plus sharp for uploads.
+// POST /edit/api/upload for product and release images (served back from /media/uploads/), GET /edit/api/backup for a backup file. Node 22+ built-ins, plus sharp for uploads.
 import { createServer } from 'node:http';
 import { randomBytes } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
@@ -13,6 +13,7 @@ import { MAX_FILE, TOO_BIG, backupBytes } from './src/lib/backup.js';
 import { signup } from './src/lib/signup.js';
 import { allow, checkLogin, clearFailures, cookieHeader, locked, parseEditors, readCookie, recordFailure, sameOrigin, signSession, verifySession, SESSION_DAYS, USER_LOCK } from './src/lib/auth.js';
 import { checkSite, fillSite } from './src/lib/site.js';
+import { checkReleases, fillReleases } from './src/lib/releases.js';
 import { checkShows, listVersion, readList, readShows, saveList } from './src/lib/store.js';
 import { checkProducts, productsHtml, shopLinks } from './src/lib/products.js';
 import { externalize } from './src/lib/ext.js';
@@ -82,14 +83,18 @@ function inject(html, path) {
     try { site = checkSite(readList(DATA, SITE, 'site.json')).rows ?? null; } catch (e) { console.error('site.json unreadable, using the built page', e.message); }
     if (site) html = fillSite(html, site, etDay());
   }
+  let rel = []; // Gabe's releases (releases.json): the Music crate, Home's newest release and the Now line follow the saved list
+  if (/<!--gl:(crate|latest|listen|now)-->/.test(html)) {
+    try { rel = readList(DATA, RELEASES, 'releases.json'); } catch (e) { console.error('releases.json unreadable, using the built page', e.message); }
+    if (!Array.isArray(rel)) rel = [];
+  }
+  if (/<!--gl:(crate|latest|listen)-->/.test(html) && rel.length) html = fillReleases(html, rel, etDay());
   const shows = html.includes('<!--gl:shows-->'), ld = html.includes('<!--gl:shows-ld-->'), now = html.includes('<!--gl:now-->');
   if (!shows && !now && !ld) return externalize(html);
   const rows = readShows(DATA, SHOWS);
   if (now) { // D45: the dated line replaces the static one between the markers; '' leaves the static one
-    let rel = [];
-    try { rel = JSON.parse(readFileSync(RELEASES, 'utf8')); } catch { /* no releases file: shows only */ }
-    if (Array.isArray(rel) && site) rel = rel.map((r) => (r?.title === 'IDENTITY' ? { ...r, ...site.identity } : r)); // one IDENTITY date: the IDENTITY tab's
-    const line = nowHtml(rows, new Date(), Array.isArray(rel) ? rel : []);
+    const all = site ? rel.map((r) => (r?.title === 'IDENTITY' ? { ...r, ...site.identity } : r)) : rel; // one IDENTITY date: the IDENTITY tab's
+    const line = nowHtml(rows, new Date(), all);
     if (line) html = html.replace(/<!--gl:now-->[\s\S]*?<!--\/gl:now-->/, () => line);
   }
   if (ld) html = html.replace('<!--gl:shows-ld-->', () => showsLdHtml(rows));
@@ -154,6 +159,8 @@ const LISTS = {
   shows: { file: 'shows.json', fallback: SHOWS, check: checkShows, max: BODY_MAX, big: 'That list is too big to save. Delete some old shows.' },
   // The Bio and IDENTITY tabs: one object, one version. A tab sends only its own fields; the server merges them onto the saved site.
   site: { file: 'site.json', fallback: SITE, check: (x) => checkSite(x, readList(DATA, SITE, 'site.json')), max: BODY_MAX, big: 'That is too big to save. Shorten the bio.' },
+  // The Releases tab: IDENTITY stays in the file (the IDENTITY tab owns it); the tab never sends it, so the check adds the saved row back.
+  releases: { file: 'releases.json', fallback: RELEASES, check: (x) => checkReleases(x, readList(DATA, RELEASES, 'releases.json').filter((r) => r?.title === 'IDENTITY')), max: 128 * 1024, big: 'That list is too big to save. Delete some old releases.' },
   products: { file: 'products.json', fallback: PRODUCTS, check: checkProducts, max: 256 * 1024, big: 'That list is too big to save. Delete some products or shorten descriptions.' },
 };
 
@@ -203,7 +210,7 @@ async function handleEdit(req, res, url) {
   if (!SECRET) return json(503, { error: 'off', message: "The edit screen isn’t switched on yet. Tell the person who runs the site." });
   // belt and braces over SameSite=Strict: a browser that says the GET came from another site gets nothing
   if (req.method === 'GET' && p.startsWith('/edit/api/') && req.headers['sec-fetch-site'] === 'cross-site') return json(403, { error: 'origin', message: "That didn’t go through. Try again." });
-  const kind = p.match(/^\/edit\/api\/(shows|site|products)$/)?.[1], list = LISTS[kind];
+  const kind = p.match(/^\/edit\/api\/(shows|site|products|releases)$/)?.[1], list = LISTS[kind];
   if (req.method === 'GET' && list) {
     const who = editor(req, url);
     if (!who) return json(401, { error: 'signed_out' });
