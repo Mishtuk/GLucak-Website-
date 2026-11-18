@@ -12,7 +12,7 @@
   const menu = $('.nav-mobile');
   if (menu) {
     const summary = menu.querySelector('summary');
-    menu.addEventListener('toggle', () => { if (menu.open) menu.querySelector('.sheet a').focus(); });
+    menu.addEventListener('toggle', () => { if (menu.open) requestAnimationFrame(() => menu.querySelector('.sheet a')?.focus()); });
     menu.addEventListener('click', (e) => { if (e.target.closest('.sheet a')) menu.open = false; });
     addEventListener('keydown', (e) => { if (e.key === 'Escape' && menu.open) { menu.open = false; summary.focus(); } });
   }
@@ -39,16 +39,6 @@
     showMotion();
   });
   showMotion();
-
-  /* ---------- Headings fade in once ---------- */
-  const fades = new IntersectionObserver((list) => {
-    for (const e of list) if (e.isIntersecting) { e.target.classList.add('seen'); fades.unobserve(e.target); }
-  }, { threshold: 0.2 });
-  // Only headings below the first screen at load wait (D47): with no JS, a failed script or print, every phrase shows.
-  document.querySelectorAll('.fade').forEach((n) => {
-    if (n.getBoundingClientRect().top >= innerHeight) n.classList.add('fade-wait');
-    fades.observe(n);
-  });
 
   /* ---------- Sign-up: posts to our own server. Without JS the form posts normally. ---------- */
   const form = $('#signup');
@@ -116,6 +106,19 @@
   }
   document.querySelectorAll('a[data-yt]').forEach((a) => {
     if (videoOk(a.dataset.yt)) a.replaceWith(makeButton(a));
+  });
+
+  /* Share a show (DESIGN 28c, D104): the phone's own share sheet; else copy the link; else show it. Same-origin, no motion. */
+  const nav = globalThis.navigator;
+  if (nav?.share || nav?.clipboard?.writeText) document.querySelectorAll('[data-share]').forEach((b) => {
+    b.hidden = false;
+    b.addEventListener('click', async () => {
+      const url = new URL(b.dataset.share, location.origin).href, msg = b.closest('li')?.querySelector('.share-msg');
+      document.querySelectorAll('.share-msg').forEach((m) => { m.textContent = ''; }); // one message on the page at a time
+      if (nav.share) { try { await nav.share({ title: b.dataset.title, text: b.dataset.text, url }); return; } catch (e) { if (e.name === 'AbortError') return; } }
+      try { await nav.clipboard.writeText(url); if (msg) msg.textContent = 'Link copied'; }
+      catch { if (msg) msg.textContent = `Copy this link: ${url}`; }
+    });
   });
 
   /* Swipe row: a focused card scrolls fully into view (instant, no smooth motion) */
