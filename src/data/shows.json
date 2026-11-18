@@ -30,6 +30,6 @@
   { "date": "2027-02-15", "time": "19:00", "type": "open-mic", "venue": "Crooked Eye Brewery", "city": "Hatboro, PA", "address": "13 E Montgomery Ave" },
   { "date": "2027-02-17", "time": "20:00", "type": "open-mic", "venue": "North Penn VFW" },
   { "date": "2027-02-21", "time": "13:00", "type": "open-mic", "venue": "Mike's York Road Tavern", "city": "Warminster, PA", "address": "544 York Rd" },
-  { "date": "2027-02-23", "time": "20:00", "type": "open-mic", "venue": "King's Corner" },
+  { "date": "2027-02-23", "time": "20:00", "type": "open-mic", "venue": "King's Corner", "city": "Jenkintown, PA" },
   { "date": "2027-02-25", "time": "19:00", "type": "open-mic", "venue": "Puck Live", "city": "Doylestown, PA", "address": "1 Printers Alley" }
 ]

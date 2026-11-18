@@ -21,8 +21,8 @@ const join = home || signup ? '#join' : '/#join';
       <p class="legal">&copy; <span id="year">{new Date().getFullYear()}</span> GLucak. <a href="/privacy/">Privacy</a></p>
       {/* DESIGN 30d: the owner's colour preview. Hidden; app.js shows it only on ?palettes or once a palette is stored. */}
       <details class="pal" id="pal" hidden>
-        <summary>Colours</summary>
-        <div class="pal-sheet" role="group" aria-label="Colour palettes">
+        <summary>Colors</summary>
+        <div class="pal-sheet" role="group" aria-label="Color palettes">
           {palettes.map((p) => (
             <button type="button" class="pal-opt" data-pal={p.id} aria-pressed="false" style={`--s1:${p.colors.bg};--s2:${p.colors.text};--s3:${p.colors.accent}`}><span class="pal-sw" aria-hidden="true"></span><span class="pal-name">{p.name}</span> <span class="pal-mood">{p.mood}</span></button>
           ))}

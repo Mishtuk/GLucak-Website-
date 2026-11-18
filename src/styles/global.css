@@ -1529,7 +1529,7 @@ html[data-home] .band-live :is(.v2-thumb, .nocover) { background: var(--bg); } /
   html[data-home] .band-live .v2-side { display: contents; }
   html[data-home] .band-live .spine { grid-column: 1 / -1; grid-row: 1; }
   html[data-home] .band-live .v2-main { grid-column: 1 / span 7; grid-row: 2; }
-  html[data-home] .band-live .v2-tall { display: block; grid-column: 9 / -1; grid-row: 2; align-self: start; width: calc(100% + var(--gutter)); max-width: none; margin-right: calc(-1 * var(--gutter)); aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 30%; }
+  html[data-home] .band-live .v2-tall { display: block; grid-column: 9 / -1; grid-row: 2; align-self: stretch; contain: size; height: auto; min-height: 20rem; width: calc(100% + var(--gutter)); max-width: none; margin-right: calc(-1 * var(--gutter)); aspect-ratio: auto; object-fit: cover; object-position: 50% 30%; } /* contain: size = the photo takes the show list's height, so no gap under All shows (owner 2026-11-18) */
 }
 @media (min-width: 900px) {
   html[data-home] .band-live .v2-main { display: contents; } /* Watch leaves the 7 columns */
