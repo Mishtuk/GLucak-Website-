@@ -60,3 +60,13 @@ test('28f: the .stub rules have no transition or animation and a 48px minimum', 
   for (const m of rules) assert.ok(!/transition|animation/.test(m[2]), m[1]);
   assert.match(css, /\.stub \{[^}]*min-height: 48px/);
 });
+
+test('28j: the new lines sit where 28j puts them (Home hero, RISE, Shows, About); .next-rel holds no btn-solid', () => {
+  const home = dist('index.html');
+  assert.ok(home.indexOf('<p class="sound">EDM, rap and rock. Raw lyrics, real faith, high energy.</p>') > home.indexOf('class="now"'));
+  const rise = home.slice(home.indexOf('class="v2-rel"'), home.indexOf('class="quote'));
+  const next = home.match(/<p class="next-rel">[^]*?<\/p>/)?.[0] ?? '';
+  assert.ok(next.includes('Next: Welcome Home, Dec 18.') && next.includes('Pre-save<span class="vh">') && !next.includes('btn-solid') && rise.includes('next-rel'));
+  assert.ok(dist('shows/index.html').includes('<p class="shows-intro">Mostly open mics around Horsham and Doylestown, plus a full show at Riverside on Jan 16. Come hear unreleased songs.</p>'));
+  assert.ok(dist('about/index.html').includes('<p>The hours in the studio. The energetic live performances.'));
+});

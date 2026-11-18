@@ -35,5 +35,6 @@ const TYPE: Record<string, string> = { single: 'Single', ep: 'EP', album: 'Album
       <a class="go" href="#shows" aria-label="See upcoming shows">Shows</a>
     </div>
     <p class="now"><Fragment set:html="<!--gl:now-->" /><a class="stub" href={now.link} rel="noopener"><span class="stub-when">Out now</span> <span class="stub-what"><span class="stub-place">{now.title}</span>{TYPE[now.type] && <Fragment> <span class="stub-sub">{TYPE[now.type]}</span></Fragment>}</span></a><Fragment set:html="<!--/gl:now-->" /></p>
+    <p class="sound">EDM, rap and rock. Raw lyrics, real faith, high energy.</p>
   </div>
 </section>

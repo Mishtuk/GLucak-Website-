@@ -1,13 +1,17 @@
 ---
 import Quote from './Quote.astro';
 import NoCover from './NoCover.astro';
-import { credit, dateLine, PLATFORMS, releases, SPOTIFY_EMBED, SPOTIFY_PLAYLIST } from './content.js';
+import { credit, dateLine, PLATFORMS, releases, SPOTIFY_EMBED, SPOTIFY_PLAYLIST, tileAction, upcoming } from './content.js';
 // Home (release): one panel with the cover, title, Listen and the player; a garage still beside it from 900px (v2 port).
 // The player is first in the DOM (phones: first on screen, and Tab reaches it before Listen); player first at every width (DESIGN 28h).
 // release={false} on /music/: the player alone (the crate's first released tile is that release); Rise is its h1 (release title drops to h2).
 const { h1 = false, release = true, ground = false } = Astro.props;
 const H = h1 ? 'h1' : 'h2', T = h1 ? 'h2' : 'h3';
 const r = releases()[0];
+// DESIGN 28j: "Next: Welcome Home, Dec 18. Pre-save." from the soonest coming release that is not IDENTITY; Pre-save only for a smart link.
+const nx = upcoming().find((x) => x.title !== 'IDENTITY');
+const nxDay = nx && new Date(`${nx.date}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+const nxPre = nx && tileAction({ ...nx, coming: true }) === 'Pre-save';
 ---
 <section class:list={['band band-rise', ground && 'has-ground ground-grooves']} id="music" aria-labelledby="h-rise">
   <div class="wrap v2-split">
@@ -39,6 +43,7 @@ const r = releases()[0];
           <a class="btn btn-solid" href={r.link} rel="noopener" aria-label={`Listen to ${r.title}`}>Listen</a>
         </div>
       </article>}
+      {release && nx && <p class="next-rel">Next: {nx.title}, {nxDay}.{nxPre && <>{' '}<a href={nx.link} rel="noopener" aria-label={`Pre-save ${nx.title}`}>Pre-save</a>.</>}</p>}
       {release && <Quote band="rise" />}
     </div>
   </div>
