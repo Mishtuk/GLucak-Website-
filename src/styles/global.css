@@ -1330,8 +1330,6 @@ html[data-header='solid'] .site-header { background: var(--bg) var(--texture) !i
   .vids-top > .vid-also { align-self: end; margin-top: 0; max-width: 20rem; } /* clearly under the lead: 320 vs 672px at 1280 */
   .vids-top > .spine { container-type: inline-size; }
   .phrase-watch { font-size: calc(100cqi / var(--w-watch)); } /* fills the 5fr column: 149px tall at 1280 */
-  .vid-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .vid-grid .v2-vid:first-child { grid-row: auto; } /* Home's D1 rule spans the first card; not here */
 }
 /* The Watch heading links to /videos/ (Home h3, Shows h2): 0px added (measured); a 47px tap box, padding cancelled by margin. */
 .h-go { display: inline-flex; align-items: center; gap: 0.4rem; padding-block: 10px; margin-block: -10px; text-decoration: none; color: inherit; }
@@ -1627,4 +1625,25 @@ html[data-palette='poster'] .band-live.edge-angle { background-color: color-mix(
   .gallery-grid li:nth-child(2) { grid-column: 6 / span 3; margin-top: 5rem; }
   .gallery-grid li:nth-child(3) { grid-column: 9 / -1; margin-top: -3rem; }
   .gallery-grid li:nth-child(3) img { aspect-ratio: 634 / 1128; }
+}
+
+/* ---------- Round 3: Videos. The music videos on a torn bg-2 band; a mosaic from 900px, staggered pairs at 700-899, bled and
+   indented cards on phones. ---------- */
+.band-mv { background-color: var(--bg-2); }
+.band-mv :is(.v2-thumb, .nocover) { background-color: var(--bg); } /* one step off the bg-2 ground */
+@media (max-width: 699px) {
+  .vid-grid > li { margin-inline: calc(-1 * var(--gutter)); }
+  .vid-grid .v2-vtitle { display: block; }
+  .vid-grid :is(.v2-vtitle, .vid-meta) { padding-inline: var(--gutter); }
+  .vid-grid > li:nth-child(even) { margin-inline: 12% 0; }
+  .vid-grid > li:nth-child(even) :is(.v2-vtitle, .vid-meta) { padding-inline: 0 var(--gutter); }
+}
+@media (min-width: 700px) and (max-width: 899px) { .vid-grid > :nth-child(even) { margin-top: 2rem; } }
+@media (min-width: 900px) {
+  .vid-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: start; }
+  .vid-grid > :nth-child(1) { grid-column: 1 / span 7; grid-row: span 2; }
+  .vid-grid > :nth-child(2), .vid-grid > :nth-child(3) { grid-column: 8 / -1; }
+  .vid-grid > :nth-child(4) { grid-column: 2 / span 5; }
+  .vid-grid > :nth-child(5) { grid-column: 7 / span 5; margin-top: 2.5rem; }
+  .vid-grid > :nth-child(n+6) { grid-column: span 4; }
 }
