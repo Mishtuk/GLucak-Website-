@@ -3,7 +3,7 @@ import { signupCopy } from './content.js';
 const copy = signupCopy(); // copy ig6 1a: Scenic Route heads-up until Jan 15
 // Posts to our own server (CSP form-action 'self'); server.js -> src/lib/signup.js -> Kit. `website` is a honeypot.
 ---
-<form class="signup" id="signup" action="/api/signup" method="post" data-ok={copy.ok}>
+<form class="signup ticket" id="signup" action="/api/signup" method="post" data-ok={copy.ok}>
   <label for="email">{copy.label}</label>
   <div class="signup-row">
     <input id="email" name="email" type="email" autocomplete="email" required aria-describedby="signup-status" placeholder="you@example.com" />

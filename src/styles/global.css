@@ -1549,3 +1549,11 @@ html[data-home] .band-live :is(.v2-thumb, .nocover) { background: var(--bg); } /
 @media (min-width: 700px) {
   .v2-push > .wrap.is-paper { width: min(100% - 2 * var(--gutter) - 6vw, var(--container) - 6vw); margin: -2rem 0 0 max(var(--gutter), calc((100% - var(--container)) / 2)); padding: var(--space-xl); }
 }
+
+/* Join: the sign-up is a ticket (30a-4). 700-899 the ticket and IDENTITY sit side by side; 900+ IDENTITY steps in 4rem. */
+@media (min-width: 700px) and (max-width: 899px) {
+  html[data-home] .band-now .now-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; }
+  html[data-home] .band-now .v2-identity { grid-template-columns: minmax(0, 1fr); justify-items: start; } /* art over the countdown in the half column */
+  html[data-home] .band-now .v2-identity .v2-photo { width: 8rem; }
+}
+@media (min-width: 900px) { html[data-home] .band-now .v2-identity { margin-left: 4rem; } }

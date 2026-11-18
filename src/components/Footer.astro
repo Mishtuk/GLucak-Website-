@@ -6,7 +6,7 @@ interface Props { home?: boolean; credits?: string[]; signup?: boolean }
 const { home = false, credits = [], signup = true } = Astro.props;
 const join = home || signup ? '#join' : '/#join';
 ---
-<footer class="site-footer" id="footer">
+<footer class="site-footer edge-tear" id="footer">
   {era.name === 'Placeholder' && <p class="ph-chip footer-chip">Placeholder colors</p>}
   <div class="wrap">
     {!home && signup && <div class="footer-join" id="join"><Signup /></div>}
