@@ -125,7 +125,18 @@ test('approved copy is on each page verbatim; no ASK GABE; no quote ships', () =
 test('Music: artists credit shown on the tile; upcoming releases are tiles in the crate (Pre-save), never listed as released', () => {
   const m = html('/music/');
   assert.match(m, /class="tile-artists">GLucak, J-BOY</);
-  assert.match(m, /data-state="coming"[^>]*>[\s\S]*?<h3 class="tile-title">Who I Am<\/h3>[\s\S]*?Pre-save/);
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date()); // same New York day as src/lib/shows.js
+  const tiles = [...m.matchAll(/<li class="tile"([^>]*)>[\s\S]*?<\/li>/g)].map((x) => x[0]);
+  const tileOf = (title) => tiles.find((t) => t.includes(`<h3 class="tile-title">${title}</h3>`));
+  for (const r of JSON.parse(readFileSync(join(import.meta.dirname, '../src/data/releases.json'), 'utf8'))) {
+    if (r.title === 'IDENTITY') continue;
+    const t = tileOf(r.title);
+    assert.ok(t, `${r.title}: tile exists`);
+    if (r.date > today) {
+      assert.ok(t.includes('data-state="coming"'), `${r.title}: coming`);
+      if (/\/\/[^/]*lnk\.to\//.test(r.link)) assert.ok(t.includes('tile-go">Pre-save<'), `${r.title}: Pre-save`);
+    } else assert.ok(!t.includes('data-state="coming"'), `${r.title}: released, not coming`);
+  }
   assert.ok(!m.includes('<h3 class="tile-title">IDENTITY</h3>'));
   assert.match(m, /<h3 class="tile-title">Duck, Dodge, Jump, Fight<\/h3>/);
 });
