@@ -95,3 +95,20 @@ test('Now marker: a show within 14 days replaces the release line; none leaves i
   const far = await (await fetch(`${base}/`)).text();
   assert.ok(far.includes('Out now: X') && !far.includes('#shows'));
 });
+
+// S7: the folder redirect's Location never starts with `//` (that would be a protocol-relative open redirect).
+const rawGet = (path) => new Promise((resolve, reject) => {
+  const s = connect(server.address().port, '127.0.0.1', () => s.write(`GET ${path} HTTP/1.1\r\nHost: x\r\nConnection: close\r\n\r\n`));
+  let out = '';
+  s.on('data', (c) => { out += c; }).on('end', () => resolve(out)).on('error', reject);
+});
+
+test('folder redirect Location never starts with //', async () => {
+  for (const path of ['/a/..//shows', '/shows/..//shows', '/%2e%2e//shows']) {
+    const loc = (await rawGet(path)).match(/^Location: (.*)\r$/mi)?.[1];
+    assert.ok(loc && !loc.startsWith('//'), `${path} -> ${loc}`);
+  }
+  const ok = await fetch(`${base}/shows`, { redirect: 'manual' });
+  assert.equal(ok.status, 301);
+  assert.equal(ok.headers.get('location'), '/shows/');
+});

@@ -308,7 +308,7 @@ function handle(req, res) {
   if (file !== DIST && !file.startsWith(DIST + sep)) return notFound(req, res);
   let st = statSafe(file);
   if (st?.isDirectory()) {
-    if (!p.endsWith('/')) { res.writeHead(301, { ...baseHeaders(req), Location: `${url.pathname}/${url.search}` }); return res.end(); }
+    if (!p.endsWith('/')) { res.writeHead(301, { ...baseHeaders(req), Location: `/${url.pathname.replace(/^\/+/, '')}/${url.search}` }); return res.end(); }
     file = join(file, 'index.html');
     st = statSafe(file);
   }
