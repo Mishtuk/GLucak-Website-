@@ -99,6 +99,10 @@ img, svg { display: block; max-width: 100%; }
 img { height: auto; }
 input, button { font: inherit; color: inherit; }
 button { cursor: pointer; }
+/* DR1 27f: browser surfaces in the era tokens (selection is the pressed-state inversion, DESIGN 16e; no accent). */
+::selection { background: var(--text); color: var(--bg); }
+html { scrollbar-color: var(--muted) var(--bg); }
+input, textarea { caret-color: var(--text); }
 ul, ol { list-style: none; padding: 0; }
 a { color: inherit; }
 p { text-wrap: pretty; }

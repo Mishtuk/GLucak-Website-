@@ -59,3 +59,16 @@ test('27d public/js strings have no straight apostrophe inside words', () => {
     assert.deepEqual(strings.filter((s) => /[A-Za-z]'[A-Za-z]/.test(s)), [], f);
   }
 });
+
+// ---------- 27f ----------
+test('27f browser surfaces use tokens only', () => {
+  const lines = [
+    '::selection { background: var(--text); color: var(--bg); }',
+    'html { scrollbar-color: var(--muted) var(--bg); }',
+    'input, textarea { caret-color: var(--text); }',
+  ];
+  for (const l of lines) {
+    assert.ok(css.includes(l), l);
+    assert.ok(!/#[0-9a-f]{3,8}\b|rgb|hsl|oklch/i.test(l), 'no colour literal');
+  }
+});
