@@ -34,7 +34,7 @@ export const CREDIT_FOR = [
   [/a-era-grade|a-night-/, PHOTO_CREDITS.kealey],
 ];
 export const SITE_URL = (import.meta.env.SITE_URL ?? 'https://glucak.com').replace(/\/$/, '');
-export const SPOTIFY_EMBED = 'https://open.spotify.com/embed/playlist/0D45boIc9xWAdDjz1uTDRo';
+export const SPOTIFY_EMBED = 'https://open.spotify.com/embed/playlist/0D45boIc9xWAdDjz1uTDRo?theme=0';
 export const SPOTIFY_PLAYLIST = 'https://open.spotify.com/playlist/0D45boIc9xWAdDjz1uTDRo';
 export const GO = 'https://wingsmusic.lnk.to/370407-Go';
 // DESIGN 25e: IDENTITY's tracklist, from the CD back (Gabe, answers row 17). Track 12 is his favourite and the first single.

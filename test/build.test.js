@@ -34,7 +34,7 @@ test('every page has header nav, mobile bar, footer Motion switch', () => {
 
 test('Spotify iframe is the exact embed URL, lazy, titled, 352px', () => {
   const tag = html('/').match(/<iframe[^>]*open\.spotify\.com[^>]*>/)?.[0] ?? '';
-  assert.match(tag, /src="https:\/\/open\.spotify\.com\/embed\/playlist\/0D45boIc9xWAdDjz1uTDRo"/);
+  assert.match(tag, /src="https:\/\/open\.spotify\.com\/embed\/playlist\/0D45boIc9xWAdDjz1uTDRo\?theme=0"/);
   assert.match(tag, /loading="lazy"/);
   assert.match(tag, /title="[^"]+"/);
   assert.match(tag, /height="352"/);
