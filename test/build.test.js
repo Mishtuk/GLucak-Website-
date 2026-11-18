@@ -109,7 +109,7 @@ test('approved copy is on each page verbatim; no ASK GABE; no quote ships', () =
     'Nevertheless, no matter the musical style or genre, be it his debut single or his upcoming 3rd album (rumored to be his best work yet), the mission statement has always been the same: Rise, Live It Loud, Push Past Fear, The Time Is Now.'];
   const want = {
     '/': ['Live It Loud', bio[0], 'Join the list. Scenic Route is coming Jan 15, and the first listen will be yours.', 'Back my projects and merch. Get early access to songs only the inner circle knows exist.'],
-    '/music/': ['Releases', 'Hear more on SoundCloud', 'Pre-save', 'IDENTITY tracklist', 'All songs written, recorded, produced, mixed and mastered by Gabriel Lucak', 'Remix album', 'Follow on Spotify'],
+    '/music/': ['Releases', 'Hear more on SoundCloud', 'Pre-save', 'IDENTITY tracklist', 'All songs written, recorded, produced, mixed and mastered by Gabriel Lucak', 'Remix album'],
     '/shows/': ['Live It Loud', 'Book GLucak'],
     '/about/': [...bio, 'Find GLucak', 'Book GLucak', 'Epilepsy survivor', 'Healed by Christ since 2009', 'Back my projects and merch.', '>Credits<', 'Photo: Alexander Kealey'],
   };

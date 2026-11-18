@@ -84,14 +84,20 @@ test('copy ig6: sign-up now wording, About lines, Patreon line, credits heading'
   for (const h of [home, about]) assert.ok(h.includes('Back my projects and merch. Get early access to songs only the inner circle knows exist.'));
 });
 
-test('copy ig6: the remix album is labelled; a coming release with no smart link never says Pre-save', () => {
+test('copy ig6: the remix album is labelled; every coming lnk.to tile reads Pre-save; no smart link never says Pre-save', () => {
   const m = page('music/index.html');
   assert.match(m, /<h3 class="tile-title">Fall Down 7, Stand Up 8<\/h3>[\s\S]*?<span class="tile-type">Remix album<\/span>/);
   const tile = (title) => [...m.matchAll(/<li class="tile"[^>]*>[\s\S]*?<\/li>/g)].map((x) => x[0]).find((t) => t.includes(`<h3 class="tile-title">${title}</h3>`));
-  const wh = tile('Welcome Home');
-  assert.ok(wh.includes('data-state') || m.includes('data-state="coming"'));
-  assert.ok(wh.includes('tile-go">Follow on Spotify<') && !wh.includes('Pre-save'), 'Welcome Home links to his Spotify artist page');
-  assert.ok(tile('Who I Am').includes('tile-go">Pre-save<') && tile('Scenic Route').includes('tile-go">Pre-save<'), 'smart links keep Pre-save');
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+  const rel = JSON.parse(src('src/data/releases.json'));
+  const smart = rel.filter((r) => r.type !== 'album' && r.date > today && /(^|\.)lnk\.to$/.test(new URL(r.link).hostname));
+  assert.ok(smart.length > 0);
+  for (const r of smart) assert.ok(tile(r.title).includes('tile-go">Pre-save<'), `${r.title} reads Pre-save`);
+  // content.js imports astro-side json, so lift the function out of the source instead of importing it
+  const c = src('src/components/content.js'), at = c.indexOf('function tileAction');
+  const tileAction = new Function(`${c.slice(at, c.indexOf('\n}', at) + 2)}; return tileAction;`)();
+  assert.equal(tileAction({ coming: true, link: 'https://open.spotify.com/artist/x' }), 'Follow on Spotify');
+  assert.equal(tileAction({ coming: true, link: 'https://wingsmusic.lnk.to/x' }), 'Pre-save');
 });
 
 test('D67 with QUOTES_APPROVED: Home keeps ONE quote (RISE), the live quote is gone; Music carries one lyric quote from his own post', () => {
