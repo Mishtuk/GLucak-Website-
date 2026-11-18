@@ -24,8 +24,8 @@ const GARAGE = SOCIAL + 'yt-K-OZiNvQB14-1.webp'; // Duck, Dodge, Jump, Fight vid
 
 const argv = process.argv.slice(2);
 const arg = (k, d) => { const i = argv.findIndex(a => a === `--${k}` || a.startsWith(`--${k}=`)); return i < 0 ? d : argv[i].includes('=') ? argv[i].split('=').slice(1).join('=') : argv[i + 1] ?? d; };
-const ERA_FILE = arg('era', ROOT + 'src/eras/placeholder.json'), era = JSON.parse(readFileSync(ERA_FILE, 'utf8'));
-const DEFAULT = /placeholder\.json$/.test(ERA_FILE);
+const ERA_FILE = arg('era', ROOT + 'src/eras/identity.json'), era = JSON.parse(readFileSync(ERA_FILE, 'utf8'));
+const DEFAULT = /(placeholder|identity)\.json$/.test(ERA_FILE);
 const OUT = DEFAULT ? ROOT + 'public/media/' : ROOT + 'docs/review/ig4/textures/' + era.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '/';
 const SHEET_DIR = ROOT + 'docs/review/ig4/design/';
 const only = arg('only', 'night,stage,garage,belt,crowd,wall,sheet').split(',');
@@ -139,14 +139,12 @@ async function textCheck(img, name, zone, sigma, floor = 4.5) {
   return cr;
 }
 
-// ======================= night: hero A on phones, the riso on black stock =======================
-// The hero B riso turned over: black stock (bg), accent for the mid-tones, white ink (text) for the highlights, a fine
-// screen so his face holds at phone size; the white screen lands 1.5 px off. In Kealey's frame the blue wall is brighter
-// than his face, so plain tone would print the wall and lose him. Separated the way a printer cuts a mask: by colour.
-// Where blue leads red (the lit wall) the tone is held at a low flat value (sparse accent on black); on Gabe (skin, hair,
-// shirt, mic: red >= blue) the tone is his own, stretched to his own percentiles. Global, per pixel: no fill, no AI.
-// Under the name the plates are held down (white out, accent capped) so GLUCAK and the slogan keep 4.5:1 with no scrim.
-async function night() {
+// ======================= printNight: hero A on phones, one ink (DESIGN 29c) =======================
+// One plate, the era's text colour, 45 degree screen, on the bg stock: no accent, no second plate to miss. In Kealey's frame the
+// blue wall is brighter than his face, so plain tone would print the wall and lose him: separated the way a printer cuts a
+// mask, by colour. Where blue leads red (the lit wall) the tone is held low; on Gabe it is his own, stretched to his percentiles.
+// Under the name at most 15% ink, so GLUCAK and the slogan keep 4.5:1 with no scrim.
+async function printNight() {
   const port = { left: 1290, top: 1300, width: 920, height: 1150 }, w = 800, h = 1000, pitch = 4.4;
   const img = await load(KEALEY, port, w, h);
   const wallness = await blurField(field(img, (r, g, b) => smooth(0.2, 0.5, b - r)), w, h, 2.5);
@@ -154,18 +152,15 @@ async function night() {
   const onHim = []; for (let i = 0; i < V.length; i += 5) if (wallness[i] < 0.3) onHim.push(V[i]); onHim.sort((a, b) => a - b);
   const lo = onHim[Math.floor(onHim.length * 0.03)], hi = onHim[Math.floor(onHim.length * 0.985)];
   const T = V.map((v, i) => { const t = clamp((v - lo) / (hi - lo)) ** 0.62; return t + (0.2 - t) * wallness[i]; });
-  const dA = new Float32Array(w * h), dW = new Float32Array(w * h);
+  const dW = new Float32Array(w * h);
   for (let y = 0; y < h; y++) {
     const z = smooth(355, 405, y);                                   // 0 above his mouth, 1 under the name (file y >= 405)
-    for (let x = 0; x < w; x++) { const i = y * w + x, t = T[i];
-      dA[i] = smooth(0.06, 0.5, t) * (0.9 - 0.36 * z);
-      dW[i] = smooth(0.34, 0.85, t) * 0.92 * (1 - z); }
+    for (let x = 0; x < w; x++) { const i = y * w + x; dW[i] = Math.min(smooth(0.06, 0.85, T[i]), 1 - 0.85 * z); }
   }
   const out = await stock(w, h, 71, BG, 1.6), mott = await cloud(w, h, 72, 18);
-  inkOver(out, await plate(dA, w, h, { pitch, angle: 15, seed: 73, rough: 0.07, mott }), ACCENT, 0.95);
-  inkOver(out, await plate(dW, w, h, { pitch, angle: 45, seed: 74, rough: 0.07, dx: 1.5, dy: 1, mott }), TEXT, 0.93);
-  await textCheck(out, 'a-night-phone-800 (name + slogan zone)', { x0: 0, x1: 1, y0: 0.405, y1: 1 }, pitch);
-  await save(out, 'a-night-phone-800', 'lossless');
+  inkOver(out, await plate(dW, w, h, { pitch, angle: 45, seed: 74, rough: 0.07, mott }), TEXT, 0.93);
+  await textCheck(out, 'a-print-phone-800 (name + slogan zone)', { x0: 0, x1: 1, y0: 0.405, y1: 1 }, pitch);
+  await save(out, 'a-print-phone-800', 'lossless');
 }
 
 // ======================= stage: Live It Loud side photo (from 900px), white line screen on black stock =======================
@@ -326,7 +321,7 @@ async function sheet() {
   console.log(`  textures-sheet.png ${W}x${H}, ${Math.round(statSync(file).size / 1024)} KB`);
 }
 
-const SLOTS = { night, stage: stageLines, garage: garageToner, belt: beltPlates, crowd: crowdScreen, wall, sheet };
+const SLOTS = { night: printNight, stage: stageLines, garage: garageToner, belt: beltPlates, crowd: crowdScreen, wall, sheet };
 console.log(`era: ${era.name} (bg ${era.colors.bg}, accent ${era.colors.accent}, paper ${era.colors.text}) -> ${OUT}`);
 for (const k of only) { console.log(`(${k})`); await SLOTS[k](); }
 if (made.length) console.table(made);

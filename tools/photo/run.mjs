@@ -16,7 +16,8 @@ const MCCC = ROOT + 'assets/from-gabe/live-mccc-msp.png';
 const PASLIER = ROOT + 'assets/from-gabe/live-sylvain-paslier.png';
 const argv = process.argv.slice(2);
 const arg = (k, d) => { const i = argv.findIndex(a => a === `--${k}` || a.startsWith(`--${k}=`)); return i < 0 ? d : argv[i].includes('=') ? argv[i].split('=').slice(1).join('=') : argv[i + 1] ?? d; };
-const ERA_FILE = arg('era', ROOT + 'src/eras/placeholder.json'), era = JSON.parse(readFileSync(ERA_FILE, 'utf8'));
+const ERA_FILE = arg('era', ROOT + 'src/eras/identity.json'), era = JSON.parse(readFileSync(ERA_FILE, 'utf8'));
+const PUB = ROOT + 'public/media/';
 const OUT = ROOT + 'docs/review/photo-treatments/' + (/placeholder.json$/.test(ERA_FILE) ? '' : era.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '/');
 const only = arg('only', 'a,b,c,d,e,f,s').split(',');
 mkdirSync(OUT, { recursive: true });
@@ -71,10 +72,10 @@ function levels(f, lo = 0.01, hi = 0.99) {
   for (let i = 0; i < f.length; i++) r[i] = clamp((f[i] - a) / (b - a || 1)); return r;
 }
 const sizes = [];
-async function save(img, name, quality = 74) { // quality 'lossless' for binary plates
+async function save(img, name, quality = 74, dir = OUT) { // quality 'lossless' for binary plates
   const ch = img.a ? 4 : 3, b = Buffer.alloc(img.w * img.h * ch);
   for (let i = 0; i < img.w * img.h; i++) { for (let c = 0; c < 3; c++) b[i * ch + c] = clamp(img.d[i * 3 + c]) * 255 + 0.5; if (img.a) b[i * 4 + 3] = clamp(img.a[i]) * 255 + 0.5; }
-  const file = OUT + name + '.webp';
+  const file = dir + name + '.webp';
   // sharp writes no EXIF/XMP/ICC unless asked (no withMetadata), so nothing from the camera survives.
   await sharp(b, { raw: { width: img.w, height: img.h, channels: ch } }).webp(quality === 'lossless' ? { lossless: true, effort: 6 } : { quality, effort: 6, smartSubsample: true, alphaQuality: 90 }).toFile(file);
   const kb = Math.round(statSync(file).size / 1024); sizes.push([name, `${img.w}x${img.h}`, kb]);
@@ -239,8 +240,8 @@ async function optB() {
 // One ink, coarse screen, contrast pushed so the blue wall falls to paper and his hair, glasses, mic and arms carry
 // the figure. Bottom edge torn: a random walk with fibres, a white rim where the printed skin tore away, a soft
 // shadow where the pasted paper lifts. Below the tear is transparent, so it sits on the poster or the page.
-async function poster(w, h, pitch, seed) {
-  const img = await load(KEALEY, { left: 1210, top: 1330, width: 1080, height: 1350 }, w, h), L = await printTone(img, pitch);
+async function poster(w, h, pitch, seed, src = KEALEY, reg = { left: 1210, top: 1330, width: 1080, height: 1350 }) {
+  const img = await load(src, reg, w, h), L = await printTone(img, pitch);
   const dK = new Float32Array(w * h); for (let i = 0; i < L.length; i++) dK[i] = 1 - smooth(0.1, 0.78, L[i]);
   const pap = await paper(w, h, seed), mott = await cloud(w, h, seed + 3, 20);
   const ink = await halftone(dK, w, h, { pitch, angle: 45, seed: seed + 4, rough: 0.09, gain: 0.85, mott });
@@ -403,7 +404,35 @@ async function optS() {
   console.log(`  sheet.png ${W}x${H}, ${Math.round(statSync(T + 'sheet.png').size / 1024)} KB`);
 }
 
-const OPTS = { a: optA, b: optB, c: optC, d: optD, e: optE, f: optF, s: optS };
+// ======================= (o) OV6 (DESIGN 29): Print and Clean =======================
+const CE = (n) => ROOT + `assets/from-gabe/social/yt-aZNW63M_C2E-${n}.webp`, CD = ROOT + 'assets/from-gabe/identity-cd/';
+const savePub = (img, name) => { mkdirSync(PUB + 'v2/', { recursive: true }); return save(img, name, 'lossless', PUB); };
+// Print, paper: era bg ink on era text paper, one 45 degree screen. Density as the (c) poster: the light falls to paper.
+async function printPaper(src, reg, w, h, pitch, seed) {
+  const img = await load(src, reg, w, h), L = await printTone(img, pitch);
+  const d = new Float32Array(w * h); for (let i = 0; i < L.length; i++) d[i] = 1 - smooth(0.1, 0.78, L[i]);
+  const pap = await paper(w, h, seed);
+  inkOn(pap, await halftone(d, w, h, { pitch, angle: 45, seed: seed + 4, rough: 0.07, gain: 0.85 }), BG, null, 0.97);
+  return pap;
+}
+async function clean(src, reg, w, name, quality = 80) { // never wider than the crop; sharp strips metadata
+  if (w > reg.width) throw new Error(`${name}: would upscale`);
+  await sharp(src).extract(reg).resize(w).webp({ quality, effort: 6 }).toFile(PUB + name + '.webp');
+}
+async function optO() {
+  const keal = { left: 950, top: 1250, width: 1700, height: 1200 };               // hero B's crop (3b), unchanged
+  await savePub(await printPaper(KEALEY, keal, 1000, 706, 6.2, 141), 'b-print-1000');
+  await savePub(await printPaper(KEALEY, keal, 600, 424, 4.4, 142), 'b-print-600');
+  const full = { left: 0, top: 0, width: 634, height: 1128 };                      // the arm-raised still, whole
+  await savePub(await printPaper(CE(4), full, 634, 1128, 7, 143), 'v2/belt-print-634');
+  await savePub(await printPaper(CE(4), full, 320, 569, 4.4, 144), 'v2/belt-print-320');
+  await savePub(await poster(600, 750, 6, 145, CE(3), { left: 0, top: 0, width: 634, height: 792 }), 'poster-print-600');
+  await clean(CD + 'identity-cd-inside-live.png', { left: 0, top: 0, width: 4000, height: 2000 }, 2400, 'cd-live-2400', 64);
+  await clean(MCCC, { left: 0, top: 0, width: 478, height: 477 }, 478, 'photo-mccc-478');
+  await clean(CE(1), full, 634, 'photo-crooked-eye-634');
+}
+
+const OPTS = { o: optO, a: optA, b: optB, c: optC, d: optD, e: optE, f: optF, s: optS };
 console.log(`era: ${era.name} (bg ${era.colors.bg}, accent ${era.colors.accent}, paper ${era.colors.text}); poster ink/paper ${contrast(BG, TEXT).toFixed(1)}:1`);
 for (const k of only) { console.log(`(${k})`); await OPTS[k](); }
 console.table(sizes.map(([name, px, kb]) => ({ name, px, kb })));
