@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { nowHtml, splitShows, showsHtml, validateShow } from '../src/lib/shows.js';
+import { nowHtml, splitShows, showsHtml, validateShow, bookingHref, showId } from '../src/lib/shows.js';
 
 const row = (o = {}) => ({ date: '2026-12-12', type: 'show', venue: 'V', city: 'C', ...o });
 const noon = (d) => new Date(`${d}T17:00:00Z`); // midday in New York
@@ -85,25 +85,92 @@ test('past list and Home limit', () => {
   assert.ok(showsHtml(rows, noon('2026-06-01'), { limit: 3, allLink: '/shows/' }).includes('href="/shows/">All shows<'));
 });
 
-test('poster is the first full show, never an open mic', () => {
-  const now = noon('2026-06-01');
-  const show = showsHtml([row({ venue: 'Big' }), row({ date: '2026-12-13', venue: 'Next' })], now);
-  assert.match(show, /<li class="poster">.*Big, C/);
-  assert.equal((show.match(/class="poster"/g) || []).length, 1);
-  // open mics first by date: the poster is still the first full show, not repeated as a row; Home limit 3 = poster + next 2 by date
-  const mics = [row({ type: 'open-mic', date: '2026-12-10', venue: 'M1' }), row({ type: 'open-mic', date: '2026-12-11', venue: 'M2' }), row({ type: 'open-mic', date: '2026-12-12', venue: 'M3' }), row({ date: '2026-12-13', venue: 'Big' })];
-  const home = showsHtml(mics, now, { limit: 3 });
-  assert.match(home, /<li class="poster">.*Big, C/);
-  assert.equal((home.match(/Big, C/g) || []).length, 1);
-  assert.ok(home.includes('M1, C') && home.includes('M2, C') && !home.includes('M3, C'));
-  assert.doesNotMatch(showsHtml([row({ type: 'open-mic' }), row({ type: 'open-mic', date: '2026-12-13' })], now), /class="poster"/);
+test('28a: items in date order; the first is the lead; a later full show is the paper poster with a small date', () => {
+  const now = noon('2026-11-18');
+  const out = showsHtml([row({ type: 'open-mic', date: '2026-11-18', venue: 'M1' }), row({ date: '2027-01-16', venue: 'Big' }), row({ type: 'open-mic', date: '2026-11-19', venue: 'M2' })], now);
+  const li = out.split('<li ').slice(1);
+  assert.equal(li.length, 3);
+  assert.ok(li[0].startsWith('class="poster is-plain"') && li[0].includes('ln-date') && !li[0].includes('poster-art') && li[0].includes('M1, C'));
+  assert.ok(li[1].startsWith('class="row"') && li[1].includes('M2, C'));
+  assert.ok(li[2].startsWith('class="poster"') && li[2].includes('date-sm') && !li[2].includes('ln-date') && li[2].includes('<strong class="flag">Full show</strong>') && li[2].includes('poster-art'));
 });
 
-test('empty state: never blank, Played rows if any, no Request button without a booking email', () => {
+test('28a: a full show first is the lead card (no is-plain) and prints no Next full show line', () => {
+  const now = noon('2026-11-18');
+  const out = showsHtml([row({ date: '2026-11-18', venue: 'Big' }), row({ type: 'open-mic', date: '2026-11-19' })], now, { past: true });
+  assert.match(out, /<li class="poster" id="s-[^"]*"><picture>/);
+  assert.ok(out.includes('ln-date') && !out.includes('is-plain') && !out.includes('next-full'));
+  assert.ok(out.includes('<strong class="flag">Full show</strong>'));
+});
+
+test('28a: Next full show line on /shows/ and Home foot row; none without a later full show; ids on upcoming only', () => {
+  const now = noon('2026-11-18');
+  const mic = row({ type: 'open-mic', date: '2026-11-18', venue: 'M1' });
+  const big = row({ date: '2027-01-16', venue: '<script>x</script>' });
+  const page = showsHtml([mic, big], now, { past: true });
+  assert.ok(page.includes(`class="next-full"><a class="text-link" href="#s-${showId(big)}">Next full show: Jan 16, &lt;script&gt;x&lt;/script&gt;</a>`) && !page.includes('<script>x'));
+  const home = showsHtml([mic, big], now, { limit: 3, allLink: '/shows/' });
+  assert.ok(home.includes('class="shows-foot"') && home.includes('>All shows<') && home.includes(`href="/shows/#s-${showId(big)}">Next full show: Jan 16<`));
+  const none = showsHtml([mic, row({ type: 'open-mic', date: '2026-11-20' })], now, { limit: 3, allLink: '/shows/' });
+  assert.ok(!none.includes('shows-foot') && !none.includes('next-full') && none.includes('>All shows<'));
+  const withPast = showsHtml([mic, row({ date: '2026-10-01', venue: 'Old' })], now, { past: true });
+  const [up, played] = withPast.split('<div class="played">');
+  assert.equal((up.match(/ id="s-/g) || []).length, 1);
+  assert.ok(!played.includes(' id="s-'));
+});
+
+test('28b: Played shows the last 3, the rest fold under All played (n)', () => {
+  const now = noon('2026-11-18');
+  const past = (n) => Array.from({ length: n }, (_, i) => row({ type: 'open-mic', date: `2026-10-${String(i + 1).padStart(2, '0')}`, venue: `P${i}` }));
+  const out = showsHtml([row({ date: '2026-12-01' }), ...past(8)], now, { past: true });
+  const [before, after] = out.split('<details class="played-more">');
+  assert.equal((before.split('<div class="played">')[1].match(/<li class="row"/g) || []).length, 3);
+  assert.ok(after.includes('<summary>All played (8)</summary>') && (after.match(/<li class="row"/g) || []).length === 5);
+  assert.ok(!showsHtml([row({ date: '2026-12-01' }), ...past(3)], now, { past: true }).includes('<details'));
+  assert.ok(!showsHtml([row({ date: '2026-12-01' })], now, { past: true }).includes('Played'));
+});
+
+test('28c: every upcoming item has one hidden share button for its id; Played has none; hostile values escaped', () => {
+  const now = noon('2026-11-18');
+  const evil = '"><img src=x onerror=alert(1)>';
+  const rows = [row({ type: 'open-mic', date: '2026-11-18', venue: evil }), row({ date: '2027-01-16', venue: "' OR 1=1 --" }), row({ type: 'open-mic', date: '2026-11-20' }), row({ date: '2026-10-01' })];
+  const out = showsHtml(rows, now, { past: true });
+  const [up, played] = out.split('<div class="played">');
+  for (const r of rows.slice(0, 3)) assert.equal(up.split(`data-share="/shows/#s-${showId(r)}"`).length - 1, 1);
+  assert.equal((up.match(/<button class="share-[a-z]+" type="button" hidden data-share=/g) || []).length, 3);
+  assert.ok(!played.includes('data-share') && !played.includes('share-'));
+  assert.ok(!up.includes('<img src=x') && up.includes('data-title="GLucak open mic at “&gt;&lt;img src=x onerror=alert(1)&gt;"') && up.includes('data-text="Open mic Nov 18') && up.includes('aria-label="Share: “&gt;&lt;img'));
+});
+
+test('28c: app.js share block: textContent only, no motion, URL built from location.origin', () => {
+  const js = readFileSync(new URL('../public/js/app.js', import.meta.url), 'utf8');
+  const blk = js.slice(js.indexOf('Share a show (DESIGN 28c'), js.indexOf('Swipe row'));
+  assert.ok(blk.length > 200 && blk.includes('textContent') && blk.includes('new URL(b.dataset.share, location.origin)'));
+  assert.ok(!/innerHTML|insertAdjacentHTML|outerHTML|transition|animate/.test(blk));
+});
+
+test('28d: cost renders last in the meta line, escaped; a newline or 41 characters is refused; Riverside says Free; bookingHref', () => {
+  const now = noon('2026-11-18');
+  const evil = showsHtml([row({ date: '2026-11-20', time: '18:00', cost: "<script>x</script>' OR 1=1 --" })], now);
+  assert.ok(!evil.includes('<script>x') && evil.includes('6:00 PM, &lt;script&gt;x&lt;/script&gt;’ OR 1=1 --</p>'));
+  assert.throws(() => validateShow(row({ cost: 'a\nb' })), /Put the cost on one line/);
+  assert.throws(() => validateShow(row({ cost: 'x'.repeat(41) })), /too long/);
+  validateShow(row({ cost: 'x'.repeat(40) }));
+  const riv = JSON.parse(readFileSync(new URL('../src/data/shows.json', import.meta.url), 'utf8')).find((r) => r.venue === 'Riverside');
+  assert.ok(showsHtml([riv], noon('2026-12-01')).includes('6:00 PM, Free'));
+  const saved = checkShows([row({ cost: '  Free  ' }), row({ cost: '' })]);
+  assert.equal(saved.rows[0].cost, 'Free'); assert.ok(!('cost' in saved.rows[1]));
+  assert.match(checkShows([row({ cost: 'a
+b' })]).errors[0].message, /Put the cost on one line/);
+  assert.equal(bookingHref(), 'https://www.instagram.com/glucakofficial/');
+  assert.equal(bookingHref('a@b.co'), 'mailto:a@b.co?subject=Booking%3A%20%5Bdate%20%2F%20venue%5D');
+});
+
+test('empty state: never blank, Played rows if any, Request a show goes to Instagram while no booking email', () => {
   const now = noon('2026-12-31');
   const none = showsHtml([], now);
   assert.ok(none.includes('No shows booked right now') && none.includes('>Follow<') && !none.includes('Played'));
-  assert.ok(!none.includes('Request a show'));
+  assert.ok(none.includes('>Request a show<') && none.includes('href="https://www.instagram.com/glucakofficial/"') && !none.includes('btn-solid'));
   assert.ok(showsHtml([row({ venue: 'Old' })], now, { past: true }).includes('Played'));
 });
 
@@ -147,9 +214,9 @@ test('poster art: only the poster li has it, rows never', async () => {
   
   const mk = (d, venue) => ({ date: d, type: 'show', venue, city: 'X' });
   const out = showsHtml([mk('2030-01-01', 'A'), mk('2030-01-02', 'B'), mk('2030-01-03', 'C')], new Date('2029-12-01T12:00:00Z'));
-  assert.equal(out.split('poster-art').length - 1, 1);
-  assert.match(out, /<li class="poster"><picture><img class="poster-art graded"/);
-  assert.ok(!/<li class="row">[^]*?poster-art[^]*?<\/li>/.test(out.replace(/<li class="poster">[^]*?<\/li>/, '')));
+  assert.equal(out.split('poster-art').length - 1, 3, 'every full show is a poster with art');
+  assert.match(out, /<li class="poster" id="s-[^"]*"><picture><img class="poster-art graded"/);
+  assert.ok(!/<li class="row"[^>]*>[^]*?poster-art[^]*?<\/li>/.test(showsHtml([mk('2030-01-01', 'A'), { ...mk('2030-01-02', 'B'), type: 'open-mic' }], new Date('2029-12-01T12:00:00Z')).replace(/<li class="poster"[^>]*>[^]*?<\/li>/, '')));
 });
 
 // ---------- D61: optional street address ----------
@@ -197,13 +264,13 @@ test('D63 F5: a C1 control (NEL) in the address is refused like a line break', (
 test('27b rows and poster: Today / Tomorrow lead the line; other days and Played rows get nothing', () => {
   const now = noon('2026-11-17');
   const out = (r) => showsHtml([r], now);
-  assert.ok(out(row({ date: '2026-11-17', type: 'open-mic', time: '19:00' })).includes('<span class="row-kind"><strong class="row-soon">Today</strong>, Open mic, 7:00 PM</span>'));
+  assert.ok(showsHtml([row({ date: '2026-11-17', type: 'show' }), row({ date: '2026-11-17', type: 'open-mic', time: '19:00' })], now).includes('<span class="row-kind"><strong class="row-soon">Today</strong>, Open mic, 7:00 PM</span>'));
   assert.ok(out(row({ date: '2026-11-18', type: 'open-mic', time: '18:00' })).includes('<strong class="row-soon">Tomorrow</strong>, Open mic, 6:00 PM'));
   assert.ok(!out(row({ date: '2026-11-19' })).includes('row-soon'));
   const played = showsHtml([row({ date: '2026-11-16' })], now, { past: true });
   assert.ok(!played.includes('row-soon'));
-  assert.ok(out(row({ date: '2026-11-17', time: '18:00' })).includes('<p class="poster-meta"><strong class="row-soon">Today</strong>, 6:00 PM</p>'));
-  assert.ok(out(row({ date: '2026-11-17' })).includes('<p class="poster-meta"><strong class="row-soon">Today</strong></p>'));
+  assert.ok(out(row({ date: '2026-11-17', time: '18:00' })).includes('<p class="poster-meta"><strong class="row-soon">Today</strong>, <strong class="flag">Full show</strong>, 6:00 PM</p>'));
+  assert.ok(out(row({ date: '2026-11-17' })).includes('<p class="poster-meta"><strong class="row-soon">Today</strong>, <strong class="flag">Full show</strong></p>'));
   // New York day: 03:30Z on Nov 18 is still Nov 17 there
   assert.ok(showsHtml([row({ date: '2026-11-17', type: 'open-mic' })], new Date('2026-11-18T03:30:00Z')).includes('row-soon">Today<'));
 });

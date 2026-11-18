@@ -782,7 +782,7 @@ html[data-hero='ab'] .slot { display: none; }
    line gives up 3.5rem of its width for it (the fitted date shrinks about 16%, the poster gets about 13px shorter). */
 .cal-icon { width: 24px; height: 24px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .poster-date { padding-right: 3.5rem; }
-.cal-link {
+.cal-link, .share-stamp {
   grid-area: date; justify-self: end; align-self: start; display: grid; place-items: center; width: 48px; height: 48px;
   color: var(--bg); border: 3px solid var(--bg); border-radius: var(--radius-s);
 }
@@ -794,14 +794,14 @@ html[data-hero='ab'] .slot { display: none; }
 .row > .btn-show { grid-area: btn; }
 /* Boss ruling (D55): where the card is 37rem+ (tablet, desktop) the poster has room, so the words show beside the glyph,
    on their own line under the date, at no height cost. Phones keep the glyph-only stamp. */
-.cal-word { display: none; }
+.cal-word, .share-word { display: none; }
 @container (min-width: 37rem) {
   .poster { grid-template-rows: auto auto 1fr auto auto; grid-template-areas: 'date art' 'cal art' 'place art' 'meta art' 'btn art'; }
   .poster-date { padding-right: 0; }
-  .cal-link { grid-area: cal; justify-self: start; display: flex; align-items: center; gap: 0.5rem; width: auto; padding: 0 0.9rem 0 0.7rem; font-weight: 700; text-decoration: none; }
-  .cal-word { display: inline; }
+  .cal-link, .share-stamp { grid-area: cal; justify-self: start; display: flex; align-items: center; gap: 0.5rem; width: auto; padding: 0 0.9rem 0 0.7rem; font-weight: 700; text-decoration: none; }
+  .cal-word, .share-word { display: inline; }
 }
-.cal-btn { grid-area: cal; justify-self: start; align-self: start; display: grid; place-items: center; width: 48px; height: 48px; margin: -12px; padding: 12px; color: inherit; }
+.cal-btn, .share-btn { grid-area: cal; justify-self: start; align-self: start; display: grid; place-items: center; width: 48px; height: 48px; margin: -12px; padding: 12px; color: inherit; }
 .row:not(:has(.cal-btn)) .row-date { grid-row: 1 / span 2; align-self: center; } /* Played rows: no glyph, the date centres as before */
 
 /* ---------- 16d. 404 ---------- */
@@ -829,15 +829,15 @@ html[data-hero='ab'] .slot { display: none; }
 a, button, summary, label { -webkit-tap-highlight-color: transparent; }
 .btn:active, .btn-solid:active, .btn-line:active, .btn-show:active, .motion-btn:not(:disabled):active,
 .links a:active, .about-set a:active, .text-link:active, .under-link:active, .listen-on a:active, .now a:active, .legal a:active,
-.quote-credit a:active, .ln-close a:active, .go:active, .nav-desktop a:active, .sheet a:active, .nav-mobile summary:active {
+.quote-credit a:active, .ln-close a:active, .played-more > summary:active, .go:active, .nav-desktop a:active, .sheet a:active, .nav-mobile summary:active {
   background: var(--text); color: var(--bg); border-color: var(--text); transition: none;
 }
 /* On the poster's paper the ink block is bg with paper letters. */
-.poster .btn-show:active, .cal-link:active { background: var(--bg); color: var(--text); border-color: var(--bg); }
+.poster .btn-show:active, .cal-link:active, .share-stamp:active { background: var(--bg); color: var(--text); border-color: var(--bg); }
 /* Rows' Tickets / Details is already text on bg-ink, so pressed turns it to the outline look. */
 .row .btn-show:active { background: var(--bg); color: var(--text); border-color: var(--text); }
 /* The row glyph's 48px box reaches past the date column, so only a 36px square round the glyph inverts. */
-.cal-btn:active { background: linear-gradient(var(--text), var(--text)) center / 36px 36px no-repeat; color: var(--bg); }
+.cal-btn:active, .share-btn:active { background: linear-gradient(var(--text), var(--text)) center / 36px 36px no-repeat; color: var(--bg); }
 .tile-link:active .tile-art, .product-link:active .product-media { outline: 4px solid var(--text); outline-offset: 0; }
 .tile-link:active .tile-text { background: var(--text); color: var(--bg); }
 .tile-link:active .tile-text :is(.tile-artists, .tile-meta, .tile-type) { color: var(--bg); }
@@ -936,7 +936,8 @@ html[data-motion='off']::view-transition-new(*) { animation: none !important; }
 @container (width < 17rem) {
   .row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'date cal' 'text text' 'btn btn'; row-gap: var(--space-xs); padding-block: var(--space-s); }
   .row-date, .row:not(:has(.cal-btn)) .row-date { grid-row: auto; align-self: center; }
-  .cal-btn { justify-self: end; align-self: center; margin: 0; }
+  .cal-btn, .share-btn { justify-self: end; align-self: center; margin: 0; }
+  .cal-btn:has(+ .share-btn:not([hidden])) { margin-right: 48px; }
   .row > .btn-show { justify-self: start; }
 }
 
@@ -1059,8 +1060,8 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 
 /* Shows: the poster's art is the hero's photo again (Kealey), so on Home it is dropped: one photo per slot. */
 .v2-main .poster-art { display: none; }
-.v2-main .poster { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: 'date' 'place' 'meta' 'btn'; }
-@container (min-width: 37rem) { .v2-main .poster { grid-template-areas: 'date' 'cal' 'place' 'meta' 'btn'; } }
+.v2-main .poster:not(.is-plain) { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: 'date' 'place' 'meta' 'btn'; }
+@container (min-width: 37rem) { .v2-main .poster:not(.is-plain) { grid-template-areas: 'date' 'cal' 'place' 'meta' 'btn'; } }
 .v2-main .played { display: none; } /* the server prints Played on every page but '/'; Home never shows it */
 
 /* (2) Video row: latest + 2 featured, real thumbnails, click-to-load facade (app.js). Phones: a still swipe row (scroll-snap,
@@ -1257,6 +1258,7 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 .venues h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; }
 .venues-line { font-size: var(--step-0); line-height: 1.4; }
 .venues-act { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs) var(--space-l); }
+.venues-hint { color: var(--muted); font-size: var(--step--1); }
 .venues-addr { font-weight: 700; overflow-wrap: anywhere; }
 .venues .go { margin-left: -0.25rem; } /* the word lines up with the heading (.go keeps 0.25rem padding for its tap box) */
 .prose > .venues { margin-top: 0; margin-bottom: var(--space-l); } /* About: .prose already opens with --space-xl */
@@ -1353,3 +1355,44 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 @media (hover: hover) { .h-go:hover { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; } }
 /* Menu sheet: with Videos + Shop at 200% text the last link ends at 624px, below a 568px screen. It scrolls, not cuts off. */
 .sheet { max-height: calc(100dvh - var(--header-h) - var(--bar-h, 0px)); overflow-y: auto; overscroll-behavior: contain; }
+
+/* ---------- 28a-c. Shows in date order, Played fold, share (DESIGN 28, D100 / D104) ---------- */
+/* Two stamps (calendar, share) at the date's end on phones: 7rem reserved, always, so the date never resizes when JS shows the
+   share stamp (CLS 0). */
+.poster-date { padding-right: 7rem; }
+.poster-tools { grid-area: date; justify-self: end; align-self: start; display: flex; gap: 0.5rem; }
+.poster-tools .cal-link { grid-area: auto; }
+.poster-foot { grid-area: btn; justify-self: start; align-self: end; min-width: 0; }
+.date-sm { display: block; font-family: var(--font-display); font-weight: 900; font-size: var(--step-3); line-height: 0.82;
+  text-transform: uppercase; text-box: trim-both cap alphabetic; white-space: nowrap; }
+.flag { font-weight: 800; }
+.poster.is-plain { background: none; color: var(--text); padding-inline: 0; border-bottom: 2px solid var(--line);
+  grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: 'date' 'place' 'meta' 'btn'; }
+.poster.is-plain :is(.cal-link, .share-stamp) { color: var(--text); border-color: var(--text); }
+.poster.is-plain :is(.cal-link, .share-stamp):active { background: var(--text); color: var(--bg); border-color: var(--text); }
+.poster.is-plain .btn-show { background: var(--text); color: var(--bg); border-color: var(--text); } /* Details: paper, not accent */
+.poster.is-plain .row-soon { color: var(--text); }
+.poster.is-plain .poster-meta { color: var(--muted); }
+.next-full { margin-bottom: var(--space-xs); }
+.shows-foot { display: flex; flex-wrap: wrap; column-gap: var(--space-l); }
+@container (min-width: 37rem) {
+  .poster-date { padding-right: 0; }
+  .poster-tools { grid-area: cal; justify-self: start; }
+  .poster.is-plain { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto 1fr;
+    grid-template-areas: 'date place' 'date meta' 'cal btn'; column-gap: var(--space-l); }
+  .poster.is-plain .poster-place { align-self: end; }
+}
+li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* the shared show, found on arrival; static */
+.share-btn[hidden], .share-stamp[hidden] { display: none; }
+.share-btn { justify-self: end; }
+.share-msg { grid-column: 1 / -1; font-size: var(--step-0); font-weight: 700; overflow-wrap: anywhere; }
+.share-msg:empty { display: none; }
+.poster .share-msg { display: block; grid-column: auto; }
+.poster .share-msg:empty { display: none; }
+.played .row-date { color: var(--muted); }
+.played-more > summary { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 48px; font-weight: 700;
+  text-decoration: underline; text-underline-offset: 3px; list-style: none; cursor: pointer; }
+.played-more > summary::-webkit-details-marker { display: none; }
+.played-more > summary::after { content: ''; width: 0.7em; height: 0.56em; background: currentColor; rotate: 90deg;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M0 16H35M23 4l12 12-12 12' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M0 16H35M23 4l12 12-12 12' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat; }
+.played-more[open] > summary::after { rotate: -90deg; } /* instant: no transition */

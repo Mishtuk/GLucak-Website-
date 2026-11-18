@@ -26,7 +26,7 @@ test('Now line: release DAY beats an upcoming release (B before A)', () => {
 
 test('calendar link: upcoming rows and the poster only, never Played; hostile venue stays escaped in the name', () => {
   const now = noon('2026-12-01');
-  const out = showsHtml([row({ date: '2026-12-05', venue: 'The Rail' }), row({ date: '2026-12-06', venue: 'B' }), row({ date: '2026-11-01', venue: 'Old' })], now, { past: true });
+  const out = showsHtml([row({ date: '2026-12-05', venue: 'The Rail' }), row({ date: '2026-12-06', venue: 'B', type: 'open-mic' }), row({ date: '2026-11-01', venue: 'Old' })], now, { past: true });
   const [up, played] = out.split('<div class="played">');
   assert.match(up, /<a class="cal-link" href="\/shows\/2026-12-05-the-rail-[0-9a-f]{6}\.ics" aria-label="Add to calendar: The Rail, Dec 5"><svg class="cal-icon" aria-hidden="true"><use href="#i-cal"\/><\/svg><span class="cal-word">Add to calendar<\/span><\/a>/);
   assert.match(up, /<a class="cal-btn" href="\/shows\/2026-12-06-b-[0-9a-f]{6}\.ics" aria-label="Add to calendar: B, Dec 6"><svg/);

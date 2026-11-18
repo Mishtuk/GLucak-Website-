@@ -12,6 +12,7 @@ export const curly = (s) => String(s ?? '').replace(/(^|[\s([{—-])"/g, '$1“'
 const validDate = (d) => { const t = new Date(`${d}T00:00:00Z`); return /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(t.getTime()) && t.toISOString().slice(0, 10) === d; };
 const httpUrl = (u) => { try { return ['http:', 'https:'].includes(new URL(u).protocol); } catch { return false; } };
 
+export const COST_LINE = 'Put the cost on one line.', COST_LONG = 'That cost is too long. 40 letters at most.';
 export const ADDR_LINE = 'Put the address on one line.', ADDR_LONG = 'That address is too long. 120 letters at most.';
 /** Returns the row if valid, else throws. */
 export function validateShow(r) {
@@ -27,6 +28,12 @@ export function validateShow(r) {
     const a = r.address.trim();
     if (/[\x00-\x1f\x7f-\x9f\u2028\u2029]/.test(a)) throw new Error(ADDR_LINE); // C0, DEL, C1 (NEL), LS, PS (D63 F5)
     if (a.length > 120) throw new Error(ADDR_LONG);
+  }
+  if (r.cost != null) {
+    if (typeof r.cost !== 'string') throw new Error('bad cost');
+    const c = r.cost.trim();
+    if (/[\x00-\x1f\x7f-\x9f\u2028\u2029]/.test(c)) throw new Error(COST_LINE);
+    if (c.length > 40) throw new Error(COST_LONG);
   }
   return r;
 }
@@ -47,6 +54,8 @@ const fmtTime = (t) => { const h = +t.slice(0, 2); return `${h % 12 || 12}:${t.s
 const INSTAGRAM = 'https://www.instagram.com/glucakofficial/';
 // ponytail: booking email unknown until Gabe answers (direction.md Q4); the Request a show button stays off until set.
 export const BOOKING_EMAIL = null;
+/** DESIGN 28d: the Request a show link: a mailto once the address is set, else the Instagram profile. */
+export const bookingHref = (email = BOOKING_EMAIL) => email ? `mailto:${email}?subject=${encodeURIComponent('Booking: [date / venue]')}` : INSTAGRAM;
 
 const monD = (d) => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 
@@ -58,6 +67,15 @@ ${r.venue}`).digest('hex').slice(0, 6)}`;
 };
 const cal = (r, words) => `<a class="${words ? 'cal-link' : 'cal-btn'}" href="/shows/${showId(r)}.ics" aria-label="${esc(`Add to calendar: ${r.venue}, ${monD(r.date)}`)}"><svg class="cal-icon" aria-hidden="true"><use href="#i-cal"/></svg>${words ? '<span class="cal-word">Add to calendar</span>' : ''}</a>`;
 
+// DESIGN 28c (D104): built hidden; public/js/app.js shows it only where the browser can share or copy. Every value escaped.
+const shareBtn = (r, words) => {
+  const kind = r.type === 'open-mic' ? 'Open mic' : 'Show';
+  const title = r.type === 'open-mic' ? `GLucak open mic at ${r.venue}` : `GLucak at ${r.venue}`;
+  const text = `${kind} ${monD(r.date)}${r.time ? `, ${fmtTime(r.time)}` : ''}: ${r.venue}, ${r.city}`;
+  return `<button class="${words ? 'share-stamp' : 'share-btn'}" type="button" hidden data-share="/shows/#s-${showId(r)}" data-title="${esc(curly(title))}" data-text="${esc(curly(text))}" aria-label="${esc(curly(`Share: ${r.venue}, ${monD(r.date)}`))}"><svg class="cal-icon" aria-hidden="true"><use href="#i-share"/></svg>${words ? '<span class="share-word">Share</span>' : ''}</button>`;
+};
+const SHARE_MSG = '<span class="share-msg" role="status"></span>';
+
 const action = (r) => r.link ? `<a class="btn btn-show" href="${esc(r.link)}" rel="noopener">${r.type === 'show' ? 'Tickets' : 'Details'}</a>` : '';
 const place = (r) => `${esc(curly(r.venue))}, ${esc(curly(r.city))}`;
 const dateTag = (r) => `<time datetime="${esc(r.date)}${r.time ? `T${esc(r.time)}` : ''}">${esc(fmtDate(r.date))}</time>`;
@@ -66,39 +84,46 @@ const dateTag = (r) => `<time datetime="${esc(r.date)}${r.time ? `T${esc(r.time)
 const POSTER_ART = `<picture><img class="poster-art graded" src="/media/c-poster-600.webp" srcset="/media/c-poster-600.webp 600w, /media/c-poster-1000.webp 1000w" sizes="(min-width: 640px) 23rem, 50vw" width="600" height="750" alt="" loading="lazy"></picture>`;
 // DESIGN 27b: "Today" / "Tomorrow" (New York day) leads the meta / kind line of an upcoming show; any other date gets nothing.
 const soonWord = (r, today) => (!today ? '' : r.date === today ? 'Today' : dayDiff(r.date, today) === 1 ? 'Tomorrow' : '');
-const lead = (r, today, parts) => [soonWord(r, today) && '<strong class="row-soon">' + soonWord(r, today) + '</strong>', parts.filter(Boolean).map((x) => esc(curly(x))).join(', ')].filter(Boolean).join(', ');
-export function posterHtml(r, { today } = {}) {
-  const meta = lead(r, today, [r.time && fmtTime(r.time), r.with && `With ${r.with}`]);
-  return `<li class="poster">${POSTER_ART}<p class="poster-date fit"><span class="ln ln-date">${dateTag(r)}</span></p>${cal(r, true)}<p class="poster-place">${place(r)}</p>${meta ? `<p class="poster-meta">${meta}</p>` : ''}${action(r)}</li>`;
+const lead = (r, today, parts, flag) => [soonWord(r, today) && '<strong class="row-soon">' + soonWord(r, today) + '</strong>', flag && '<strong class="flag">Full show</strong>', parts.filter(Boolean).map((x) => esc(curly(x))).join(', ')].filter(Boolean).join(', ');
+const costOf = (r) => r.cost?.trim();
+/** DESIGN 28a: the lead (first upcoming item, big date) and every full show are posters; an open mic as the lead is the plain poster. */
+export function posterHtml(r, { today, lead: isLead = false } = {}) {
+  const plain = isLead && r.type === 'open-mic';
+  const full = r.type === 'show';
+  const meta = lead(r, today, [plain && 'Open mic', r.time && fmtTime(r.time), r.with && `With ${r.with}`, costOf(r)], full);
+  const date = isLead ? `<p class="poster-date fit"><span class="ln ln-date">${dateTag(r)}</span></p>` : `<p class="poster-date"><span class="date-sm">${dateTag(r)}</span></p>`;
+  return `<li class="poster${plain ? ' is-plain' : ''}" id="s-${showId(r)}">${plain ? '' : POSTER_ART}${date}<span class="poster-tools">${cal(r, true)}${shareBtn(r, true)}</span><p class="poster-place">${place(r)}</p>${meta ? `<p class="poster-meta">${meta}</p>` : ''}<div class="poster-foot">${action(r)}${SHARE_MSG}</div></li>`;
 }
-/** `past` rows (Played) get no calendar link: past shows have no .ics. */
+/** `past` rows (Played) get no calendar link, share button or id: past shows have no .ics and are not shared. */
 export function rowHtml(r, { past = false, today } = {}) {
-  const extra = lead(r, past ? null : today, [r.type === 'open-mic' ? 'Open mic' : 'Show', r.time && fmtTime(r.time), r.with && `With ${r.with}`]);
-  return `<li class="row"><span class="row-date">${dateTag(r)}</span>${past ? '' : cal(r, false)}<span class="row-text"><span class="row-place">${place(r)}</span><span class="row-kind">${extra}</span></span>${action(r)}</li>`;
+  const extra = lead(r, past ? null : today, [r.type === 'open-mic' ? 'Open mic' : 'Show', r.time && fmtTime(r.time), r.with && `With ${r.with}`, costOf(r)]);
+  return `<li class="row"${past ? '' : ` id="s-${showId(r)}"`}><span class="row-date">${dateTag(r)}</span>${past ? '' : cal(r, false) + shareBtn(r, false)}<span class="row-text"><span class="row-place">${place(r)}</span><span class="row-kind">${extra}</span></span>${action(r)}${past ? '' : SHARE_MSG}</li>`;
 }
 // Kept for callers that want one plain row.
 export const showHtml = rowHtml;
 
-/** The poster is the first full show (open mics may come before it by date); the rest are rows by date, the poster not repeated. limit counts the poster. */
+/** In date order: item 1 is the lead (big date); a later full show is a paper poster with a small date, an open mic a row. limit counts the lead. */
 const upcomingHtml = (list, limit = Infinity, today) => {
-  const poster = list.find((r) => r.type === 'show');
-  const rows = list.filter((r) => r !== poster).slice(0, poster ? limit - 1 : limit);
-  return `<ul class="shows">${(poster ? posterHtml(poster, { today }) : '') + rows.map((r) => rowHtml(r, { today })).join('')}</ul>`;
+  const items = list.slice(0, limit).map((r, i) => i === 0 ? posterHtml(r, { today, lead: true }) : r.type === 'show' ? posterHtml(r, { today }) : rowHtml(r, { today }));
+  return `<ul class="shows">${items.join('')}</ul>`;
 };
-const playedHtml = (list) => list.length ? `<div class="played"><h2>Played</h2><ul class="rows">${list.map((r) => rowHtml(r, { past: true })).join('')}</ul></div>` : '';
-const emptyHtml = (played) => `<div class="empty"><p class="empty-line">No shows booked right now</p><div class="empty-actions"><a class="btn btn-solid" href="${INSTAGRAM}" rel="noopener">Follow</a>${BOOKING_EMAIL ? `<a class="btn btn-line" href="mailto:${esc(BOOKING_EMAIL)}?subject=Show%20request">Request a show</a>` : ''}</div>${playedHtml(played)}</div>`;
+// DESIGN 28b: the last 3 played, then the rest folded.
+const playedHtml = (list) => list.length ? `<div class="played"><h2>Played</h2><ul class="rows">${list.slice(0, 3).map((r) => rowHtml(r, { past: true })).join('')}</ul>${list.length > 3 ? `<details class="played-more"><summary>All played (${list.length})</summary><ul class="rows">${list.slice(3).map((r) => rowHtml(r, { past: true })).join('')}</ul></details>` : ''}</div>` : '';
+const emptyHtml = (played) => `<div class="empty"><p class="empty-line">No shows booked right now</p><div class="empty-actions"><a class="btn btn-line" href="${INSTAGRAM}" rel="noopener">Follow</a><a class="btn btn-line" href="${esc(bookingHref())}"${BOOKING_EMAIL ? '' : ' aria-label="Request a show on Instagram"'}>Request a show</a></div>${playedHtml(played)}</div>`;
 
 /**
  * The list for the page marker. Invalid rows are skipped, never rendered.
- * Home: { limit: 3, allLink: '/shows/' } -> poster + 2 rows + All shows. Shows page: { past: true } -> everything + Played.
+ * Home: { limit: 3, allLink: '/shows/' } -> lead + 2 more + All shows (and Next full show when it is not the lead). Shows page: { past: true } -> everything + Played.
  * No upcoming shows: the empty state (DESIGN.md section 7), with Played rows if any.
  */
 export function showsHtml(rows, now = new Date(), { limit = Infinity, past = false, allLink = null } = {}) {
   const ok = rows.filter((r) => { try { return validateShow(r); } catch { return false; } });
   const s = splitShows(ok, now);
   if (!s.upcoming.length) return emptyHtml(past ? s.past : s.past.slice(0, 3));
+  const nf = s.upcoming.slice(1).find((r) => r.type === 'show'); // DESIGN 28a: the next full show when it is not the lead
   let out = upcomingHtml(s.upcoming, limit, etDay(now));
-  if (allLink) out += `<a class="text-link" href="${esc(allLink)}">All shows</a>`;
+  if (!allLink && nf) out = `<p class="next-full"><a class="text-link" href="#s-${showId(nf)}">${esc(curly(`Next full show: ${monD(nf.date)}, ${nf.venue}`))}</a></p>` + out;
+  if (allLink) out += nf ? `<p class="shows-foot"><a class="text-link" href="${esc(allLink)}">All shows</a><a class="text-link" href="${esc(allLink)}#s-${showId(nf)}">Next full show: ${esc(monD(nf.date))}</a></p>` : `<a class="text-link" href="${esc(allLink)}">All shows</a>`;
   if (past) out += playedHtml(s.past);
   return out;
 }
