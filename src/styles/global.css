@@ -1513,3 +1513,15 @@ li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* 
   .hero-print { display: block; grid-area: print; justify-self: end; align-self: center; width: min(100%, 26rem); margin: var(--space-m) 0 0; rotate: -2deg; }
   .hero-print img { display: block; width: 100%; height: auto; }
 }
+
+/* Rise: the mirror. Card left, RISE and the garage print right, the print running off the right edge. Home only (Music is round 3). */
+@media (max-width: 699px) {
+  html[data-home] .band-rise .v2-card { margin-inline: calc(-1 * var(--gutter)); border-radius: 0; padding-inline: var(--gutter); } /* the one edge-to-edge panel */
+}
+@media (min-width: 700px) and (max-width: 899px) { html[data-home] .phrase-rise { text-align: end; } }
+@media (min-width: 900px) {
+  html[data-home] .band-rise > .wrap.v2-split { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+  html[data-home] .band-rise .v2-side { grid-column: 2; grid-row: 1; justify-items: end; text-align: end; }
+  html[data-home] .band-rise .v2-split > :last-child { grid-column: 1; grid-row: 1; }
+  html[data-home] .band-rise .v2-land { width: calc(100% + var(--gutter)); max-width: none; margin-right: calc(-1 * var(--gutter)); }
+}
