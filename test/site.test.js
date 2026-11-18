@@ -35,7 +35,7 @@ const future = (n) => new Date(Date.now() + n * 864e5).toISOString().slice(0, 10
 test('fallback: no site.json -> the shipped seed is what is served and what the editor loads', async () => {
   assert.ok(!existsSync(join(data, 'site.json')));
   const about = await get('/about/');
-  assert.ok(!about.includes('built bio') && about.includes('The hours in the studio.'), 'markers are filled from the seed');
+  assert.ok(!about.includes('built bio') && about.includes('Reforged and ready'), 'markers are filled from the seed');
   assert.ok((await get('/music/')).includes('Pre-save'));
   const r = await post('/edit/login', { username: 'gabe', password: 'gabes long password' });
   cookie = r.headers.get('set-cookie').split(';')[0];

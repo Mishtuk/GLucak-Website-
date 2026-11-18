@@ -138,7 +138,7 @@ twice; magenta in no photo; About header photo reads at 768 / 1280; gallery of c
 once; the 2-up sheet is one of the 4 committed shots. OUT: any photo not already cleared, AI upscaling, lightbox script.
 
 ## 5. HELD (Gabe or owner; no guessing)
-New bio ("Reforaged" spelling) and whether "Epilepsy survivor" stays; Dec 4 Airport Square still on; open-mic cover and set length;
+New bio (NO LONGER HELD, 2026-11-18: "Reforged" confirmed, bio on the site, epilepsy lines kept; round GA) and whether "Epilepsy survivor" stays; Dec 4 Airport Square still on; open-mic cover and set length;
 venue towns / street addresses; Scenic Route giveaway file + Kit account; Discord link; Montco Radio mention; Scenic lyric line by track
 12; single art for Scenic Route / Welcome Home / Who I Am (M2 "Coming up" row waits with it); CD photo credits; which real merch first;
 M.O.M's vs "Cheshire" name; booking details (owner creates the glucak.com address, then `BOOKING_EMAIL` flips); D81 player size;

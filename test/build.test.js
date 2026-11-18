@@ -114,11 +114,10 @@ test('port notes: no quote text, mark in header, one hero image, credits, no EXI
 });
 
 test('approved copy is on each page verbatim; no ASK GABE; no quote ships', () => {
-  const bio = ['The hours in the studio. The energetic live performances. The time spent tweaking everything to hit just right. It’s more than a hobby.',
-    'Despite facing various difficulties and struggles over the years, Epilepsy survivor and Producer-Rapper/DJ GLucak has shown no intent to give up on either his Faith in God or his mission in creating energetic music to bring others to Christ.',
-    'Nevertheless, no matter the musical style or genre, be it his debut single or his upcoming 3rd album (rumored to be his best work yet), the mission statement has always been the same: Rise, Live It Loud, Push Past Fear, The Time Is Now.'];
+  const bio = ["Reforged and ready for the next era, Horsham-based Producer-Rapper and DJ GLucak is now gearing up toward his third album, IDENTITY, due August 13th of 2027. Making energetic, misfit, honest, Faith-based tracks since 2022, the EDM/Rap hybrid artist has been moving at a fast pace since then, having put together seven brand-new singles since his self-titled album debuted in 2025, beginning with Earned Your Stripes, and soon to conclude the series with Welcome Home.",
+    "Shortly afterward, a new era will begin. Deeper lyrical themes, further expansion of an already-versatile sound, and a bolder, louder approach than ever before. Nevertheless, the slogan is still the same as it was in ’22: Rise. Live It Loud. Push Past Fear. The Time Is Now."];
   const want = {
-    '/': ['Live It Loud', bio[1], SIGNUP, 'Help back my projects and merch, and get early access to songs only my inner circle knows exist.'],
+    '/': ['Live It Loud', 'Reforged and ready for the next era', SIGNUP, 'Help back my projects and merch, and get early access to songs only my inner circle knows exist.'],
     '/music/': ['Releases', 'Hear more on SoundCloud', 'Pre-save', 'IDENTITY tracklist', 'All songs written, recorded, produced, mixed and mastered by Gabriel Lucak', 'Remix album'],
     '/shows/': ['Live It Loud', 'Book GLucak'],
     '/about/': [...bio, 'Book GLucak', 'Epilepsy survivor', 'Healed by Christ since 2009', 'Help back my projects and merch', '>Credits<', 'Photo: Alexander Kealey'],

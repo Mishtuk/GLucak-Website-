@@ -68,7 +68,7 @@ test('28j: the new lines sit where 28j puts them (Home hero, RISE, Shows, About)
   const next = home.match(/<p class="next-rel">[^]*?<\/p>/)?.[0] ?? '';
   assert.ok(next.includes('Next: Welcome Home, Dec 18.') && next.includes('Pre-save<span class="vh">') && !next.includes('btn-solid') && rise.includes('next-rel'));
   assert.ok(dist('shows/index.html').includes('<p class="shows-intro">Mostly open mics around Horsham and Doylestown, plus a full show at Riverside on Jan 16. Come hear unreleased songs.</p>'));
-  assert.ok(dist('about/index.html').includes('<p>The hours in the studio. The energetic live performances.'));
+  assert.ok(dist('about/index.html').includes('<p>Reforged and ready for the next era'));
 });
 
 test('C18: the Home latest video is the newest non-Short (a kind "other" Short never leads the row)', () => {

@@ -244,7 +244,7 @@ Every page footer: socials (Instagram, Threads, X, YouTube, SoundCloud, Spotify)
 - None blocking for design and the first build.
 
 ## 2026-11-18 Gabe's answers (email 13:26, saved as V:\WarminsterVFW\source\fb\"A few questions before I start on your website (2).eml")
-- Bio: "Reforaged" was a typo -> "Reforged". KEEP the epilepsy line ("Epilepsy survivor" / "Healed by Christ since 2009"); place it near the debut; a longer version is coming from Gabe.
+- Bio: NO LONGER HELD (round GA: new bio is on About + Home). "Reforaged" was a typo -> "Reforged". KEEP the epilepsy line ("Epilepsy survivor" / "Healed by Christ since 2009"); place it near the debut; a longer version is coming from Gabe.
 - Giveaway: Scenic Route WAV/MP3 is in his Google Drive (link in the email, "12 - Scenic Route.mp3"). Kit account in his name with his Gmail: YES.
 - Mailing address for the Kit footer + domain registration: his home address is in the email. PRIVATE: never in this repo or on the site. A P.O. box may replace it later.
 - Venue towns: M.O.M.'s = Maxwell's on Main, Doylestown; High Steaks = Ambler; Fox Chase Tavern = NE Philly (Rhawn St); Music & Arts Airport Square = North Wales; Crooked Eye = Hatboro; Cheshire = Cheshire Brewing Co., Cheltenham (near Elkins Park, Gabe unsure); North Penn VFW = unknown (Gabe asking).
