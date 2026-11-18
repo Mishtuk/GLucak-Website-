@@ -81,18 +81,18 @@ const place = (r) => `${esc(curly(r.venue))}, ${esc(curly(r.city))}`;
 const dateTag = (r) => `<time datetime="${esc(r.date)}${r.time ? `T${esc(r.time)}` : ''}">${esc(fmtDate(r.date))}</time>`;
 
 /** Markup per DESIGN.md (classes from prototype/styles.css). A poster is only ever a full show, never an open mic. */
-const POSTER_ART = `<picture><img class="poster-art graded" src="/media/c-poster-600.webp" srcset="/media/c-poster-600.webp 600w, /media/c-poster-1000.webp 1000w" sizes="(min-width: 640px) 23rem, 50vw" width="600" height="750" alt="" loading="lazy"></picture>`;
+const POSTER_ART = `<picture><img class="poster-art graded" src="/media/poster-print-600.webp" width="600" height="750" alt="" loading="lazy"></picture>`;
 // DESIGN 27b: "Today" / "Tomorrow" (New York day) leads the meta / kind line of an upcoming show; any other date gets nothing.
 const soonWord = (r, today) => (!today ? '' : r.date === today ? 'Today' : dayDiff(r.date, today) === 1 ? 'Tomorrow' : '');
 const lead = (r, today, parts, flag) => [soonWord(r, today) && '<strong class="row-soon">' + soonWord(r, today) + '</strong>', flag && '<strong class="flag">Full show</strong>', parts.filter(Boolean).map((x) => esc(curly(x))).join(', ')].filter(Boolean).join(', ');
 const costOf = (r) => r.cost?.trim();
 /** DESIGN 28a: the lead (first upcoming item, big date) and every full show are posters; an open mic as the lead is the plain poster. */
-export function posterHtml(r, { today, lead: isLead = false } = {}) {
+export function posterHtml(r, { today, lead: isLead = false, art = false } = {}) {
   const plain = isLead && r.type === 'open-mic';
   const full = r.type === 'show';
   const meta = lead(r, today, [plain && 'Open mic', r.time && fmtTime(r.time), r.with && `With ${r.with}`, costOf(r)], full);
   const date = isLead ? `<p class="poster-date fit"><span class="ln ln-date">${dateTag(r)}</span></p>` : `<p class="poster-date"><span class="date-sm">${dateTag(r)}</span></p>`;
-  return `<li class="poster${plain ? ' is-plain' : ''}" id="s-${showId(r)}">${plain ? '' : POSTER_ART}${date}<span class="poster-tools">${cal(r, true)}${shareBtn(r, true)}</span><p class="poster-place">${place(r)}</p>${meta ? `<p class="poster-meta">${meta}</p>` : ''}<div class="poster-foot">${action(r)}${SHARE_MSG}</div></li>`;
+  return `<li class="poster${plain ? ' is-plain' : ''}" id="s-${showId(r)}">${art && !plain ? POSTER_ART : ''}${date}<span class="poster-tools">${cal(r, true)}${shareBtn(r, true)}</span><p class="poster-place">${place(r)}</p>${meta ? `<p class="poster-meta">${meta}</p>` : ''}<div class="poster-foot">${action(r)}${SHARE_MSG}</div></li>`;
 }
 /** `past` rows (Played) get no calendar link, share button or id: past shows have no .ics and are not shared. */
 export function rowHtml(r, { past = false, today } = {}) {
@@ -104,7 +104,8 @@ export const showHtml = rowHtml;
 
 /** In date order: item 1 is the lead (big date); a later full show is a paper poster with a small date, an open mic a row. limit counts the lead. */
 const upcomingHtml = (list, limit = Infinity, today) => {
-  const items = list.slice(0, limit).map((r, i) => i === 0 ? posterHtml(r, { today, lead: true }) : r.type === 'show' ? posterHtml(r, { today }) : rowHtml(r, { today }));
+  const firstShow = list.slice(0, limit).findIndex((r) => r.type === 'show'); // DESIGN 29d: art on the first full show only (no frame twice on a page)
+  const items = list.slice(0, limit).map((r, i) => i === 0 ? posterHtml(r, { today, lead: true, art: i === firstShow }) : r.type === 'show' ? posterHtml(r, { today, art: i === firstShow }) : rowHtml(r, { today }));
   return `<ul class="shows">${items.join('')}</ul>`;
 };
 // DESIGN 28b: the last 3 played, then the rest folded.

@@ -26,12 +26,13 @@ export const PHOTO_CREDITS = {
 };
 // Image src -> the credit it needs. Pages list their credits by hand; test/credits.test.js scans each built page's images against this so they can't drift.
 export const CREDIT_FOR = [
-  [/\/media\/v2\/(belt|stage)-|videos\/OOGT3GxlQJk-/, PHOTO_CREDITS.yt],
+  [/\/media\/v2\/(belt|stage)-|poster-print-|photo-crooked-eye-|videos\/aZNW63M_C2E-/, PHOTO_CREDITS.vladd],
+  [/videos\/OOGT3GxlQJk-/, PHOTO_CREDITS.yt],
+  [/photo-mccc-/, PHOTO_CREDITS.mccc],
   [/covers\/identity|identity-art-/, PHOTO_CREDITS.identity],
   [/\/media\/cd-/, PHOTO_CREDITS.cd],
-  [/videos\/aZNW63M_C2E-/, PHOTO_CREDITS.vladd],
   [/\/media\/v2\/garage-|videos\/K-OZiNvQB14-/, PHOTO_CREDITS.joseph],
-  [/a-era-grade|a-night-/, PHOTO_CREDITS.kealey],
+  [/a-print-|b-print-/, PHOTO_CREDITS.kealey],
 ];
 export const SITE_URL = (import.meta.env.SITE_URL ?? 'https://glucak.com').replace(/\/$/, '');
 export const SPOTIFY_EMBED = 'https://open.spotify.com/embed/playlist/0D45boIc9xWAdDjz1uTDRo?theme=0';

@@ -1,33 +1,22 @@
 ---
 import { releases } from './content.js';
-// Hero A, B (D14) or 'ab' (D34: A under 900px, B from 900px up). A = GLUCAK over the graded photo (a); B = photo in the name.
-// In 'ab' each <picture> serves a 1x1 data GIF at the width where it's hidden, so only one photo downloads.
-interface Props { variant?: 'a' | 'b' | 'ab' }
+// D34 hero, DESIGN 29: A under 900px (GLUCAK over his print), B from 900px (his print in the name). Both are Print, one ink.
+// Each <picture> serves a 1x1 data GIF at the width where it's hidden, so only one photo downloads.
 const GIF = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
-const { variant = 'a' } = Astro.props;
 const now = releases()[0];
 const TYPE: Record<string, string> = { single: 'Single', ep: 'EP', album: 'Album', remix: 'Remix album' };
 ---
 <section class="hero" aria-label="GLucak">
   <div class="hero-wall" aria-hidden="true"></div>
-  {variant !== 'b' && (
-    <div class="hero-photo">
-      <picture>
-        {variant === 'ab' && <source media="(min-width: 900px)" srcset={GIF} />}
-        {variant === 'ab'
-          ? <img class="graded" src="/media/a-night-phone-800.webp" alt="" width="800" height="1000" fetchpriority="high" />
-          : <Fragment><source media="(max-width: 699px)" srcset="/media/a-night-phone-800.webp 800w" sizes="100vw" width="800" height="1000" />
-        <img class="graded" src="/media/a-era-grade-1600.webp" srcset="/media/a-era-grade-800.webp 800w, /media/a-era-grade-1600.webp 1600w" sizes="100vw" alt="" width="1600" height="1067" fetchpriority="high" /></Fragment>}
-      </picture>
-    </div>
-  )}
+  <div class="hero-photo">
+    <picture>
+      <source media="(min-width: 900px)" srcset={GIF} />
+      <img class="graded" src="/media/a-print-phone-800.webp" alt="" width="800" height="1000" fetchpriority="high" />
+    </picture>
+  </div>
   <div class="wrap hero-inner">
     <h1 class="name" aria-label="GLucak">
-      <span class="name-row" aria-hidden="true"><span class="n-g">G</span>{variant === 'b' && (
-        <span class="slot"><picture><source media="(min-width: 900px)" srcset="/media/b-riso-identity-600.webp 600w, /media/b-riso-identity-1000.webp 1000w" sizes="37vw" /><img class="graded" src="/media/f-mccc-478.webp" srcset="/media/f-mccc-240.webp 240w, /media/f-mccc-478.webp 478w" sizes="34vw" alt="" width="478" height="477" fetchpriority="high" /></picture></span>
-      )}{variant === 'ab' && (
-        <span class="slot"><picture><source media="(min-width: 900px)" srcset="/media/b-riso-identity-600.webp 600w, /media/b-riso-identity-1000.webp 1000w" sizes="37vw" /><img class="graded" src={GIF} alt="" width="1000" height="706" /></picture></span>
-      )}<span class="n-rest">LUCAK</span></span>
+      <span class="name-row" aria-hidden="true"><span class="n-g">G</span><span class="slot"><picture><source media="(min-width: 900px)" srcset="/media/b-print-600.webp 600w, /media/b-print-1000.webp 1000w" sizes="37vw" /><img class="graded" src={GIF} alt="" width="1000" height="706" /></picture></span><span class="n-rest">LUCAK</span></span>
     </h1>
     <p class="slogan fit"><span class="sl sl-1">Rise, Live It Loud,</span> <span class="sl sl-2">Push Past Fear, The Time Is Now.</span></p>
     <div class="hero-actions">
