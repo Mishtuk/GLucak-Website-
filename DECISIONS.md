@@ -463,3 +463,4 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   lists 2 shows if over); the edit tab is "IDENTITY" not "Now + IDENTITY" (five tabs at 320); Request a show links to his verified
   Instagram profile with a "press Message" hint (no unverified DM URL); IDENTITY Pre-save stays an outline button; 700-899px
   headlines set on one line as at 900px. Heights marked "about" are measured at each round's gate.
+- **D113** (2026-11-18, OV2/3 fix round 1; owner asleep, reversible): amends D39. Home cap is 5.85 screens at 390x660 (3861px). Why: the 28j sound and Next-release lines the owner asked for put Home at 3859; the review's option A (sound at step -1, `.next-rel` margin 0) only saved 6px (3853, the line stays two lines), so it was not kept. Revert by trimming 31px elsewhere and restoring 5.8.
