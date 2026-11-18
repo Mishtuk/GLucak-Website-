@@ -9,6 +9,7 @@
   if (header && sentinel && header.dataset.overlay != null) {
     new IntersectionObserver(([e]) => header.classList.toggle('is-solid', !e.isIntersecting)).observe(sentinel);
   }
+  if (header && sentinel) new IntersectionObserver(([e]) => header.classList.toggle('is-condensed', !e.isIntersecting)).observe(sentinel); // DESIGN 30b: 900px+ CSS shrinks the bar
   const menu = $('.nav-mobile');
   if (menu) {
     const summary = menu.querySelector('summary');
@@ -39,6 +40,26 @@
     showMotion();
   });
   showMotion();
+
+  /* ---------- Palettes (DESIGN 30d): the owner's preview. Shown with ?palettes, or on any page once a palette is stored. Instant swap. ---------- */
+  const pal = $('#pal');
+  if (pal) {
+    const read = () => { try { return localStorage.getItem('palette'); } catch { return null; } };
+    const write = (v) => { try { v ? localStorage.setItem('palette', v) : localStorage.removeItem('palette'); } catch { /* this page only */ } };
+    const sync = () => {
+      const cur = root.dataset.palette || 'identity';
+      pal.querySelectorAll('[data-pal]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.pal === cur)));
+      $('meta[name="theme-color"]')?.setAttribute('content', getComputedStyle(root).getPropertyValue('--bg').trim());
+    };
+    if (new URLSearchParams(location.search).has('palettes') || read()) { pal.hidden = false; sync(); }
+    pal.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-pal], .pal-reset');
+      if (!b) return;
+      const v = b.dataset.pal || null; // the reset button has no data-pal
+      if (v && v !== 'identity') root.dataset.palette = v; else delete root.dataset.palette;
+      write(v); sync();
+    });
+  }
 
   /* ---------- Sign-up: posts to our own server. Without JS the form posts normally. ---------- */
   const form = $('#signup');
