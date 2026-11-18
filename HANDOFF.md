@@ -10,6 +10,8 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
+- **OVERNIGHT 2026-11-18 (owner asleep, no questions, 5 loops): follow `docs/review/overhaul/overnight-plan.md`.** Wake-up
+  scheduled ~03:47 ET + hourly heartbeat 04:13-11:13 (session-only cron). Progress log: append one line per finished step below.
 - **Desktop 2026-11-18: OVERHAUL in progress (owner: "deep dive review of the website in all aspects ... an overhaul";
   use the past emails `docs/research/email-thread-digest.md` + everything learned).** Reviews: `docs/review/overhaul/design-ux.md`
   (29/40 across all widths; direction "the gig poster that is always current"; top: shows in date order not poster-first, edit
