@@ -148,7 +148,7 @@ test('days to go are computed per request, not at build', () => {
 });
 
 test('backup includes site.json; restore validates it', async () => {
-  const fb = { shows: join(dir, 'shipped.json'), products: join(dir, 'shipped.json'), site: SEED };
+  const fb = { shows: join(dir, 'shipped.json'), products: join(dir, 'shipped.json'), site: SEED, releases: join(import.meta.dirname, '../src/data/releases.json') };
   const live = JSON.parse(readFileSync(join(data, 'site.json'), 'utf8'));
   const dl = await (await fetch(`${base}/edit/api/backup`, { headers: { cookie } })).json();
   assert.deepEqual(dl.site, live);
