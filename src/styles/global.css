@@ -819,7 +819,7 @@ html[data-hero='ab'] .slot { display: none; }
    and photos are never changed: a pressed tile outlines its cover and inverts its words instead. */
 a, button, summary, label { -webkit-tap-highlight-color: transparent; }
 .btn:active, .btn-solid:active, .btn-line:active, .btn-show:active, .motion-btn:not(:disabled):active,
-.links a:active, .about-set a:active, .text-link:active, .under-link:active, .listen-on a:active, .legal a:active,
+.links a:active, .pal-opt:active, .pal-reset:active, .pal summary:active, .about-set a:active, .text-link:active, .under-link:active, .listen-on a:active, .legal a:active,
 .quote-credit a:active, .ln-close a:active, .played-more > summary:active, .go:active, .nav-desktop a:active, .sheet a:active, .nav-mobile summary:active {
   background: var(--text); color: var(--bg); border-color: var(--text); transition: none;
 }
@@ -1446,3 +1446,15 @@ li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* 
 :is(.edge-angle, .edge-tear)::before { content: ''; position: absolute; left: 0; right: 0; bottom: 100%; background: inherit; pointer-events: none; }
 .edge-angle::before { height: clamp(14px, 3vw, 44px); clip-path: polygon(0 100%, 100% 0, 100% 100%); }
 .edge-tear::before { height: 12px; clip-path: polygon(0 100%, 0 45%, 3% 70%, 7% 20%, 12% 60%, 16% 10%, 22% 55%, 27% 25%, 33% 75%, 38% 15%, 44% 50%, 49% 5%, 55% 60%, 61% 30%, 66% 70%, 72% 10%, 78% 55%, 83% 20%, 89% 65%, 94% 15%, 100% 50%, 100% 100%); }
+
+/* 30d. The palette switcher (owner preview; #pal is hidden for fans). No transition anywhere. */
+.pal { position: fixed; left: 12px; bottom: calc(var(--bar-h) + 12px); z-index: 70; }
+.pal summary { display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.9rem; background: var(--bg-2); border: 2px solid var(--line); border-radius: var(--radius-s); font-weight: 700; font-size: var(--step--1); list-style: none; cursor: pointer; }
+.pal summary::-webkit-details-marker { display: none; }
+.pal-sheet { position: absolute; left: 0; bottom: calc(100% + 6px); display: grid; width: min(20rem, calc(100vw - 24px)); max-height: 70dvh; overflow-y: auto; padding: var(--space-xs); background: var(--bg); border: 2px solid var(--line); }
+.pal-opt { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); column-gap: 0.6rem; align-items: center; min-height: 52px; padding: 0.35rem; text-align: left; background: none; border: 0; color: inherit; font: inherit; cursor: pointer; }
+.pal-sw { grid-row: span 2; height: 2.25rem; border: 2px solid var(--line); background: linear-gradient(90deg, var(--s1) 0 50%, var(--s2) 50% 75%, var(--s3) 75%); }
+.pal-name { font-weight: 800; }
+.pal-mood { color: var(--muted); font-size: var(--step--1); line-height: 1.25; }
+.pal-opt[aria-pressed='true'] { box-shadow: inset 4px 0 0 var(--text); }
+.pal-reset { min-height: 44px; margin-top: var(--space-xs); background: none; border: 2px solid var(--muted); color: inherit; font: inherit; font-weight: 700; cursor: pointer; }

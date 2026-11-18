@@ -1,6 +1,7 @@
 ---
 import Signup from './Signup.astro';
 import { SOCIALS, era } from './content.js';
+import palettes from '../palettes.json';
 interface Props { home?: boolean; credits?: string[]; signup?: boolean }
 const { home = false, credits = [], signup = true } = Astro.props;
 const join = home || signup ? '#join' : '/#join';
@@ -18,6 +19,16 @@ const join = home || signup ? '#join' : '/#join';
     <div class="footer-row">
       <button class="motion-btn" id="motion" type="button" aria-pressed="true">Motion: on</button>
       <p class="legal">&copy; <span id="year">{new Date().getFullYear()}</span> GLucak. <a href="/privacy/">Privacy</a></p>
+      {/* DESIGN 30d: the owner's colour preview. Hidden; app.js shows it only on ?palettes or once a palette is stored. */}
+      <details class="pal" id="pal" hidden>
+        <summary>Colours</summary>
+        <div class="pal-sheet" role="group" aria-label="Colour palettes">
+          {palettes.map((p) => (
+            <button type="button" class="pal-opt" data-pal={p.id} aria-pressed="false" style={`--s1:${p.colors.bg};--s2:${p.colors.text};--s3:${p.colors.accent}`}><span class="pal-sw" aria-hidden="true"></span><span class="pal-name">{p.name}</span> <span class="pal-mood">{p.mood}</span></button>
+          ))}
+          <button type="button" class="pal-reset">Reset to IDENTITY</button>
+        </div>
+      </details>
     </div>
   </div>
 </footer>
