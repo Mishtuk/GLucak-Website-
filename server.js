@@ -46,13 +46,13 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; ch
 const TEXT = /^(text\/|application\/(json|xml|manifest)|image\/svg)/;
 
 // Astro inlines the stylesheet (style-src 'unsafe-inline'); no inline scripts, so script-src is 'self' only.
-// Spotify and YouTube players are the only frames allowed.
+// Spotify and YouTube players are the only frames allowed; nothing may frame us and no <base> is used (ASVS 5.0 3.4.3, 3.4.6).
 const CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; " +
-  "connect-src 'self'; frame-src https://open.spotify.com https://www.youtube-nocookie.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'";
+  "connect-src 'self'; frame-src https://open.spotify.com https://www.youtube-nocookie.com; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'";
 
 function baseHeaders(req) {
   const h = { 'Content-Security-Policy': CSP, 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'strict-origin-when-cross-origin',
-    'X-Frame-Options': 'SAMEORIGIN', 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    'X-Frame-Options': 'DENY', 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
     'Cross-Origin-Opener-Policy': 'same-origin', 'Cross-Origin-Resource-Policy': 'same-origin', // CORP is on OUR responses only; the Spotify/YouTube frames are their documents
     'X-Permitted-Cross-Domain-Policies': 'none', 'Origin-Agent-Cluster': '?1' };
   if (isHttps(req)) { h['Strict-Transport-Security'] = 'max-age=31536000'; h['Content-Security-Policy'] = `${CSP}; upgrade-insecure-requests`; }

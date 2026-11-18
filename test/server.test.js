@@ -39,7 +39,9 @@ test('security headers', async () => {
   assert.match(csp, /frame-src https:\/\/open\.spotify\.com https:\/\/www\.youtube-nocookie\.com/);
   assert.match(csp, /script-src 'self'(;|$)/);
   assert.equal(r.headers.get('x-content-type-options'), 'nosniff');
-  assert.equal(r.headers.get('x-frame-options'), 'SAMEORIGIN');
+  assert.equal(r.headers.get('x-frame-options'), 'DENY');
+  assert.match(csp, /frame-ancestors 'none'/);
+  assert.match(csp, /base-uri 'none'/);
   assert.ok(r.headers.get('referrer-policy'));
 });
 
