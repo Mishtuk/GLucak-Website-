@@ -1496,3 +1496,27 @@ li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* 
 .scenic-quote p { margin: 0; }
 .scenic-quote footer { margin-top: var(--space-xs); color: var(--muted); font-size: var(--step--1); font-weight: 400; }
 .scenic-quote + .releases-head { margin-top: var(--section); }
+
+/* Round 2 (Home). 30a-3..5: tape, ticket, stagger and the hover outline. Static; every :hover below is fine-pointer only. */
+
+/* 30a-3 Tape: on a figure or a sheet, never an img. */
+.taped { position: relative; }
+.taped::before, .taped::after { content: ''; position: absolute; z-index: 2; top: -0.7rem; width: clamp(3.5rem, 8vw, 6rem); height: 1.5rem; background: color-mix(in srgb, var(--muted) 60%, transparent); pointer-events: none; }
+.taped::before { left: -1rem; rotate: -8deg; }
+.taped::after { right: -1rem; rotate: 6deg; }
+
+/* 30a-4 Ticket: a paper stub with a half-circle notch cut from each short side. */
+.ticket {
+  padding: var(--space-s) calc(var(--space-m) + 12px); background: var(--bg-2) var(--texture);
+  -webkit-mask: radial-gradient(circle 12px at 0 50%, #0000 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 12px at 100% 50%, #0000 97%, #000) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle 12px at 0 50%, #0000 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 12px at 100% 50%, #0000 97%, #000) right / 51% 100% no-repeat;
+}
+.footer-join .ticket { background-color: var(--bg); } /* the footer's ground is bg-2 */
+
+/* 30a-5 Stagger: every second child steps down from 700px. Never on phone swipe rows. */
+@media (min-width: 700px) { .stagger > :nth-child(even) { margin-top: var(--stg, 2rem); } }
+
+/* 30a hover: an outline around the art, instant, nothing moves. */
+@media (hover: hover) and (pointer: fine) {
+  :is(.tile-link, .product-link, .v2-vid a, .gallery-grid a):hover :is(.tile-art, .product-media, .v2-thumb, img) { outline: 2px solid var(--text); outline-offset: 4px; }
+}
