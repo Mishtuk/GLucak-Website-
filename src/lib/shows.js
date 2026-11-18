@@ -147,13 +147,16 @@ export function showsLdHtml(rows, now = new Date()) {
 }
 
 const dayDiff = (a, b) => Math.round((Date.parse(a) - Date.parse(b)) / 864e5);
-const link = (href, text) => `<a href="${esc(href)}"${href === '#shows' ? '' : ' rel="noopener"'}>${esc(curly(text))}</a>`; // no aria-label: the visible text is the name (WCAG 2.5.3, D57)
+const TYPE = { single: 'Single', ep: 'EP', album: 'Album', remix: 'Remix album' };
+// DESIGN 28f: the ticket stub. No aria-label: the visible words are the name (WCAG 2.5.3, D57); the spans are separated by a space.
+const stub = (href, when, place, sub) => `<a class="stub" href="${esc(href)}"${href === '#shows' ? '' : ' rel="noopener"'}><span class="stub-when">${esc(curly(when))}</span> <span class="stub-what"><span class="stub-place">${esc(curly(place))}</span>${sub ? ` <span class="stub-sub">${esc(curly(sub))}</span>` : ''}</span></a>`;
+const relStub = (r, when) => stub(r.link, when, r.title, TYPE[r.type]);
 
 /**
- * The Now line (D45/D57, copy in docs/copy/round2.md), picked per visit by New York day. In order:
- * B release day "Out today: Title" (beats an upcoming release); T (D96) next show or open mic today or tomorrow "Open mic today: ..." / "Show tomorrow: ..."; A release 1-14 days ahead "Out Nov 13: Title"; C 1-7 days after "Out now: Title";
- * D next show or open mic within 14 days "Show Nov 20: Venue, City" / "Open mic Nov 20: ..." ("Show today: ..." on the day), linking #shows;
- * E newest release "Out now: Title". '' if nothing applies (the static release line then stays). Escaped; release links http(s) only; never "Pre-save".
+ * The Now line (D45/D57/D96, DESIGN 28f: a ticket stub, "when" / place / sub), picked per visit by New York day. In order:
+ * B release day "Out today"; T next show or open mic today or tomorrow ("Today" / "Tomorrow", venue, kind, time, city); A release 1-14 days ahead "Out Nov 13";
+ * C 1-7 days after "Out now"; D next show or open mic within 14 days ("Nov 20"), linking #shows; E newest release "Out now".
+ * '' if nothing applies (the static release stub then stays). Escaped; release links http(s) only; never "Pre-save".
  * Shows are validated rows; `releases` is the raw releases.json list.
  */
 export function nowHtml(rows, now = new Date(), releases = []) {
@@ -162,16 +165,16 @@ export function nowHtml(rows, now = new Date(), releases = []) {
     .map((r) => ({ ...r, d: dayDiff(r.date, today) })).sort((a, b) => a.d - b.d);
   const b = rel.find((r) => r.d === 0), a = rel.find((r) => r.d >= 1 && r.d <= 14);
   const c = rel.filter((r) => r.d < 0 && r.d >= -7).pop();
-  if (b) return link(b.link, `Out today: ${b.title}`);
+  if (b) return relStub(b, 'Out today');
   const ok = rows.filter((r) => { try { return validateShow(r); } catch { return false; } });
   const next = splitShows(ok, now).upcoming[0];
-  const showLine = (r) => `${r.type === 'open-mic' ? 'Open mic' : 'Show'} ${r.date === today ? 'today' : dayDiff(r.date, today) === 1 ? 'tomorrow' : monD(r.date)}: ${r.venue}, ${r.city}`;
-  if (next && dayDiff(next.date, today) <= 1) return link('#shows', showLine(next)); // T (D96): a show or open mic today or tomorrow beats releases A and C
-  if (a) return link(a.link, `Out ${monD(a.date)}: ${a.title}`);
-  if (c) return link(c.link, `Out now: ${c.title}`);
-  if (next && dayDiff(next.date, today) <= 14) return link('#shows', showLine(next));
+  const showStub = (r) => stub('#shows', r.date === today ? 'Today' : dayDiff(r.date, today) === 1 ? 'Tomorrow' : monD(r.date), r.venue, [r.type === 'open-mic' ? 'Open mic' : 'Show', r.time && fmtTime(r.time), r.city].filter(Boolean).join(', '));
+  if (next && dayDiff(next.date, today) <= 1) return showStub(next); // T (D96): a show or open mic today or tomorrow beats releases A and C
+  if (a) return relStub(a, `Out ${monD(a.date)}`);
+  if (c) return relStub(c, 'Out now');
+  if (next && dayDiff(next.date, today) <= 14) return showStub(next);
   const latest = rel.filter((r) => r.d < 0).pop();
-  return latest ? link(latest.link, `Out now: ${latest.title}`) : '';
+  return latest ? relStub(latest, 'Out now') : '';
 }
 
 // ---------- Add to calendar: one .ics per upcoming show (RFC 5545), GET /shows/<showId>.ics ----------

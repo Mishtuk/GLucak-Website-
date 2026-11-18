@@ -5,14 +5,15 @@ import { icsById, icsFor, nowHtml, showId, showsHtml } from '../src/lib/shows.js
 const row = (o = {}) => ({ date: '2026-12-12', type: 'show', venue: 'V', city: 'C', ...o });
 const noon = (d) => new Date(`${d}T17:00:00Z`);
 const link = (href, text, rel = ' rel="noopener"') => `<a href="${href}"${rel}>${text}</a>`;
+const stub = (href, when, place, sub, rel = ' rel="noopener"') => `<a class="stub" href="${href}"${rel}><span class="stub-when">${when}</span> <span class="stub-what"><span class="stub-place">${place}</span>${sub ? ` <span class="stub-sub">${sub}</span>` : ''}</span></a>`;
 const GO = { title: 'Go', date: '2026-03-20', link: 'https://x.example/go' };
 const WIA = { title: 'Who I Am', date: '2026-11-13', link: 'https://x.example/wia' };
 
 test('D57 Now wording: Show / Open mic / today, linking #shows; no aria-label on the Now line in any state', () => {
-  assert.equal(nowHtml([row({ date: '2026-11-28', type: 'open-mic', venue: 'The Rail', city: 'Doylestown' })], noon('2026-11-21'), []), link('#shows', 'Open mic Nov 28: The Rail, Doylestown', ''));
-  assert.equal(nowHtml([row({ date: '2026-12-01', type: 'open-mic', venue: 'Pub', city: 'Philly' })], noon('2026-12-01'), []), link('#shows', 'Open mic today: Pub, Philly', ''));
-  assert.equal(nowHtml([row({ date: '2026-12-01', venue: 'Pub', city: 'Philly' })], noon('2026-12-01'), []), link('#shows', 'Show today: Pub, Philly', ''));
-  assert.equal(nowHtml([row({ date: '2026-11-28', venue: 'The Rail', city: 'Doylestown' })], noon('2026-11-21'), []), link('#shows', 'Show Nov 28: The Rail, Doylestown', ''));
+  assert.equal(nowHtml([row({ date: '2026-11-28', type: 'open-mic', venue: 'The Rail', city: 'Doylestown' })], noon('2026-11-21'), []), stub('#shows', 'Nov 28', 'The Rail', 'Open mic, Doylestown', ''));
+  assert.equal(nowHtml([row({ date: '2026-12-01', type: 'open-mic', venue: 'Pub', city: 'Philly' })], noon('2026-12-01'), []), stub('#shows', 'Today', 'Pub', 'Open mic, Philly', ''));
+  assert.equal(nowHtml([row({ date: '2026-12-01', venue: 'Pub', city: 'Philly' })], noon('2026-12-01'), []), stub('#shows', 'Today', 'Pub', 'Show, Philly', ''));
+  assert.equal(nowHtml([row({ date: '2026-11-28', venue: 'The Rail', city: 'Doylestown' })], noon('2026-11-21'), []), stub('#shows', 'Nov 28', 'The Rail', 'Show, Doylestown', ''));
   const states = [nowHtml([], noon('2026-11-06'), [GO, WIA]), nowHtml([], noon('2026-11-13'), [GO, WIA]), nowHtml([], noon('2026-11-20'), [GO, WIA]),
     nowHtml([row({ date: '2026-12-02' })], noon('2026-12-01'), []), nowHtml([], noon('2027-03-01'), [GO])];
   for (const h of states) assert.ok(h.startsWith('<a ') && !h.includes('aria-label'), h);
@@ -20,8 +21,8 @@ test('D57 Now wording: Show / Open mic / today, linking #shows; no aria-label on
 
 test('Now line: release DAY beats an upcoming release (B before A)', () => {
   const SR = { title: 'Scenic Route', date: '2026-11-20', link: 'https://x.example/sr' };
-  assert.equal(nowHtml([], noon('2026-11-13'), [GO, WIA, SR]), link(WIA.link, 'Out today: Who I Am'));
-  assert.equal(nowHtml([], noon('2026-11-06'), [GO, WIA, SR]), link(WIA.link, 'Out Nov 13: Who I Am'), 'before the day the sooner one leads');
+  assert.equal(nowHtml([], noon('2026-11-13'), [GO, WIA, SR]), stub(WIA.link, 'Out today', 'Who I Am'));
+  assert.equal(nowHtml([], noon('2026-11-06'), [GO, WIA, SR]), stub(WIA.link, 'Out Nov 13', 'Who I Am'), 'before the day the sooner one leads');
 });
 
 test('calendar link: upcoming rows and the poster only, never Played; hostile venue stays escaped in the name', () => {

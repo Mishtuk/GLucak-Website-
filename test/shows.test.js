@@ -175,25 +175,25 @@ test('empty state: never blank, Played rows if any, Request a show goes to Insta
 
 const WIA = { title: 'Who I Am', date: '2026-11-13', link: 'https://wingsmusic.lnk.to/WhoIAm' };
 const GO = { title: 'Go', date: '2026-03-20', link: 'https://wingsmusic.lnk.to/370407-Go' };
-const link = (href, text, rel = ' rel="noopener"') => `<a href="${href}"${rel}>${text}</a>`;
-const OUT13 = link(WIA.link, 'Out Nov 13: Who I Am');
+const stub = (href, when, place, sub, rel = ' rel="noopener"') => `<a class="stub" href="${href}"${rel}><span class="stub-when">${when}</span> <span class="stub-what"><span class="stub-place">${place}</span>${sub ? ` <span class="stub-sub">${sub}</span>` : ''}</span></a>`;
+const OUT13 = stub(WIA.link, 'Out Nov 13', 'Who I Am');
 
 test('Now line D45: Nov 6 / 13 / 20 / 21 pick Out Nov 13, Out today, Out now, then a show or the newest release', () => {
   const rels = [GO, WIA];
   assert.equal(nowHtml([], noon('2026-11-06'), rels), OUT13);
   assert.equal(nowHtml([], noon('2026-10-30'), rels), OUT13, '14 days ahead');
   assert.ok(!nowHtml([], noon('2026-10-29'), rels).includes('Out Nov 13'), '15 days ahead: not yet');
-  assert.equal(nowHtml([], noon('2026-11-13'), rels), link(WIA.link, 'Out today: Who I Am'));
-  assert.equal(nowHtml([], noon('2026-11-20'), rels), link(WIA.link, 'Out now: Who I Am'));
+  assert.equal(nowHtml([], noon('2026-11-13'), rels), stub(WIA.link, 'Out today', 'Who I Am'));
+  assert.equal(nowHtml([], noon('2026-11-20'), rels), stub(WIA.link, 'Out now', 'Who I Am'));
   const show = row({ date: '2026-11-28', venue: 'The Rail', city: 'Doylestown' });
-  assert.equal(nowHtml([show], noon('2026-11-21'), rels), link('#shows', 'Show Nov 28: The Rail, Doylestown', ''));
-  assert.equal(nowHtml([], noon('2026-11-21'), rels), link(WIA.link, 'Out now: Who I Am'), 'newest release');
-  assert.equal(nowHtml([row({ date: '2026-12-21' })], noon('2026-11-21'), [GO]), link(GO.link, 'Out now: Go'), 'show too far: newest');
+  assert.equal(nowHtml([show], noon('2026-11-21'), rels), stub('#shows', 'Nov 28', 'The Rail', 'Show, Doylestown', ''));
+  assert.equal(nowHtml([], noon('2026-11-21'), rels), stub(WIA.link, 'Out now', 'Who I Am'), 'newest release');
+  assert.equal(nowHtml([row({ date: '2026-12-21' })], noon('2026-11-21'), [GO]), stub(GO.link, 'Out now', 'Go'), 'show too far: newest');
   assert.equal(nowHtml([], noon('2026-11-21'), []), '', 'nothing at all');
 });
 
 test('Now line D45: a show on the day says Today; a coming release beats a show; day 14 counts, 15 does not', () => {
-  assert.equal(nowHtml([row({ date: '2026-12-01', venue: 'Pub', city: 'Philly' })], noon('2026-12-01'), []), link('#shows', 'Show today: Pub, Philly', ''));
+  assert.equal(nowHtml([row({ date: '2026-12-01', venue: 'Pub', city: 'Philly' })], noon('2026-12-01'), []), stub('#shows', 'Today', 'Pub', 'Show, Philly', ''));
   assert.equal(nowHtml([row({ date: '2026-11-08' })], noon('2026-11-06'), [GO, WIA]), OUT13);
   assert.ok(nowHtml([row({ date: '2026-12-15' })], noon('2026-12-01'), []).includes('#shows'));
   assert.equal(nowHtml([row({ date: '2026-12-16' })], noon('2026-12-01'), []), '');
@@ -278,9 +278,18 @@ test('27b Now line T: a show or open mic today / tomorrow beats releases A and C
   const mic = (date) => row({ date, type: 'open-mic', venue: 'M.O.M’s', city: 'Doylestown, PA' });
   const c = { ...WIA, date: '2026-11-13' }; // 4 days old on the 17th: C
   const t = nowHtml([mic('2026-11-17')], noon('2026-11-17'), [c]);
-  assert.equal(t, link('#shows', 'Open mic today: M.O.M’s, Doylestown, PA', ''));
+  assert.equal(t, stub('#shows', 'Today', 'M.O.M’s', 'Open mic, Doylestown, PA', ''));
   assert.ok(t.includes('href="#shows"'));
-  assert.equal(nowHtml([mic('2026-11-18')], noon('2026-11-17'), [c]), link('#shows', 'Open mic tomorrow: M.O.M’s, Doylestown, PA', ''));
-  assert.ok(nowHtml([mic('2026-11-17')], noon('2026-11-13'), [c]).includes('Out today: Who I Am'), 'B still wins');
-  assert.ok(nowHtml([mic('2026-11-20')], noon('2026-11-17'), [c]).includes('Out now: Who I Am'), 'three days out: C as before');
+  assert.equal(nowHtml([mic('2026-11-18')], noon('2026-11-17'), [c]), stub('#shows', 'Tomorrow', 'M.O.M’s', 'Open mic, Doylestown, PA', ''));
+  assert.ok(nowHtml([mic('2026-11-17')], noon('2026-11-13'), [c]).includes('>Out today<') && nowHtml([mic('2026-11-17')], noon('2026-11-13'), [c]).includes('>Who I Am<'), 'B still wins');
+  assert.ok(nowHtml([mic('2026-11-20')], noon('2026-11-17'), [c]).includes('>Out now<'), 'three days out: C as before');
+});
+
+test('28f: the Now line is one ticket stub link; type words under the title; escaped; no Pre-save', () => {
+  const t = nowHtml([], noon('2026-11-06'), [{ ...WIA, type: 'remix', title: '<img src=x onerror=1>' }]);
+  assert.equal((t.match(/<a /g) || []).length, 1);
+  assert.ok(t.startsWith('<a class="stub" ') && t.includes('<span class="stub-when">Out Nov 13</span>') && t.includes('<span class="stub-sub">Remix album</span>') && !t.includes('<img') && !t.includes('Pre-save'));
+  assert.ok(nowHtml([], noon('2026-11-06'), [{ ...WIA, type: 'single' }]).includes('stub-sub">Single<'));
+  const s = nowHtml([row({ date: '2026-12-04', time: '19:00', type: 'open-mic', venue: '<script>x</script>', city: "' OR 1=1 --" })], noon('2026-12-01'), []);
+  assert.ok(s.includes('Open mic, 7:00 PM, ‘ OR 1=1 --') && !s.includes('<script>') && s.includes('stub-when">Dec 4<'));
 });

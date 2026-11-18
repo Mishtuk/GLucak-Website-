@@ -6,6 +6,7 @@ interface Props { variant?: 'a' | 'b' | 'ab' }
 const GIF = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
 const { variant = 'a' } = Astro.props;
 const now = releases()[0];
+const TYPE: Record<string, string> = { single: 'Single', ep: 'EP', album: 'Album', remix: 'Remix album' };
 ---
 <section class="hero" aria-label="GLucak">
   <div class="hero-wall" aria-hidden="true"></div>
@@ -33,6 +34,6 @@ const now = releases()[0];
       <a class="btn btn-solid" href="#music" aria-label="Listen to the music">Listen</a>
       <a class="go" href="#shows" aria-label="See upcoming shows">Shows</a>
     </div>
-    <p class="now"><Fragment set:html="<!--gl:now-->" /><a href={now.link} rel="noopener">Out now: {now.title}</a><Fragment set:html="<!--/gl:now-->" /></p>
+    <p class="now"><Fragment set:html="<!--gl:now-->" /><a class="stub" href={now.link} rel="noopener"><span class="stub-when">Out now</span> <span class="stub-what"><span class="stub-place">{now.title}</span>{TYPE[now.type] && <Fragment> <span class="stub-sub">{TYPE[now.type]}</span></Fragment>}</span></a><Fragment set:html="<!--/gl:now-->" /></p>
   </div>
 </section>

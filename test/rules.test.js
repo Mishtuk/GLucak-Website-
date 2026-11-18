@@ -53,3 +53,10 @@ test('28e: the nav, Listen and the lockups switch at 700px, the Menu fallback is
   assert.ok(dist('index.html').includes('phrase fit lock-now'));
   assert.match(css, /--w-now: 6\.3265;/);
 });
+
+test('28f: the .stub rules have no transition or animation and a 48px minimum', () => {
+  const rules = [...css.matchAll(/(?:^|\n)(\.stub[^{\n]*)\{([^}]*)\}/g)];
+  assert.ok(rules.length >= 5);
+  for (const m of rules) assert.ok(!/transition|animation/.test(m[2]), m[1]);
+  assert.match(css, /\.stub \{[^}]*min-height: 48px/);
+});
