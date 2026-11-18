@@ -1658,3 +1658,30 @@ html[data-palette='poster'] .band-live.edge-angle { background-color: color-mix(
 .shop-banner.taped::before { inset: 0 auto 0 0; width: 0.75rem; height: auto; top: 0; left: 0; z-index: auto; rotate: none; background: repeating-linear-gradient(-45deg, var(--bg) 0 3px, transparent 3px 9px); } /* the hatched stub stays; the tape is the right strip only */
 .shop-banner.taped::after { right: 0.5rem; }
 @media (min-width: 700px) { .shop-grid > :nth-child(3n+2) { margin-top: 2.5rem; } } /* 3 columns from 700px; the middle one drops */
+
+/* ---------- Home film (owner 2026-11-18). Gabe's music videos behind the hero, only while Motion is on (app.js adds .film-on once a
+   frame plays; until then, and with Motion off, the still hero shows). The file is gray; two inks come from here, so every palette
+   re-inks it like the prints: black -> --bg (lighten), white -> --film-ink (multiply). The veil keeps the text on dark ink. ---------- */
+.hero-film { visibility: hidden; position: absolute; inset: 0; z-index: 1; overflow: hidden; isolation: isolate; pointer-events: none;
+  --film-ink: color-mix(in srgb, var(--accent) 20%, color-mix(in srgb, var(--text) 45%, var(--bg))); background: var(--film-ink); }
+.hero.film-on .hero-film { visibility: visible; }
+.hero.film-on :is(.hero-photo, .hero-wall, .hero-print) { visibility: hidden; }
+.hero-film video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 35%; background: var(--bg); mix-blend-mode: multiply; }
+.hero-film::before, .hero-film::after { content: ''; position: absolute; inset: 0; }
+.hero-film::before { z-index: 1; background: var(--bg); mix-blend-mode: lighten; }
+.hero-film::after { z-index: 2; background:
+  linear-gradient(to bottom, color-mix(in srgb, var(--bg) 60%, transparent), transparent calc(var(--header-h) + 3rem)),
+  linear-gradient(to bottom, transparent 30%, color-mix(in srgb, var(--bg) 62%, transparent) 62%, var(--bg)); }
+@media (min-width: 900px) { .hero-film::after { background:
+  linear-gradient(to bottom, color-mix(in srgb, var(--bg) 60%, transparent), transparent calc(var(--header-h) + 3rem)),
+  linear-gradient(to right, color-mix(in srgb, var(--bg) 72%, transparent) 0 40%, transparent 70%),
+  linear-gradient(to bottom, transparent 55%, var(--bg)); } }
+.hero.film-on .name-row { text-shadow: 0.035em 0.035em 0 var(--accent); } /* the name stands off the film */
+.hero.film-on .slogan { text-shadow: 0 0.08em 0 var(--bg); }
+.film-btn { position: absolute; z-index: 3; right: var(--gutter); bottom: calc(var(--tab-h) + 1rem); min-height: 2.25rem; padding: 0.3rem 0.8rem;
+  font: inherit; font-size: var(--step--1); color: var(--text); background: color-mix(in srgb, var(--bg) 75%, transparent); border: 1px solid var(--line); cursor: pointer; }
+.film-btn[hidden] { display: none; }
+@media (max-width: 899px) { .film-btn { bottom: auto; top: calc(var(--strip) - 2.5rem); } }
+/* The light palette (Gig Poster): inks flip. Video multiplies onto the paper (white -> --bg), lighten lifts black to a mid ink. */
+html[data-palette='poster'] .hero-film { --film-ink: color-mix(in srgb, var(--text) 42%, var(--bg)); background: var(--bg); }
+html[data-palette='poster'] .hero-film::before { background: var(--film-ink); }

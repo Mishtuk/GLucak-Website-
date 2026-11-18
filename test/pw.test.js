@@ -182,3 +182,22 @@ test('30f: Music cover is never rotated, framed or filtered (D51); crate and Sho
   assert.match(r3, /\.vid-grid > :nth-child\(1\) \{ grid-column: 1 \/ span 7; grid-row: span 2; \}/);
   assert.match(r3, /\.shop-banner \{ rotate: -1\.5deg; \}/);
 });
+
+// Owner 2026-11-18: the Home film. Plays only while Motion is on; no autoplay attribute, nothing preloads, the still hero stays
+// until a frame plays. The flash check on the files themselves is tools/film/analyze.mjs (ffmpeg, not in npm test).
+test('film: video is muted, inline, preload none, no autoplay; app.js plays it only through runFilm(on); CSS shows it only with .film-on', () => {
+  const v = home.match(/<video[^>]*>/)[0];
+  assert.ok(/\bmuted\b/.test(v) && /\bplaysinline\b/.test(v) && /preload="none"/.test(v) && !/autoplay/.test(v));
+  assert.match(home, /src="\/media\/film\/hero-port\.mp4"/); assert.match(home, /src="\/media\/film\/hero-land\.mp4"/);
+  const app = read('public/js/app.js');
+  assert.equal(app.split('film.play()').length - 1, 2, 'play() only in runFilm(on) and the visitor\'s Play button');
+  assert.match(app, /function showMotion\(\) \{\n[^]*?runFilm\(on\);/);
+  assert.match(css, /\.hero-film \{ visibility: hidden;/); assert.match(css, /\.hero\.film-on \.hero-film \{ visibility: visible; \}/);
+});
+test('film: the brightest film ink keeps large text at 3:1 in every palette (before the veil)', () => {
+  for (const p of pals) {
+    const c = p.colors;
+    const ink = p.id === 'poster' ? mix(c.text, 0.42, c.bg) : mix(c.accent, 0.2, mix(c.text, 0.45, c.bg));
+    assert.ok(ratio(c.text, ink) >= 3, `${p.id}: ${ratio(c.text, ink).toFixed(2)}`);
+  }
+});

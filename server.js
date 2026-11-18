@@ -5,7 +5,7 @@
 // POST /edit/api/upload for product and release images (served back from /media/uploads/), GET /edit/api/backup for a backup file. Node 22+ built-ins, plus sharp for uploads.
 import { createServer } from 'node:http';
 import { randomBytes } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { createReadStream, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { extname, join, normalize, sep } from 'node:path';
 import { brotliCompressSync, constants as zc, gzipSync } from 'node:zlib';
 import { etDay, icsById, nowHtml, showsHtml, showsLdHtml } from './src/lib/shows.js';
@@ -43,7 +43,7 @@ if (PROD && env.TRUST_PROXY !== '1') console.error('WARNING: TRUST_PROXY is not 
 
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json',
   '.webmanifest': 'application/manifest+json', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8', '.svg': 'image/svg+xml',
-  '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon', '.woff2': 'font/woff2' };
+  '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.mp4': 'video/mp4', '.ico': 'image/x-icon', '.woff2': 'font/woff2' };
 const TEXT = /^(text\/|application\/(json|xml|manifest)|image\/svg)/;
 
 // Astro inlines the stylesheet (style-src 'unsafe-inline'); no inline scripts, so script-src is 'self' only.
@@ -362,6 +362,16 @@ function handle(req, res) {
   const etag = `W/"${st.size.toString(16)}-${Math.floor(st.mtimeMs).toString(16)}"`; // weak: the body may be gzipped per request
   const cache = { 'Cache-Control': p.startsWith('/_astro/') ? 'public, max-age=31536000, immutable' : 'public, max-age=86400', ETag: etag };
   if ((req.headers['if-none-match'] ?? '').split(',').some((t) => t.trim() === etag)) { res.writeHead(304, { ...baseHeaders(req), ...cache }); return res.end(); }
+  if (type === 'video/mp4') { // the Home film: Safari plays video only with byte ranges. One range (bytes=a-b, a-, -n); anything else gets the whole file.
+    cache['Accept-Ranges'] = 'bytes';
+    const m = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range ?? '');
+    if (m && (m[1] || m[2])) {
+      const size = st.size, a = m[1] === '' ? Math.max(0, size - Number(m[2])) : Number(m[1]), b = m[1] === '' || m[2] === '' ? size - 1 : Math.min(Number(m[2]), size - 1);
+      if (a > b || a >= size) { res.writeHead(416, { ...baseHeaders(req), 'Content-Range': `bytes */${size}` }); return res.end(); }
+      res.writeHead(206, { ...baseHeaders(req), ...cache, 'Content-Type': type, 'Content-Range': `bytes ${a}-${b}/${size}`, 'Content-Length': b - a + 1 });
+      return req.method === 'HEAD' ? res.end() : createReadStream(file, { start: a, end: b }).pipe(res);
+    }
+  }
   send(req, res, 200, type, readFileSync(file), cache);
 }
 

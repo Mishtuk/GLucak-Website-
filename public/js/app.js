@@ -23,9 +23,27 @@
   const btn = $('#motion');
   const stored = () => { try { return localStorage.getItem('motion'); } catch { return null; } };
   const store = (v) => { try { localStorage.setItem('motion', v); } catch { /* the switch still works for this visit */ } };
+  /* Home film (owner 2026-11-18): Gabe's music videos, slowed, gray, two inks from CSS. Plays only while Motion is on (never under
+     reduced motion); preload none, so nothing downloads otherwise. The still hero stays until the first frame plays. */
+  const film = $('.hero-film video');
+  const filmBtn = $('.film-btn');
+  const filmSync = () => { if (filmBtn) filmBtn.textContent = film.paused ? 'Play video' : 'Pause video'; };
+  if (film) {
+    const hero = film.closest('.hero');
+    film.addEventListener('playing', () => { hero.classList.add('film-on'); if (filmBtn) filmBtn.hidden = false; filmSync(); });
+    film.addEventListener('pause', filmSync);
+    // A visitor's pause holds through Motion changes (data-stopped).
+    filmBtn?.addEventListener('click', () => { if (film.paused) { delete film.dataset.stopped; film.play().catch(() => {}); } else { film.dataset.stopped = '1'; film.pause(); } });
+  }
+  function runFilm(on) {
+    if (!film) return;
+    if (on) { if (!film.dataset.stopped) film.play().catch(() => {}); return; }
+    film.pause(); film.closest('.hero').classList.remove('film-on'); if (filmBtn) filmBtn.hidden = true;
+  }
   function showMotion() {
     const device = reduceQuery.matches;
     const on = !device && root.dataset.motion === 'on';
+    runFilm(on);
     btn.textContent = device ? 'Motion: off (device setting)' : `Motion: ${on ? 'on' : 'off'}`;
     btn.setAttribute('aria-pressed', String(on));
     btn.disabled = device;

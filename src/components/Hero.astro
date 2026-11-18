@@ -14,6 +14,15 @@ const TYPE: Record<string, string> = { single: 'Single', ep: 'EP', album: 'Album
       <img class="graded print" src="/media/a-print-phone-800.webp" alt="" width="800" height="1000" fetchpriority="high" />
     </picture>
   </div>
+  {/* Owner 2026-11-18: the hero is Gabe's music videos (.work/mv/build.mjs: calm shots only, flash-checked, slowed, gray). app.js plays it
+       only while Motion is on; until then (and with Motion off) the still hero above shows. Two inks come from CSS. */}
+  <div class="hero-film" aria-hidden="true">
+    <video muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback>
+      <source media="(max-width: 699px) and (orientation: portrait)" src="/media/film/hero-port.mp4" type="video/mp4" />
+      <source src="/media/film/hero-land.mp4" type="video/mp4" />
+    </video>
+  </div>
+  <button class="film-btn" type="button" hidden>Pause video</button>
   <div class="wrap hero-inner">
     <h1 class="name" aria-label="GLucak">
       <span class="name-row" aria-hidden="true"><span class="n-g">G</span><span class="n-rest">LUCAK</span></span>

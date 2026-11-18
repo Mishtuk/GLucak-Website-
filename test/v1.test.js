@@ -20,7 +20,7 @@ test('26g-1: /videos/ has no player, no autoplay and no YouTube image before a p
   assert.equal(js.split('autoplay=1').length - 1, 1, 'autoplay=1 appears once');
   assert.ok(js.indexOf('autoplay=1') > js.indexOf('function play('), 'inside play()');
   assert.match(js, /addEventListener\('click', \(\) => play\(b\)\)/, 'play() runs only from the click handler');
-  assert.equal(js.split('play(').length - 1, 2, 'play( is defined once and called once');
+  assert.equal(js.split(/(?<![.\w])play\(/).length - 1, 2, 'play( is defined once and called once'); // film.play() (the Home film) is a method, not this
   for (const f of ['index.html', 'shows/index.html']) assert.ok(!/<iframe[^>]*youtube/i.test(page(f)), `${f}: no YouTube iframe`);
 });
 
@@ -146,7 +146,7 @@ test('26g-8: the Riverside poster files exist, are the privacy crop (800x450 fro
 
 test('26e: the CSS is static, the nav fallback is 48rem (30b), the Watch heading link and the scrolling sheet are in', () => {
   const css = src('src/styles/global.css');
-  const block = css.slice(css.indexOf('/* ---------- DESIGN 26. Videos page')).replace(/\/\*[\s\S]*?\*\//g, '');
+  const block = css.slice(css.indexOf('/* ---------- DESIGN 26. Videos page'), css.indexOf('/* ---------- Home film')).replace(/\/\*[\s\S]*?\*\//g, '');
   assert.ok(block.length > 1500);
   assert.ok(!/animation|transition|@keyframes|--accent/.test(block));
   assert.match(css, /@container \(width < 48rem\) \{/);
