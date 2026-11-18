@@ -34,7 +34,7 @@ const EDITORS = parseEditors(env.EDITOR_USERS);
 // Production needs a real SESSION_SECRET (32+ characters) or the edit routes stay off (503). Dev: a new secret each start.
 const SECRET = env.SESSION_SECRET?.length >= 32 ? env.SESSION_SECRET : PROD ? null : randomBytes(32).toString('hex');
 if (!SECRET) console.error('Edit screen off: set SESSION_SECRET (32+ characters) to turn it on.');
-if (PROD && !env.DATA_DIR) console.error('WARNING: DATA_DIR is not set; Gabe's saved shows and uploads live inside the app and are lost on redeploy. Set it to the persistent disk path.');
+if (PROD && !env.DATA_DIR) console.error('WARNING: DATA_DIR is not set; the saved shows and uploads live inside the app and are lost on redeploy. Set it to the persistent disk path.');
 if (PROD && env.TRUST_PROXY !== '1') console.error('WARNING: TRUST_PROXY is not 1; behind the host proxy, rate limits see one IP and cookies/HSTS may not see HTTPS. Set TRUST_PROXY=1.');
 
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json',
