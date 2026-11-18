@@ -34,6 +34,8 @@ const EDITORS = parseEditors(env.EDITOR_USERS);
 // Production needs a real SESSION_SECRET (32+ characters) or the edit routes stay off (503). Dev: a new secret each start.
 const SECRET = env.SESSION_SECRET?.length >= 32 ? env.SESSION_SECRET : PROD ? null : randomBytes(32).toString('hex');
 if (!SECRET) console.error('Edit screen off: set SESSION_SECRET (32+ characters) to turn it on.');
+if (PROD && !env.DATA_DIR) console.error('WARNING: DATA_DIR is not set; Gabe's saved shows and uploads live inside the app and are lost on redeploy. Set it to the persistent disk path.');
+if (PROD && env.TRUST_PROXY !== '1') console.error('WARNING: TRUST_PROXY is not 1; behind the host proxy, rate limits see one IP and cookies/HSTS may not see HTTPS. Set TRUST_PROXY=1.');
 
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json',
   '.webmanifest': 'application/manifest+json', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8', '.svg': 'image/svg+xml',
@@ -324,7 +326,10 @@ function handle(req, res) {
       : p.startsWith('/shop/') && !shopOn() ? { 'X-Robots-Tag': 'noindex' } : {}; // the shop preview stays out of search
     return send(req, res, 200, type, Buffer.from(html), { 'Cache-Control': 'no-cache', ...(p.startsWith('/edit/') ? {} : SPEC), ...edit });
   }
-  send(req, res, 200, type, readFileSync(file), { 'Cache-Control': p.startsWith('/_astro/') ? 'public, max-age=31536000, immutable' : 'public, max-age=86400' });
+  const etag = `W/"${st.size.toString(16)}-${Math.floor(st.mtimeMs).toString(16)}"`; // weak: the body may be gzipped per request
+  const cache = { 'Cache-Control': p.startsWith('/_astro/') ? 'public, max-age=31536000, immutable' : 'public, max-age=86400', ETag: etag };
+  if ((req.headers['if-none-match'] ?? '').split(',').some((t) => t.trim() === etag)) { res.writeHead(304, { ...baseHeaders(req), ...cache }); return res.end(); }
+  send(req, res, 200, type, readFileSync(file), cache);
 }
 
 export const server = createServer((req, res) => { try { handle(req, res); } catch (e) { fail(req, res, e); } });

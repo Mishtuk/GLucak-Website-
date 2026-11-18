@@ -128,3 +128,19 @@ test('failed sign-ins and lockouts log one escaped line, never the password', as
   assert.match(lines[5], / sign-in locked: /);
   assert.ok(!lines.join('\n').includes('hunter2'));
 });
+
+test('static files: weak ETag, 304 on If-None-Match, a changed file gets a fresh tag, Cache-Control kept', async () => {
+  writeFileSync(join(dir, 'x.css'), 'a{}');
+  const r = await fetch(`${base}/x.css`);
+  const tag = r.headers.get('etag');
+  assert.match(tag, /^W\/"[0-9a-f]+-[0-9a-f]+"$/);
+  assert.equal(r.headers.get('cache-control'), 'public, max-age=86400');
+  const again = await fetch(`${base}/x.css`, { headers: { 'If-None-Match': tag } });
+  assert.equal(again.status, 304);
+  assert.equal(again.headers.get('cache-control'), 'public, max-age=86400');
+  assert.equal(await again.text(), '');
+  writeFileSync(join(dir, 'x.css'), 'a{color:red}');
+  const changed = await fetch(`${base}/x.css`, { headers: { 'If-None-Match': tag } });
+  assert.equal(changed.status, 200);
+  assert.notEqual(changed.headers.get('etag'), tag);
+});

@@ -12,7 +12,7 @@
   const menu = $('.nav-mobile');
   if (menu) {
     const summary = menu.querySelector('summary');
-    menu.addEventListener('toggle', () => { if (menu.open) menu.querySelector('.sheet a').focus(); });
+    menu.addEventListener('toggle', () => { if (menu.open) requestAnimationFrame(() => menu.querySelector('.sheet a')?.focus()); });
     menu.addEventListener('click', (e) => { if (e.target.closest('.sheet a')) menu.open = false; });
     addEventListener('keydown', (e) => { if (e.key === 'Escape' && menu.open) { menu.open = false; summary.focus(); } });
   }
