@@ -87,3 +87,9 @@ test('C19: player fallback and the Shorts line are the content.md strings', () =
   assert.equal((v.match(/>New shorts most weeks on YouTube\.</g) ?? []).length, 1);
   assert.ok(!v.includes('Shorts most weeks:') && !v.includes('>On YouTube<'));
 });
+
+test('C19: the shop samples say "once the merch is ready"', () => {
+  const rows = JSON.parse(read('src/data/products.json'));
+  assert.equal(rows.filter((r) => r.description.endsWith('go here once the merch is ready.')).length, 2);
+  assert.ok(rows.every((r) => !/Gabe/.test(r.description)));
+});

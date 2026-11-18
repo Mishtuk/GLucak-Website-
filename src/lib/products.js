@@ -96,13 +96,12 @@ const priceHtml = (p) => (p.status === 'sample' ? '' : `<p class="product-price"
 const card = (p) => `<li class="product-card" data-status="${p.status}"><a class="product-link" href="#${anchor(p)}">${img(p, 'product-media', '')}${tape(p)}<p class="product-name">${esc(p.name)}</p>${priceHtml(p)}${statusP(p)}</a></li>`;
 const detail = (p) => `<article class="product-detail" id="${anchor(p)}" data-status="${p.status}">${img(p, 'product-media', esc(p.name))}${tape(p)}<div class="product-body"><h2 class="product-name">${esc(p.name)}</h2>${priceHtml(p)}${p.description ? `<p class="product-desc">${esc(p.description)}</p>` : ''}${p.sizes?.length ? `<p class="product-sizes">Sizes: ${p.sizes.map(esc).join(', ')}</p>` : ''}${actionHtml(p)}<a class="text-link product-back" href="#h-shop">Back to all merch</a></div></article>`;
 
-/** The /shop/ marker: optional Preview chip (shop not switched on), sample banner, grid, then one detail per product. */
-export function productsHtml(rows, { preview = false } = {}) {
+/** The /shop/ marker: sample banner (the one notice), grid, then one detail per product. */
+export function productsHtml(rows) {
   const list = sorted(rows);
-  const chip = preview ? '<p class="shop-preview"><span class="ph-chip inline">Preview: the shop is not open yet</span></p>' : '';
-  if (!list.length) return `${chip}<p class="shop-empty">Nothing in the shop yet.</p>`;
+  if (!list.length) return `<p class="shop-empty">Nothing in the shop yet.</p>`;
   const banner = list.every((p) => p.status === 'sample') ? '<p class="shop-banner" role="note">This shop is a preview. Everything here is a sample and can’t be bought.</p>' : '';
-  return `${chip}${banner}<ul class="shop-grid">${list.map(card).join('')}</ul><div class="shop-details">${list.map(detail).join('')}</div>`;
+  return `${banner}<ul class="shop-grid">${list.map(card).join('')}</ul><div class="shop-details">${list.map(detail).join('')}</div>`;
 }
 
 // SHOP_ENABLED (D8, D36): the built pages carry empty markers; the server fills them per request.

@@ -55,7 +55,7 @@ test('the shipped sample file is valid: 5 marked samples with images that exist'
   assert.deepEqual(rows.map((r) => r.type).sort(), ['cd', 'hoodie', 'shirt', 'sticker', 'vinyl']);
   for (const r of rows) {
     assert.equal(r.status, 'sample');
-    assert.match(r.name, /^Sample: /);
+    assert.ok(!/^Sample/.test(r.name) && !r.description.includes('Gabe'), 'C20: no Sample: title prefix; C19: no third-person merch line');
     assert.ok(readFileSync(new URL(`../public${r.image}`, import.meta.url)).length > 0, r.image);
   }
 });
@@ -79,12 +79,12 @@ test('button rules: Buy only when available with a link; otherwise a plain label
   for (const s of ['sample', 'coming-soon', 'sold-out']) assert.ok(!/<button|<a /.test(actionHtml(good({ status: s, link: 'https://x.com' }))), s);
 });
 
-test('banner only while any product is a sample; Preview chip only when asked; order, price, empty state', () => {
+test('banner only while any product is a sample; no Preview chip (C20: one notice); order, price, empty state', () => {
   const banner = "This shop is a preview. Everything here is a sample and can’t be bought.";
   assert.ok(!productsHtml([good(), good({ id: 'b', status: 'sample' })]).includes(banner), 'one real product -> no banner');
   assert.ok(productsHtml([good({ status: 'sample' }), good({ id: 'b', status: 'sample' })]).includes(banner));
   assert.ok(!productsHtml([good(), good({ id: 'b', status: 'sold-out' })]).includes(banner));
-  assert.ok(productsHtml([good()], { preview: true }).includes('Preview'));
+  assert.ok(!productsHtml([good()]).includes('Preview'));
   assert.ok(!productsHtml([good()]).includes('ph-chip'));
   const html = productsHtml([good({ id: 'second', name: 'Second', order: 2 }), good({ id: 'first', name: 'First', order: 1, price: 0 }), good({ id: 'broken', price: -1 })]);
   assert.ok(html.indexOf('First') < html.indexOf('Second') && !html.includes('broken'), 'sorted by order, invalid rows skipped');

@@ -75,7 +75,7 @@ function inject(html, path) {
   const products = readList(DATA, PRODUCTS, 'products.json');
   html = shopLinks(html, { enabled: shopOn(), path, rows: products });
   if (html.includes('<!--gl:shop-->')) {
-    const shop = productsHtml(products, { preview: !shopOn() });
+    const shop = productsHtml(products);
     html = html.replace('<!--gl:shop-->', () => shop);
   }
   let site = null; // Gabe's bio and IDENTITY (site.json): filled per visit, so the days to go are always today's

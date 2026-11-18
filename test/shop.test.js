@@ -31,13 +31,13 @@ const product = (o = {}) => ({ id: 'real-tee', name: 'Real tee', type: 'shirt', 
 const save = async (products, v) => post('/edit/api/products', { version: v === undefined ? await version() : v, products });
 const upload = (body, type = 'image/png', headers = {}) => post('/edit/api/upload', body, { 'content-type': type, ...headers });
 
-test('/shop/ is filled per visit from the shipped samples: banner, Coming soon, Preview chip, noindex', async () => {
+test('/shop/ is filled per visit from the shipped samples: banner (the one notice), Coming soon, noindex', async () => {
   const r = await get('/shop/');
   assert.equal(r.status, 200);
   assert.equal(r.headers.get('x-robots-tag'), 'noindex');
   const html = await r.text();
   assert.ok(!html.includes('<!--gl:shop-->'));
-  assert.ok(html.includes("This shop is a preview. Everything here is a sample and can’t be bought.") && html.includes('Sample: GLucak tee') && !html.includes('class="product-price"') && html.includes('Preview'));
+  assert.ok(html.includes("This shop is a preview. Everything here is a sample and can’t be bought.") && html.includes('>GLucak tee<') && !html.includes('Sample: ') && !html.includes('SampleSample') && !html.includes('Gabe') && !html.includes('class="product-price"') && !html.includes('Preview: the shop') && !html.includes('class="ph-chip'), 'C20: one notice, no chip, no Sample: prefix');
   assert.equal((html.match(/<article class="product-detail"/g) ?? []).length, 5);
   assert.ok(!html.includes('>Buy<'), 'samples are never buyable');
 });
