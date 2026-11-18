@@ -1,5 +1,5 @@
-// Gabe's edit screen: Shows | IDENTITY | Bio | Products tabs. Builds every row with createElement and sets data only through
-// textContent / value. Talks to /edit/login, /edit/logout, /edit/api/shows, /edit/api/site, /edit/api/products and /edit/api/upload
+// Gabe's edit screen: Shows | Releases | IDENTITY | Bio | Products tabs. Builds every row with createElement and sets data only through
+// textContent / value. Talks to /edit/login, /edit/logout, /edit/api/shows, /edit/api/releases, /edit/api/site, /edit/api/products and /edit/api/upload
 // (same origin, session cookie on Path=/edit).
 (() => {
   const $ = (id) => document.getElementById(id);
@@ -15,6 +15,7 @@
   // Per tab: its list, message line, unsaved flag and the version it loaded (sent back on save -> 409 if stale).
   const T = {
     shows: { list: $('list'), msg: $('msg'), dirty: false, version: null, noun: ['show', 'shows'], label: 'Show' },
+    releases: { list: $('r-list'), msg: $('r-msg'), dirty: false, version: null, noun: ['release', 'releases'], label: 'Release' },
     products: { list: $('p-list'), msg: $('p-msg'), dirty: false, version: null, noun: ['product', 'products'], label: 'Product' },
     // IDENTITY and Bio are fields, not rows. Both save into site.json: one shared version (siteVersion), kept from every reply.
     identity: { msg: $('i-msg'), dirty: false },
@@ -67,7 +68,7 @@
   function changed(kind) { setDirty(kind, true); say(T[kind].msg, 'Not saved yet.', 'dirty'); }
   const lists = (kind) => (kind === 'shows' ? [T.shows.list, T.shows.played] : [T[kind].list]);
   const rows = (kind) => lists(kind).flatMap((l) => [...l.children]); // shows: upcoming, then Played (one array, so error row numbers match)
-  const EMPTY = { shows: 'No shows yet. Press Add show.', products: 'No products yet. Press Add product.' };
+  const EMPTY = { shows: 'No shows yet. Press Add show.', releases: 'No releases yet. Press Add release.', products: 'No products yet. Press Add product.' };
   function number(kind) {
     const list = rows(kind), t = T[kind];
     list.forEach((r, i) => {
@@ -160,13 +161,55 @@
     setDirty('shows', false);
   };
 
+  // ---------- Releases ----------
+  const REL_TYPES = [['single', 'Single'], ['ep', 'EP'], ['album', 'Album'], ['remix-album', 'Remix album']]; // Remix album saves type album + remix
+  const dayText = (d) => { if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return ''; const [y, m, day] = d.split('-').map(Number); return new Date(Date.UTC(y, m - 1, day)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }); };
+  function releaseRow(r = {}) {
+    const thumb = el('img', { class: 'ed-thumb', alt: '', width: 48, height: 48 });
+    const box = shell(thumb, 'release');
+    const title = el('input', { required: true, maxLength: 120, value: r.title ?? '' });
+    const type = select(REL_TYPES, r.remix && r.type === 'album' ? 'remix-album' : r.type);
+    const date = el('input', { type: 'date', required: true, value: r.date ?? '' });
+    const link = el('input', { type: 'url', inputMode: 'url', required: true, maxLength: 300, value: r.link ?? '', placeholder: 'https://', spellcheck: false });
+    const artists = el('input', { maxLength: 120, value: r.artists ?? '' });
+    const { image, block } = uploader('releases', { value: r.cover, thumb, button: 'Upload a cover', hint: 'Square JPG, PNG or WebP, up to 5 MB. No art yet? Leave it empty: the site shows the title on a plain sleeve.' });
+    box.form.append(field('Title', title), field('Type', type),
+      field('Date', date, 'The day it comes out. Until then the site shows Pre-save.'),
+      field('Link', link, 'Your smart link (like wingsmusic.lnk.to/…) or the Spotify link.'),
+      field('Artists (optional)', artists, 'Only if someone joins you, like: GLucak, J-BOY'),
+      field('Cover', image, 'Filled in when you upload a cover below. Empty it to remove the cover.'), block, box.delBar);
+    box.read = () => ({ title: title.value, type: type.value === 'remix-album' ? 'album' : type.value, remix: type.value === 'remix-album', date: date.value, link: link.value, artists: artists.value, cover: image.value });
+    const mark = () => {
+      box.setTitle(title.value.trim());
+      const label = REL_TYPES.find(([v]) => v === type.value)[1], when = dayText(date.value);
+      box.setMeta(el('span', { textContent: [label, when].filter(Boolean).join(', ') }), ...(date.value > today() ? [el('span', { class: 'ed-tag', textContent: 'Coming' })] : []));
+    };
+    box.form.addEventListener('input', mark);
+    box.form.addEventListener('change', mark);
+    box.del.addEventListener('click', () => {
+      if (!confirm(`Delete ${title.value.trim() || 'this release'}? It goes away when you press Save.`)) return;
+      box.remove();
+      changed('releases');
+      number('releases');
+    });
+    mark();
+    return box;
+  }
+
+  // IDENTITY is not here: it has its own tab (the server keeps its row).
+  T.releases.render = (releases) => {
+    T.releases.list.replaceChildren(...releases.filter((r) => r.title !== 'IDENTITY').sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '')).map(releaseRow));
+    number('releases');
+    setDirty('releases', false);
+  };
+
   // ---------- Products ----------
   const TYPES = [['shirt', 'Shirt'], ['hoodie', 'Hoodie'], ['cd', 'CD'], ['vinyl', 'Vinyl'], ['sticker', 'Sticker'], ['other', 'Other']];
   const STATUSES = [['coming-soon', 'Coming soon'], ['available', 'Available (shows Buy once it has a Link)'], ['sold-out', 'Sold out'], ['sample', 'Sample (shows Coming soon, no price)']];
   const SHORT = { 'coming-soon': 'Coming soon', available: 'Available', 'sold-out': 'Sold out', sample: 'Sample' };
   let uploads = 0; // photo uploads on their way
-  let waitMsg = false; // Save was pressed during an upload, so the Products message says to wait; cleared when the upload ends
-  const IMAGE = /^\/media\/(?:shop\/[a-z0-9]+(?:-[a-z0-9]+)*\.(?:webp|png|jpg)|uploads\/[a-f0-9]{32}\.webp)$/; // same rule as the server
+  let waitFor = null; // the tab whose Save was pressed during an upload: its message says to wait; cleared when the upload ends
+  const IMAGE = /^\/media\/(?:covers\/[a-z0-9]+(?:-[a-z0-9]+)*\.webp|shop\/[a-z0-9]+(?:-[a-z0-9]+)*\.(?:webp|png|jpg)|uploads\/[a-f0-9]{32}\.webp)$/; // the files the server accepts (a preview only)
   const UPLOADABLE = ['image/jpeg', 'image/png', 'image/webp'];
   const slug = (s) => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60).replace(/-+$/, '');
   const cents = (v) => { const t = v.trim(); if (!t) return null; const n = Math.round(Number(t) * 100); return Number.isFinite(n) ? n : null; };
@@ -179,6 +222,38 @@
     const b = await reply(r);
     if (r.status === 401) { login.hidden = false; return { message: 'You were signed out. Sign in above, then upload again.' }; }
     return r.ok ? { path: b.path } : { message: b.message || "That didn’t upload. Try again." };
+  }
+
+  // The photo block Products and Releases share: the path field, a preview (and the row's thumb), the upload button and its messages.
+  function uploader(kind, { value, thumb, button, hint }) {
+    const image = el('input', { maxLength: 200, value: value ?? '', spellcheck: false, placeholder: '/media/uploads/...' });
+    const pic = el('img', { class: 'ed-pic', alt: '', width: 120, height: 120 });
+    const showPic = () => { const v = image.value.trim(); for (const i of [pic, thumb]) if (IMAGE.test(v)) i.src = v; else i.removeAttribute('src'); };
+    image.addEventListener('input', showPic);
+    // The upload is a big button (the label) with the real file input over it at opacity 0. Busy line only: no progress bar (D41).
+    const file = el('input', { type: 'file', class: 'ed-file-input', accept: UPLOADABLE.join(',') });
+    file.id = `f${++uid}`;
+    const fileHint = el('span', { class: 'ed-hint', id: `${file.id}-hint`, textContent: hint });
+    file.setAttribute('aria-describedby', fileHint.id);
+    const upMsg = el('span', { class: 'ed-hint ed-upmsg', role: 'status' });
+    file.addEventListener('change', async () => {
+      const f = file.files[0];
+      if (!f) return;
+      say(upMsg, 'Uploading…', 'busy');
+      uploads++;
+      let r;
+      try { r = await upload(f); } finally { uploads--; if (!uploads && waitFor) { say(T[waitFor].msg, ''); waitFor = null; } }
+      file.value = '';
+      if (!r.path) return say(upMsg, r.message, 'error');
+      image.value = r.path;
+      showPic();
+      changed(kind);
+      say(upMsg, 'Uploaded. Press Save to keep it.', 'ok');
+    });
+    showPic();
+    const block = el('div', { class: 'ed-upload' }, pic, el('div', { class: 'ed-upload-side' },
+      el('span', { class: 'ed-file-wrap' }, el('label', { class: 'ed-btn ed-file', htmlFor: file.id, textContent: button }), file), fileHint, upMsg));
+    return { image, block };
   }
 
   function productRow(p = {}) {
@@ -196,38 +271,13 @@
       ...STATUSES.map(([v, text]) => el('label', { class: 'ed-choice' }, el('input', { type: 'radio', name: group, value: v, checked: v === start }), el('span', { textContent: text }))));
     const status = () => statusBox.querySelector('input:checked')?.value ?? STATUSES[0][0];
     const price = el('input', { type: 'number', min: 0, max: 1000, step: '0.01', inputMode: 'decimal', required: true, value: Number.isInteger(p.price) ? (p.price / 100).toFixed(2) : '' });
-    const image = el('input', { maxLength: 200, value: p.image ?? '', spellcheck: false, placeholder: '/media/uploads/...' });
-    const pic = el('img', { class: 'ed-pic', alt: '', width: 120, height: 120 });
-    const showPic = () => { const v = image.value.trim(); for (const i of [pic, thumb]) if (IMAGE.test(v)) i.src = v; else i.removeAttribute('src'); };
-    image.addEventListener('input', showPic);
-    // The upload is a big button (the label) with the real file input over it at opacity 0. Busy line only: no progress bar (D41).
-    const file = el('input', { type: 'file', class: 'ed-file-input', accept: UPLOADABLE.join(',') });
-    file.id = `f${++uid}`;
-    const fileHint = el('span', { class: 'ed-hint', id: `${file.id}-hint`, textContent: 'JPG, PNG or WebP, up to 5 MB.' });
-    file.setAttribute('aria-describedby', fileHint.id);
-    const upMsg = el('span', { class: 'ed-hint ed-upmsg', role: 'status' });
-    file.addEventListener('change', async () => {
-      const f = file.files[0];
-      if (!f) return;
-      say(upMsg, 'Uploading…', 'busy');
-      uploads++;
-      let r;
-      try { r = await upload(f); } finally { uploads--; if (!uploads && waitMsg) { waitMsg = false; say(T.products.msg, ''); } }
-      file.value = '';
-      if (!r.path) return say(upMsg, r.message, 'error');
-      image.value = r.path;
-      showPic();
-      changed('products');
-      say(upMsg, 'Uploaded. Press Save to keep it.', 'ok');
-    });
+    const { image, block: photo } = uploader('products', { value: p.image, thumb, button: 'Upload a photo', hint: 'JPG, PNG or WebP, up to 5 MB.' });
     const desc = el('textarea', { maxLength: 600, value: p.description ?? '', rows: 4 });
     const link = el('input', { type: 'url', inputMode: 'url', maxLength: 500, value: p.link ?? '', placeholder: 'https://' });
     const sizes = el('input', { maxLength: 200, value: (p.sizes ?? []).join(', '), placeholder: 'S, M, L, XL' });
     box.form.append(field('Name', name), field('Short name', id, 'Lowercase letters, numbers and dashes. It fills in from the name; leave it unless you need to change it.'),
       el('div', { class: 'ed-two' }, field('Type', type), field('Price (US dollars)', price, 'Like 25 or 25.00')),
-      statusBox, field('Photo', image, 'Filled in when you upload a photo below. Leave it as it is.'),
-      el('div', { class: 'ed-upload' }, pic, el('div', { class: 'ed-upload-side' },
-        el('span', { class: 'ed-file-wrap' }, el('label', { class: 'ed-btn ed-file', htmlFor: file.id, textContent: 'Upload a photo' }), file), fileHint, upMsg)),
+      statusBox, field('Photo', image, 'Filled in when you upload a photo below. Leave it as it is.'), photo,
       field('Description (optional)', desc, 'Up to 600 characters'),
       field('Link (optional)', link, 'Where fans buy it: the product page on your store. Needed for the Buy button.'),
       field('Sizes (optional)', sizes, 'Separate with commas, like S, M, L, XL.'));
@@ -266,7 +316,6 @@
     };
     box.form.addEventListener('input', sync);
     box.form.addEventListener('change', sync);
-    showPic();
     sync();
     return box;
   }
@@ -297,7 +346,7 @@
   for (const k of ['identity', 'bio']) $(`panel-${k}`).addEventListener('input', () => changed(k));
 
   // ---------- Tabs ----------
-  const tabs = ['shows', 'identity', 'bio', 'products'];
+  const tabs = ['shows', 'releases', 'identity', 'bio', 'products'];
   function pick(kind, focus = false) {
     for (const k of tabs) {
       const tab = $(`tab-${k}`), on = k === kind;
@@ -324,23 +373,25 @@
     editor.hidden = false;
     say($('who'), `Signed in as ${name}`);
     if (data) {
-      for (const k of ['shows', 'products']) if (data[k]) T[k].render(data[k]);
+      for (const k of ['shows', 'releases', 'products']) if (data[k]) T[k].render(data[k]);
       if (data.site) { fillSite(data.site, 'identity'); fillSite(data.site, 'bio'); }
       loaded = true;
     }
   }
 
   async function load() {
-    let r, p, q;
-    try { [r, p, q] = await Promise.all([api('/edit/api/shows'), api('/edit/api/products'), api('/edit/api/site')]); } catch { login.hidden = false; return say(loginMsg, "Can’t reach the site. Check your connection and reload.", 'error'); }
+    let r, p, q, rl;
+    try { [r, p, q, rl] = await Promise.all([api('/edit/api/shows'), api('/edit/api/products'), api('/edit/api/site'), api('/edit/api/releases')]); } catch { login.hidden = false; return say(loginMsg, "Can’t reach the site. Check your connection and reload.", 'error'); }
     const b = await reply(r);
     if (r.ok) {
       const pb = await reply(p);
       T.shows.version = b.version;
       if (p.ok) T.products.version = pb.version; else say(T.products.msg, "Couldn’t load the products. Reload the page.", 'error');
+      const rb = rl.ok ? await reply(rl) : {};
+      if (rl.ok) T.releases.version = rb.version; else say(T.releases.msg, "Couldn’t load the releases. Reload the page.", 'error');
       const qb = q.ok ? await reply(q) : {};
       if (q.ok) siteVersion = qb.version; else for (const k of ['identity', 'bio']) say(T[k].msg, "Couldn’t load this. Reload the page.", 'error');
-      return signedIn(b.editor, { shows: b.shows, products: p.ok ? pb.products : null, site: q.ok ? qb.site : null });
+      return signedIn(b.editor, { shows: b.shows, releases: rl.ok ? rb.releases : null, products: p.ok ? pb.products : null, site: q.ok ? qb.site : null });
     }
     login.hidden = false;
     if (r.status === 503) say(loginMsg, b.message || "The edit screen isn’t switched on yet. Tell the person who runs the site.", 'error');
@@ -380,6 +431,14 @@
     row.open(true);
     row.form.querySelector('input').focus();
   });
+  $('r-add').addEventListener('click', () => {
+    const row = releaseRow({ type: 'single' });
+    T.releases.list.prepend(row);
+    number('releases');
+    changed('releases');
+    row.open(true);
+    row.form.querySelector('input').focus();
+  });
   $('p-add').addEventListener('click', () => {
     const row = productRow({ type: 'shirt', status: 'coming-soon' });
     T.products.list.append(row);
@@ -389,14 +448,15 @@
     row.form.querySelector('input').focus();
   });
 
-  for (const k of ['shows', 'products']) T[k].list.addEventListener('input', (e) => { if (e.target.type !== 'file') changed(k); }); // uploads mark it on success
+  for (const k of ['shows', 'releases', 'products']) T[k].list.addEventListener('input', (e) => { if (e.target.type !== 'file') changed(k); }); // uploads mark it on success
   T.shows.played.addEventListener('input', () => changed('shows'));
 
-  const saving = { shows: false, products: false };
+  const saving = { shows: false, releases: false, products: false };
+  const IDS = { shows: ['save', 'add'], releases: ['r-save', 'r-add'], products: ['p-save', 'p-add'] }; // Save and Add button per list tab
   async function save(kind) {
     if (saving[kind]) return; // no second save while one is on its way
-    const t = T[kind], list = rows(kind), btn = $(kind === 'shows' ? 'save' : 'p-save'), add = $(kind === 'shows' ? 'add' : 'p-add');
-    if (kind === 'products' && uploads) { waitMsg = true; return say(t.msg, 'Wait for the photo to finish uploading, then press Save.', 'busy'); } // an upload would land in a row the reply rebuilds
+    const t = T[kind], list = rows(kind), [btn, add] = IDS[kind].map($);
+    if (kind !== 'shows' && uploads) { waitFor = kind; return say(t.msg, 'Wait for the photo to finish uploading, then press Save.', 'busy'); } // an upload would land in a row the reply rebuilds
     for (const r of list) { say(r.err, ''); r.classList.remove('bad'); }
     saving[kind] = true;
     btn.setAttribute('aria-disabled', 'true');
@@ -440,6 +500,7 @@
     } finally { siteSaving[kind] = false; btn.removeAttribute('aria-disabled'); panel.inert = false; }
   }
   $('save').addEventListener('click', () => save('shows'));
+  $('r-save').addEventListener('click', () => save('releases'));
   $('i-save').addEventListener('click', () => saveSite('identity'));
   $('b-save').addEventListener('click', () => saveSite('bio'));
   $('p-save').addEventListener('click', () => save('products'));

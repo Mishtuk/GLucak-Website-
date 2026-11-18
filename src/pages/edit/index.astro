@@ -1,6 +1,6 @@
 ---
-// Gabe's edit screen (v2: Shows | Products tabs). A static shell: public/js/edit.js signs in and builds both lists from
-// /edit/api/shows and /edit/api/products with createElement + textContent/value only. Not linked from the site; noindex.
+// Gabe's edit screen (Shows | Releases | IDENTITY | Bio | Products tabs). A static shell: public/js/edit.js signs in and builds the lists from
+// /edit/api/shows, /edit/api/releases and /edit/api/products with createElement + textContent/value only. Not linked from the site; noindex.
 import '../../styles/global.css';
 import { era } from '../../components/content.js';
 
@@ -37,9 +37,10 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
         <p class="ed-who"><span id="who"></span> <button id="logout" class="ed-btn ed-plain" type="button">Sign out</button></p>
         <div id="out-ask" class="ed-ask" role="alert" hidden><p>You have changes that aren’t saved. Sign out anyway?</p>
           <p class="ed-ask-btns"><button id="out-yes" class="ed-btn" type="button">Sign out</button> <button id="out-no" class="ed-btn" type="button">Stay</button></p></div>
-        <p class="ed-help">Change your shows, IDENTITY and bio here. Each tab saves on its own.</p>
+        <p class="ed-help">Change your shows, releases, IDENTITY and bio here. Each tab saves on its own.</p>
         <div class="ed-tabs" role="tablist" aria-label="What to edit">
           <button id="tab-shows" class="ed-tab" type="button" role="tab" aria-selected="true" aria-controls="panel-shows">Shows</button>
+          <button id="tab-releases" class="ed-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-releases" tabindex="-1">Releases</button>
           <button id="tab-identity" class="ed-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-identity" tabindex="-1">IDENTITY</button>
           <button id="tab-bio" class="ed-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-bio" tabindex="-1">Bio</button>
           <button id="tab-products" class="ed-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-products" tabindex="-1">Products</button>
@@ -52,6 +53,15 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
           <div class="ed-bar">
             <button id="save" class="ed-btn ed-main" type="button">Save shows</button>
             <div class="ed-say"><p id="msg" class="ed-msg" role="status"></p><a class="ed-see text-link" href="/shows/" target="_blank" rel="noopener" hidden>See it on the site</a></div>
+          </div>
+        </div>
+        <div id="panel-releases" class="ed-panel" role="tabpanel" aria-labelledby="tab-releases" hidden>
+          <p class="ed-help">Your releases, newest first. They show on the Music page; the newest one is also on Home. Change anything, then press Save.</p>
+          <button id="r-add" class="ed-btn ed-add" type="button">Add release</button>
+          <ol id="r-list" class="ed-list"></ol>
+          <div class="ed-bar">
+            <button id="r-save" class="ed-btn ed-main" type="button">Save releases</button>
+            <div class="ed-say"><p id="r-msg" class="ed-msg" role="status"></p><a class="ed-see text-link" href="/music/" target="_blank" rel="noopener" hidden>See it on the site</a></div>
           </div>
         </div>
         <div id="panel-identity" class="ed-panel" role="tabpanel" aria-labelledby="tab-identity" hidden>
@@ -167,10 +177,12 @@ html:has(.ed-body) { scroll-padding: 1rem 0 10rem; } /* a focused field never hi
 .ed-ask { margin-top: var(--space-m); padding: var(--space-m); background: var(--text); color: var(--bg); font-weight: 700; }
 .ed-ask-btns { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xs); margin-top: var(--space-s); }
 
-/* Tabs: two halves of one bar. The open one is inverted (text ground, bg letters), like the site's crate tabs. */
-.ed-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px; margin-top: var(--space-m); background: var(--text); border: 2px solid var(--text); border-radius: var(--radius-s); } /* the 2px gap draws the rules between cells */
-@container (min-width: 36rem) { .ed-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@container (width < 17rem) { .ed-tabs { grid-template-columns: minmax(0, 1fr); } }
+/* Tabs: five cells, three then two (the last spans two) on phones, one row of five from 36rem. */
+/* The open one is inverted (text ground, bg letters), like the site's crate tabs. */
+.ed-tab:last-child { grid-column: span 2; } /* phones: Shows Releases IDENTITY / Bio Products */
+.ed-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; margin-top: var(--space-m); background: var(--text); border: 2px solid var(--text); border-radius: var(--radius-s); } /* the 2px gap draws the rules between cells */
+@container (min-width: 36rem) { .ed-tabs { grid-template-columns: repeat(5, minmax(0, 1fr)); } .ed-tab:last-child { grid-column: auto; } }
+@container (width < 17rem) { .ed-tabs { grid-template-columns: minmax(0, 1fr); } .ed-tab:last-child { grid-column: auto; } }
 .ed-tab { min-height: 52px; padding: 0.4rem 0.25rem; font: inherit; font-weight: 800; font-size: 1.0625rem; color: var(--text); background: var(--bg); border: 0; }
 .ed-tab[data-dirty]::after { content: ''; display: inline-block; width: 0.6rem; height: 0.6rem; margin-left: 0.4rem; border: 2px solid currentColor; border-radius: 50%; } /* unsaved: the dirty ring, never colour alone */
 .ed-tab[aria-selected='true'] { background: var(--text); color: var(--bg); }

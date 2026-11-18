@@ -208,10 +208,10 @@ test('backup link: plain download fallback kept, JS fetch handles 401 / 413 / 42
 
 // ---- DESIGN 28i (OV4a): tabs, compact rows, Played fold, Delete inside the form, "See it on the site" ----
 const src = (f) => readFileSync(join(import.meta.dirname, '..', f), 'utf8');
-test('28i: four tabs in order, each controlling an existing tabpanel; keys incl. Home/End; no innerHTML', () => {
+test('28i: five tabs in order, each controlling an existing tabpanel; keys incl. Home/End; no innerHTML', () => {
   const page = src('src/pages/edit/index.astro'), js = src('public/js/edit.js');
   const tabs = [...page.matchAll(/role="tab"[^>]*aria-controls="([\w-]+)"[^>]*>([^<]+)</g)];
-  assert.deepEqual(tabs.map((t) => t[2]), ['Shows', 'IDENTITY', 'Bio', 'Products']);
+  assert.deepEqual(tabs.map((t) => t[2]), ['Shows', 'Releases', 'IDENTITY', 'Bio', 'Products']);
   for (const [, panel] of tabs) assert.match(page, new RegExp(`id="${panel}" class="ed-panel" role="tabpanel"`));
   for (const k of ['ArrowLeft', 'ArrowRight', 'Home', 'End']) assert.ok(js.includes(k), k);
   assert.ok(!js.includes('innerHTML') && !js.includes('insertAdjacentHTML'));
@@ -222,7 +222,7 @@ test('28i: Delete is appended to the form (not the row head); Played fold; ed-se
   assert.ok(js.includes('box.form.append(box.delBar)') && js.includes("`Delete this ${noun}`") && !/ed-row-head'[^;]*\bdel\b/.test(js));
   assert.match(page, /<details id="played" class="ed-played"/);
   const see = [...page.matchAll(/<a class="ed-see text-link" href="([^"]+)" target="_blank" rel="noopener" hidden>See it on the site<\/a>/g)].map((m) => m[1]);
-  assert.deepEqual(see, ['/shows/', '/music/', '/about/', '/shop/']);
+  assert.deepEqual(see, ['/shows/', '/music/', '/music/', '/about/', '/shop/']);
   assert.ok(js.includes("see.hidden = state !== 'ok'"));
 });
 test('28i: IDENTITY and Bio fields have the caps the server enforces, Save buttons named, one shared site version', () => {

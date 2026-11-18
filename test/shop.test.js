@@ -231,7 +231,7 @@ test('F2 (D43): Save makes the rows inert and disables Add until the reply; Save
   assert.ok(fn.includes('l.inert = true') && fn.includes('add.disabled = true'), 'locked while saving');
   assert.ok(fin.includes('l.inert = false') && fin.includes('add.disabled = false'), 'cleared in finally');
   assert.ok(fn.indexOf('l.inert = true') < fn.indexOf('await send('), 'set before the POST');
-  assert.ok(fn.includes("uploads) { waitMsg = true; return say(t.msg, 'Wait for the photo to finish uploading, then press Save.', 'busy'); }"), 'upload guard (D57 string)');
+  assert.ok(fn.includes("uploads) { waitFor = kind; return say(t.msg, 'Wait for the photo to finish uploading, then press Save.', 'busy'); }"), 'upload guard (D57 string)');
   assert.ok(js.includes('uploads++') && js.includes('finally { uploads--;'), 'upload counter balanced even on a throw');
-  assert.ok(js.includes("if (!uploads && waitMsg) { waitMsg = false; say(T.products.msg, ''); }"), 'wait message cleared when the upload ends');
+  assert.ok(js.includes("if (!uploads && waitFor) { say(T[waitFor].msg, ''); waitFor = null; }"), 'wait message cleared when the upload ends');
 });
