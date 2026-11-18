@@ -7,7 +7,7 @@ import { validateShow, ADDR_LINE, ADDR_LONG, COST_LINE, COST_LONG } from './show
 
 export const MAX_SHOWS = 200;
 const FIELDS = ['date', 'time', 'type', 'venue', 'city', 'address', 'with', 'link', 'cost'];
-const OPTIONAL = new Set(['time', 'address', 'with', 'link', 'cost']);
+const OPTIONAL = new Set(['time', 'city', 'address', 'with', 'link', 'cost']);
 const MAX_LEN = 300;
 
 const PLAIN = {

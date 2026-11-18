@@ -20,7 +20,8 @@ export function validateShow(r) {
   if (typeof r.date !== 'string' || !validDate(r.date)) throw new Error('bad date');
   if (r.time != null && (typeof r.time !== 'string' || !/^([01]\d|2[0-3]):[0-5]\d$/.test(r.time))) throw new Error('bad time');
   if (r.type !== 'show' && r.type !== 'open-mic') throw new Error('bad type');
-  for (const k of ['venue', 'city']) if (typeof r[k] !== 'string' || !r[k].trim()) throw new Error(`bad ${k}`);
+  if (typeof r.venue !== 'string' || !r.venue.trim()) throw new Error('bad venue');
+  if (r.city != null && typeof r.city !== 'string') throw new Error('bad city'); // optional: a venue whose town is not known yet shows without one
   if (r.link != null && (typeof r.link !== 'string' || !httpUrl(r.link))) throw new Error('bad link');
   if (r.with != null && (typeof r.with !== 'string' || !r.with.trim())) throw new Error('bad with');
   if (r.address != null) {
@@ -71,13 +72,13 @@ const cal = (r, words) => `<a class="${words ? 'cal-link' : 'cal-btn'}" href="/s
 const shareBtn = (r, words) => {
   const kind = r.type === 'open-mic' ? 'Open mic' : 'Show';
   const title = r.type === 'open-mic' ? `GLucak open mic at ${r.venue}` : `GLucak at ${r.venue}`;
-  const text = `${kind} ${monD(r.date)}${r.time ? `, ${fmtTime(r.time)}` : ''}: ${r.venue}, ${r.city}`;
+  const text = `${kind} ${monD(r.date)}${r.time ? `, ${fmtTime(r.time)}` : ''}: ${[r.venue, r.city?.trim()].filter(Boolean).join(', ')}`;
   return `<button class="${words ? 'share-stamp' : 'share-btn'}" type="button" hidden data-share="/shows/#s-${showId(r)}" data-title="${esc(curly(title))}" data-text="${esc(curly(text))}" aria-label="${esc(curly(`Share: ${r.venue}, ${monD(r.date)}`))}"><svg class="cal-icon" aria-hidden="true"><use href="#i-share"/></svg>${words ? '<span class="share-word">Share</span>' : ''}</button>`;
 };
 const SHARE_MSG = '<span class="share-msg" role="status"></span>';
 
 const action = (r) => r.link ? `<a class="btn btn-show" href="${esc(r.link)}" rel="noopener">${r.type === 'show' ? 'Tickets' : 'Details'}</a>` : '';
-const place = (r) => `${esc(curly(r.venue))}, ${esc(curly(r.city))}`;
+const place = (r) => [r.venue, r.city?.trim()].filter(Boolean).map((x) => esc(curly(x))).join(', ');
 const dateTag = (r) => `<time datetime="${esc(r.date)}${r.time ? `T${esc(r.time)}` : ''}">${esc(fmtDate(r.date))}</time>`;
 
 /** Markup per DESIGN.md (classes from prototype/styles.css). A poster is only ever a full show, never an open mic. */
@@ -138,10 +139,10 @@ export function showsLdHtml(rows, now = new Date()) {
       const off = new Intl.DateTimeFormat('en-US', { timeZone: TZ, timeZoneName: 'longOffset' }).formatToParts(new Date(`${r.date}T${r.time}:00Z`)).find((p) => p.type === 'timeZoneName').value.replace('GMT', '');
       startDate = `${r.date}T${r.time}:00${off || '+00:00'}`;
     }
-    const m = r.city.match(/^(.+?),\s*([A-Za-z]{2})$/);
+    const m = (r.city ?? '').match(/^(.+?),\s*([A-Za-z]{2})$/);
     return { '@context': 'https://schema.org', '@type': 'MusicEvent', name: `GLucak at ${r.venue}`, startDate,
       eventStatus: 'https://schema.org/EventScheduled', eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-      location: { '@type': 'Place', name: r.venue, address: { '@type': 'PostalAddress', ...(r.address?.trim() && { streetAddress: r.address.trim() }), addressLocality: m ? m[1] : r.city, ...(m && { addressRegion: m[2].toUpperCase() }) } },
+      location: { '@type': 'Place', name: r.venue, address: { '@type': 'PostalAddress', ...(r.address?.trim() && { streetAddress: r.address.trim() }), ...((m || r.city?.trim()) && { addressLocality: m ? m[1] : r.city.trim() }), ...(m && { addressRegion: m[2].toUpperCase() }) } },
       performer: { '@type': 'MusicGroup', name: 'GLucak' }, ...(r.type === 'show' && r.link && { offers: { '@type': 'Offer', url: r.link } }) };
   });
   return events.length ? `<script type="application/ld+json">${JSON.stringify(events).replace(/</g, '\\u003c')}</script>` : '';
@@ -202,7 +203,7 @@ const VTIMEZONE = ['BEGIN:VTIMEZONE', 'TZID:America/New_York',
 /** The .ics text for one show row: all-day until the row has a time, then a 2 hour event in New York time. CRLF lines, folded, escaped. */
 export function icsFor(r, now = new Date()) {
   const url = httpUrl(r.link) ? new URL(r.link).href : null; // .href is percent-encoded: no control characters can ride in
-  const desc = [r.type === 'open-mic' ? 'GLucak at an open mic.' : 'GLucak live.', r.with && `With ${r.with}.`, `${r.venue}, ${r.city}`, url && `${r.type === 'show' ? 'Tickets' : 'Details'}: ${url}`].filter(Boolean);
+  const desc = [r.type === 'open-mic' ? 'GLucak at an open mic.' : 'GLucak live.', r.with && `With ${r.with}.`, [r.venue, r.city?.trim()].filter(Boolean).join(', '), url && `${r.type === 'show' ? 'Tickets' : 'Details'}: ${url}`].filter(Boolean);
   const ymd = r.date.replace(/-/g, '');
   let when;
   if (r.time) { // ponytail: no end time in the data, so a fixed 2 hour slot; add an end field if Gabe wants one
@@ -214,7 +215,7 @@ export function icsFor(r, now = new Date()) {
   const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//GLucak//glucak.com//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', ...(r.time ? VTIMEZONE : []),
     'BEGIN:VEVENT', `UID:${showId(r)}@glucak.com`, `DTSTAMP:${stamp(now).slice(0, 15)}Z`, ...when,
     `SUMMARY:${icsText(r.type === 'open-mic' ? `GLucak open mic at ${r.venue}` : `GLucak at ${r.venue}`)}`,
-    `LOCATION:${icsText([r.venue, r.address?.trim(), r.city].filter(Boolean).join(', '))}`, `DESCRIPTION:${icsText(desc.join('\n'))}`, ...(url ? [`URL:${url}`] : []), 'END:VEVENT', 'END:VCALENDAR'];
+    `LOCATION:${icsText([r.venue, r.address?.trim(), r.city?.trim()].filter(Boolean).join(', '))}`, `DESCRIPTION:${icsText(desc.join('\n'))}`, ...(url ? [`URL:${url}`] : []), 'END:VEVENT', 'END:VCALENDAR'];
   return lines.map(fold).join(CRLF) + CRLF;
 }
 
