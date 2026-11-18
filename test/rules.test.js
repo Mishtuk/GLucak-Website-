@@ -109,7 +109,7 @@ test('C19: the footer credits are one line (content.md 2); the full list is on A
   for (const f of ['index.html', 'music/index.html', 'shows/index.html', 'videos/index.html']) assert.equal(dist(f).split(line).length - 1, 1, f);
   assert.ok(!dist('about/index.html').includes('class="credits"'), 'DESIGN 29d: About prints the list once, no footer line');
   const list = dist('about/index.html').match(/class="credit-list">([^]*?)<\/ul>/)[1];
-  for (const c of ['Alexander Kealey', 'Joseph Lucak', 'GLucak on YouTube', 'Vladd', 'IDENTITY CD', 'Dave Bahm', 'Montgomery County']) assert.ok(list.includes(c), c);
+  for (const c of ['Alexander Kealey', 'Joseph Lucak', 'GLucak on YouTube', 'Vladd', 'Gabriel Lucak', 'Emily Mae', 'Dave Bahm', 'Montgomery County']) assert.ok(list.includes(c), c);
 });
 
 // ---------- Overhaul OV6 (DESIGN 29g): one photo language ----------

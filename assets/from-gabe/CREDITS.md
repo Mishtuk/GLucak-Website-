@@ -22,7 +22,9 @@ art (Scenic Route, ChurchBoy, Single Kids, WYLD LOVE, Another Dimension); everyt
 |---|---|---|
 | `identity-cover.png` (3000x3000) | IDENTITY album cover | Cover: GLucak. Logo: Dave Bahm |
 | `identity-cd-back-tracklist.png` (3000x3000) | CD back with the authoritative tracklist | GLucak |
-| `identity-cd-inside-live.png` (4000x2000) | CD inside: live shot, purple | from the CD (photographer: ask Gabe) |
-| `photo-jump.png`, `photo-studio.png`, `photo-looking.png` (960x960) | CD photos, already graded by Gabe | from the CD (photographer: ask Gabe) |
+| `identity-cd-inside-live.png` (4000x2000) | CD inside: live shot, purple | Photo: Gabriel Lucak (he took them himself, 2026-11-18) |
+| `photo-jump.png`, `photo-studio.png`, `photo-looking.png` (960x960) | CD photos, already graded by Gabe | Photo: Gabriel Lucak (he took them himself, 2026-11-18) |
 | `live-show-dates-nov-2026.png` | his Nov-Dec show graphic (reference only, not for the site) | GLucak |
 Video credits: Duck, Dodge, Jump, Fight car / garage scenes: Joseph Lucak. Scenic Route live clip: Vladd (Vladdtime).
+
+Gabe (2026-11-18): the IDENTITY CD photos (live inside, jump, studio, looking-away) were taken by Gabe himself; credit "Photo: Gabriel Lucak". Emily Mae is a guest on You're Not Alone.

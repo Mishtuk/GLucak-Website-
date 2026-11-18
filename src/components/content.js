@@ -21,7 +21,7 @@ export const PHOTO_CREDITS = {
   joseph: 'Video still: Joseph Lucak.', // camera on Duck, Dodge, Jump, Fight only
   yt: 'Video stills: GLucak on YouTube.', // Crooked Eye live stills: videographer unknown (asked Gabe, rights Q1)
   identity: 'IDENTITY cover: GLucak. Logo: Dave Bahm.', // Gabe made the cover, Dave Bahm the logo (answers row 3)
-  cd: 'Photos: from the IDENTITY CD.', // photographer still open in Gabe’s answers; put the name in when he says
+  cd: 'Photos: Gabriel Lucak.', // the IDENTITY CD photos (cover shots, live inside, jump, studio, looking-away): Gabe took them himself (answers 2026-11-18)
   vladd: 'Video still: Vladd (Vladdtime).', // the Scenic Route live clip, filmed by Vladd (answers row 13)
 };
 // Image src -> the credit it needs. Pages list their credits by hand; test/credits.test.js scans each built page's images against this so they can't drift.
