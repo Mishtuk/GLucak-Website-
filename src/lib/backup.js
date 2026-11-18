@@ -52,8 +52,8 @@ export async function checkBackup(text, data) {
   if (names.length > MAX_UPLOADS) return fail(`The backup has more than ${MAX_UPLOADS} photos.`);
   const s = checkShows(b.shows), p = checkProducts(b.products);
   const st = b.site === undefined ? null : checkSite(b.site); // an older backup has no site: the saved bio stays. A site must be complete.
-  // an older backup has no releases: the saved ones stay. IDENTITY travels in the list but checkReleases refuses it as a title, so split it out.
-  const rl = !Array.isArray(b.releases) ? null : checkReleases(b.releases.filter((r) => r?.title !== 'IDENTITY'), b.releases.filter((r) => r?.title === 'IDENTITY'));
+  // an older backup has no releases: the saved ones stay. IDENTITY is never taken from a file (it has its own tab): writeBackup keeps the site's own row.
+  const rl = !Array.isArray(b.releases) ? null : checkReleases(b.releases.filter((r) => r?.title !== 'IDENTITY'));
   const errors = [...(s.errors ?? []), ...(p.errors ?? []), ...(st?.errors ?? []), ...(rl?.errors ?? [])], uploads = new Map();
   for (const name of names) {
     const v = b.uploads[name];
@@ -88,5 +88,8 @@ export function writeBackup(data, r, fallback) {
   saveList(data, r.shows, fallback.shows, 'shows.json');
   saveList(data, r.products, fallback.products, 'products.json');
   if (r.site) saveList(data, r.site, fallback.site, 'site.json');
-  if (r.releases) saveList(data, r.releases, fallback.releases, 'releases.json');
+  if (r.releases) {
+    const now = readList(data, fallback.releases, 'releases.json');
+    saveList(data, [...r.releases, ...(Array.isArray(now) ? now : []).filter((x) => x?.title === 'IDENTITY')], fallback.releases, 'releases.json');
+  }
 }

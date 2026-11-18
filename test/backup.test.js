@@ -234,7 +234,9 @@ test('releases and their uploaded covers survive export, wipe, restore; an old b
   const w = freshData(); // wiped machine
   const r = cliAt(w, 'restore', out, '--yes');
   assert.equal(r.status, 0, r.stderr);
-  assert.deepEqual(JSON.parse(readFileSync(join(w, 'releases.json'), 'utf8')), list, 'IDENTITY row kept');
+  const shipped = JSON.parse(readFileSync(new URL('../src/data/releases.json', import.meta.url), 'utf8')).filter((x) => x.title === 'IDENTITY');
+  const restored = JSON.parse(readFileSync(join(w, 'releases.json'), 'utf8'));
+  assert.deepEqual(restored, [list[0], ...shipped], 'a backup IDENTITY row (example.com) is never written: the site keeps its own');
   assert.ok(existsSync(join(w, 'uploads', `${other}.webp`)));
   // old backup (no releases key): the current releases stay, with a warning
   delete b.releases;
@@ -243,7 +245,7 @@ test('releases and their uploaded covers survive export, wipe, restore; an old b
   const o = cliAt(w, 'restore', old, '--yes');
   assert.equal(o.status, 0, o.stderr);
   assert.match(o.stdout, /no releases/);
-  assert.deepEqual(JSON.parse(readFileSync(join(w, 'releases.json'), 'utf8')), list);
+  assert.deepEqual(JSON.parse(readFileSync(join(w, 'releases.json'), 'utf8')), restored);
 });
 
 test('a corrupt releases.json: the Releases API still answers with the shipped list, and a save repairs it', async () => {
