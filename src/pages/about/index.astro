@@ -37,8 +37,8 @@ import { PATREON, PATREON_LINE, PHOTO_CREDITS as C } from '../../components/cont
         </ul>
       </section>
     </div>
-    <div class="wrap prose">
-      <ForVenues />
+    <div class="wrap prose is-paper">
+      <ForVenues sheet={false} />
       <h2>Credits</h2>
       <ul class="credit-list">
         {Object.values(C).map((c) => <li>{c.replace(/\.$/, '')}</li>)}

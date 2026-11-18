@@ -1512,16 +1512,16 @@ li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* 
   .hero-print img { display: block; width: 100%; height: auto; }
 }
 
-/* Rise: the mirror. Card left, RISE and the garage print right, the print running off the right edge. Home only (Music is round 3). */
+/* Rise: the mirror. Card (Home) or player (Music) left, RISE and the garage print right, the print running off the right edge. */
 @media (max-width: 699px) {
-  html[data-home] .band-rise .v2-card { margin-inline: calc(-1 * var(--gutter)); border-radius: 0; padding-inline: var(--gutter); } /* the one edge-to-edge panel */
+  .band-rise .v2-card { margin-inline: calc(-1 * var(--gutter)); border-radius: 0; padding-inline: var(--gutter); } /* the one edge-to-edge panel */
 }
-@media (min-width: 700px) and (max-width: 899px) { html[data-home] .phrase-rise { text-align: end; } }
+@media (min-width: 700px) and (max-width: 899px) { .phrase-rise { text-align: end; } }
 @media (min-width: 900px) {
-  html[data-home] .band-rise > .wrap.v2-split { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
-  html[data-home] .band-rise .v2-side { grid-column: 2; grid-row: 1; justify-items: end; text-align: end; }
-  html[data-home] .band-rise .v2-split > :last-child { grid-column: 1; grid-row: 1; }
-  html[data-home] .band-rise .v2-land { width: calc(100% + var(--gutter)); max-width: none; margin-right: calc(-1 * var(--gutter)); }
+  .band-rise > .wrap.v2-split { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+  .band-rise .v2-side { grid-column: 2; grid-row: 1; justify-items: end; text-align: end; }
+  .band-rise .v2-split > :last-child { grid-column: 1; grid-row: 1; }
+  .band-rise .v2-land { width: calc(100% + var(--gutter)); max-width: none; margin-right: calc(-1 * var(--gutter)); }
 }
 
 /* Shows: the banner. Angled top on bg-2; phrase full; list 7 columns, the stage print bled to the right edge; Watch full width under (900+). */
@@ -1575,3 +1575,17 @@ html[data-palette='poster'] .band-live.edge-angle { background-color: color-mix(
 /* The Colours pill sat on the Spotify card at phone width: tuck it to the left edge, above the bar. */
 @media (max-width: 699px) { .pal { right: auto; left: 12px; } .pal-sheet { right: auto; left: 0; } }
 @media (max-width: 699px) { html[data-home] .band:not(.v2-push) { padding-bottom: calc(var(--section) - 0.75rem); } } /* phone height cap: 12px off each of Rise, Shows, Join */
+
+/* ---------- Round 3 (DESIGN 30f). Music: IDENTITY on a paper sheet, the cover breaking its top edge (never rotated, framed or
+   filtered, D51), and a staggered release grid. Rise is the Home mirror (unscoped above). Static; no hover. ---------- */
+.idn.is-paper { margin-inline: calc(-1 * var(--gutter)); padding: var(--space-m) var(--gutter); }
+.idn.is-paper .idn-cover { margin-top: -1.5rem; align-self: start; }
+.idn .mark { box-sizing: content-box; padding: 0.25rem 0.35rem; background: var(--mark-ground); border-radius: var(--radius-s); } /* the mark keeps its dark plate on the sheet (D25) */
+@media (min-width: 700px) { .idn.is-paper { margin-inline: 0; padding: var(--space-l); } }
+@media (min-width: 900px) {
+  .idn.is-paper { padding: var(--space-xl); }
+  .idn.is-paper .idn-cover { margin-top: calc(-1 * var(--space-xl) - 2.5rem); }
+}
+@media (max-width: 699px) { .crate > :nth-child(even) { margin-top: 1.5rem; } }
+@media (min-width: 700px) and (max-width: 899px) { .crate > :nth-child(even) { margin-top: 0; } .crate > :nth-child(3n+2) { margin-top: 2rem; } }
+@media (min-width: 900px) { .crate > :nth-child(even) { margin-top: 3rem; } } /* the stagger of 30a-5, written on the grid: the markup stays .crate */

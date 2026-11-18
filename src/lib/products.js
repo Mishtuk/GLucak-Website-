@@ -100,7 +100,7 @@ const detail = (p) => `<article class="product-detail" id="${anchor(p)}" data-st
 export function productsHtml(rows) {
   const list = sorted(rows);
   if (!list.length) return `<p class="shop-empty">Nothing in the shop yet.</p>`;
-  const banner = list.every((p) => p.status === 'sample') ? '<p class="shop-banner" role="note">This shop is a preview. Everything here is a sample and can’t be bought.</p>' : '';
+  const banner = list.every((p) => p.status === 'sample') ? '<p class="shop-banner taped" role="note">This shop is a preview. Everything here is a sample and can’t be bought.</p>' : '';
   return `${banner}<ul class="shop-grid">${list.map(card).join('')}</ul><div class="shop-details">${list.map(detail).join('')}</div>`;
 }
 

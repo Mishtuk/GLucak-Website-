@@ -15,7 +15,7 @@ const g = videosPage();
     </div>
   </section>
   {g.music.length > 0 && (
-    <section class="band band-mv" aria-labelledby="h-mv">
+    <section class="band band-mv edge-tear" aria-labelledby="h-mv">
       <div class="wrap">
         <h2 id="h-mv" class="prose-h">Music videos</h2>
         <ul class="vid-list vid-grid">{g.music.map((v) => <VideoCard v={v} tag="li" />)}</ul>

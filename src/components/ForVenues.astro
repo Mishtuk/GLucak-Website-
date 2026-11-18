@@ -1,8 +1,9 @@
 ---
 import { BOOKING_EMAIL, bookingHref } from '../lib/shows.js';
 // DESIGN 24b / 28d: the booker's block. Request a show goes to the Instagram profile until BOOKING_EMAIL is set.
+const { sheet = true } = Astro.props; // a paper sheet on Shows; About's credits sheet already is one
 ---
-<div class="venues">
+<div class:list={['venues', sheet && 'is-paper taped']}>
   <h2>Book GLucak</h2>
   <p class="venues-line">Horsham-based producer-rapper and DJ. Open mics and full shows, often with guitarist Fran Carroll.</p>
   <p class="venues-act">
