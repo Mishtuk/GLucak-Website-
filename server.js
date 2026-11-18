@@ -342,7 +342,7 @@ function handle(req, res) {
 }
 
 export const server = createServer((req, res) => { try { handle(req, res); } catch (e) { fail(req, res, e); } });
-server.requestTimeout = 30000; server.headersTimeout = 20000; server.keepAliveTimeout = 5000; // slowloris: Node's defaults are looser
+server.requestTimeout = 120000; server.headersTimeout = 20000; server.keepAliveTimeout = 5000; // slowloris: headers 20 s + body idle 10 s; 120 s total so a 5 MB photo on slow phone data (~0.5 Mbps) still fits
 // Tests import this file without listening; `node server.js` listens.
 if (process.argv[1] && import.meta.filename === process.argv[1]) {
   process.on('unhandledRejection', (e) => console.error(new Date().toISOString(), 'unhandled rejection:', e?.message ?? e));
