@@ -88,6 +88,10 @@ If you press Save while a photo is still going up, it says **Wait for the photo 
 
 Photo problems: **Pick a JPG, PNG or WebP photo.** (wrong kind of file) or **That photo is over 5 MB. Pick a smaller one.**
 
+## 5a. Releases
+
+The **Releases** tab is next to Shows. Press **Add release**, then fill in the **Title**, the **Type** (Single, EP, Album or Remix album), the **Date** and the **Link** (your smart link or the Spotify link; it has to start with https://). **Artists** is only for when someone joins you, like GLucak, J-BOY. To add art, press **Upload a cover** (square JPG, PNG or WebP, up to 5 MB). With no cover, the site shows the title on a plain sleeve. A release with a date still to come shows the word Coming here and Pre-save on the site. Press **Edit** on any row to change it, and **Delete this release** is at the bottom of the open row. Press **Save releases**: the Music page, the newest release on Home and the line under your name change at once. IDENTITY is not in this list; it has its own tab.
+
 ## 5b. IDENTITY and your bio
 
 Two more tabs sit next to Shows: **IDENTITY** and **Bio**. Each one saves on its own.
