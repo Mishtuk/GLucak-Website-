@@ -38,17 +38,21 @@ export const cookieHeader = (value, { secure, maxAge = SESSION_DAYS * 86400 }) =
   `${COOKIE}=${value}; Path=/edit; HttpOnly; SameSite=Strict; Max-Age=${maxAge}${secure ? '; Secure' : ''}`;
 export const readCookie = (header) => header?.split(/;\s*/).find((c) => c.startsWith(`${COOKIE}=`))?.slice(COOKIE.length + 1) ?? null;
 
-// ---------- Passwords: scrypt with a per-password salt, stored as "<salt hex>.<hash hex>" ----------
-const SCRYPT = { N: 16384, r: 8, p: 1 };
+// ---------- Passwords: scrypt with a per-password salt ----------
+// New hashes: "s2.<salt hex>.<hash hex>" (OWASP: N=2^15, r=8, p=3, ~32 MB). Old hashes "<salt hex>.<hash hex>" (N=2^14, p=1) still verify.
+const SCRYPT_OLD = { N: 16384, r: 8, p: 1 };
+const SCRYPT_NEW = { N: 32768, r: 8, p: 3, maxmem: 64 * 1024 * 1024 };
+const HASH_FORM = /^(?:(s2)\.)?([0-9a-f]{32})\.([0-9a-f]{128})$/;
 export const USERNAME = /^[a-z0-9_-]{1,32}$/;
-export const hashPassword = (pw, salt = randomBytes(16)) => `${salt.toString('hex')}.${scryptSync(String(pw), salt, 64, SCRYPT).toString('hex')}`;
+export const validHash = (h) => HASH_FORM.test(String(h));
+export const hashPassword = (pw, salt = randomBytes(16)) => `s2.${salt.toString('hex')}.${scryptSync(String(pw), salt, 64, SCRYPT_NEW).toString('hex')}`;
 const scryptAsync = promisify(scrypt);
 /** Async (libuv thread pool), so a burst of sign-ins never blocks the event loop serving the public site. */
 export async function verifyPassword(pw, stored) {
-  const [salt, hash] = String(stored ?? '').split('.');
-  if (!/^[0-9a-f]{32}$/.test(salt ?? '') || !/^[0-9a-f]{128}$/.test(hash ?? '')) return false;
-  const got = await scryptAsync(String(pw), Buffer.from(salt, 'hex'), 64, SCRYPT);
-  return timingSafeEqual(got, Buffer.from(hash, 'hex'));
+  const m = HASH_FORM.exec(String(stored ?? ''));
+  if (!m) return false;
+  const got = await scryptAsync(String(pw), Buffer.from(m[2], 'hex'), 64, m[1] ? SCRYPT_NEW : SCRYPT_OLD);
+  return timingSafeEqual(got, Buffer.from(m[3], 'hex'));
 }
 const DUMMY = hashPassword('no-such-editor-placeholder');
 
@@ -58,7 +62,7 @@ export function parseEditors(value, warn = console.warn) {
   for (const entry of String(value ?? '').split(',').map((s) => s.trim()).filter(Boolean)) {
     const i = entry.indexOf(':');
     const name = entry.slice(0, i).trim().toLowerCase(), hash = entry.slice(i + 1).trim();
-    if (i < 1 || !USERNAME.test(name) || !/^[0-9a-f]{32}\.[0-9a-f]{128}$/.test(hash)) { warn(`EDITOR_USERS: skipped a bad entry${i > 0 ? ` (${name})` : ''}`); continue; }
+    if (i < 1 || !USERNAME.test(name) || !validHash(hash)) { warn(`EDITOR_USERS: skipped a bad entry${i > 0 ? ` (${name})` : ''}`); continue; }
     users.set(name, hash);
   }
   return users;

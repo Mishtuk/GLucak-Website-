@@ -20,7 +20,7 @@ Set these on the host. Leave out any that say "leave unset".
 | Variable | Set to | What it does |
 |---|---|---|
 | `SESSION_SECRET` | 32+ random characters | Signs the `/edit/` login cookie. In production, if it is missing or shorter than 32, the edit routes answer 503 and log "Edit screen off". Changing it signs everyone out (fine). |
-| `EDITOR_USERS` | `gabe:<hash>` (more with commas: `gabe:<hash>,alex:<hash>`) | Who may sign in at `/edit/`. Name then a password hash (32 hex, a dot, 128 hex). A bad entry is skipped with a warning. A new hash ends that editor's old sessions. |
+| `EDITOR_USERS` | `gabe:<hash>` (more with commas: `gabe:<hash>,alex:<hash>`) | Who may sign in at `/edit/`. Name then a password hash (`s2.`, 32 hex, a dot, 128 hex; older hashes without the `s2.` still work). A bad entry is skipped with a warning. A new hash ends that editor's old sessions. |
 | `DATA_DIR` | the persistent disk path, e.g. `/var/data` | Where `shows.json`, `shows.prev.json`, `products.json` and `uploads/` live. Default is `.data/` inside the app, which is lost on redeploy on most hosts. |
 | `TRUST_PROXY` | `1` | Trust the host's `X-Forwarded-For` and `X-Forwarded-Proto` headers: real client IP for rate limits, and HTTPS detection for secure cookies and HSTS. Only set it behind the host's proxy. |
 | `KIT_API_KEY` | from Kit (Settings > Developer / API) | Server-side sign-up to Kit API v4 (sent as `X-Kit-Api-Key`). Never in the browser or the repo. |
@@ -47,7 +47,7 @@ From the repo folder:
 It asks for the password (typing is hidden and never lands in shell history) and prints a hash. Gabe should choose his own password
 (the tool refuses weak ones and says why). Then set `EDITOR_USERS` to `gabe:<the hash>`. Do not use `echo 'pw' | ...` or pass the
 password as an argument; both put it in shell history. A password manager's CLI can pipe into the tool instead. To change a password,
-make a new hash and replace it in the env var; his old sessions end at once.
+make a new hash and replace it in the env var; his old sessions end at once. New hashes use the stronger scrypt setting (`s2.` prefix); an old-style hash keeps working until you remake it.
 
 ## 3. Host-specific: Render (swap only this section for another host)
 Render figures are from search summaries of Render's pages: **unverified** until you read them. Starter about $7/mo, disk about $0.25/GB/mo.

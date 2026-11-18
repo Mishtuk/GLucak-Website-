@@ -1,4 +1,5 @@
 // Editor sign-in: session cookie, password hashes, rate limit, lockout, Origin check.
+import { randomBytes, scryptSync } from 'node:crypto';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { allow, checkLogin, cookieHeader, hashPassword, locked, parseEditors, passwordProblem, readCookie, recordFailure, clearFailures,
@@ -37,7 +38,7 @@ test('cookie header: HttpOnly, SameSite=Strict, Path=/edit, Secure on https', ()
 test('passwords: scrypt (async), salted, wrong password and unknown name fail', async () => {
   const a = hashPassword('correct horse battery'), b = hashPassword('correct horse battery');
   assert.notEqual(a, b, 'same password, different salt');
-  assert.match(a, /^[0-9a-f]{32}\.[0-9a-f]{128}$/);
+  assert.match(a, /^s2\.[0-9a-f]{32}\.[0-9a-f]{128}$/);
   assert.ok(verifyPassword('x', a) instanceof Promise, 'never blocks the event loop');
   assert.ok(await verifyPassword('correct horse battery', a));
   assert.ok(!(await verifyPassword('correct horse batterY', a)));
@@ -92,4 +93,22 @@ test('same-origin: Origin must be present and match the host', () => {
   assert.ok(!sameOrigin({ origin: 'https://glucak.com.evil.example', host: 'glucak.com' }));
   assert.ok(!sameOrigin({ origin: 'null', host: 'glucak.com' }));
   assert.ok(!sameOrigin({ host: 'glucak.com' }), 'missing Origin is refused');
+});
+
+test('old two-part hashes still verify; new s2 hashes verify; wrong and malformed fail', async () => {
+  const salt = randomBytes(16);
+  const old = `${salt.toString('hex')}.${scryptSync('old password here', salt, 64, { N: 16384, r: 8, p: 1 }).toString('hex')}`;
+  const fresh = hashPassword('new password here');
+  assert.ok(fresh.startsWith('s2.'));
+  assert.ok(await verifyPassword('old password here', old));
+  assert.ok(await verifyPassword('new password here', fresh));
+  assert.ok(!(await verifyPassword('wrong password!!', old)));
+  assert.ok(!(await verifyPassword('wrong password!!', fresh)));
+  assert.ok(!(await verifyPassword('old password here', fresh)), 'params are not interchangeable');
+  for (const bad of [undefined, '', 'garbage', 's2.abc.def', `s3.${fresh.slice(3)}`, `${fresh}.x`, fresh.toUpperCase()]) assert.equal(await verifyPassword('x', bad), false, String(bad));
+  const m = parseEditors(`a:${old},b:${fresh}`, () => {});
+  assert.deepEqual([...m.keys()], ['a', 'b']);
+  const v = signSession('b', Date.now() + 864e5, SECRET, fresh);
+  assert.equal(verifySession(v, SECRET, m), 'b', 'sessions work on s2 hashes');
+  assert.equal(await checkLogin(m, 'a', 'old password here'), 'a');
 });
