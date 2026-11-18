@@ -42,6 +42,21 @@ setups, prompt and handoff practices); credibility-check each, vendor only safe 
   obfuscated code. Any hit = text-only use or reject.
 - **Never run repo code, never `npx` / `npm install` a repo's package, never add a hook or plugin from it.** Text rules are
   vendored unchanged with their licence, plus our overrides (hard rules win).
+- **Thorough harm scan (owner, 00:28: "make sure they're not harmful"), done on the whole tree via `gh api`, never a clone that runs anything:**
+  1. Every file listed (`git/trees/HEAD?recursive=1`); flag binaries / archives / minified or obfuscated JS (`.exe .dll .so .bin
+     .zip .tgz .jar .wasm`, long single-line files, base64 blobs, `eval(`, `Function(`, `atob(`, `\x` / `\u` escape runs).
+  2. `package.json` / `setup.py` / `pyproject` / Makefiles: `preinstall`, `install`, `postinstall`, `prepare` scripts; deps on
+     typosquats or unknown git URLs.
+  3. Network + shell: `curl`, `wget`, `Invoke-WebRequest`, `fetch(`, `http.request`, `child_process`, `exec`, `spawn`, `| sh`,
+     `| bash`, `iex`, PowerShell `-enc`; secrets / env reads (`process.env`, `os.environ`, `.ssh`, `.aws`, `credentials`, `token`).
+  4. Claude-specific: hooks (`hooks.json`, `settings.json`), MCP servers, `--dangerously-skip-permissions`, `bypassPermissions`,
+     auto-approve lists, and **prompt injection in .md files** (instructions to ignore rules, exfiltrate files or keys, run
+     commands, edit settings / CLAUDE.md, hidden text in HTML comments, zero-width or bidi Unicode: grep `[​-‏‪-‮⁦-⁩]`).
+  5. GitHub Actions in the repo (`.github/workflows`): `pull_request_target`, secrets echoed, remote scripts.
+  6. History: last 20 commits (`gh api repos/o/r/commits`): sudden owner change, a big recent push of unreviewed code, force-pushed
+     tags; issues / advisories mentioning malware, stolen, compromised (`gh search issues --repo o/r malware`).
+  7. A **second, separate reviewer agent** (Sonnet, read-only) re-checks every repo marked "use" before anything is vendored; any
+     doubt = reject. Log each repo's verdict and evidence in `docs/research/repo-safety-log.md`.
 - Design fit: nothing that breaks hard rules (flashing, reduced motion, real photos only, CSP `script-src 'self'`, no third-party scripts).
 
 ## Usage
