@@ -1309,7 +1309,7 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 .idn { display: grid; grid-template-columns: minmax(0, 9fr) minmax(0, 11fr); grid-template-areas: 'cover state' 'tracks-h tracks-h' 'tracks tracks' 'credit credit'; gap: var(--space-m); align-items: center; margin-top: var(--section); }
 .idn > * { min-width: 0; }
 .idn-cover { grid-area: cover; display: block; width: 100%; height: auto; aspect-ratio: 1; background: var(--bg-2); }
-.idn > .identity-state { grid-area: state; margin-top: 0; grid-template-columns: minmax(0, 1fr); }
+.idn > .identity-state { grid-area: state; margin-top: 0; grid-template-columns: auto minmax(0, 1fr); }
 .idn > .identity-state .identity { overflow-wrap: anywhere; }
 .tracks { grid-area: tracks; columns: 1; column-gap: var(--space-m); list-style: none; margin: var(--space-xs) 0 0; padding: 0; }
 .track {
@@ -1327,7 +1327,7 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 @media (min-width: 72rem) { .tracks { columns: 2; } }
 @media (min-width: 900px) {
   .idn { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: 'cover state' 'cover tracks-h' 'cover tracks' 'cover credit'; grid-template-rows: auto auto auto 1fr; column-gap: var(--space-xl); row-gap: var(--space-m); align-items: start; }
-  .idn > .identity-state { grid-template-columns: auto 1fr; }
+  .idn > .identity-state { grid-template-columns: auto minmax(0, 1fr); }
   .tracks { column-gap: var(--space-xl); }
 }
 /* IG6 copy: tracklist heading, About's Epilepsy survivor line with its subheader, the Patreon line. No accent, no motion. */
