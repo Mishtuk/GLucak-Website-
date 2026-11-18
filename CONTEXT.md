@@ -242,3 +242,19 @@ Every page footer: socials (Instagram, Threads, X, YouTube, SoundCloud, Spotify)
 - A host account (the Riverside site's host can be reused), a domain registrar, domain email.
 - Email-list provider account; shop/checkout provider account (later).
 - None blocking for design and the first build.
+
+## 2026-11-18 Gabe's answers (email 13:26, saved as V:\WarminsterVFW\source\fb\"A few questions before I start on your website (2).eml")
+- Bio: "Reforaged" was a typo -> "Reforged". KEEP the epilepsy line ("Epilepsy survivor" / "Healed by Christ since 2009"); place it near the debut; a longer version is coming from Gabe.
+- Giveaway: Scenic Route WAV/MP3 is in his Google Drive (link in the email, "12 - Scenic Route.mp3"). Kit account in his name with his Gmail: YES.
+- Mailing address for the Kit footer + domain registration: his home address is in the email. PRIVATE: never in this repo or on the site. A P.O. box may replace it later.
+- Venue towns: M.O.M.'s = Maxwell's on Main, Doylestown; High Steaks = Ambler; Fox Chase Tavern = NE Philly (Rhawn St); Music & Arts Airport Square = North Wales; Crooked Eye = Hatboro; Cheshire = Cheshire Brewing Co., Cheltenham (near Elkins Park, Gabe unsure); North Penn VFW = unknown (Gabe asking).
+- New show list (attached image "2027 LIVE SHOWS.png", all 2027): Riverside Community Church Jan 16 6pm; Crooked Eye Brewery Jan 18 7pm; Chambers 19 Jan 20 7pm; Mike's York Road Tavern Jan 24 1pm; Cheshire Jan 26 7:30pm; Puck Live Jan 28 7pm; Fox Chase Tavern Feb 1 8pm; High Steaks Feb 3 7:30pm; Music & Arts of Airport Square Feb 5 5pm; Mike's York Road Tavern Feb 7 1pm; M.O.M.'s Feb 9 7pm; Puck Live Feb 11 7pm; Crooked Eye Brewery Feb 15 7pm; North Penn VFW Feb 17 8pm; Mike's York Road Tavern Feb 21 1pm; King's Corner Feb 23 8pm; Puck Live Feb 25 7pm.
+- Bandsintown: https://www.bandsintown.com/a/15654461-glucak
+- Street addresses OK for Riverside, Puck Live, Crooked Eye, Mike's, Chambers 19; Google Maps links welcome.
+- Live-set originals + the Fran/Chance short: Gabe doesn't have them; can't reach Chance -> do not use that short.
+- IDENTITY CD photos (cover, live inside, jump, studio, looking-away): all taken by Gabe himself (credit "Gabriel Lucak").
+- Riverside clip: Pastor Ezra if Gabe wears his current outfit, else maybe Alexander Kealey.
+- Emily Mae IS on You're Not Alone (credit her).
+- Patreon line: "Help back my projects and merch, and get early access to songs only my inner circle knows exist."
+- Quotes: Who I Am = a chorus line (our pick); Scenic Route = "It's a long road ahead, hills and valleys / but I'll just enjoy the view and enjoy the journey" (Gabe wrote "vallies"; owner to confirm spelling).
+- Shop first items: shirts, hats, hoodies, maybe stickers; prices TBD; ship US-only for now.
