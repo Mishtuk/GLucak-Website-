@@ -60,7 +60,7 @@ test('injection stays inert', () => {
   const out = showsHtml([row({ venue: '<script>alert(1)</script>', city: "' OR 1=1 --", link: 'https://x.com/?a="><script>' })], now);
   assert.ok(!out.includes('<script>'));
   assert.ok(out.includes('&lt;script&gt;alert(1)&lt;/script&gt;'));
-  assert.ok(out.includes('&#39; OR 1=1 --'));
+  assert.ok(out.includes('‘ OR 1=1 --'));
   assert.ok(!out.includes('"><script>'));
   // a javascript: link row is dropped entirely, never rendered
   const js = showsHtml([row({ venue: 'Evil', link: 'javascript:alert(1)' })], now);
@@ -137,7 +137,7 @@ test('Now line D45: a show on the day says Today; a coming release beats a show;
 
 test('Now line D45: everything escaped, release links http(s) only', () => {
   const bad = nowHtml([row({ date: '2026-12-04', venue: '<script>x</script>', city: "' OR 1=1 --" })], noon('2026-12-01'), []);
-  assert.ok(!bad.includes('<script>') && bad.includes('&lt;script&gt;') && bad.includes('&#39; OR 1=1 --'));
+  assert.ok(!bad.includes('<script>') && bad.includes('&lt;script&gt;') && bad.includes('‘ OR 1=1 --'));
   const rel = nowHtml([], noon('2026-11-06'), [{ ...WIA, title: '<img src=x onerror=1>"', link: 'https://x.example/?a="b"&c=<' }]);
   assert.ok(!rel.includes('<img') && rel.includes('&lt;img') && !rel.includes('"b"'));
   assert.equal(nowHtml([], noon('2026-11-06'), [{ ...WIA, link: 'javascript:alert(1)' }]), '');

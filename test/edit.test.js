@@ -73,7 +73,7 @@ test('valid save: on the public page at the next request, old list kept as .prev
   const r = await save([row({ venue: 'Brand New Venue', time: '19:30', with: 'Fran Carroll', link: 'https://example.com/t' })]);
   assert.equal(r.status, 200);
   const b = await r.json();
-  assert.equal(b.message, "Saved. It's on the site now.");
+  assert.equal(b.message, "Saved. It’s on the site now.");
   assert.deepEqual(b.shows[0], { date: d(5), time: '19:30', type: 'show', venue: 'Brand New Venue', city: 'Doylestown, PA', with: 'Fran Carroll', link: 'https://example.com/t' });
   const html = await page();
   assert.ok(html.includes('Brand New Venue') && html.includes('With Fran Carroll') && !html.includes('Shipped Venue'));
@@ -108,7 +108,7 @@ test('injection: <script> and SQL text are stored as plain text and rendered esc
   const html = await page();
   assert.ok(!html.includes('<script>') && !html.includes('<img src=x'), 'no live markup');
   assert.ok(html.includes('&lt;img src=x onerror=alert(1)&gt;'), 'the with-line payload is shown escaped');
-  assert.ok(html.includes('&lt;script&gt;alert(1)&lt;/script&gt;') && html.includes('&#39; OR 1=1 --') && html.includes('&quot;&gt;&lt;img'));
+  assert.ok(html.includes('&lt;script&gt;alert(1)&lt;/script&gt;') && html.includes('‘ OR 1=1 --') && html.includes('“&gt;&lt;img'));
   const api = await (await fetch(`${base}/edit/api/shows`, { headers: { cookie } })).json();
   assert.equal(api.shows[0].city, "' OR 1=1 --", 'the editor gets the exact text back');
 });
@@ -146,7 +146,7 @@ test('save conflict: a save based on an older list is 409, nothing written, the 
   assert.notEqual(v2, v1);
   const stale = await save([row({ venue: 'Tab Two' })], {}, v1);
   assert.equal(stale.status, 409);
-  assert.equal((await stale.json()).message, "Someone else saved the shows just now, so yours didn't save. Reloading shows their changes but clears yours, so write down what you changed first.");
+  assert.equal((await stale.json()).message, "Someone else saved the shows just now, so yours didn’t save. Reloading shows their changes but clears yours, so write down what you changed first.");
   assert.equal((await save([row({ venue: 'Tab Two' })], {}, null)).status, 409, 'no version sent');
   assert.equal(JSON.parse(readFileSync(join(data, 'shows.json'), 'utf8'))[0].venue, 'Tab One');
   assert.equal((await save([row({ venue: 'Tab Two' })], {}, v2)).status, 200, 'with the new version it saves');
@@ -201,7 +201,7 @@ test('backup link: plain download fallback kept, JS fetch handles 401 / 413 / 42
   assert.match(page, /<p id="backup-msg"[^>]*role="status"/);
   assert.match(js, /fetch\('\/edit\/api\/backup', \{ credentials: 'same-origin' \}\)/);
   for (const s of ['You were signed out. Sign in above, then download again.', 'This backup is too big for one file. Tell the person who runs the site.',
-    'Too many backups. Wait an hour, then try again.', "That didn't download. Try again.", 'Making your backup…', 'Done. Look for it in your downloads.']) assert.ok(js.includes(s), s);
+    'Too many backups. Wait an hour, then try again.', "That didn’t download. Try again.", 'Making your backup…', 'Done. Look for it in your downloads.']) assert.ok(js.includes(s), s);
   assert.match(js, /r\.status === 401/); assert.match(js, /r\.status === 413/); assert.match(js, /r\.status === 429/);
   assert.doesNotMatch(js, /innerHTML/);
 });

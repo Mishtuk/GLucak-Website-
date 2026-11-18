@@ -45,7 +45,7 @@ const FIELDS = ['id', 'name', 'type', 'price', 'image', 'description', 'link', '
 /** Keep only known fields, trim strings, drop empty optional ones, ids unique. Returns { rows } or { errors: [{ row, message }] }. */
 export function checkProducts(list) {
   if (!Array.isArray(list)) return { errors: [{ row: null, message: 'Nothing to save.' }] };
-  if (list.length > MAX_PRODUCTS) return { errors: [{ row: null, message: `That's more than ${MAX_PRODUCTS} products. Delete some first.` }] };
+  if (list.length > MAX_PRODUCTS) return { errors: [{ row: null, message: `That’s more than ${MAX_PRODUCTS} products. Delete some first.` }] };
   const rows = [], errors = [], seen = new Set();
   list.forEach((r, i) => {
     let clean = null;
@@ -87,12 +87,12 @@ const tape = (p) => (p.status === 'sample' ? '<span class="product-tape" aria-hi
 
 /** Buy opens the provider's product page; anything else is a plain label, never a button that does nothing. */
 export function actionHtml(p) {
-  if (buyable(p)) return `<a class="btn btn-solid product-buy" href="${esc(p.link)}" rel="noopener">Buy</a><p class="product-note">You pay on the store's own page. We never see your card details.</p>`;
+  if (buyable(p)) return `<a class="btn btn-solid product-buy" href="${esc(p.link)}" rel="noopener">Buy</a><p class="product-note">You pay on the store’s own page. We never see your card details.</p>`;
   return statusP(p);
 }
 
 const img = (p, cls, alt) => `<img class="${cls}" src="${esc(p.image)}" alt="${alt}" width="600" height="600" loading="lazy" decoding="async" />`;
-const priceHtml = (p) => (p.status === 'sample' ? '' : `<p class="product-price">${price(p.price)}</p>`); // a sample's price would read as real (D37)
+const priceHtml = (p) => (p.status === 'sample' ? '' : `<p class="product-price">${price(p.price)}</p>`); // a sample’s price would read as real (D37)
 const card = (p) => `<li class="product-card" data-status="${p.status}"><a class="product-link" href="#${anchor(p)}">${img(p, 'product-media', '')}${tape(p)}<p class="product-name">${esc(p.name)}</p>${priceHtml(p)}${statusP(p)}</a></li>`;
 const detail = (p) => `<article class="product-detail" id="${anchor(p)}" data-status="${p.status}">${img(p, 'product-media', esc(p.name))}${tape(p)}<div class="product-body"><h2 class="product-name">${esc(p.name)}</h2>${priceHtml(p)}${p.description ? `<p class="product-desc">${esc(p.description)}</p>` : ''}${p.sizes?.length ? `<p class="product-sizes">Sizes: ${p.sizes.map(esc).join(', ')}</p>` : ''}${actionHtml(p)}<a class="text-link product-back" href="#h-shop">Back to all merch</a></div></article>`;
 
@@ -101,7 +101,7 @@ export function productsHtml(rows, { preview = false } = {}) {
   const list = sorted(rows);
   const chip = preview ? '<p class="shop-preview"><span class="ph-chip inline">Preview: the shop is not open yet</span></p>' : '';
   if (!list.length) return `${chip}<p class="shop-empty">Nothing in the shop yet.</p>`;
-  const banner = list.every((p) => p.status === 'sample') ? '<p class="shop-banner" role="note">This shop is a preview. Everything here is a sample and can\'t be bought.</p>' : '';
+  const banner = list.every((p) => p.status === 'sample') ? '<p class="shop-banner" role="note">This shop is a preview. Everything here is a sample and can’t be bought.</p>' : '';
   return `${chip}${banner}<ul class="shop-grid">${list.map(card).join('')}</ul><div class="shop-details">${list.map(detail).join('')}</div>`;
 }
 

@@ -33,7 +33,7 @@ export function makeBackup(data, fallback) {
 /** makeBackup as the bytes of one file. Callers refuse it over MAX_FILE (restore would): TOO_BIG. */
 export const backupBytes = (data, fallback) => Buffer.from(JSON.stringify(makeBackup(data, fallback)));
 
-const label = (name) => JSON.stringify(String(name).slice(0, 80)); // quoted and escaped: a hostile name can't drive the terminal
+const label = (name) => JSON.stringify(String(name).slice(0, 80)); // quoted and escaped: a hostile name can’t drive the terminal
 
 /** Check a backup file's text. `data`: DATA_DIR, where a product's photo may already be. Returns
  * { shows, products, uploads: Map<name, webp>, warnings: [message] } or { errors: [{ row, message }] }. */

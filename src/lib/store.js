@@ -28,7 +28,7 @@ export const showsVersion = (dataDir, fallback) => listVersion(dataDir, fallback
 /** Keep only the known fields; empty optional fields are dropped. Returns { rows } or { errors: [{ row, message }] }. */
 export function checkShows(list) {
   if (!Array.isArray(list)) return { errors: [{ row: null, message: 'Nothing to save.' }] };
-  if (list.length > MAX_SHOWS) return { errors: [{ row: null, message: `That's more than ${MAX_SHOWS} shows. Delete some old ones first.` }] };
+  if (list.length > MAX_SHOWS) return { errors: [{ row: null, message: `That’s more than ${MAX_SHOWS} shows. Delete some old ones first.` }] };
   const rows = [], errors = [];
   list.forEach((r, i) => {
     const clean = {};

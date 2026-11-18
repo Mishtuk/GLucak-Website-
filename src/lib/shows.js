@@ -5,6 +5,10 @@ export const etDay = (now = new Date()) => new Intl.DateTimeFormat('en-CA', { ti
 
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
+// ponytail: typographic quotes for display text only; "'90s" becomes ‘90s (rare in show/video names), fix by hand if it shows up.
+export const curly = (s) => String(s ?? '').replace(/(^|[\s([{—-])"/g, '$1“').replace(/"/g, '”')
+  .replace(/(^|[\s([{—-])'/g, '$1‘').replace(/'/g, '’');
+
 const validDate = (d) => { const t = new Date(`${d}T00:00:00Z`); return /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(t.getTime()) && t.toISOString().slice(0, 10) === d; };
 const httpUrl = (u) => { try { return ['http:', 'https:'].includes(new URL(u).protocol); } catch { return false; } };
 
@@ -55,18 +59,18 @@ ${r.venue}`).digest('hex').slice(0, 6)}`;
 const cal = (r, words) => `<a class="${words ? 'cal-link' : 'cal-btn'}" href="/shows/${showId(r)}.ics" aria-label="${esc(`Add to calendar: ${r.venue}, ${monD(r.date)}`)}"><svg class="cal-icon" aria-hidden="true"><use href="#i-cal"/></svg>${words ? '<span class="cal-word">Add to calendar</span>' : ''}</a>`;
 
 const action = (r) => r.link ? `<a class="btn btn-show" href="${esc(r.link)}" rel="noopener">${r.type === 'show' ? 'Tickets' : 'Details'}</a>` : '';
-const place = (r) => `${esc(r.venue)}, ${esc(r.city)}`;
+const place = (r) => `${esc(curly(r.venue))}, ${esc(curly(r.city))}`;
 const dateTag = (r) => `<time datetime="${esc(r.date)}${r.time ? `T${esc(r.time)}` : ''}">${esc(fmtDate(r.date))}</time>`;
 
 /** Markup per DESIGN.md (classes from prototype/styles.css). A poster is only ever a full show, never an open mic. */
 const POSTER_ART = `<picture><img class="poster-art graded" src="/media/c-poster-600.webp" srcset="/media/c-poster-600.webp 600w, /media/c-poster-1000.webp 1000w" sizes="(min-width: 640px) 23rem, 50vw" width="600" height="750" alt="" loading="lazy"></picture>`;
 export function posterHtml(r) {
-  const meta = [r.time && fmtTime(r.time), r.with && `With ${r.with}`].filter(Boolean).map(esc).join(', ');
+  const meta = [r.time && fmtTime(r.time), r.with && `With ${r.with}`].filter(Boolean).map((x) => esc(curly(x))).join(', ');
   return `<li class="poster">${POSTER_ART}<p class="poster-date fit"><span class="ln ln-date">${dateTag(r)}</span></p>${cal(r, true)}<p class="poster-place">${place(r)}</p>${meta ? `<p class="poster-meta">${meta}</p>` : ''}${action(r)}</li>`;
 }
 /** `past` rows (Played) get no calendar link: past shows have no .ics. */
 export function rowHtml(r, { past = false } = {}) {
-  const extra = [r.type === 'open-mic' ? 'Open mic' : 'Show', r.time && fmtTime(r.time), r.with && `With ${r.with}`].filter(Boolean).map(esc).join(', ');
+  const extra = [r.type === 'open-mic' ? 'Open mic' : 'Show', r.time && fmtTime(r.time), r.with && `With ${r.with}`].filter(Boolean).map((x) => esc(curly(x))).join(', ');
   return `<li class="row"><span class="row-date">${dateTag(r)}</span>${past ? '' : cal(r, false)}<span class="row-text"><span class="row-place">${place(r)}</span><span class="row-kind">${extra}</span></span>${action(r)}</li>`;
 }
 // Kept for callers that want one plain row.
@@ -115,7 +119,7 @@ export function showsLdHtml(rows, now = new Date()) {
 }
 
 const dayDiff = (a, b) => Math.round((Date.parse(a) - Date.parse(b)) / 864e5);
-const link = (href, text) => `<a href="${esc(href)}"${href === '#shows' ? '' : ' rel="noopener"'}>${esc(text)}</a>`; // no aria-label: the visible text is the name (WCAG 2.5.3, D57)
+const link = (href, text) => `<a href="${esc(href)}"${href === '#shows' ? '' : ' rel="noopener"'}>${esc(curly(text))}</a>`; // no aria-label: the visible text is the name (WCAG 2.5.3, D57)
 
 /**
  * The Now line (D45/D57, copy in docs/copy/round2.md), picked per visit by New York day. In order:

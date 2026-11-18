@@ -75,7 +75,7 @@ test("25b-d: Gabe's photos and the re-printed images are wired; every new file h
 test('copy ig6: sign-up now wording, About lines, Patreon line, credits heading', () => {
   const home = page('index.html');
   assert.ok(home.includes('Join the list. Scenic Route is coming Jan 15, and the first listen will be yours.'));
-  assert.match(home, /data-ok="You(&#39;|')re in\. We(&#39;|')ll tell you the day Scenic Route lands\."/);
+  assert.match(home, /data-ok="You’re in\. We’ll tell you the day Scenic Route lands\."/);
   assert.ok(!/free download|check your inbox/i.test(home), 'no promise Kit cannot keep yet');
   assert.ok(src('public/js/app.js').includes('form.dataset.ok'));
   const about = page('about/index.html');

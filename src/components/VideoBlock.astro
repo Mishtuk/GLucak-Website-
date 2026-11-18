@@ -1,14 +1,15 @@
 ---
 import { existsSync } from 'node:fs';
 import { videoRow, YOUTUBE } from './content.js';
+import { curly } from '../lib/shows.js';
 // "Watch": the newest upload then up to 2 featured videos (v2 port). Facade: no YouTube loads until tapped (public/js/app.js swaps in a
 // youtube-nocookie iframe). Without JS each is a link. D64: the picture is the video's own thumbnail saved on our server
 // (tools/fetch-video-thumbs.mjs); no file = the gray box. Phones: a still swipe row; from 700px three across.
-const { h1 = false } = Astro.props; // true when the page's top heading is an h1 (/shows/), so this is an h2
+const { h1 = false } = Astro.props; // true when the page’s top heading is an h1 (/shows/), so this is an h2
 const T = h1 ? 'h2' : 'h3';
 const rows = videoRow(3);
 const items = (rows.length ? rows : [{ title: 'GLucak on YouTube' }]).map((v) => ({
-  id: v.id, title: v.title ?? 'GLucak on YouTube', href: v.id ? `https://www.youtube.com/watch?v=${v.id}` : YOUTUBE,
+  id: v.id, title: curly(v.title ?? 'GLucak on YouTube'), href: v.id ? `https://www.youtube.com/watch?v=${v.id}` : YOUTUBE,
   thumb: v.id && existsSync(`public/media/videos/${v.id}-1280.webp`) && existsSync(`public/media/videos/${v.id}-640.webp`) ? `/media/videos/${v.id}` : null,
 }));
 ---

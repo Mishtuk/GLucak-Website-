@@ -37,7 +37,7 @@ test('/shop/ is filled per visit from the shipped samples: banner, Coming soon, 
   assert.equal(r.headers.get('x-robots-tag'), 'noindex');
   const html = await r.text();
   assert.ok(!html.includes('<!--gl:shop-->'));
-  assert.ok(html.includes("This shop is a preview. Everything here is a sample and can't be bought.") && html.includes('Sample: GLucak tee') && !html.includes('class="product-price"') && html.includes('Preview'));
+  assert.ok(html.includes("This shop is a preview. Everything here is a sample and can’t be bought.") && html.includes('Sample: GLucak tee') && !html.includes('class="product-price"') && html.includes('Preview'));
   assert.equal((html.match(/<article class="product-detail"/g) ?? []).length, 5);
   assert.ok(!html.includes('>Buy<'), 'samples are never buyable');
 });
@@ -88,10 +88,10 @@ test('products save: on /shop/ at the next visit, Buy for available + link, prev
 
 test('products save: says the shop is not open to fans while SHOP_ENABLED is off, plain message when on', async () => {
   const off = await (await save([product()])).json();
-  assert.equal(off.message, "Saved. The shop isn't open to fans yet, so they won't see it until it's switched on.");
+  assert.equal(off.message, "Saved. The shop isn’t open to fans yet, so they won’t see it until it’s switched on.");
   await withShop(async () => {
     const on = await (await save([product()])).json();
-    assert.equal(on.message, "Saved. It's on the site now.");
+    assert.equal(on.message, "Saved. It’s on the site now.");
   });
 });
 
@@ -108,7 +108,7 @@ test('products: stale version is 409 and nothing written; over 256 KB is 413', a
   assert.equal((await save([product({ name: 'Tab one' })], v1)).status, 200);
   const stale = await save([product({ name: 'Tab two' })], v1);
   assert.equal(stale.status, 409);
-  assert.match((await stale.json()).message, /^Someone else saved the products just now, so yours didn't save. Reloading shows their changes but clears yours/);
+  assert.match((await stale.json()).message, /^Someone else saved the products just now, so yours didn’t save. Reloading shows their changes but clears yours/);
   assert.equal(JSON.parse(readFileSync(join(data, 'products.json'), 'utf8'))[0].name, 'Tab one');
   assert.equal((await save([product({ description: 'x'.repeat(300 * 1024) })])).status, 413);
 });

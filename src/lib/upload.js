@@ -10,7 +10,7 @@ export const UPLOAD_NAME = /^[a-f0-9]{32}\.webp$/;
 
 /** WebP buffer, or throws Error('not_image' | 'too_many_pixels'). */
 export async function toWebp(buf) {
-  const { default: sharp } = await import('sharp'); // lazy: the public site runs even if sharp's binary is missing
+  const { default: sharp } = await import('sharp'); // lazy: the public site runs even if sharp’s binary is missing
   let meta;
   try { meta = await sharp(buf).metadata(); } catch { throw new Error('not_image'); }
   if (!['jpeg', 'png', 'webp'].includes(meta.format)) throw new Error('not_image'); // no SVG, GIF, TIFF, HEIF...

@@ -69,7 +69,7 @@ test('escaping: <script> and SQL text in name and description render inert', () 
 
 test('button rules: Buy only when available with a link; otherwise a plain label', () => {
   const buy = actionHtml(good({ link: 'https://shop.example/tee' }));
-  assert.match(buy, /^<a class="btn btn-solid product-buy" href="https:\/\/shop\.example\/tee" rel="noopener">Buy<\/a><p class="product-note">You pay on the store's own page\. We never see your card details\.<\/p>$/);
+  assert.match(buy, /^<a class="btn btn-solid product-buy" href="https:\/\/shop\.example\/tee" rel="noopener">Buy<\/a><p class="product-note">You pay on the store’s own page\. We never see your card details\.<\/p>$/);
   for (const status of ['sample', 'coming-soon']) {
     const h = actionHtml(good({ status, link: 'https://shop.example/tee' }));
     assert.equal(h, '<p class="product-status is-coming-soon">Coming soon</p>', status);
@@ -80,7 +80,7 @@ test('button rules: Buy only when available with a link; otherwise a plain label
 });
 
 test('banner only while any product is a sample; Preview chip only when asked; order, price, empty state', () => {
-  const banner = "This shop is a preview. Everything here is a sample and can't be bought.";
+  const banner = "This shop is a preview. Everything here is a sample and can’t be bought.";
   assert.ok(!productsHtml([good(), good({ id: 'b', status: 'sample' })]).includes(banner), 'one real product -> no banner');
   assert.ok(productsHtml([good({ status: 'sample' }), good({ id: 'b', status: 'sample' })]).includes(banner));
   assert.ok(!productsHtml([good(), good({ id: 'b', status: 'sold-out' })]).includes(banner));
@@ -99,7 +99,7 @@ test('samples show no price; real products do', () => {
 });
 
 test('buying note only under a Buy button', () => {
-  const note = "You pay on the store's own page. We never see your card details.";
+  const note = "You pay on the store’s own page. We never see your card details.";
   assert.ok(actionHtml(good({ link: 'https://shop.example/t' })).includes(note));
   for (const s of ['sample', 'coming-soon', 'sold-out']) assert.ok(!actionHtml(good({ status: s, link: 'https://x.com' })).includes(note), s);
   assert.ok(!actionHtml(good()).includes(note), 'available without a link');

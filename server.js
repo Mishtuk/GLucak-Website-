@@ -117,7 +117,7 @@ function handleSignup(req, res) {
     if (big) return reply(413, { ok: false });
     let fields = {};
     try { fields = /json/.test(req.headers['content-type'] ?? '') ? JSON.parse(raw || '{}') : Object.fromEntries(new URLSearchParams(raw)); } catch { return reply(400, { ok: false }); }
-    if (!fields || typeof fields !== 'object' || Array.isArray(fields)) fields = {}; // valid JSON that isn't an object (null, [], "x", 5): no email, so 400
+    if (!fields || typeof fields !== 'object' || Array.isArray(fields)) fields = {}; // valid JSON that isn’t an object (null, [], "x", 5): no email, so 400
     const r = await signup(fields, { ip: clientIp(req), headers: req.headers, host: req.headers.host });
     reply(r.status, r.body);
   };
@@ -167,10 +167,10 @@ function redirect(req, res, location, extra = {}) {
 
 // One line per failed sign-in or lockout. JSON.stringify escapes quotes and newlines in the name; the password is never passed in.
 const warnLogin = (why, ip, username) => console.warn(new Date().toISOString(), `sign-in ${why}:`, ip, JSON.stringify(username));
-const WRONG = "That name and password don't match. Check them and try again.";
+const WRONG = "That name and password don’t match. Check them and try again.";
 const LOCKED = 'Too many tries. Wait 15 minutes, then try again.';
-const STALE = (kind) => `Someone else saved the ${kind} just now, so yours didn't save. Reloading shows their changes but clears yours, so write down what you changed first.`;
-const NOT_IMAGE = "That file isn't a photo we can use. Try a JPG, PNG or WebP.";
+const STALE = (kind) => `Someone else saved the ${kind} just now, so yours didn’t save. Reloading shows their changes but clears yours, so write down what you changed first.`;
+const NOT_IMAGE = "That file isn’t a photo we can use. Try a JPG, PNG or WebP.";
 
 async function handleEdit(req, res, url) {
   const p = url.pathname;
@@ -178,9 +178,9 @@ async function handleEdit(req, res, url) {
     req.resume(); // drain any unread body
     send(req, res, status, 'application/json', Buffer.from(JSON.stringify(body)), { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex', ...extra });
   };
-  if (!SECRET) return json(503, { error: 'off', message: "The edit screen isn't switched on yet. Tell the person who runs the site." });
+  if (!SECRET) return json(503, { error: 'off', message: "The edit screen isn’t switched on yet. Tell the person who runs the site." });
   // belt and braces over SameSite=Strict: a browser that says the GET came from another site gets nothing
-  if (req.method === 'GET' && p.startsWith('/edit/api/') && req.headers['sec-fetch-site'] === 'cross-site') return json(403, { error: 'origin', message: "That didn't go through. Try again." });
+  if (req.method === 'GET' && p.startsWith('/edit/api/') && req.headers['sec-fetch-site'] === 'cross-site') return json(403, { error: 'origin', message: "That didn’t go through. Try again." });
   const kind = p.match(/^\/edit\/api\/(shows|products)$/)?.[1], list = LISTS[kind];
   if (req.method === 'GET' && list) {
     const who = editor(req, url);
@@ -192,7 +192,7 @@ async function handleEdit(req, res, url) {
     if (!who) return json(401, { error: 'signed_out' });
     if (!allow(`backup:${who}`, 10, 60 * 60e3)) return json(429, { error: 'slow_down', message: 'Too many backups. Wait an hour, then try again.' });
     const body = backupBytes(DATA, { shows: SHOWS, products: PRODUCTS }); // ponytail: built in memory, fine under the 50 MB restore cap
-    if (body.length > MAX_FILE) { // restore would refuse it: say so now, not on the day it's needed
+    if (body.length > MAX_FILE) { // restore would refuse it: say so now, not on the day it’s needed
       console.error(new Date().toISOString(), `backup refused for ${who}: ${body.length} bytes is over the ${MAX_FILE}-byte restore cap`);
       return json(413, { error: 'too_big', message: TOO_BIG });
     }
@@ -202,7 +202,7 @@ async function handleEdit(req, res, url) {
     return res.end(body);
   }
   if (req.method !== 'POST') return json(405, { error: 'method' }, { Allow: 'POST' });
-  if (!sameOrigin(req.headers)) return json(403, { error: 'origin', message: "That didn't go through. Try again." });
+  if (!sameOrigin(req.headers)) return json(403, { error: 'origin', message: "That didn’t go through. Try again." });
 
   if (p === '/edit/login') {
     const isJson = /json/.test(req.headers['content-type'] ?? '');
@@ -235,7 +235,7 @@ async function handleEdit(req, res, url) {
     const raw = (await readBody(req, list.max))?.toString('utf8');
     if (raw == null) return json(413, { error: 'too_big', errors: [{ row: null, message: list.big }] });
     let b;
-    try { b = JSON.parse(raw); } catch { return json(400, { error: 'bad_body', errors: [{ row: null, message: "That didn't save. Try again." }] }); }
+    try { b = JSON.parse(raw); } catch { return json(400, { error: 'bad_body', errors: [{ row: null, message: "That didn’t save. Try again." }] }); }
     const r = list.check(Array.isArray(b) ? b : b?.[kind]);
     if (r.errors) return json(400, { error: 'invalid', errors: r.errors });
     // Two tabs or two editors: refuse a save based on an older list instead of silently dropping the other's changes.
@@ -243,7 +243,7 @@ async function handleEdit(req, res, url) {
     if (b?.version !== version()) return json(409, { error: 'stale', message: STALE(kind), errors: [{ row: null, message: STALE(kind) }] });
     saveList(DATA, r.rows, list.fallback, list.file);
     console.log(new Date().toISOString(), `${kind} saved by ${who}: ${r.rows.length} rows`);
-    return json(200, { ok: true, [kind]: r.rows, version: version(), message: kind === 'products' && !shopOn() ? "Saved. The shop isn't open to fans yet, so they won't see it until it's switched on." : "Saved. It's on the site now." });
+    return json(200, { ok: true, [kind]: r.rows, version: version(), message: kind === 'products' && !shopOn() ? "Saved. The shop isn’t open to fans yet, so they won’t see it until it’s switched on." : "Saved. It’s on the site now." });
   }
   if (p === '/edit/api/upload') {
     // The raw image is the body. The declared type only gates the door; sharp decides what the bytes really are.
@@ -259,7 +259,7 @@ async function handleEdit(req, res, url) {
       return json(400, e.message === 'too_many_pixels'
         ? { error: 'too_many_pixels', message: 'That photo is too big (over 40 megapixels). Shrink it or pick another one.' } : { error: 'not_image', message: NOT_IMAGE });
     }
-    const name = `${randomBytes(16).toString('hex')}.webp`; // our name, never the client's
+    const name = `${randomBytes(16).toString('hex')}.webp`; // our name, never the client’s
     mkdirSync(UPLOADS, { recursive: true });
     writeFileSync(join(UPLOADS, name), out, { flag: 'wx' });
     console.log(new Date().toISOString(), `image uploaded by ${who}: ${name} (${out.length} bytes)`);

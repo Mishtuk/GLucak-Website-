@@ -146,10 +146,10 @@
     if (!UPLOADABLE.includes(file.type)) return { message: 'Pick a JPG, PNG or WebP photo.' };
     if (file.size > 5 * 1024 * 1024) return { message: 'That photo is over 5 MB. Pick a smaller one.' };
     let r;
-    try { r = await fetch('/edit/api/upload', { method: 'POST', credentials: 'same-origin', headers: { Accept: 'application/json', 'Content-Type': file.type }, body: file }); } catch { return { message: "That didn't upload. Check your connection and try again." }; }
+    try { r = await fetch('/edit/api/upload', { method: 'POST', credentials: 'same-origin', headers: { Accept: 'application/json', 'Content-Type': file.type }, body: file }); } catch { return { message: "That didn’t upload. Check your connection and try again." }; }
     const b = await reply(r);
     if (r.status === 401) { login.hidden = false; return { message: 'You were signed out. Sign in above, then upload again.' }; }
-    return r.ok ? { path: b.path } : { message: b.message || "That didn't upload. Try again." };
+    return r.ok ? { path: b.path } : { message: b.message || "That didn’t upload. Try again." };
   }
 
   function productRow(p = {}) {
@@ -157,7 +157,7 @@
     const box = shell(thumb);
     const name = el('input', { required: true, maxLength: 120, value: p.name ?? '' });
     const id = el('input', { required: true, maxLength: 60, value: p.id ?? '', autocapitalize: 'none', spellcheck: false });
-    let autoId = !p.id; // a new product's ID follows its name until edited by hand
+    let autoId = !p.id; // a new product’s ID follows its name until edited by hand
     name.addEventListener('input', () => { if (autoId) id.value = slug(name.value); });
     id.addEventListener('input', () => { autoId = false; });
     const type = select(TYPES, p.type);
@@ -280,25 +280,25 @@
 
   async function load() {
     let r, p;
-    try { [r, p] = await Promise.all([api('/edit/api/shows'), api('/edit/api/products')]); } catch { login.hidden = false; return say(loginMsg, "Can't reach the site. Check your connection and reload.", 'error'); }
+    try { [r, p] = await Promise.all([api('/edit/api/shows'), api('/edit/api/products')]); } catch { login.hidden = false; return say(loginMsg, "Can’t reach the site. Check your connection and reload.", 'error'); }
     const b = await reply(r);
     if (r.ok) {
       const pb = await reply(p);
       T.shows.version = b.version;
-      if (p.ok) T.products.version = pb.version; else say(T.products.msg, "Couldn't load the products. Reload the page.", 'error');
+      if (p.ok) T.products.version = pb.version; else say(T.products.msg, "Couldn’t load the products. Reload the page.", 'error');
       return signedIn(b.editor, { shows: b.shows, products: p.ok ? pb.products : null });
     }
     login.hidden = false;
-    if (r.status === 503) say(loginMsg, b.message || "The edit screen isn't switched on yet. Tell the person who runs the site.", 'error');
+    if (r.status === 503) say(loginMsg, b.message || "The edit screen isn’t switched on yet. Tell the person who runs the site.", 'error');
   }
 
   login.addEventListener('submit', async (e) => {
     e.preventDefault();
     say(loginMsg, 'Signing in…', 'busy');
     let r;
-    try { r = await api('/edit/login', { username: $('username').value, password: $('password').value }); } catch { return say(loginMsg, "That didn't go through. Try again.", 'error'); }
+    try { r = await api('/edit/login', { username: $('username').value, password: $('password').value }); } catch { return say(loginMsg, "That didn’t go through. Try again.", 'error'); }
     const b = await reply(r);
-    if (!r.ok) return say(loginMsg, b.message || "That didn't go through. Try again.", 'error');
+    if (!r.ok) return say(loginMsg, b.message || "That didn’t go through. Try again.", 'error');
     $('password').value = '';
     say(loginMsg, '');
     if (loaded) { signedIn(b.editor); for (const k of tabs) if (T[k].dirty) say(T[k].msg, 'Signed in again. Press Save.', 'ok'); return; } // keep unsaved edits
@@ -351,18 +351,18 @@
   }
   async function send(kind, t, list) {
     let r;
-    try { r = await api(`/edit/api/${kind}`, { version: t.version, [kind]: list.map((x, i) => x.read(i)) }); } catch { return say(t.msg, "That didn't save. Check your connection and try again.", 'error'); }
+    try { r = await api(`/edit/api/${kind}`, { version: t.version, [kind]: list.map((x, i) => x.read(i)) }); } catch { return say(t.msg, "That didn’t save. Check your connection and try again.", 'error'); }
     const b = await reply(r);
-    if (r.ok) { t.version = b.version; t.render(b[kind]); return say(t.msg, b.message || "Saved. It's on the site now.", 'ok'); }
+    if (r.ok) { t.version = b.version; t.render(b[kind]); return say(t.msg, b.message || "Saved. It’s on the site now.", 'ok'); }
     if (r.status === 401) { login.hidden = false; $('username').focus(); return say(t.msg, 'You were signed out. Sign in above, then press Save again. Your changes are still here.', 'error'); }
-    if (r.status === 409) return say(t.msg, b.message || `Someone else saved the ${kind} just now, so yours didn't save. Reloading shows their changes but clears yours, so write down what you changed first.`, 'error'); // rows untouched
+    if (r.status === 409) return say(t.msg, b.message || `Someone else saved the ${kind} just now, so yours didn’t save. Reloading shows their changes but clears yours, so write down what you changed first.`, 'error'); // rows untouched
     const errs = b.errors ?? [];
     for (const x of errs) {
       const row = list[x.row];
       if (row) { say(row.err, x.message); row.classList.add('bad'); row.open(true); }
     }
     const general = errs.filter((x) => !list[x.row]).map((x) => x.message).join(' ');
-    say(t.msg, general || (errs.length ? `Not saved. Fix the ${errs.length === 1 ? t.noun[0] : `${errs.length} ${t.noun[1]}`} marked with !, then press Save.` : "That didn't save. Try again."), 'error');
+    say(t.msg, general || (errs.length ? `Not saved. Fix the ${errs.length === 1 ? t.noun[0] : `${errs.length} ${t.noun[1]}`} marked with !, then press Save.` : "That didn’t save. Try again."), 'error');
     list[errs[0]?.row]?.form.querySelector('input')?.focus();
   }
   $('save').addEventListener('click', () => save('shows'));
@@ -377,13 +377,13 @@
     say(bkMsg, 'Making your backup…', 'busy');
     try {
       let r;
-      try { r = await fetch('/edit/api/backup', { credentials: 'same-origin' }); } catch { return say(bkMsg, "That didn't download. Check your connection and try again.", 'error'); }
+      try { r = await fetch('/edit/api/backup', { credentials: 'same-origin' }); } catch { return say(bkMsg, "That didn’t download. Check your connection and try again.", 'error'); }
       if (r.status === 401) { login.hidden = false; $('username').focus(); return say(bkMsg, 'You were signed out. Sign in above, then download again.', 'error'); }
       if (!r.ok) {
         const b = await r.json().catch(() => ({}));
         if (r.status === 413) return say(bkMsg, b.message || 'This backup is too big for one file. Tell the person who runs the site.', 'error');
         if (r.status === 429) return say(bkMsg, b.message || 'Too many backups. Wait an hour, then try again.', 'error');
-        return say(bkMsg, b.message || "That didn't download. Try again.", 'error');
+        return say(bkMsg, b.message || "That didn’t download. Try again.", 'error');
       }
       const url = URL.createObjectURL(await r.blob());
       const name = /filename="([^"]+)"/.exec(r.headers.get('Content-Disposition') || '')?.[1] || 'glucak-backup.json';
@@ -391,13 +391,13 @@
       document.body.append(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 60000); // revoking at once breaks some browsers' downloads
       say(bkMsg, 'Done. Look for it in your downloads.', 'ok');
-    } catch { say(bkMsg, "That didn't download. Try again.", 'error'); } finally { bk.removeAttribute('aria-disabled'); }
+    } catch { say(bkMsg, "That didn’t download. Try again.", 'error'); } finally { bk.removeAttribute('aria-disabled'); }
   });
 
   addEventListener('beforeunload', (e) => { if (anyDirty()) e.preventDefault(); });
 
   login.hidden = true; // until we know whether this browser is signed in
   const err = new URLSearchParams(location.search).get('login'); // set by the no-JS form fallback
-  if (err) say(loginMsg, err === 'locked' ? 'Too many tries. Wait 15 minutes, then try again.' : "That name and password don't match. Check them and try again.", 'error');
+  if (err) say(loginMsg, err === 'locked' ? 'Too many tries. Wait 15 minutes, then try again.' : "That name and password don’t match. Check them and try again.", 'error');
   load();
 })();

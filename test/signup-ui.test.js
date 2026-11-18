@@ -37,12 +37,12 @@ test('sign-up: a valid submit shows Sending..., sets aria-disabled on Join, and 
   assert.equal(calls, 1);
   release();
   await first;
-  assert.equal(status.textContent, "That didn't go through. Try again.");
+  assert.equal(status.textContent, "That didn’t go through. Try again.");
   assert.equal(join.attrs['aria-disabled'], undefined);
 });
 
 test('sign-up: the three existing messages still come back, and Join is released each time', async () => {
-  for (const [res, text] of [[{ ok: true, status: 200 }, "You're on the list."], [{ ok: false, status: 422 }, 'Enter an email like name@example.com.'], [{ ok: false, status: 503 }, "That didn't go through. Try again."]]) {
+  for (const [res, text] of [[{ ok: true, status: 200 }, "You’re on the list."], [{ ok: false, status: 422 }, 'Enter an email like name@example.com.'], [{ ok: false, status: 503 }, "That didn’t go through. Try again."]]) {
     const { status, join, submit } = setup(async () => res);
     await submit();
     assert.equal(status.textContent, text);
@@ -50,7 +50,7 @@ test('sign-up: the three existing messages still come back, and Join is released
   }
   const { status, join, submit } = setup(async () => { throw new Error('offline'); });
   await submit();
-  assert.equal(status.textContent, "That didn't go through. Try again.");
+  assert.equal(status.textContent, "That didn’t go through. Try again.");
   assert.equal(join.attrs['aria-disabled'], undefined);
 });
 

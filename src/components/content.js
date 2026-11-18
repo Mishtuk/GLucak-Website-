@@ -1,5 +1,5 @@
 // Build-time content: era file, releases and videos. Missing data files fall back to marked placeholders.
-import { etDay } from '../lib/shows.js';
+import { etDay, curly } from '../lib/shows.js';
 import era from '../eras/identity.json';
 import { groupVideos } from './videos.js';
 
@@ -7,7 +7,7 @@ export { era };
 // Header look, one place: 'solid' = a solid dark band from the first paint (v2, follows D25); 'scrim' = the gradient scrim over the Home hero until you scroll.
 export const HEADER_STYLE = 'solid';
 // D21/D23: a "From Gabe" quote ships only after Gabe OKs it. Flip this when he does; until then no quote is in the page.
-export const QUOTES_APPROVED = true; // Gabe OK'd both post quotes (answers row 16, 2026-11-11). D67: Home keeps ONE quote (RISE); the live one is not placed on any page.
+export const QUOTES_APPROVED = true; // Gabe OK’d both post quotes (answers row 16, 2026-11-11). D67: Home keeps ONE quote (RISE); the live one is not placed on any page.
 const QUOTES = {
   rise: { text: 'God will always be with you, and will never leave you in the valley. Trust me, I know.', url: 'https://www.instagram.com/p/Dd6keDDDefE/', credit: 'GLucak, Instagram, Sep 2026' },
   // copy ig6 7: his own lyric line from his own post (Instagram 2026-10-15). Music only; one quote per page (D67). The Scenic Route line waits on its post date.
@@ -21,7 +21,7 @@ export const PHOTO_CREDITS = {
   joseph: 'Video still: Joseph Lucak.', // camera on Duck, Dodge, Jump, Fight only
   yt: 'Video stills: GLucak on YouTube.', // Crooked Eye live stills: videographer unknown (asked Gabe, rights Q1)
   identity: 'IDENTITY cover: GLucak. Logo: Dave Bahm.', // Gabe made the cover, Dave Bahm the logo (answers row 3)
-  cd: 'Photos: from the IDENTITY CD.', // photographer still open in Gabe's answers; put the name in when he says
+  cd: 'Photos: from the IDENTITY CD.', // photographer still open in Gabe’s answers; put the name in when he says
   vladd: 'Video still: Vladd (Vladdtime).', // the Scenic Route live clip, filmed by Vladd (answers row 13)
 };
 // Image src -> the credit it needs. Pages list their credits by hand; test/credits.test.js scans each built page's images against this so they can't drift.
@@ -46,8 +46,8 @@ const SCENIC_DAY = '2027-01-15';
 /** Sign-up wording (copy ig6 1a): Kit is not set up, so only a heads-up is promised. After Scenic Route's day the old line returns. */
 export function signupCopy() {
   return etDay() < SCENIC_DAY
-    ? { label: 'Join the list. Scenic Route is coming Jan 15, and the first listen will be yours.', ok: "You're in. We'll tell you the day Scenic Route lands." }
-    : { label: 'Get the next show and every new song first.', ok: "You're on the list." };
+    ? { label: 'Join the list. Scenic Route is coming Jan 15, and the first listen will be yours.', ok: "You’re in. We’ll tell you the day Scenic Route lands." }
+    : { label: 'Get the next show and every new song first.', ok: "You’re on the list." };
 }
 export const START = { title: 'Go', link: GO }; // DESIGN 24c, Q44: the "New here?" pick (variant: the playlist)
 export const SOUNDCLOUD = 'https://soundcloud.com/glucak';
@@ -81,7 +81,7 @@ export function releases() {
   const today = etDay();
   const rows = (load('releases') ?? []).filter((r) => r?.title && http(r.link) && r.date && r.date <= today);
   // No cover file yet -> the marked placeholder, until Gabe's art (or a downloaded cover) is in public/media.
-  if (rows.length) return newest(rows).map((r) => (r.cover ? r : { ...r, cover: '/media/placeholder-cover.svg', placeholder: true }));
+  if (rows.length) return newest(rows).map((r) => ({ ...r, title: curly(r.title) })).map((r) => (r.cover ? r : { ...r, cover: '/media/placeholder-cover.svg', placeholder: true }));
   return [{ title: 'Go', type: 'single', cover: '/media/placeholder-cover.svg', link: GO, soundcloud: SOUNDCLOUD, placeholder: true }];
 }
 
