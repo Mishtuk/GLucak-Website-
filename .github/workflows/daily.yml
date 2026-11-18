@@ -1,0 +1,22 @@
+# Daily: test the site, then republish the preview (past shows drop off, the Now line moves) to gh-pages.
+name: daily
+on:
+  schedule:
+    - cron: '0 9 * * *' # 09:00 UTC
+  workflow_dispatch:
+permissions:
+  contents: write # the preview push to gh-pages uses the job token
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: node tools/preview.mjs --publish
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

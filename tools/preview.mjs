@@ -52,7 +52,8 @@ console.log('preview written to .preview/');
 if (process.argv.includes('--publish')) {
   // A normal (fast-forward) push: the new snapshot is committed on top of the existing gh-pages history, never forced.
   const msg = `Preview ${new Date().toISOString().slice(0, 16)}`;
-  const REPO = 'https://github.com/Mishtuk/GLucak-Website-.git';
+  // In CI (GITHUB_TOKEN set, contents: write) the clone/push carry the token; locally it uses the stored git credentials as before.
+  const T = process.env.GITHUB_TOKEN, REPO = `https://${T ? 'x-access-token:' + T + '@' : ''}github.com/Mishtuk/GLucak-Website-.git`;
   const WT = join(ROOT, '.preview-git');
   rmSync(WT, { recursive: true, force: true });
   const exists = execSync(`git ls-remote --heads ${REPO} gh-pages`, { cwd: ROOT }).toString().trim() !== '';
