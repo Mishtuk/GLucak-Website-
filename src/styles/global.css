@@ -1417,5 +1417,10 @@ li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* 
 .gallery-grid li:nth-child(3) img { position: absolute; inset: 0; height: 100%; aspect-ratio: auto; object-position: 50% 15%; }
 .gallery-grid a:active img { outline: 3px solid var(--text); outline-offset: -3px; } /* 16e: instant pressed */
 @media (min-width: 900px) {
-  .about-body { align-items: start; } /* the bio starts level with the setlist; the gallery follows under the bio (no dead gap) */
+  .about-body { align-items: start; } /* the bio starts level with the setlist */
+  /* the gallery runs full width under both columns as one row of three (no dead gap beside or under the bio) */
+  .gallery { grid-column: 1 / -1; max-width: none; }
+  .gallery-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .gallery-grid li:nth-child(3) { grid-column: auto; grid-row: auto; }
+  .gallery-grid li:nth-child(3) img { position: static; height: auto; aspect-ratio: 1; }
 }
