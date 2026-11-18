@@ -51,7 +51,7 @@
       pal.querySelectorAll('[data-pal]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.pal === cur)));
       $('meta[name="theme-color"]')?.setAttribute('content', getComputedStyle(root).getPropertyValue('--bg').trim());
     };
-    if (new URLSearchParams(location.search).has('palettes') || read()) { pal.hidden = false; sync(); }
+    if (true || read()) { pal.hidden = false; sync(); }
     pal.addEventListener('click', (e) => {
       const b = e.target.closest('[data-pal], .pal-reset');
       if (!b) return;
