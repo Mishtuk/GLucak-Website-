@@ -1525,3 +1525,20 @@ li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* 
   html[data-home] .band-rise .v2-split > :last-child { grid-column: 1; grid-row: 1; }
   html[data-home] .band-rise .v2-land { width: calc(100% + var(--gutter)); max-width: none; margin-right: calc(-1 * var(--gutter)); }
 }
+
+/* Shows: the banner. Angled top on bg-2; phrase full; list 7 columns, the stage print bled to the right edge; Watch full width under (900+). */
+html[data-home] .band-live.edge-angle { background-color: var(--bg-2); }
+html[data-home] .band-live :is(.v2-thumb, .nocover) { background: var(--bg); } /* one step off the bg-2 ground */
+@media (min-width: 700px) {
+  html[data-home] .band-live { padding-bottom: calc(var(--section) + 2rem); } /* the About sheet overlaps this padding */
+  html[data-home] .band-live > .wrap.v2-split { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--space-l); }
+  html[data-home] .band-live .v2-side { display: contents; }
+  html[data-home] .band-live .spine { grid-column: 1 / -1; grid-row: 1; }
+  html[data-home] .band-live .v2-main { grid-column: 1 / span 7; grid-row: 2; }
+  html[data-home] .band-live .v2-tall { display: block; grid-column: 9 / -1; grid-row: 2; align-self: start; width: calc(100% + var(--gutter)); max-width: none; margin-right: calc(-1 * var(--gutter)); aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 30%; }
+}
+@media (min-width: 900px) {
+  html[data-home] .band-live .v2-main { display: contents; } /* Watch leaves the 7 columns */
+  html[data-home] #shows-mount { grid-column: 1 / span 7; grid-row: 2; }
+  html[data-home] .band-live .v2-videos { grid-column: 1 / -1; grid-row: 3; }
+}
