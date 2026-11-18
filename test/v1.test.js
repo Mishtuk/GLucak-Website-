@@ -166,7 +166,7 @@ test('og: videos share image exists and is wired; the apple-touch icon sits on t
 
 test('IG6 eval 2: Music shows the IDENTITY block before the Releases grid', () => {
   const m = page('music/index.html');
-  const idn = m.indexOf('class="idn"');
+  const idn = m.indexOf('class="idn is-paper"');
   assert.ok(idn > 0 && idn < m.indexOf('id="h-releases"') && idn < m.indexOf('class="crate"'));
   assert.equal((m.match(/<li class="track/g) ?? []).length, 12, 'the 12 tracks');
   assert.equal((m.match(/<h1/g) ?? []).length, 1);

@@ -9,7 +9,7 @@ const ROOT = join(import.meta.dirname, '..');
 const page = (f) => readFileSync(join(ROOT, 'dist', f), 'utf8');
 const css = readFileSync(join(ROOT, 'src/styles/global.css'), 'utf8').replace(/\r\n/g, '\n');
 const block24a = css.slice(css.indexOf('/* ---------- DESIGN 24a.'), css.indexOf('DESIGN 24b.'));
-const venues = (h) => h.match(/<div class="venues">[^]*?<\/p>\s*<\/div>/)?.[0] ?? '';
+const venues = (h) => h.match(/<div class="venues(?: is-paper taped)?">[^]*?<\/p>\s*<\/div>/)?.[0] ?? '';
 
 test('24b / 28d: For venues on Shows and About with no address = Request a show to Instagram, no chip, no period in the heading', () => {
   for (const f of ['shows/index.html', 'about/index.html']) {
@@ -22,7 +22,7 @@ test('24b / 28d: For venues on Shows and About with no address = Request a show 
     assert.ok(!/Placeholder: booking email/.test(page(f)), `${f}: old placeholder line gone`);
   }
   assert.ok(!/<h2>Booking<\/h2>/.test(page('about/index.html')));
-  assert.match(page('shows/index.html'), /<div class="shows-side">[^]*<div class="venues">/);
+  assert.match(page('shows/index.html'), /<div class="shows-side">[^]*<div class="venues(?: is-paper taped)?">/);
 });
 
 test('24b / 28d: the address line exists only when BOOKING_EMAIL is set (component source)', () => {

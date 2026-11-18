@@ -111,8 +111,9 @@ test('30h-4: Home bands take the poster-wall classes; the old hero slot and the 
   assert.match(hp, /alt=""/);
 });
 
-test('30h-4: Home layout rules (mirror, banner, sheet, ticket) are in block 30e and scoped to Home', () => {
-  assert.match(css, /html\[data-home\] \.band-rise > \.wrap\.v2-split \{ grid-template-columns: minmax\(0, 7fr\) minmax\(0, 5fr\); \}/);
+test('30h-4: Home layout rules (mirror, banner, sheet, ticket) are in block 30e; the mirror is shared with Music', () => {
+  assert.match(css, /\.band-rise > \.wrap\.v2-split \{ grid-template-columns: minmax\(0, 7fr\) minmax\(0, 5fr\); \}/);
+  assert.ok(!/html\[data-home\] \.band-rise/.test(css), 'Rise is unscoped');
   assert.match(css, /html\[data-home\] \.band-live > \.wrap\.v2-split \{ display: grid; grid-template-columns: repeat\(12, minmax\(0, 1fr\)\)/);
   assert.match(css, /\.band-push\.v2-push > \.wrap\.v2-split \{[^}]*'p1 side' 'p1 bio' 'p1 act'/);
   assert.match(css, /\.is-paper \.tab \{ left: var\(--space-m\); color: var\(--page-text\); \}/);
@@ -154,4 +155,30 @@ test('30h-5: every img.print is a Print file; no filter on covers, Clean .graded
   }
   assert.ok(!/\.(mark|v2-cover|cover|idn-cover|tile-art)[^{]*\{[^}]*filter\s*:/.test(stripC(blk)), 'no filter on covers or the mark');
   assert.match(read('server.js'), /script-src 'self'; style-src 'self' 'unsafe-inline'/);
+});
+
+// ---- Round 3 (30f): the other pages ----
+const page = (n) => read(`dist/${n}/index.html`);
+
+test('30f: page classes (Music sheet, Videos torn band, About credits sheet, Book GLucak sheet) and the deleted 72rem Shows rule', () => {
+  assert.match(page('music'), /<div class="idn is-paper" id="identity">/);
+  assert.match(page('videos'), /class="band band-mv edge-tear"/);
+  assert.match(page('about'), /<div class="wrap prose is-paper">/);
+  assert.ok(!/class="venues[^"]*is-paper/.test(page('about')), 'About: the credits sheet is the one sheet (no paper inside paper)');
+  assert.match(page('shows'), /class="venues is-paper taped"/);
+  assert.ok(!/@media \(min-width: 72rem\) \{\s*\.shows-grid \{/.test(css), '72rem .shows-grid rule deleted');
+  assert.match(css, /@media \(min-width: 700px\) \{ \.shows-grid \{ grid-template-columns: minmax\(0, 7fr\) minmax\(0, 5fr\)/);
+  assert.match(read('src/lib/products.js'), /class="shop-banner taped"/);
+});
+
+test('30f: Music cover is never rotated, framed or filtered (D51); crate and Shop stagger; About collage and Videos mosaic rules exist', () => {
+  const r3 = css.slice(css.indexOf('Round 3 (DESIGN 30f)'));
+  assert.ok(!/\.idn-cover[^{]*\{[^}]*(rotate|transform|filter|border|outline|box-shadow)/.test(r3), 'idn-cover touched only for its margin');
+  assert.match(r3, /\.idn\.is-paper \.idn-cover \{ margin-top: calc\(-1 \* var\(--space-xl\) - 2\.5rem\); \}/);
+  assert.match(r3, /\.crate > :nth-child\(even\) \{ margin-top: 3rem; \}/);
+  assert.match(r3, /\.shop-grid > :nth-child\(even\) \{ margin-top: 2\.5rem; \}/);
+  assert.match(r3, /\.about-actions \{ grid-column: 9 \/ -1; position: sticky;/);
+  assert.match(r3, /nth-child\(3\) img \{ aspect-ratio: 634 \/ 1128; \}/);
+  assert.match(r3, /\.vid-grid > :nth-child\(1\) \{ grid-column: 1 \/ span 7; grid-row: span 2; \}/);
+  assert.match(r3, /\.shop-banner \{ rotate: -1\.5deg; \}/);
 });
