@@ -8,6 +8,7 @@ import { join } from 'node:path';
 import { checkShows, readList, saveList } from './store.js';
 import { checkSite } from './site.js';
 import { checkProducts } from './products.js';
+import { checkReleases } from './releases.js';
 import { MAX_BYTES, UPLOAD_NAME, toWebp } from './upload.js';
 
 export const FORMAT = 'glucak-backup', VERSION = 1;
@@ -19,17 +20,19 @@ const uploadsDir = (data) => join(data, 'uploads');
 const photoOf = (image) => String(image ?? '').match(/^\/media\/uploads\/(.+)$/)?.[1];
 
 /** The live data as a backup object, with only the photos the products use (orphan uploads are never shown).
- * `fallback`: { shows, products, site } shipped files, used until Gabe has saved. */
+ * `fallback`: { shows, products, site, releases } shipped files, used until Gabe has saved. */
 export function makeBackup(data, fallback) {
   let products = readList(data, fallback.products, 'products.json'); // first: every photo it names is on disk by now
   if (!Array.isArray(products)) products = [];
+  const releases = readList(data, fallback.releases, 'releases.json');
   const uploads = {};
-  for (const name of [...new Set(products.map((p) => photoOf(p?.image)))].filter((n) => n && UPLOAD_NAME.test(n)).sort()) {
+  const covers = Array.isArray(releases) ? releases.map((r) => r?.cover) : [];
+  for (const name of [...new Set([...products.map((p) => p?.image), ...covers].map(photoOf))].filter((n) => n && UPLOAD_NAME.test(n)).sort()) {
     const f = join(uploadsDir(data), name);
     if (lstatSync(f, { throwIfNoEntry: false })?.isFile()) uploads[name] = readFileSync(f).toString('base64'); // not a symlink or folder
   }
   return { format: FORMAT, version: VERSION, created: new Date().toISOString(),
-    shows: readList(data, fallback.shows, 'shows.json'), products, site: readList(data, fallback.site, 'site.json'), uploads };
+    shows: readList(data, fallback.shows, 'shows.json'), products, site: readList(data, fallback.site, 'site.json'), releases, uploads };
 }
 /** makeBackup as the bytes of one file. Callers refuse it over MAX_FILE (restore would): TOO_BIG. */
 export const backupBytes = (data, fallback) => Buffer.from(JSON.stringify(makeBackup(data, fallback)));
@@ -49,7 +52,9 @@ export async function checkBackup(text, data) {
   if (names.length > MAX_UPLOADS) return fail(`The backup has more than ${MAX_UPLOADS} photos.`);
   const s = checkShows(b.shows), p = checkProducts(b.products);
   const st = b.site === undefined ? null : checkSite(b.site); // an older backup has no site: the saved bio stays. A site must be complete.
-  const errors = [...(s.errors ?? []), ...(p.errors ?? []), ...(st?.errors ?? [])], uploads = new Map();
+  // an older backup has no releases: the saved ones stay. IDENTITY travels in the list but checkReleases refuses it as a title, so split it out.
+  const rl = !Array.isArray(b.releases) ? null : checkReleases(b.releases.filter((r) => r?.title !== 'IDENTITY'), b.releases.filter((r) => r?.title === 'IDENTITY'));
+  const errors = [...(s.errors ?? []), ...(p.errors ?? []), ...(st?.errors ?? []), ...(rl?.errors ?? [])], uploads = new Map();
   for (const name of names) {
     const v = b.uploads[name];
     const bad = (why) => errors.push({ row: null, message: `Photo ${label(name)}: ${why}` });
@@ -65,7 +70,12 @@ export async function checkBackup(text, data) {
     const up = photoOf(r.image);
     if (up && !uploads.has(up) && !onDisk(up)) warnings.push(`Product ${i + 1}: its photo ${label(up)} is not in the backup, so it will be missing on the Shop page.`);
   });
-  return errors.length ? { errors } : { shows: s.rows, products: p.rows, site: st?.rows, uploads, warnings };
+  (rl?.rows ?? []).forEach((r) => {
+    const up = photoOf(r.cover);
+    if (up && !uploads.has(up) && !onDisk(up)) warnings.push(`Release ${label(r.title)}: its cover ${label(up)} is not in the backup, so the site shows a plain sleeve.`);
+  });
+  if (!rl) warnings.push('This backup has no releases, so the saved releases stay as they are.');
+  return errors.length ? { errors } : { shows: s.rows, products: p.rows, site: st?.rows, releases: rl?.rows, uploads, warnings };
 }
 
 /** Write a checked backup: photos first (temp + rename), then shows.json and products.json (atomic, old one kept as .prev). */
@@ -78,4 +88,5 @@ export function writeBackup(data, r, fallback) {
   saveList(data, r.shows, fallback.shows, 'shows.json');
   saveList(data, r.products, fallback.products, 'products.json');
   if (r.site) saveList(data, r.site, fallback.site, 'site.json');
+  if (r.releases) saveList(data, r.releases, fallback.releases, 'releases.json');
 }

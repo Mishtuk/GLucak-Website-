@@ -174,7 +174,7 @@
     const artists = el('input', { maxLength: 120, value: r.artists ?? '' });
     const { image, block } = uploader('releases', { value: r.cover, thumb, button: 'Upload a cover', hint: 'Square JPG, PNG or WebP, up to 5 MB. No art yet? Leave it empty: the site shows the title on a plain sleeve.' });
     box.form.append(field('Title', title), field('Type', type),
-      field('Date', date, 'The day it comes out. Until then the site shows Pre-save.'),
+      field('Date', date, 'The day it comes out. Until then a smart link shows Pre-save.'),
       field('Link', link, 'Your smart link (like wingsmusic.lnk.to/…) or the Spotify link.'),
       field('Artists (optional)', artists, 'Only if someone joins you, like: GLucak, J-BOY'),
       field('Cover', image, 'Filled in when you upload a cover below. Empty it to remove the cover.'), block, box.delBar);
@@ -182,7 +182,7 @@
     const mark = () => {
       box.setTitle(title.value.trim());
       const label = REL_TYPES.find(([v]) => v === type.value)[1], when = dayText(date.value);
-      box.setMeta(el('span', { textContent: [label, when].filter(Boolean).join(', ') }), ...(date.value > today() ? [el('span', { class: 'ed-tag', textContent: 'Coming' })] : []));
+      box.setMeta(...(date.value > today() ? [el('span', { class: 'ed-tag', textContent: 'Coming' })] : []), el('span', { textContent: [label, when].filter(Boolean).join(', ') })); // the tag first: a narrow row clips the text, never the tag
     };
     box.form.addEventListener('input', mark);
     box.form.addEventListener('change', mark);
@@ -207,7 +207,7 @@
   const TYPES = [['shirt', 'Shirt'], ['hoodie', 'Hoodie'], ['cd', 'CD'], ['vinyl', 'Vinyl'], ['sticker', 'Sticker'], ['other', 'Other']];
   const STATUSES = [['coming-soon', 'Coming soon'], ['available', 'Available (shows Buy once it has a Link)'], ['sold-out', 'Sold out'], ['sample', 'Sample (shows Coming soon, no price)']];
   const SHORT = { 'coming-soon': 'Coming soon', available: 'Available', 'sold-out': 'Sold out', sample: 'Sample' };
-  let uploads = 0; // photo uploads on their way
+  const uploads = { releases: 0, products: 0 }; // photo uploads on their way, per tab
   let waitFor = null; // the tab whose Save was pressed during an upload: its message says to wait; cleared when the upload ends
   const IMAGE = /^\/media\/(?:covers\/[a-z0-9]+(?:-[a-z0-9]+)*\.webp|shop\/[a-z0-9]+(?:-[a-z0-9]+)*\.(?:webp|png|jpg)|uploads\/[a-f0-9]{32}\.webp)$/; // the files the server accepts (a preview only)
   const UPLOADABLE = ['image/jpeg', 'image/png', 'image/webp'];
@@ -240,9 +240,9 @@
       const f = file.files[0];
       if (!f) return;
       say(upMsg, 'Uploading…', 'busy');
-      uploads++;
+      uploads[kind]++;
       let r;
-      try { r = await upload(f); } finally { uploads--; if (!uploads && waitFor) { say(T[waitFor].msg, ''); waitFor = null; } }
+      try { r = await upload(f); } finally { uploads[kind]--; if (!uploads[kind] && waitFor === kind) { say(T[waitFor].msg, ''); waitFor = null; } }
       file.value = '';
       if (!r.path) return say(upMsg, r.message, 'error');
       image.value = r.path;
@@ -456,7 +456,7 @@
   async function save(kind) {
     if (saving[kind]) return; // no second save while one is on its way
     const t = T[kind], list = rows(kind), [btn, add] = IDS[kind].map($);
-    if (kind !== 'shows' && uploads) { waitFor = kind; return say(t.msg, 'Wait for the photo to finish uploading, then press Save.', 'busy'); } // an upload would land in a row the reply rebuilds
+    if (uploads[kind]) { waitFor = kind; return say(t.msg, 'Wait for the photo to finish uploading, then press Save.', 'busy'); } // an upload would land in a row the reply rebuilds
     for (const r of list) { say(r.err, ''); r.classList.remove('bad'); }
     saving[kind] = true;
     btn.setAttribute('aria-disabled', 'true');

@@ -155,12 +155,14 @@ export const isHttps = (req) => Boolean(req.socket.encrypted) || (env.TRUST_PROX
 const LOOPBACK = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
 const BODY_MAX = 32 * 1024;
 // Each list the edit screen saves, same model for both: validate all, version check -> 409, atomic write + .prev.
+// releases.json damaged or empty: the shipped list stands in (like the public pages), so Gabe can still save and repair it.
+const releasesNow = () => { try { return readList(DATA, RELEASES, 'releases.json'); } catch { return JSON.parse(readFileSync(RELEASES, 'utf8')); } };
 const LISTS = {
   shows: { file: 'shows.json', fallback: SHOWS, check: checkShows, max: BODY_MAX, big: 'That list is too big to save. Delete some old shows.' },
   // The Bio and IDENTITY tabs: one object, one version. A tab sends only its own fields; the server merges them onto the saved site.
   site: { file: 'site.json', fallback: SITE, check: (x) => checkSite(x, readList(DATA, SITE, 'site.json')), max: BODY_MAX, big: 'That is too big to save. Shorten the bio.' },
   // The Releases tab: IDENTITY stays in the file (the IDENTITY tab owns it); the tab never sends it, so the check adds the saved row back.
-  releases: { file: 'releases.json', fallback: RELEASES, check: (x) => checkReleases(x, readList(DATA, RELEASES, 'releases.json').filter((r) => r?.title === 'IDENTITY')), max: 128 * 1024, big: 'That list is too big to save. Delete some old releases.' },
+  releases: { file: 'releases.json', fallback: RELEASES, check: (x) => checkReleases(x, releasesNow().filter((r) => r?.title === 'IDENTITY')), max: 128 * 1024, big: 'That list is too big to save. Delete some old releases.' },
   products: { file: 'products.json', fallback: PRODUCTS, check: checkProducts, max: 256 * 1024, big: 'That list is too big to save. Delete some products or shorten descriptions.' },
 };
 
@@ -214,13 +216,13 @@ async function handleEdit(req, res, url) {
   if (req.method === 'GET' && list) {
     const who = editor(req, url);
     if (!who) return json(401, { error: 'signed_out' });
-    return json(200, { editor: who, [kind]: readList(DATA, list.fallback, list.file), version: listVersion(DATA, list.fallback, list.file) });
+    return json(200, { editor: who, [kind]: kind === 'releases' ? releasesNow() : readList(DATA, list.fallback, list.file), version: listVersion(DATA, list.fallback, list.file) });
   }
   if (req.method === 'GET' && p === '/edit/api/backup') { // one JSON file of the live data (src/lib/backup.js), for Gabe to keep
     const who = editor(req, url);
     if (!who) return json(401, { error: 'signed_out' });
     if (!allow(`backup:${who}`, 10, 60 * 60e3)) return json(429, { error: 'slow_down', message: 'Too many backups. Wait an hour, then try again.' });
-    const body = backupBytes(DATA, { shows: SHOWS, products: PRODUCTS, site: SITE }); // ponytail: built in memory, fine under the 50 MB restore cap
+    const body = backupBytes(DATA, { shows: SHOWS, products: PRODUCTS, site: SITE, releases: RELEASES }); // ponytail: built in memory, fine under the 50 MB restore cap
     if (body.length > MAX_FILE) { // restore would refuse it: say so now, not on the day it’s needed
       console.error(new Date().toISOString(), `backup refused for ${who}: ${body.length} bytes is over the ${MAX_FILE}-byte restore cap`);
       return json(413, { error: 'too_big', message: TOO_BIG });

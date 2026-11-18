@@ -81,7 +81,7 @@ test('download: 401 signed out; signed in it is one attachment of the live data 
   assert.equal(r.headers.get('content-disposition'), `attachment; filename="glucak-backup-${etDay()}.json"`);
   assert.equal(r.headers.get('cache-control'), 'no-store');
   const b = await r.json();
-  assert.deepEqual(Object.keys(b), ['format', 'version', 'created', 'shows', 'products', 'site', 'uploads']);
+  assert.deepEqual(Object.keys(b), ['format', 'version', 'created', 'shows', 'products', 'site', 'releases', 'uploads']);
   assert.equal(b.format, 'glucak-backup');
   assert.equal(b.version, 1);
   assert.ok(!Number.isNaN(Date.parse(b.created)));
@@ -220,3 +220,43 @@ test('a backup over the restore cap is refused at download (413) and at export (
     assert.equal(x.stderr.trim(), msg);
     assert.ok(!existsSync(join(dir, 'too-big.json')));
   }));
+
+const rel = (title, cover) => ({ title, date: '2026-01-01', type: 'single', link: 'https://example.com/r', cover });
+test('releases and their uploaded covers survive export, wipe, restore; an old backup keeps the current releases', async () => {
+  const a = freshData({ [`uploads/${other}.webp`]: webp });
+  const list = [rel('Mine', `/media/uploads/${other}.webp`), { title: 'IDENTITY', date: '2027-08-13', type: 'album', link: 'https://example.com/i', cover: '/media/covers/identity.webp' }]; // IDENTITY last, as a save leaves it
+  writeFileSync(join(a, 'releases.json'), JSON.stringify(list));
+  const out = join(dir, 'rel-out.json');
+  assert.equal(cliAt(a, 'export', out).status, 0);
+  const b = JSON.parse(readFileSync(out, 'utf8'));
+  assert.deepEqual(b.releases, list);
+  assert.ok(b.uploads[`${other}.webp`], 'the cover is in the file');
+  const w = freshData(); // wiped machine
+  const r = cliAt(w, 'restore', out, '--yes');
+  assert.equal(r.status, 0, r.stderr);
+  assert.deepEqual(JSON.parse(readFileSync(join(w, 'releases.json'), 'utf8')), list, 'IDENTITY row kept');
+  assert.ok(existsSync(join(w, 'uploads', `${other}.webp`)));
+  // old backup (no releases key): the current releases stay, with a warning
+  delete b.releases;
+  const old = join(dir, 'rel-old.json');
+  writeFileSync(old, JSON.stringify(b));
+  const o = cliAt(w, 'restore', old, '--yes');
+  assert.equal(o.status, 0, o.stderr);
+  assert.match(o.stdout, /no releases/);
+  assert.deepEqual(JSON.parse(readFileSync(join(w, 'releases.json'), 'utf8')), list);
+});
+
+test('a corrupt releases.json: the Releases API still answers with the shipped list, and a save repairs it', async () => {
+  const f = join(data, 'releases.json');
+  writeFileSync(f, '{bad');
+  try {
+    const g = await fetch(`${base}/edit/api/releases`, { headers: { cookie } });
+    assert.equal(g.status, 200);
+    const j = await g.json();
+    assert.ok(j.releases.some((r) => r.title === 'IDENTITY'));
+    const p = await fetch(`${base}/edit/api/releases`, { method: 'POST', headers: { cookie, origin: base, 'content-type': 'application/json' },
+      body: JSON.stringify({ releases: [rel('Fixed')], version: j.version }) });
+    assert.equal(p.status, 200, await p.text());
+    assert.ok(JSON.parse(readFileSync(f, 'utf8')).some((r) => r.title === 'Fixed'));
+  } finally { rmSync(f, { force: true }); }
+});
