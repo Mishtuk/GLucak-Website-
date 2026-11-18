@@ -17,7 +17,7 @@
   magenta only on Listen / Tickets / Pre-save / Buy, Spotify `theme=0`; argues to change D34, the DESIGN 5 poster rule, D47, D96
   share; must keep: type, slogan bands, era system, cover grid, Videos, phone bar, footer, 404, Today / Tomorrow, calendar, section
   word), `content.md` (promises 10 done / 5 partly / 2 missing: gallery, Discord; stale bio "two albums"; booking has no
-  address; videos.json hand-fed), `technical.md` (running / check). **Next:** boss merges the three into
+  address; videos.json hand-fed), `technical.md` (DONE: repo is PUBLIC and tracks unreleased IDENTITY CD art + Gabe's originals + ~100 MB shots -> owner decides visibility; edit screen lacks releases / bio; daily.yml has no Render deploy hook and test/build.test.js:111 date-bombs on Jan 15; Astro 7.4.12 + engines + npm audit fix; cache validators; a11y strong; delete list of 8 groups). **Next:** boss merges the three into
   `docs/review/overhaul/plan.md` (keep / change list + ordered rounds to Jan 11), then designer -> coder -> shots -> design-review
   -> boss gate per round. Local review server was on :8095 (DEV_EDITOR=1, DATA_DIR=.work/review-data); stop it when done.
 - **Desktop 2026-11-18: round DR1 DONE (DESIGN 27, D96 approved, `docs/review/dr1/gate.md`):** speculation-rules prefetch over a
