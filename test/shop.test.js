@@ -55,7 +55,7 @@ test('Shop links: none without SHOP_ENABLED; with it nav + footer get Shop, but 
       assert.match(html.match(/<nav class="sheet"[\s\S]*?<\/nav>/)[0], />Shop<\/a>/, `${p} menu`);
       const bar = html.match(/<nav class="phone-bar"[\s\S]*?<\/nav>/)[0];
       assert.ok(bar.includes('<span>Watch</span>') && !bar.includes('<span>Shop</span>'), `${p} bar keeps Watch (only samples)`);
-      assert.match(html.match(/<p class="closing[\s\S]*?<\/p>/)[0], /href="\/shop\/">Shop\.<\/a>/, `${p} footer`);
+      assert.match(html.match(/<p class="closing[\s\S]*?<\/p>/)[0], /href="\/shop\/">Shop<\/a>/, `${p} footer`);
     }
     const r = await get('/shop/');
     assert.equal(r.headers.get('x-robots-tag'), null, 'indexable once open');

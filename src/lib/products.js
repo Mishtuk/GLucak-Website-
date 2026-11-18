@@ -115,5 +115,5 @@ export function shopLinks(html, { enabled, path, rows = [] }) {
   return html
     .replaceAll('<!--gl:nav-shop-->', enabled ? `<a href="/shop/"${cur}>Shop</a>` : '')
     .replace(/<!--gl:watch-->([\s\S]*?)<!--\/gl:watch-->/, (_, watch) => (bar ? `<a href="/shop/"${cur}>${BAG}<span>Shop</span></a>` : watch))
-    .replaceAll('<!--gl:footer-shop-->', enabled ? ' <a href="/shop/">Shop.</a>' : '');
+    .replaceAll('<!--gl:footer-shop-->', enabled ? ' <a href="/shop/">Shop</a>' : '');
 }

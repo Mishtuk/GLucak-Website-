@@ -116,7 +116,7 @@ test('shopLinks: nav + footer follow enabled; the bar swaps Watch for Shop only 
   const only = shopLinks(page, { enabled: true, path: '/shop/', rows: samples });
   assert.equal(only.match(/<a href="\/shop\/" aria-current="page">Shop<\/a>/g).length, 2, 'desktop nav + menu sheet');
   assert.ok(only.includes('<span>Watch</span>') && !only.includes('<span>Shop</span>'), 'enabled, nothing buyable: Watch stays');
-  assert.ok(only.includes('<a href="/shop/">Shop.</a>'));
+  assert.ok(only.includes('<a href="/shop/">Shop</a>'));
   const on = shopLinks(page, { enabled: true, path: '/shop/', rows: one });
   assert.ok(on.includes('<span>Shop</span>') && !on.includes('Watch'), 'enabled + one available: Shop replaces Watch');
   assert.ok(shopLinks(page, { enabled: true, path: '/shop/', rows: [good({ status: 'available', price: -1 })] }).includes('Watch'), 'an invalid row does not count');
