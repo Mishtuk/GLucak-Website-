@@ -44,6 +44,7 @@
     const device = reduceQuery.matches;
     const on = !device && root.dataset.motion === 'on';
     runFilm(on);
+    layoutHs();
     btn.textContent = device ? 'Motion: off (device setting)' : `Motion: ${on ? 'on' : 'off'}`;
     btn.setAttribute('aria-pressed', String(on));
     btn.disabled = device;
@@ -150,72 +151,44 @@
     if (videoOk(a.dataset.yt)) a.replaceWith(makeButton(a));
   });
 
-  /* Reels (owner 2026-11-18, src/components/Reel.astro): flip one page at a time. Instant unless Motion is on. A flip stops a playing video. */
-  document.querySelectorAll('[data-reel]').forEach((reel) => {
-    const track = reel.querySelector('.reel-track');
-    const slides = [...track.children];
-    const picks = [...reel.querySelectorAll('.reel-pick')];
-    const now = reel.querySelector('.reel-now');
-    const nav = reel.querySelector('.reel-nav');
-    const prev = reel.querySelector('.reel-prev');
-    const next = reel.querySelector('.reel-next');
-    let cur = 0;
-    const mark = (i) => {
-      cur = i;
-      now.textContent = String(i + 1).padStart(2, '0');
-      picks.forEach((p, k) => (k === i ? p.setAttribute('aria-current', 'true') : p.removeAttribute('aria-current')));
-      prev.disabled = i === 0; next.disabled = i === slides.length - 1;
-    };
-    const go = (i) => {
-      i = Math.max(0, Math.min(slides.length - 1, i));
-      if (i !== cur) stopVideos();
-      track.scrollTo({ left: slides[i].offsetLeft - slides[0].offsetLeft, behavior: root.dataset.motion === 'on' ? 'smooth' : 'auto' });
-      mark(i);
-    };
-    nav.hidden = slides.length < 2;
-    prev.addEventListener('click', () => go(cur - 1));
-    next.addEventListener('click', () => go(cur + 1));
-    picks.forEach((p, k) => p.addEventListener('click', (e) => { e.preventDefault(); go(k); }));
-    track.addEventListener('keydown', (e) => { if (e.target === track && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { e.preventDefault(); go(cur + (e.key === 'ArrowRight' ? 1 : -1)); } });
-    let raf = 0; // a swipe: the count follows the page that snapped into place
-    track.addEventListener('scroll', () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const step = slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : 0;
-        if (!step) return; // a hidden tab: no layout
-        const i = Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / step)));
-        if (i !== cur) { stopVideos(); mark(i); }
-      });
-    }, { passive: true });
-    track.tabIndex = 0;
-    mark(0);
-  });
-
-  /* Tabs (Videos page): Music videos / Live. Arrow keys move between tabs. Switching stops a playing video. */
-  document.querySelectorAll('.tabs[role="tablist"]').forEach((list) => {
-    const tabs = [...list.querySelectorAll('[role="tab"]')];
-    const pick = (t, focus) => {
-      tabs.forEach((x) => {
-        const on = x === t;
-        x.setAttribute('aria-selected', String(on));
-        if (on) x.removeAttribute('tabindex'); else x.tabIndex = -1;
-        document.getElementById(x.getAttribute('aria-controls')).hidden = !on;
-      });
-      document.getElementById(t.getAttribute('aria-controls')).querySelectorAll('.reel-track').forEach((tr) => tr.dispatchEvent(new Event('scroll'))); // the count follows where the shown reel is
-      stopVideos();
-      if (focus) t.focus();
-    };
-    tabs.forEach((t, i) => {
-      t.addEventListener('click', () => pick(t));
-      t.addEventListener('keydown', (e) => {
-        const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-        if (d) { e.preventDefault(); pick(tabs[(i + d + tabs.length) % tabs.length], true); }
-      });
+  /* Pinned galleries (owner 2026-11-18, HScroll.astro). Motion on: the strip sticks and scrolling down slides it sideways, coupled to
+     the scroll (nothing moves on its own). Motion off / reduced / unsupported: a plain swipe row. Run by showMotion() and on resize. */
+  function layoutHs() {
+    const on = root.dataset.motion === 'on' && !reduceQuery.matches;
+    document.querySelectorAll('[data-hs]').forEach((s) => {
+      const pin = s.querySelector('.hs-pin'), track = s.querySelector('.hs-track');
+      track.style.translate = '';
+      s.classList.toggle('is-pinned', on);
+      if (!on) { s.style.height = ''; return; }
+      const dist = Math.max(0, track.scrollWidth - pin.clientWidth);
+      s.dataset.dist = String(dist);
+      s.style.height = `${pin.offsetHeight + dist}px`;
     });
-    list.hidden = false;
-    list.parentElement.classList.add('tabs-on');
-    pick(tabs.find((t) => t.getAttribute('aria-selected') === 'true') ?? tabs[0]);
-  });
+    moveHs();
+  }
+  function moveHs() {
+    document.querySelectorAll('[data-hs].is-pinned').forEach((s) => {
+      const dist = Number(s.dataset.dist) || 0;
+      const top = parseFloat(getComputedStyle(s.querySelector('.hs-pin')).top) || 0;
+      const p = dist ? Math.min(1, Math.max(0, (top - s.getBoundingClientRect().top) / dist)) : 0;
+      s.querySelector('.hs-track').style.translate = `${(-p * dist).toFixed(1)}px 0`;
+    });
+  }
+  if (document.querySelector('[data-hs]')) {
+    let raf = 0;
+    addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(moveHs); }, { passive: true });
+    addEventListener('resize', layoutHs);
+    addEventListener('load', layoutHs);
+    // Keyboard: a focused item off to the side scrolls the page to where the strip shows it.
+    document.querySelectorAll('[data-hs]').forEach((s) => s.addEventListener('focusin', (e) => {
+      const li = e.target.closest('.hs-track > li');
+      if (!li || !s.classList.contains('is-pinned')) return;
+      const pin = s.querySelector('.hs-pin'), dist = Number(s.dataset.dist) || 0;
+      const p = dist ? Math.min(1, Math.max(0, (li.offsetLeft + li.offsetWidth / 2 - pin.clientWidth / 2) / dist)) : 0;
+      const top = parseFloat(getComputedStyle(pin).top) || 0;
+      scrollTo({ top: s.getBoundingClientRect().top + scrollY - top + p * dist, behavior: 'instant' });
+    }));
+  }
 
   /* Share a show (DESIGN 28c, D104): the phone's own share sheet; else copy the link; else show it. Same-origin, no motion. */
   const nav = globalThis.navigator;
