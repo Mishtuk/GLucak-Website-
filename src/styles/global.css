@@ -1079,8 +1079,6 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 .v2-vid a:active .v2-vtitle { background: var(--text); color: var(--bg); }
 .v2-videos h3, .v2-videos h2 { margin-bottom: var(--space-xs); }
 @media (min-width: 700px) { .v2-vrow { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; } }
-/* /shows/ puts the row in the narrow 5fr column from 72rem: back to the swipe row there. */
-@media (min-width: 72rem) { .shows-grid .v2-vrow { grid-auto-flow: column; grid-auto-columns: 82%; grid-template-columns: none; overflow-x: auto; } }
 
 /* (3) Push Past Fear: a live still beside the bio (phones), then the actions full width. */
 .v2-push-body { display: grid; grid-template-columns: 30% minmax(0, 1fr); grid-template-areas: 'p1 bio' 'act act'; gap: var(--space-m); align-items: start; }
@@ -1147,8 +1145,11 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
   .band-push.v2-push { padding-top: var(--space-m); }
   .band-push.v2-push > .wrap.v2-split { row-gap: var(--space-s); }
 }
-/* D1 on /shows/ from 72rem: its row is the swipe row again, so the first card does not span two rows. */
-@media (min-width: 72rem) { .shows-grid .v2-vid:first-child { grid-row: auto; } }
+/* DR1 27e: /shows/ from 72rem, Watch in the 5fr column is a lead plus two, not a clipped sideways row. */
+@media (min-width: 72rem) {
+  .shows-grid .v2-vrow { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; }
+  .shows-grid .v2-vid:first-child { grid-column: 1 / -1; grid-row: auto; }
+}
 /* Closed Menu sheet: not laid out at all (Chrome lays out closed <details> content unpainted; testing tools then report
    phantom overlaps with the hero). From the Laptop's 18h review. */
 .nav-mobile:not([open]) > .sheet { display: none; }
