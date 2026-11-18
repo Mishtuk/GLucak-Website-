@@ -72,7 +72,7 @@ test('Home shows the newest RELEASED release and the newest dated video', () => 
   const home = html('/');
   assert.ok(home.includes(esc(out.title)), `latest release should be ${out.title}`);
   for (const r of rel.filter((r) => r.date > today)) assert.ok(!home.includes(`<h3>${esc(r.title)}`), `${r.title} isn't out yet`);
-  const vids = JSON.parse(readFileSync(new URL('../src/data/videos.json', import.meta.url), 'utf8')).filter((v) => v.date);
+  const vids = JSON.parse(readFileSync(new URL('../src/data/videos.json', import.meta.url), 'utf8')).filter((v) => v.date && v.kind !== 'other'); // C18: Shorts never lead
   const latest = vids.sort((a, b) => b.date.localeCompare(a.date))[0];
   assert.ok(home.includes(`data-yt="${latest.id}"`), `latest video should be ${latest.title}`);
 });

@@ -96,12 +96,12 @@ const videos = () => (load('videos') ?? []).filter((v) => !FLASHING.test(v.title
 /** The Videos page (DESIGN 26): { lead, live, music }. Shorts (kind other) are not listed. */
 export const videosPage = () => groupVideos(load('videos') ?? [], FLASHING);
 
-/** Newest video with a valid 11-character YouTube id, or null (the block then links to the channel). */
+/** Newest video that is not a Short (kind other; Shorts are one link out) with a valid 11-character YouTube id, or null (the block then links to the channel). */
 export function latestVideo() {
   const rows = videos().map((v) => {
     const id = v.id ?? v.videoId ?? String(v.url ?? '').match(/(?:v=|youtu\.be\/|embed\/)([\w-]{11})/)?.[1];
     return { ...v, id };
-  }).filter((v) => /^[\w-]{11}$/.test(v.id ?? ''));
+  }).filter((v) => v.kind !== 'other' && /^[\w-]{11}$/.test(v.id ?? ''));
   return rows.length ? newest(rows)[0] : null;
 }
 

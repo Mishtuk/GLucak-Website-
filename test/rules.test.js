@@ -70,3 +70,13 @@ test('28j: the new lines sit where 28j puts them (Home hero, RISE, Shows, About)
   assert.ok(dist('shows/index.html').includes('<p class="shows-intro">Mostly open mics around Horsham and Doylestown, plus a full show at Riverside on Jan 16. Come hear unreleased songs.</p>'));
   assert.ok(dist('about/index.html').includes('<p>The hours in the studio. The energetic live performances.'));
 });
+
+test('C18: the Home latest video is the newest non-Short (a kind "other" Short never leads the row)', () => {
+  const vids = JSON.parse(read('src/data/videos.json'));
+  const lead = vids.filter((v) => v.kind !== 'other' && v.date).sort((a, b) => b.date.localeCompare(a.date))[0];
+  const short = vids.filter((v) => v.kind === 'other').sort((a, b) => b.date.localeCompare(a.date))[0];
+  const h = dist('index.html');
+  const first = h.match(/<ul class="v2-vrow">\s*<li class="v2-vid">\s*<a href="https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})"/)?.[1];
+  assert.equal(first, lead.id);
+  assert.notEqual(first, short.id);
+});
