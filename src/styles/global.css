@@ -25,6 +25,7 @@
   --tint: 0%;
   --bg-2: color-mix(in oklch, var(--accent) var(--tint), color-mix(in srgb, var(--text) 7%, var(--bg)));
   --line: color-mix(in oklch, var(--accent) var(--tint), color-mix(in srgb, var(--text) 26%, var(--bg)));
+  --page-bg: var(--bg); --page-text: var(--text); /* DESIGN 30a: resolved on html, so a paper sheet can swap them */
 
   /* Type */
   --font-display: 'Big Shoulders Display', Impact, 'Arial Narrow', sans-serif;
@@ -1424,3 +1425,24 @@ li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* 
   .gallery-grid li:nth-child(3) { grid-column: auto; grid-row: auto; }
   .gallery-grid li:nth-child(3) img { position: static; height: auto; aspect-ratio: 1; }
 }
+
+/* =====================================================================================================================
+   30. Poster wall (DESIGN 30, D118). Round 1: the kit's sheet and edges, the top bar (30b) and the palette switcher
+   (30d). All static: no transition, animation or scroll link. Palette changes and the header condense are instant.
+   ===================================================================================================================== */
+
+/* 30a-1 Paper sheet: ink and paper swap inside it. */
+.is-paper {
+  --bg: var(--page-text); --text: var(--page-bg); --muted: var(--muted-inv);
+  --bg-2: color-mix(in srgb, var(--page-bg) 7%, var(--page-text));
+  --line: color-mix(in srgb, var(--page-bg) 26%, var(--page-text));
+  position: relative; background: var(--bg) var(--texture); color: var(--text);
+}
+.is-paper .btn-solid { border-color: var(--text); }
+
+/* 30a-2 Edges: a pseudo-element above the band, in the band's ground (the band must set background-color). */
+.edge-angle, .edge-tear { border-top: 0; }
+:is(.edge-angle, .edge-tear) .tab { top: calc(-1 * var(--tab-h)); }
+:is(.edge-angle, .edge-tear)::before { content: ''; position: absolute; left: 0; right: 0; bottom: 100%; background: inherit; pointer-events: none; }
+.edge-angle::before { height: clamp(14px, 3vw, 44px); clip-path: polygon(0 100%, 100% 0, 100% 100%); }
+.edge-tear::before { height: 12px; clip-path: polygon(0 100%, 0 45%, 3% 70%, 7% 20%, 12% 60%, 16% 10%, 22% 55%, 27% 25%, 33% 75%, 38% 15%, 44% 50%, 49% 5%, 55% 60%, 61% 30%, 66% 70%, 72% 10%, 78% 55%, 83% 20%, 89% 65%, 94% 15%, 100% 50%, 100% 100%); }

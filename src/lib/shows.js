@@ -81,7 +81,7 @@ const place = (r) => `${esc(curly(r.venue))}, ${esc(curly(r.city))}`;
 const dateTag = (r) => `<time datetime="${esc(r.date)}${r.time ? `T${esc(r.time)}` : ''}">${esc(fmtDate(r.date))}</time>`;
 
 /** Markup per DESIGN.md (classes from prototype/styles.css). A poster is only ever a full show, never an open mic. */
-const POSTER_ART = `<picture><img class="poster-art graded" src="/media/poster-print-600.webp" width="600" height="750" alt="" loading="lazy"></picture>`;
+const POSTER_ART = `<picture><img class="poster-art graded print" src="/media/poster-print-600.webp" width="600" height="750" alt="" loading="lazy"></picture>`;
 // DESIGN 27b: "Today" / "Tomorrow" (New York day) leads the meta / kind line of an upcoming show; any other date gets nothing.
 const soonWord = (r, today) => (!today ? '' : r.date === today ? 'Today' : dayDiff(r.date, today) === 1 ? 'Tomorrow' : '');
 const lead = (r, today, parts, flag) => [soonWord(r, today) && '<strong class="row-soon">' + soonWord(r, today) + '</strong>', flag && '<strong class="flag">Full show</strong>', parts.filter(Boolean).map((x) => esc(curly(x))).join(', ')].filter(Boolean).join(', ');
