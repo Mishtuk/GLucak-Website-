@@ -1315,7 +1315,6 @@ html[data-header='solid'] .site-header { background: var(--bg) var(--texture) !i
 .band-vids { padding-top: var(--space-l); }
 .vids { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-m); }
 .phrase-watch { font-size: 3.5rem; line-height: 0.82; text-box: trim-both cap alphabetic; }
-.reel .v2-vtitle { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; }
 .vid-meta { display: flex; flex-wrap: wrap; gap: 0.25rem 0.6rem; margin-top: 0.25rem; color: var(--muted); font-size: var(--step--1); font-variant-numeric: tabular-nums; }
 .vid-more { margin-top: var(--space-xl); }
 .v2-vid button { all: unset; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.4rem; width: 100%; cursor: pointer; }
@@ -1325,9 +1324,8 @@ html[data-header='solid'] .site-header { background: var(--bg) var(--texture) !i
 .v2-vid button:active .v2-vtitle { background: var(--text); color: var(--bg); }
 @media (min-width: 900px) {
   .vids { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: var(--space-xl); }
-  .vids > :not(.spine, .tabs) { grid-column: 1 / -1; }
+  .vids > :not(.spine) { grid-column: 1 / -1; }
   .vids > .spine { container-type: inline-size; }
-  .vids > .tabs { align-self: end; justify-self: end; }
   .phrase-watch { font-size: calc(100cqi / var(--w-watch)); } /* fills the 5fr column: 149px tall at 1280 */
 }
 /* The Watch heading links to /videos/ (Home h3, Shows h2): 0px added (measured); a 47px tap box, padding cancelled by margin. */
@@ -1476,7 +1474,7 @@ li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* 
 
 /* 30a hover: an outline around the art, instant, nothing moves. */
 @media (hover: hover) and (pointer: fine) {
-  :is(.tile-link, .product-link, .v2-vid a, .reel-pick):hover :is(.tile-art, .product-media, .v2-thumb, img) { outline: 2px solid var(--text); outline-offset: 4px; }
+  :is(.tile-link, .product-link, .v2-vid a):hover :is(.tile-art, .product-media, .v2-thumb, img) { outline: 2px solid var(--text); outline-offset: 4px; }
 }
 
 /* ---------- 30e. Home (DESIGN 30e). Hero from 900px: GLUCAK whole across the top, his print taped in 5fr (loop5 P2 fixed). ---------- */
@@ -1641,50 +1639,40 @@ html[data-palette='poster'] .band-live.edge-angle { background-color: color-mix(
 html[data-palette='poster'] .hero-film { --film-ink: color-mix(in srgb, var(--text) 42%, var(--bg)); background: var(--bg); }
 html[data-palette='poster'] .hero-film::before { background: var(--film-ink); }
 
-/* ---------- Reels (owner 2026-11-18, Reel.astro): albums to flip through, a page at a time with the next one peeking. Static: no
-   transition or animation; a flip is a scroll (smooth only while Motion is on, app.js). Videos: tabs over two reels. ---------- */
-.reel-bar { display: flex; align-items: end; justify-content: space-between; gap: var(--space-s); margin-bottom: var(--space-s); }
-.reel-count { margin: 0; font-family: var(--font-display); font-weight: 900; font-size: var(--step-3); line-height: 0.8; font-variant-numeric: tabular-nums; }
-.reel-of { color: var(--muted); font-size: 0.5em; }
-.reel-nav { display: flex; gap: var(--space-xs); }
-.reel-nav[hidden] { display: none; }
-.reel-nav button { display: grid; place-items: center; width: 3rem; height: 3rem; padding: 0; border: 2px solid var(--text); background: var(--bg); color: var(--text); cursor: pointer; }
-.reel-nav svg { width: 1.5rem; height: 1.5rem; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: square; }
-.reel-nav button:disabled { border-color: var(--line); color: var(--muted); cursor: default; }
-.reel-nav button:not(:disabled):active { background: var(--text); color: var(--bg); }
-.reel-track { display: grid; grid-auto-flow: column; grid-auto-columns: 86%; gap: var(--space-m); overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; margin: 0; padding: 0 0 var(--space-xs); list-style: none; }
-.reel-track::-webkit-scrollbar { display: none; }
-.reel-track::after { content: ''; } /* a blank end column, so the last page can snap to the left edge too */
-.reel-track:focus-visible { outline: 3px solid var(--text); outline-offset: 4px; }
-.reel-slide { scroll-snap-align: start; min-width: 0; }
-.reel-slide > * { position: relative; }
-.reel-num { position: absolute; z-index: 2; top: 0; left: 0; padding: 0.15em 0.4em; background: var(--accent); color: var(--accent-text); font-family: var(--font-display); font-weight: 900; font-size: var(--step-1); line-height: 1; pointer-events: none; }
-.reel-slide:has(iframe) .reel-num { display: none; }
-.reel-strip { display: grid; grid-auto-flow: column; grid-auto-columns: 6.5rem; gap: var(--space-xs); overflow-x: auto; scrollbar-width: none; margin: var(--space-s) 0 0; padding: 5px; list-style: none; }
-.reel-strip::-webkit-scrollbar { display: none; }
-.reel-pick { position: relative; display: block; color: var(--text); text-decoration: none; }
-.reel-pick img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; background: var(--bg-2); filter: grayscale(1) brightness(0.7); }
-.reel-pick[aria-current] img { filter: none; outline: 3px solid var(--accent); outline-offset: 2px; }
-.reel-pick-n { position: absolute; left: 0; bottom: 0; padding: 0.05em 0.35em; background: var(--bg); font-family: var(--font-display); font-weight: 900; font-size: var(--step--1); line-height: 1.2; }
-.reel-pick:active img { outline: 3px solid var(--text); outline-offset: 2px; }
-/* Photo album: paper pages, the whole photo on each (contain), a two-page spread from 700px. */
-.reel-photo .reel-track { grid-auto-columns: 80%; }
-.reel-page { margin: 0; padding: var(--space-s) var(--space-s) var(--space-xs); }
-.reel-page img { display: block; width: 100%; height: min(60vh, 30rem); object-fit: contain; background: var(--bg-2); }
-.reel-page figcaption { margin-top: 0.5rem; font-size: var(--step--1); }
-.reel-page .reel-num { top: var(--space-s); left: var(--space-s); }
-.reel-photo .reel-pick img { aspect-ratio: 1; }
-@media (min-width: 700px) { .reel-photo .reel-track { grid-auto-columns: calc((100% - var(--space-m)) / 2); } }
-/* Videos: a screen on bg-2 (edge to edge on phones); the tabs sit right of WATCH from 900px. */
-.vids .reel { padding: var(--space-m) var(--space-m) var(--space-s); background: var(--bg-2); }
-.vids .reel :is(.v2-thumb, .nocover) { background-color: var(--bg); }
-@media (max-width: 699px) { .vids .reel { margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); } }
-@media (min-width: 900px) { .reel-video .reel-track { grid-auto-columns: 74%; } .reel-video .reel-num { font-size: var(--step-3); } }
-.tabs { display: flex; flex-wrap: wrap; width: fit-content; border: 2px solid var(--text); }
-.tabs[hidden] { display: none; }
-.tabs [role='tab'] { min-height: 3rem; padding: 0.4rem 1rem; border: 0; background: transparent; color: var(--text); font-family: var(--font-display); font-weight: 900; font-size: var(--step-1); text-transform: uppercase; cursor: pointer; }
-.tabs [aria-selected='true'] { background: var(--text); color: var(--bg); }
-.tabs [role='tab']:not([aria-selected='true']):active { background: var(--bg-2); }
-.tab-n { font-size: 0.7em; vertical-align: 0.15em; }
-.tabs-on .tab-h { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.tab-panel + .tab-panel { margin-top: var(--space-l); }
+/* ---------- Pinned galleries (owner 2026-11-18, HScroll.astro). No arrows: a swipe row, or with Motion on (app.js .is-pinned) a strip
+   that sticks under the header and slides sideways as the page scrolls, coupled to the scroll. No transition, no animation. ---------- */
+.hs { position: relative; min-width: 0; max-width: 100%; margin-block: var(--space-xl); } /* a grid child: never wider than the page */
+.hs-pin { position: relative; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.hs.is-pinned .hs-pin { position: sticky; top: var(--header-h); height: calc(100svh - var(--header-h) - var(--bar-h)); display: flex; align-items: center; overflow: clip; scroll-snap-type: none; }
+.hs-track { display: flex; align-items: center; gap: clamp(1.5rem, 4vw, 4rem); width: max-content; margin: 0; padding: var(--space-m) var(--gutter); list-style: none; }
+.hs-track > li { flex: none; scroll-snap-align: center; }
+.hs-head { width: min(78vw, 24rem); }
+.hs-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(3.5rem, 2rem + 7vw, 8.5rem); line-height: 0.82; text-transform: uppercase; text-box: trim-both cap alphabetic; }
+.hs-sub { margin-top: var(--space-s); color: var(--muted); }
+.hs-tail { width: min(70vw, 20rem); }
+.hs-n { font-family: var(--font-display); font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+/* Videos: a film strip. Sprocket holes run along the strip itself, so they travel with it. */
+.hs-video .hs-track { padding-block: 2.75rem; background:
+  repeating-linear-gradient(90deg, var(--bg) 0 1.1rem, transparent 1.1rem 2.2rem) 0 0.8rem / 100% 0.85rem no-repeat,
+  repeating-linear-gradient(90deg, var(--bg) 0 1.1rem, transparent 1.1rem 2.2rem) 0 calc(100% - 0.8rem) / 100% 0.85rem no-repeat,
+  var(--bg-2); }
+.hs-video .hs-item { width: min(80vw, 36rem); }
+.hs-video .v2-vid { position: relative; }
+.hs-video .hs-n { position: absolute; z-index: 2; top: 0; left: 0; padding: 0.1em 0.35em; background: var(--accent); color: var(--accent-text); font-size: var(--step-2); pointer-events: none; }
+.hs-video .v2-vid:has(iframe) .hs-n { display: none; }
+.hs-video .v2-thumb { background-color: var(--bg); }
+.hs-video .v2-vtitle { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; }
+/* About: a scrapbook of paper prints, each a little higher or lower and off square. */
+.hs-print { margin: 0; padding: 0.75rem 0.75rem 0.6rem; }
+.hs-print img { display: block; width: auto; height: clamp(13rem, 46svh, 30rem); max-width: 78vw; object-fit: cover; }
+.hs-print figcaption { display: flex; align-items: baseline; gap: 0.5rem; margin-top: 0.5rem; font-size: var(--step--1); }
+.hs-print .hs-n { color: var(--muted); font-size: var(--step-1); }
+.hs-photo .hs-item:nth-child(3n+2) { rotate: -1.5deg; margin-top: -3rem; }
+.hs-photo .hs-item:nth-child(3n) { rotate: 1deg; margin-top: 3.5rem; }
+.hs-photo .hs-item:nth-child(3n+1) { rotate: -0.5deg; margin-top: 0.5rem; }
+/* Videos: Now showing. The name in poster type laps over the bottom of the screen. */
+.now-showing { max-width: 1100px; }
+.now-label { margin-bottom: var(--space-xs); font-family: var(--font-display); font-weight: 900; font-size: var(--step-1); text-transform: uppercase; color: var(--accent); }
+.now-showing .v2-vtitle { position: relative; z-index: 1; margin-top: -0.55em; padding-inline: var(--space-s); font-family: var(--font-display); font-weight: 900; font-size: clamp(2.5rem, 1rem + 7vw, 7rem); line-height: 0.85; text-transform: uppercase; text-shadow: 0.04em 0.04em 0 var(--bg); }
+.now-showing .vid-meta { padding-inline: var(--space-s); }
+

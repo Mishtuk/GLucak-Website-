@@ -1,33 +1,34 @@
 ---
+import { existsSync } from 'node:fs';
 import Base from '../../layouts/Base.astro';
-import Reel from '../../components/Reel.astro';
+import HScroll from '../../components/HScroll.astro';
 import { videosPage, YOUTUBE, SHORTS, PHOTO_CREDITS as C } from '../../components/content.js';
-// Owner 2026-11-18: a theatre, not a scatter. Two tabs (Music videos, Live), each a reel to flip through: one big screen, the next
-// peeking, a numbered strip. No iframe until a press (hard rule 1). Without JS: both reels, one under the other, with their headings.
+import { curly } from '../../lib/shows.js';
+// Owner 2026-11-18: a theatre. "Now showing" (the newest music video) on a big screen with its name in poster type, then every other
+// video on a film strip that slides past as you scroll (HScroll). No iframe until a press (hard rule 1).
 const g = videosPage();
 const live = g.lead ? [g.lead, ...g.live] : g.live;
-const panels = [
-  g.music.length > 0 && { id: 'mv', name: 'Music videos', items: g.music, kind: 'video' as const },
-  live.length > 0 && { id: 'live', name: 'Live', items: live, kind: 'video' as const },
-].filter(Boolean) as { id: string; name: string; items: Record<string, any>[]; kind: 'video' }[];
+const lead = g.music[0] ?? live[0] ?? null;
+const rest = [...g.music, ...live].filter((v) => v !== lead);
+const thumb = lead && existsSync(`public/media/videos/${lead.id}-1280.webp`) && existsSync(`public/media/videos/${lead.id}-640.webp`) ? `/media/videos/${lead.id}` : null;
+const leadMeta = lead && [lead.place ? `Live at ${lead.place}` : lead.kind === 'lyric-video' ? 'Lyric video' : 'Music video', lead.with].filter(Boolean).join(' · ');
 ---
 <Base image="videos" title="Videos | GLucak" current="videos" credits={[C.vladd, C.joseph, C.yt]} description="Watch GLucak: every music video, and Scenic Route live at Crooked Eye.">
   <section class="band band-vids" aria-labelledby="h-vids">
     <div class="wrap vids">
       <h1 class="spine" id="h-vids"><span class="tab">Videos</span> <span class="phrase phrase-watch">Watch</span></h1>
-      {panels.length > 1 && (
-        <div class="tabs" role="tablist" aria-label="Videos" hidden>
-          {panels.map((p, i) => <button type="button" role="tab" id={`t-${p.id}`} aria-controls={`p-${p.id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? undefined : '-1'}>{p.name} <span class="tab-n">{p.items.length}</span></button>)}
+      {lead ? (
+        <div class="v2-vid now-showing">
+          <p class="now-label">Now showing</p>
+          <a href={`https://www.youtube.com/watch?v=${lead.id}`} rel="noopener" data-yt={lead.id} data-title={curly(lead.name ?? lead.title)}>
+            <span class="v2-thumb">{thumb && <img class="yt-img" src={`${thumb}-640.webp`} srcset={`${thumb}-640.webp 640w, ${thumb}-1280.webp 1280w`} sizes="(min-width: 1200px) 1100px, 92vw" width="1280" height="720" alt="" loading="eager" fetchpriority="high" decoding="async" />}<span class="yt-play" aria-hidden="true"></span></span>
+            <span class="v2-vtitle">{curly(lead.name ?? lead.title)}</span>
+          </a>
+          <p class="vid-meta"><span>{leadMeta}</span></p>
         </div>
-      )}
-      {panels.map((p) => (
-        <section class="tab-panel" id={`p-${p.id}`} role={panels.length > 1 ? 'tabpanel' : undefined} aria-labelledby={`h-${p.id}`}>
-          <h2 class="prose-h tab-h" id={`h-${p.id}`}>{p.name}</h2>
-          <Reel id={p.id} label={p.name} kind={p.kind} items={p.items} />
-        </section>
-      ))}
-      {panels.length === 0 && <p class="vid-lead"><a class="go" href={YOUTUBE} rel="noopener">GLucak on YouTube</a></p>}
-      <p class="start-line vid-more"><a class="go" href={SHORTS} rel="noopener">New shorts most weeks on YouTube.</a></p>
+      ) : <p class="vid-lead"><a class="go" href={YOUTUBE} rel="noopener">GLucak on YouTube</a></p>}
     </div>
   </section>
+  {rest.length > 0 && <HScroll id="reel" kind="video" title="The reel" sub="Every music video and live clip." items={rest} tail={{ href: SHORTS, text: 'New shorts most weeks on YouTube.' }} />}
+  {rest.length === 0 && <p class="wrap start-line vid-more"><a class="go" href={SHORTS} rel="noopener">New shorts most weeks on YouTube.</a></p>}
 </Base>

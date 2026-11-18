@@ -105,7 +105,7 @@ test('26g-6: every card has a name, every poster is alt="" with size and a file,
     assert.ok(img.includes('alt=""') && img.includes('width="1280"') && img.includes('height="720"'));
     const file = img.match(/src="([^"]+)"/)[1];
     assert.ok(existsSync(join(ROOT, 'public', file)), file);
-    assert.equal(/loading="eager"/.test(img), i === 0 || i === ids.indexOf('aZNW63M_C2E'), 'only the first of each reel is eager');
+    assert.equal(/loading="eager"/.test(img), i === 0, 'only Now showing is eager');
   });
   assert.equal(vids.split('<h1').length - 1, 1);
   assert.match(js, /b\.type = 'button'/);

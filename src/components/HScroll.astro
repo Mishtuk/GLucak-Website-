@@ -1,0 +1,40 @@
+---
+import { existsSync } from 'node:fs';
+import { curly } from '../lib/shows.js';
+// Owner 2026-11-18: "more seamless looking through the page", no arrow bar. A pinned horizontal gallery (the Awwwards pattern): with
+// Motion on (app.js adds .is-pinned) the strip sticks and scrolling down slides it sideways, coupled to the scroll, nothing on its
+// own. Motion off, reduced motion or no JS: a plain swipe row. kind 'video': a film strip (videos.json rows; facade, no player
+// until a press). kind 'photo': paper prints, a scrapbook ({ src, w, h, srcset?, alt, cap }).
+interface Props { id: string; title: string; sub?: string; kind: 'video' | 'photo'; items: Record<string, any>[]; tail?: { href: string; text: string } }
+const { id, title, sub, kind, items, tail } = Astro.props;
+const pad = (n: number) => String(n).padStart(2, '0');
+const thumb = (v: Record<string, any>) => existsSync(`public/media/videos/${v.id}-1280.webp`) && existsSync(`public/media/videos/${v.id}-640.webp`) ? `/media/videos/${v.id}` : null;
+const meta = (v: Record<string, any>) => [v.place ? `Live at ${v.place}` : v.kind === 'lyric-video' ? 'Lyric video' : 'Music video', v.with].filter(Boolean).join(' · ');
+---
+<section class:list={['hs', `hs-${kind}`]} data-hs id={id} aria-labelledby={`h-${id}`}>
+  <div class="hs-pin">
+    <ol class="hs-track">
+      <li class="hs-head"><h2 class="hs-title" id={`h-${id}`}>{title}</h2>{sub && <p class="hs-sub">{sub}</p>}</li>
+      {items.map((it, i) => (
+        <li class="hs-item">
+          {kind === 'video' ? (
+            <div class="v2-vid">
+              <span class="hs-n" aria-hidden="true">{pad(i + 1)}</span>
+              <a href={`https://www.youtube.com/watch?v=${it.id}`} rel="noopener" data-yt={it.id} data-title={curly(it.name ?? it.title)}>
+                <span class="v2-thumb">{thumb(it) && <img class="yt-img" src={`${thumb(it)}-640.webp`} srcset={`${thumb(it)}-640.webp 640w, ${thumb(it)}-1280.webp 1280w`} sizes="(min-width: 700px) 36rem, 80vw" width="1280" height="720" alt="" loading="lazy" decoding="async" />}<span class="yt-play" aria-hidden="true"></span></span>
+                <span class="v2-vtitle">{curly(it.name ?? it.title)}</span>
+              </a>
+              <p class="vid-meta"><span>{meta(it)}</span></p>
+            </div>
+          ) : (
+            <figure class="hs-print is-paper">
+              <img src={it.src} srcset={it.srcset} sizes="(min-width: 700px) 40vw, 80vw" width={it.w} height={it.h} alt={it.alt} loading="lazy" decoding="async" />
+              <figcaption><span class="hs-n" aria-hidden="true">{pad(i + 1)}</span> {it.cap}</figcaption>
+            </figure>
+          )}
+        </li>
+      ))}
+      {tail && <li class="hs-tail"><a class="go" href={tail.href} rel="noopener">{tail.text}</a></li>}
+    </ol>
+  </div>
+</section>

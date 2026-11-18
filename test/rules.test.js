@@ -186,11 +186,11 @@ test('29g-4: About has the header photo, 3 plain-link gallery photos, the credit
   const img = h.match(/<img[^>]*class="[^"]*push-photo[^"]*"[^>]*>/)[0];
   assert.match(img, /alt="[^"]+"/); assert.ok(img.includes('fetchpriority="high"') && !img.includes('loading="lazy"') && img.includes('2400w'));
   // owner 2026-11-18: the gallery is a photo album reel. Every page: one photo with alt and a caption, a real file.
-  const pages = h.match(/<ol class="reel-track"[^>]*>([^]*?)<\/ol>/)[1].split('</li>').filter((x) => x.includes('<li'));
+  const pages = h.match(/<ol class="hs-track">([^]*?)<\/ol>/)[1].split('</li>').filter((x) => x.includes('hs-item'));
   assert.equal(pages.length, 8);
   for (const li of pages) {
     const src = li.match(/<img src="(\/media\/[^"]+\.webp)"[^>]*alt="[^"]+"/)?.[1];
-    assert.ok(src && /<figcaption>[^<]+<\/figcaption>/.test(li), `one img with alt and a caption: ${li}`); assert.ok(statSync(join(ROOT, 'public', src)).isFile());
+    assert.ok(src && /<figcaption>.*<\/span> [A-Z][^<]+<\/figcaption>/.test(li), `one img with alt and a caption: ${li}`); assert.ok(statSync(join(ROOT, 'public', src)).isFile());
   }
   const scripts = [...h.matchAll(/<script\b[^>]*>/g)].map((m) => m[0]).filter((s) => !s.includes('application/ld+json'));
   assert.ok(scripts.every((s) => /src="\/js\/(boot|app)\.js"/.test(s)), `no script beyond Base: ${scripts}`);

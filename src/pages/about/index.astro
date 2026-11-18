@@ -2,11 +2,11 @@
 import Base from '../../layouts/Base.astro';
 import PushPhoto from '../../components/PushPhoto.astro';
 import ForVenues from '../../components/ForVenues.astro';
-import Reel from '../../components/Reel.astro';
+import HScroll from '../../components/HScroll.astro';
 import site from '../../data/site.json';
 import { bioHtml } from '../../lib/site.js';
 import { PATREON, PATREON_LINE, PHOTO_CREDITS as C } from '../../components/content.js';
-// Owner 2026-11-18: the Photos grid became an album to flip through. Real photos only; each one's credit is in CREDIT_FOR (content.js).
+// Owner 2026-11-18: the Photos grid became a scrapbook that slides past (HScroll). Real photos only; each one's credit is in CREDIT_FOR (content.js).
 // Stills: frames from his music videos (tools/film: the same downloads), 1280 + 480 webp in /media/stills.
 const ALBUM = [
   { src: '/media/cd-studio-960.webp', thumb: '/media/cd-studio-480.webp', srcset: '/media/cd-studio-480.webp 480w, /media/cd-studio-960.webp 960w', w: 960, h: 960, alt: 'GLucak in his home studio, headphones on, his gear on the floor around him', cap: 'In the home studio' },
@@ -41,11 +41,8 @@ const ALBUM = [
         <p class="patreon-line">{PATREON_LINE}</p>
         <a class="btn btn-line about-patreon" href={PATREON} rel="noopener">Patreon</a>
       </div>
-      <section class="gallery" aria-labelledby="h-photos">
-        <h2 class="prose-h" id="h-photos">Photo album</h2>
-        <Reel id="album" label="Photo album" kind="photo" items={ALBUM} />
-      </section>
     </div>
+    <HScroll id="album" kind="photo" title="Photo album" sub="Shows, shoots and the home studio." items={ALBUM} />
     <div class="wrap prose is-paper">
       <ForVenues sheet={false} />
       <h2>Credits</h2>
