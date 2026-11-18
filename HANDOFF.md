@@ -10,6 +10,13 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
+- **Desktop 2026-11-18: round DR1 DONE (DESIGN 27, D96 approved, `docs/review/dr1/gate.md`):** speculation-rules prefetch over a
+  header + still phone bar, Today / Tomorrow on the next show (Now line rule T, amends D45), Apple Music / YouTube / SoundCloud
+  row under Spotify, curly quotes everywhere (`curly()` before escaping), Shows Watch lead + two at 1280, era selection / caret /
+  scrollbar. Design review 31/40 (was 29), hard rules PASS, `npm test` 245/245, Home 3782 at 390, Music 1280 +56 accepted.
+  New: `docs/research/RESOURCES.md` (every owner-shared resource), project skill `.claude/skills/design-review/` (impeccable
+  rubric + our overrides), hallmark sloplint triage `docs/review/dr1/sloplint-notes.md`. Loop for every UI round: designer spec ->
+  coder -> 390 + 1280 shots (motion on + reduced) -> design-review + sloplint by a separate reviewer -> boss gate.
 - **Desktop 2026-11-17 status:** round done and pushed (boss-approved, `docs/review/desktop-round-2026-11-17-review.md`): S1 / S7 /
   sign-in log, poster = first full show, 'Shop', Dependabot, Welcome Home Pre-save, `--w-close` 10.65, **daily Actions workflow**
   (`.github/workflows/daily.yml`, 09:00 UTC: npm ci, npm test, republish preview; owner OK'd; first run green). `npm test` 232/232.
