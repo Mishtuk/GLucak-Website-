@@ -9,6 +9,6 @@
 - **Owner call, kept for now (P2-2):** the About header is Gabe's own violet grade (median hue 274, not magenta by the rule; D51 forbids
   re-grading his art). It reads vivid next to the magenta Listen button; the owner can swap it for a Print frame.
 - Left: P2-3 credits list not tied per photo + INDEX.md Crooked Eye clip note; P3 bare .webp gallery links, hero A crop at 390.
-  `data-hero='b'` CSS is NOT dead (D34 default B from 900) and stays.
+  Dead `html[data-hero='b']` / `.credit-b` CSS removed (no page passes hero b since D116 item 3); Home 1280 + 390 re-shot, unchanged, 3859px.
 - Security (loop 4): uploads checked by magic bytes before sharp; scrypt N=2^15 r=8 p=3 with `s2.` format (old hashes still verify);
   sign-out revokes the session on every device (`DATA_DIR/signouts.json`). `npm test` 314/314.

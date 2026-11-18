@@ -317,17 +317,6 @@ img.duo { filter: url('#duo'); }
 @media (min-width: 900px) { .stub { max-width: 26rem; } }
 .footer-chip { top: -0.85rem; bottom: auto; right: max(var(--gutter), calc((100% - var(--container)) / 2)); border: 0; padding: 0 0.35rem; text-decoration: underline dashed var(--muted); text-underline-offset: 4px; } /* DESIGN 21c / 23: on the footer's top rule, no box, the dashed mark as an underline */
 
-/* Hero B: photo in the name, at his own break. The slot stands taller than the letters. */
-html[data-hero='b'] .hero-photo { display: none; }
-html[data-hero='b'] .name-row { --k: 1.18; --fs: calc(100cqi / (var(--w-name) + var(--k) + 0.1)); }
-html[data-hero='b'] .slot {
-  display: block; position: relative; flex: none; overflow: hidden;
-  width: calc(var(--fs) * var(--k)); height: calc(var(--fs) * 1.56);
-  margin-inline: 0.05em; background: var(--bg-2);
-}
-html[data-hero='b'] .slot picture { display: contents; }
-html[data-hero='b'] .slot img { width: 100%; height: 100%; object-fit: cover; object-position: 44% 20%; }
-
 /* ---------- Bands and the spine ---------- */
 .band { position: relative; z-index: 2; border-top: 4px solid var(--line); padding-block: var(--space-m) var(--section); background-image: var(--texture); }
 .band-rise { background-color: transparent; }
@@ -517,10 +506,8 @@ html[data-shows='none'] .quote-live { display: none; }
 .identity-date { color: var(--muted); font-weight: 400; }
 .identity-state .btn { margin-top: 0.25rem; }
 
-/* Photo credits for this page (CREDITS.md wording). The MCCC still appears only in hero B under 900px. */
+/* Photo credits for this page (CREDITS.md wording). */
 .credits { margin-top: var(--space-xs); color: var(--muted); font-size: var(--step--1); }
-html:not([data-hero='b']) .credit-b { display: none; }
-@media (min-width: 900px) { .credit-b { display: none; } }
 
 /* ---------- Footer ---------- */
 .site-footer { position: relative; z-index: 2; border-top: 4px solid var(--line); padding-block: var(--space-l); background: var(--bg-2); background-image: var(--texture); }
@@ -559,8 +546,6 @@ html:not([data-hero='b']) .credit-b { display: none; }
   .slogan { font-family: var(--font-display); white-space: nowrap; }
   .hero-actions { display: inline-flex; margin-top: var(--space-l); }
   .now { display: inline-block; margin: 0 0 0 var(--space-l); vertical-align: bottom; }
-  html[data-hero='b'] .name-row { --k: 1.9; }
-  html[data-hero='b'] .slot { height: calc(var(--fs) * 1.34); }
 
   .rise-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-m) var(--space-xl); align-items: start; }
   .spine:has(.phrase-rise) { grid-column: 1; }
@@ -1194,7 +1179,6 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 @supports not (width: 1cqi) {
   :root { --fitw: min(100vw - 2 * var(--gutter) - var(--safe-x), var(--container)); }
   .name-row { --fs: calc(var(--fitw) / var(--w-name)); }
-  html[data-hero='b'] .name-row { --fs: calc(var(--fitw) / (var(--w-name) + var(--k) + 0.1)); }
   .sl-1 { font-size: calc(var(--fitw) / var(--w-sl1)); }
   .sl-2 { font-size: calc(var(--fitw) / var(--w-sl2)); }
   .ln-live { font-size: calc(var(--fitw) / var(--w-live)); }
