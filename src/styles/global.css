@@ -578,10 +578,6 @@ html[data-shows='none'] .quote-live { display: none; }
   .now-grid { margin-top: 0; gap: var(--space-l); }
   .shows-grid { gap: var(--space-xl); }
 }
-/* Shows beside the video only from 72rem: below that the poster art would not fit beside its text. */
-@media (min-width: 72rem) {
-  .shows-grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: start; }
-}
 
 /* ---------- Added in the port ---------- */
 .yt-title { position: absolute; inset: auto 0.75rem 0.6rem; font-weight: 700; font-size: var(--step--1); line-height: 1.25; }
@@ -1142,8 +1138,8 @@ html[data-header='solid'] .site-header { background: var(--bg) var(--texture) !i
   .v2-videos { margin-top: var(--space-m); }
   .band-push.v2-push > .wrap.v2-split { row-gap: var(--space-s); }
 }
-/* DR1 27e: /shows/ from 72rem, Watch in the 5fr column is a lead plus two, not a clipped sideways row. */
-@media (min-width: 72rem) {
+/* DR1 27e (30z-10: from 700px): /shows/, Watch in the 5fr column is a lead plus two, not a clipped sideways row. */
+@media (min-width: 700px) {
   .shows-grid .v2-vrow { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; }
   .shows-grid .v2-vid:first-child { grid-column: 1 / -1; grid-row: auto; }
 }
@@ -1589,3 +1585,24 @@ html[data-palette='poster'] .band-live.edge-angle { background-color: color-mix(
 @media (max-width: 699px) { .crate > :nth-child(even) { margin-top: 1.5rem; } }
 @media (min-width: 700px) and (max-width: 899px) { .crate > :nth-child(even) { margin-top: 0; } .crate > :nth-child(3n+2) { margin-top: 2rem; } }
 @media (min-width: 900px) { .crate > :nth-child(even) { margin-top: 3rem; } } /* the stagger of 30a-5, written on the grid: the markup stays .crate */
+
+/* ---------- Round 3: Shows. Two columns from 700px (30z-10), the next show a ticket, the full-show poster breaking out of its
+   column, Book GLucak a taped sheet, Played a bg-2 panel. ---------- */
+@media (min-width: 700px) { .shows-grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: start; } }
+.shows > :first-child:is(.poster, .row) { /* the notches of 30a-4; the poster keeps its paper and its art bleed */
+  -webkit-mask: radial-gradient(circle 12px at 0 50%, #0000 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 12px at 100% 50%, #0000 97%, #000) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle 12px at 0 50%, #0000 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 12px at 100% 50%, #0000 97%, #000) right / 51% 100% no-repeat;
+}
+.shows > :first-child:is(.row, .is-plain) { padding: var(--space-m) var(--space-l); background: var(--bg-2) var(--texture); } /* the next show: a ticket stub */
+.venues.is-paper { padding: var(--space-l); max-width: none; }
+.venues.is-paper .btn-line { border-color: var(--text); }
+.played { padding: var(--space-l); background: var(--bg-2); }
+@media (max-width: 699px) {
+  .venues.is-paper { margin-inline: var(--space-m) calc(-1 * var(--gutter)); padding-right: var(--gutter); }
+  .venues.is-paper::after { right: 0.5rem; }
+  .played { margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); }
+}
+@media (min-width: 900px) {
+  .shows-side { margin-top: 6rem; }
+  .poster:not(.is-plain) { margin-right: calc(-1 * var(--space-l)); } /* breaks out of its column, 0.75rem short of Watch */
+}
