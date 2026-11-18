@@ -64,23 +64,26 @@ const dateTag = (r) => `<time datetime="${esc(r.date)}${r.time ? `T${esc(r.time)
 
 /** Markup per DESIGN.md (classes from prototype/styles.css). A poster is only ever a full show, never an open mic. */
 const POSTER_ART = `<picture><img class="poster-art graded" src="/media/c-poster-600.webp" srcset="/media/c-poster-600.webp 600w, /media/c-poster-1000.webp 1000w" sizes="(min-width: 640px) 23rem, 50vw" width="600" height="750" alt="" loading="lazy"></picture>`;
-export function posterHtml(r) {
-  const meta = [r.time && fmtTime(r.time), r.with && `With ${r.with}`].filter(Boolean).map((x) => esc(curly(x))).join(', ');
+// DESIGN 27b: "Today" / "Tomorrow" (New York day) leads the meta / kind line of an upcoming show; any other date gets nothing.
+const soonWord = (r, today) => (!today ? '' : r.date === today ? 'Today' : dayDiff(r.date, today) === 1 ? 'Tomorrow' : '');
+const lead = (r, today, parts) => [soonWord(r, today) && '<strong class="row-soon">' + soonWord(r, today) + '</strong>', parts.filter(Boolean).map((x) => esc(curly(x))).join(', ')].filter(Boolean).join(', ');
+export function posterHtml(r, { today } = {}) {
+  const meta = lead(r, today, [r.time && fmtTime(r.time), r.with && `With ${r.with}`]);
   return `<li class="poster">${POSTER_ART}<p class="poster-date fit"><span class="ln ln-date">${dateTag(r)}</span></p>${cal(r, true)}<p class="poster-place">${place(r)}</p>${meta ? `<p class="poster-meta">${meta}</p>` : ''}${action(r)}</li>`;
 }
 /** `past` rows (Played) get no calendar link: past shows have no .ics. */
-export function rowHtml(r, { past = false } = {}) {
-  const extra = [r.type === 'open-mic' ? 'Open mic' : 'Show', r.time && fmtTime(r.time), r.with && `With ${r.with}`].filter(Boolean).map((x) => esc(curly(x))).join(', ');
+export function rowHtml(r, { past = false, today } = {}) {
+  const extra = lead(r, past ? null : today, [r.type === 'open-mic' ? 'Open mic' : 'Show', r.time && fmtTime(r.time), r.with && `With ${r.with}`]);
   return `<li class="row"><span class="row-date">${dateTag(r)}</span>${past ? '' : cal(r, false)}<span class="row-text"><span class="row-place">${place(r)}</span><span class="row-kind">${extra}</span></span>${action(r)}</li>`;
 }
 // Kept for callers that want one plain row.
 export const showHtml = rowHtml;
 
 /** The poster is the first full show (open mics may come before it by date); the rest are rows by date, the poster not repeated. limit counts the poster. */
-const upcomingHtml = (list, limit = Infinity) => {
+const upcomingHtml = (list, limit = Infinity, today) => {
   const poster = list.find((r) => r.type === 'show');
   const rows = list.filter((r) => r !== poster).slice(0, poster ? limit - 1 : limit);
-  return `<ul class="shows">${(poster ? posterHtml(poster) : '') + rows.map((r) => rowHtml(r)).join('')}</ul>`;
+  return `<ul class="shows">${(poster ? posterHtml(poster, { today }) : '') + rows.map((r) => rowHtml(r, { today })).join('')}</ul>`;
 };
 const playedHtml = (list) => list.length ? `<div class="played"><h2>Played</h2><ul class="rows">${list.map((r) => rowHtml(r, { past: true })).join('')}</ul></div>` : '';
 const emptyHtml = (played) => `<div class="empty"><p class="empty-line">No shows booked right now</p><div class="empty-actions"><a class="btn btn-solid" href="${INSTAGRAM}" rel="noopener">Follow</a>${BOOKING_EMAIL ? `<a class="btn btn-line" href="mailto:${esc(BOOKING_EMAIL)}?subject=Show%20request">Request a show</a>` : ''}</div>${playedHtml(played)}</div>`;
@@ -94,7 +97,7 @@ export function showsHtml(rows, now = new Date(), { limit = Infinity, past = fal
   const ok = rows.filter((r) => { try { return validateShow(r); } catch { return false; } });
   const s = splitShows(ok, now);
   if (!s.upcoming.length) return emptyHtml(past ? s.past : s.past.slice(0, 3));
-  let out = upcomingHtml(s.upcoming, limit);
+  let out = upcomingHtml(s.upcoming, limit, etDay(now));
   if (allLink) out += `<a class="text-link" href="${esc(allLink)}">All shows</a>`;
   if (past) out += playedHtml(s.past);
   return out;
@@ -123,7 +126,7 @@ const link = (href, text) => `<a href="${esc(href)}"${href === '#shows' ? '' : '
 
 /**
  * The Now line (D45/D57, copy in docs/copy/round2.md), picked per visit by New York day. In order:
- * B release day "Out today: Title" (beats an upcoming release); A release 1-14 days ahead "Out Nov 13: Title"; C 1-7 days after "Out now: Title";
+ * B release day "Out today: Title" (beats an upcoming release); T (D96) next show or open mic today or tomorrow "Open mic today: ..." / "Show tomorrow: ..."; A release 1-14 days ahead "Out Nov 13: Title"; C 1-7 days after "Out now: Title";
  * D next show or open mic within 14 days "Show Nov 20: Venue, City" / "Open mic Nov 20: ..." ("Show today: ..." on the day), linking #shows;
  * E newest release "Out now: Title". '' if nothing applies (the static release line then stays). Escaped; release links http(s) only; never "Pre-save".
  * Shows are validated rows; `releases` is the raw releases.json list.
@@ -135,14 +138,13 @@ export function nowHtml(rows, now = new Date(), releases = []) {
   const b = rel.find((r) => r.d === 0), a = rel.find((r) => r.d >= 1 && r.d <= 14);
   const c = rel.filter((r) => r.d < 0 && r.d >= -7).pop();
   if (b) return link(b.link, `Out today: ${b.title}`);
-  if (a) return link(a.link, `Out ${monD(a.date)}: ${a.title}`);
-  if (c) return link(c.link, `Out now: ${c.title}`);
   const ok = rows.filter((r) => { try { return validateShow(r); } catch { return false; } });
   const next = splitShows(ok, now).upcoming[0];
-  if (next && dayDiff(next.date, today) <= 14) {
-    const kind = next.type === 'open-mic' ? 'Open mic' : 'Show';
-    return link('#shows', `${kind} ${next.date === today ? 'today' : monD(next.date)}: ${next.venue}, ${next.city}`);
-  }
+  const showLine = (r) => `${r.type === 'open-mic' ? 'Open mic' : 'Show'} ${r.date === today ? 'today' : dayDiff(r.date, today) === 1 ? 'tomorrow' : monD(r.date)}: ${r.venue}, ${r.city}`;
+  if (next && dayDiff(next.date, today) <= 1) return link('#shows', showLine(next)); // T (D96): a show or open mic today or tomorrow beats releases A and C
+  if (a) return link(a.link, `Out ${monD(a.date)}: ${a.title}`);
+  if (c) return link(c.link, `Out now: ${c.title}`);
+  if (next && dayDiff(next.date, today) <= 14) return link('#shows', showLine(next));
   const latest = rel.filter((r) => r.d < 0).pop();
   return latest ? link(latest.link, `Out now: ${latest.title}`) : '';
 }

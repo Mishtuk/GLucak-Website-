@@ -192,3 +192,29 @@ test('D63 F5: a C1 control (NEL) in the address is refused like a line break', (
   assert.throws(() => validateShow(row({ address: '12 Main\u0085St' })), /Put the address on one line\./);
   assert.throws(() => validateShow(row({ address: '12 Main\u009fSt' })), /Put the address on one line\./);
 });
+
+// ---------- DR1 27b: Today / Tomorrow ----------
+test('27b rows and poster: Today / Tomorrow lead the line; other days and Played rows get nothing', () => {
+  const now = noon('2026-11-17');
+  const out = (r) => showsHtml([r], now);
+  assert.ok(out(row({ date: '2026-11-17', type: 'open-mic', time: '19:00' })).includes('<span class="row-kind"><strong class="row-soon">Today</strong>, Open mic, 7:00 PM</span>'));
+  assert.ok(out(row({ date: '2026-11-18', type: 'open-mic', time: '18:00' })).includes('<strong class="row-soon">Tomorrow</strong>, Open mic, 6:00 PM'));
+  assert.ok(!out(row({ date: '2026-11-19' })).includes('row-soon'));
+  const played = showsHtml([row({ date: '2026-11-16' })], now, { past: true });
+  assert.ok(!played.includes('row-soon'));
+  assert.ok(out(row({ date: '2026-11-17', time: '18:00' })).includes('<p class="poster-meta"><strong class="row-soon">Today</strong>, 6:00 PM</p>'));
+  assert.ok(out(row({ date: '2026-11-17' })).includes('<p class="poster-meta"><strong class="row-soon">Today</strong></p>'));
+  // New York day: 03:30Z on Nov 18 is still Nov 17 there
+  assert.ok(showsHtml([row({ date: '2026-11-17', type: 'open-mic' })], new Date('2026-11-18T03:30:00Z')).includes('row-soon">Today<'));
+});
+
+test('27b Now line T: a show or open mic today / tomorrow beats releases A and C, not B', () => {
+  const mic = (date) => row({ date, type: 'open-mic', venue: 'M.O.M’s', city: 'Doylestown, PA' });
+  const c = { ...WIA, date: '2026-11-13' }; // 4 days old on the 17th: C
+  const t = nowHtml([mic('2026-11-17')], noon('2026-11-17'), [c]);
+  assert.equal(t, link('#shows', 'Open mic today: M.O.M’s, Doylestown, PA', ''));
+  assert.ok(t.includes('href="#shows"'));
+  assert.equal(nowHtml([mic('2026-11-18')], noon('2026-11-17'), [c]), link('#shows', 'Open mic tomorrow: M.O.M’s, Doylestown, PA', ''));
+  assert.ok(nowHtml([mic('2026-11-17')], noon('2026-11-13'), [c]).includes('Out today: Who I Am'), 'B still wins');
+  assert.ok(nowHtml([mic('2026-11-20')], noon('2026-11-17'), [c]).includes('Out now: Who I Am'), 'three days out: C as before');
+});
