@@ -20,3 +20,5 @@ Rules:
 - Commit as Alex Mishtuk with no Claude / AI attribution line (owner rule). Claim files in HANDOFF.md "Now working on"
   before editing; `git pull --rebase` before every push; post every push
   on the board (`node tools/board.mjs say "Desktop: pushed <hash>: ..."`).
+- No fabrication, surgical diffs (FerroxLabs/agents-md AGENTS.md s.0-3, MIT): never invent paths, hashes, APIs or test results, read or run to check; every changed line traces to the brief; no drive-by refactors or reformatting; no abstraction for single-use code. If unsure, take the boss's brief and the simplest reading (the owner is asleep, never ask).
+- Effect reject-list (ig-loop1): no shadows, glow, pulse, sparkle / burst, or sound effects on this site (DESIGN.md "no shadows, no cards"; hard rule: nothing flashes). Reel-derived effect packs (two-shadow cards, manga SFX, crit flashes) are rejected at the brief, not built. Reel-triage: a reel is "new" only if it carries a testable rule (CSS value, number, named check); skip game-effect packs and vlogs with a one-line note.

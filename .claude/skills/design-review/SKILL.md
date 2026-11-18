@@ -22,3 +22,9 @@ The reference files are vendored, unchanged, from impeccable (github.com/pbakaus
 6. Output: the critique / audit report as the reference files describe, saved as `docs/review/<round>/design-review.md`, ending
    with P0-P3 fixes (file:line, the change). No edits to site code: the reviewer reports, the coder fixes, the boss gates
    (pass = no P0 / P1, no craft-floor FAIL, reduced-motion set intact). At most 2 fix rounds, then the boss decides.
+
+## More references (vendored loop 1, text only, MIT, our overrides above still win)
+- `reference/antislop-slop-patterns-and-gate.md`: read when scoring a page for template / AI-slop tells (copy, layout, icons) and before the boss gate; end the report with its PASS / FAIL gate lines, each backed by evidence. It bans nothing on its own; our hard rules and D-rulings win.
+- `reference/antislop-layoutmobile.md`: read when checking the 390 and 320 shots (overflow, tap targets, collapsing grids, mobile nav).
+- `reference/review-triage.md`: read when several findings come in; give each a confidence, an act / skip decision with a reason, and write the table before fixing.
+Licences: `reference/LICENSE-anti-slop`, `reference/LICENSE-claude-code-workflows`, `reference/LICENSE-agents-md`.

@@ -28,3 +28,4 @@ What matters:
   off under `prefers-reduced-motion`. Gabe is an epilepsy survivor; this is a hard rule.
 - Gabe edits small things himself (shows, releases, videos): design those edit screens simply too.
 - Phones first (fans come from Instagram links), real empty/loading states (no shows booked yet), accessible contrast.
+- Effect reject-list (ig-loop1): no shadows, glow, pulse, sparkle / burst or sound effects for GLucak; reject reel-derived effect packs (stacked shadows, manga SFX, crit flashes) at the brief. Reel-triage: a reel counts only if it carries a testable rule (CSS value, number, named check); skip game-effect packs, income vlogs and "websites you should know" posts with a one-line note.

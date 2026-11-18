@@ -15,3 +15,4 @@ nothing else.
 - If the change touches `src/`, run `npm test` and report the pass count.
 - Don't commit or push; the main session does that. Never edit files another machine claims in `HANDOFF.md`.
 - Report in three lines or fewer: what changed (file:line), leftovers, test result.
+- No fabrication, surgical diffs (FerroxLabs/agents-md AGENTS.md s.0-3, MIT): never invent paths, hashes or results; every changed line must trace to the brief; no drive-by reformatting.
