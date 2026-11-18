@@ -72,3 +72,35 @@ test('27f browser surfaces use tokens only', () => {
     assert.ok(!/#[0-9a-f]{3,8}\b|rgb|hsl|oklch/i.test(l), 'no colour literal');
   }
 });
+
+// ---------- 27a ----------
+test('27a Speculation-Rules header on pages, not on /edit/ or JSON', async () => {
+  for (const p of ['/', '/music/', '/nope-404']) assert.equal((await fetch(`${base}${p}`)).headers.get('speculation-rules'), '"/speculation-rules.json"', p);
+  assert.equal((await fetch(`${base}/edit/`)).headers.get('speculation-rules'), null);
+  const api = await fetch(`${base}/edit/api/shows`);
+  assert.equal(api.headers.get('speculation-rules'), null);
+  assert.equal((await fetch(`${base}/speculation-rules.json`)).headers.get('speculation-rules'), null);
+});
+
+test('27a /speculation-rules.json: right type, prefetch + prerender, never /edit/ /api/ .ics', async () => {
+  const r = await fetch(`${base}/speculation-rules.json`);
+  assert.equal(r.status, 200);
+  assert.equal(r.headers.get('content-type'), 'application/speculationrules+json');
+  const j = await r.json();
+  for (const k of ['prefetch', 'prerender']) {
+    const w = JSON.stringify(j[k][0].where);
+    for (const x of ['/edit/*', '/api/*', '/*.ics']) assert.ok(w.includes(x), `${k} excludes ${x}`);
+  }
+});
+
+test('27a CSP unchanged: no inline-speculation-rules, no unsafe-inline in script-src; no inline rules in built pages', async () => {
+  const csp = (await fetch(`${base}/`)).headers.get('content-security-policy');
+  assert.ok(!csp.includes('inline-speculation-rules'));
+  assert.match(csp, /script-src 'self'(;|$)/);
+  for (const f of walk(join(ROOT, 'dist'))) assert.ok(!readFileSync(f, 'utf8').includes('type="speculationrules"'), f);
+});
+
+test('27a phone bar held still in the view transition', () => {
+  assert.ok(css.includes('.phone-bar { view-transition-name: phone-bar; }'));
+  assert.ok(css.includes('::view-transition-group(phone-bar), ::view-transition-old(phone-bar), ::view-transition-new(phone-bar) { animation: none; }'));
+});

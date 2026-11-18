@@ -84,6 +84,7 @@ function inject(html, path) {
   return externalize(shows ? html.replace('<!--gl:shows-->', () => showsHtml(rows, new Date(), path === '/' ? { limit: 3, allLink: '/shows/' } : { past: true })) : html);
 }
 
+const SPEC = { 'Speculation-Rules': '"/speculation-rules.json"' }; // DESIGN 27a: a header, so CSP needs no inline-speculation-rules
 function send(req, res, status, type, body, extra = {}) {
   const headers = { ...baseHeaders(req), 'Content-Type': type, ...extra };
   const out = compress(req, body, type, headers);
@@ -100,7 +101,7 @@ function notFound(req, res) {
     try { html = inject(html, '/404'); } catch (e) { console.error('inject failed on 404', e.message); }
     body = Buffer.from(html);
   }
-  send(req, res, 404, TYPES['.html'], body, { 'Cache-Control': 'no-cache', 'X-Robots-Tag': 'noindex' });
+  send(req, res, 404, TYPES['.html'], body, { 'Cache-Control': 'no-cache', 'X-Robots-Tag': 'noindex', ...SPEC });
 }
 
 /** POST /api/signup. Form or JSON body, max 2 KB. JSON reply for the page's script; 303 back to the form without JS. */
@@ -315,13 +316,13 @@ function handle(req, res) {
     st = statSafe(file);
   }
   if (!st?.isFile()) return notFound(req, res);
-  const type = TYPES[extname(file)] ?? 'application/octet-stream';
+  const type = p === '/speculation-rules.json' ? 'application/speculationrules+json' : TYPES[extname(file)] ?? 'application/octet-stream'; // Chrome ignores the rules under any other type
   if (type.startsWith('text/html')) {
     let html = readFileSync(file, 'utf8');
     try { html = inject(html, p); } catch (e) { console.error('inject failed, serving the static page', e.message); }
     const edit = p.startsWith('/edit/') ? { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' }
       : p.startsWith('/shop/') && !shopOn() ? { 'X-Robots-Tag': 'noindex' } : {}; // the shop preview stays out of search
-    return send(req, res, 200, type, Buffer.from(html), { 'Cache-Control': 'no-cache', ...edit });
+    return send(req, res, 200, type, Buffer.from(html), { 'Cache-Control': 'no-cache', ...(p.startsWith('/edit/') ? {} : SPEC), ...edit });
   }
   send(req, res, 200, type, readFileSync(file), { 'Cache-Control': p.startsWith('/_astro/') ? 'public, max-age=31536000, immutable' : 'public, max-age=86400' });
 }

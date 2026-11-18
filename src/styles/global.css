@@ -876,6 +876,8 @@ a, button, summary, label { -webkit-tap-highlight-color: transparent; }
 ::view-transition-group(root) { animation-duration: 0.2s; }
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.2s; animation-timing-function: ease-out; }
 ::view-transition-group(site-header), ::view-transition-old(site-header), ::view-transition-new(site-header) { animation: none; }
+.phone-bar { view-transition-name: phone-bar; }
+::view-transition-group(phone-bar), ::view-transition-old(phone-bar), ::view-transition-new(phone-bar) { animation: none; }
 @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
 html[data-motion='off']::view-transition-group(*),
 html[data-motion='off']::view-transition-old(*),

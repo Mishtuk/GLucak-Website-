@@ -1,0 +1,14 @@
+{
+  "prefetch": [{ "source": "document", "eagerness": "moderate", "where": { "and": [
+    { "href_matches": "/*" },
+    { "not": { "href_matches": "/edit/*" } },
+    { "not": { "href_matches": "/api/*" } },
+    { "not": { "href_matches": "/*.ics" } },
+    { "not": { "selector_matches": "[target=_blank], [download], [rel~=nofollow]" } } ] } }],
+  "prerender": [{ "source": "document", "eagerness": "conservative", "where": { "and": [
+    { "href_matches": "/*" },
+    { "not": { "href_matches": "/edit/*" } },
+    { "not": { "href_matches": "/api/*" } },
+    { "not": { "href_matches": "/*.ics" } },
+    { "not": { "selector_matches": "[target=_blank], [download], [rel~=nofollow]" } } ] } }]
+}
