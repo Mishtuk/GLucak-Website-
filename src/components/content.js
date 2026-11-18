@@ -33,6 +33,8 @@ export const CREDIT_FOR = [
   [/\/media\/cd-/, PHOTO_CREDITS.cd],
   [/\/media\/v2\/garage-|videos\/K-OZiNvQB14-|stills\/ddjf-/, PHOTO_CREDITS.joseph],
   [/stills\/(eys|yna|rl)-/, PHOTO_CREDITS.yt], // the About album's music video stills
+  [/sleeves\/K-OZiNvQB14-/, PHOTO_CREDITS.joseph], [/sleeves\/aZNW63M_C2E-/, PHOTO_CREDITS.vladd], // the Videos page record sleeves
+  [/sleeves\/(ZGlnFchIVVY|jL3OKWeRFwg|6SpsSt8rPzI|LBQ4fqLVHSI|OOGT3GxlQJk)-/, PHOTO_CREDITS.yt],
   [/a-print-|b-print-/, PHOTO_CREDITS.kealey],
 ];
 export const SITE_URL = (import.meta.env.SITE_URL ?? 'https://glucak.com').replace(/\/$/, '');

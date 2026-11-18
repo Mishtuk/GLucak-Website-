@@ -51,6 +51,7 @@
   --header-h: 60px;
   --tab-h: 1.5rem;
   --bar-h: 0px;
+  --vinyl: #121217; --vinyl-groove: #1e1e26; --vinyl-edge: #0b0b0f; /* records are black in every palette */
   --safe-x: calc(2 * max(env(safe-area-inset-left), env(safe-area-inset-right)));
 
   /* Measured width of each fitted line, in em, at letter-spacing 0. Re-measure with `node check.mjs --measure` if the face changes. */
@@ -1651,17 +1652,6 @@ html[data-palette='poster'] .hero-film::before { background: var(--film-ink); }
 .hs-sub { margin-top: var(--space-s); color: var(--muted); }
 .hs-tail { width: min(70vw, 20rem); }
 .hs-n { font-family: var(--font-display); font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
-/* Videos: a film strip. Sprocket holes run along the strip itself, so they travel with it. */
-.hs-video .hs-track { padding-block: 2.75rem; background:
-  repeating-linear-gradient(90deg, var(--bg) 0 1.1rem, transparent 1.1rem 2.2rem) 0 0.8rem / 100% 0.85rem no-repeat,
-  repeating-linear-gradient(90deg, var(--bg) 0 1.1rem, transparent 1.1rem 2.2rem) 0 calc(100% - 0.8rem) / 100% 0.85rem no-repeat,
-  var(--bg-2); }
-.hs-video .hs-item { width: min(80vw, 36rem); }
-.hs-video .v2-vid { position: relative; }
-.hs-video .hs-n { position: absolute; z-index: 2; top: 0; left: 0; padding: 0.1em 0.35em; background: var(--accent); color: var(--accent-text); font-size: var(--step-2); pointer-events: none; }
-.hs-video .v2-vid:has(iframe) .hs-n { display: none; }
-.hs-video .v2-thumb { background-color: var(--bg); }
-.hs-video .v2-vtitle { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; }
 /* About: a scrapbook of paper prints, each a little higher or lower and off square. */
 .hs-print { margin: 0; padding: 0.75rem 0.75rem 0.6rem; }
 .hs-print img { display: block; width: auto; height: clamp(13rem, 46svh, 30rem); max-width: 78vw; object-fit: cover; }
@@ -1676,3 +1666,52 @@ html[data-palette='poster'] .hero-film::before { background: var(--film-ink); }
 .now-showing .v2-vtitle { position: relative; z-index: 1; margin-top: -0.55em; padding-inline: var(--space-s); font-family: var(--font-display); font-weight: 900; font-size: clamp(2.5rem, 1rem + 7vw, 7rem); line-height: 0.85; text-transform: uppercase; text-shadow: 0.04em 0.04em 0 var(--bg); }
 .now-showing .vid-meta { padding-inline: var(--space-s); }
 
+
+/* ---------- Records (owner 2026-11-18, Videos page): a record shop (the Dribbble pattern). Each video is a sleeve: a real still from
+   it in two inks (multiply onto the light ink, lighten up to the dark ink, so every palette re-inks it) and one of four cover
+   layouts, with the vinyl standing out behind it. Static; with Motion on, a fine-pointer hover slides the vinyl out a little. ---------- */
+.now-showing { scroll-margin-top: calc(var(--header-h) + 1rem); }
+.band-crate { background-color: var(--bg-2); }
+.crate-h { font-family: var(--font-display); font-weight: 900; font-size: clamp(3rem, 1.5rem + 7vw, 8rem); line-height: 0.82; text-transform: uppercase; text-box: trim-both cap alphabetic; }
+.crate-sub { margin-top: var(--space-s); color: var(--muted); }
+.records { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-xl) var(--space-m); margin: var(--space-l) 0 0; padding: 0; list-style: none; }
+.records > :nth-child(even) { margin-top: var(--space-l); }
+@media (min-width: 700px) { .records { grid-template-columns: repeat(3, minmax(0, 1fr)); } .records > :nth-child(even) { margin-top: 0; } .records > :nth-child(3n+2) { margin-top: var(--space-xl); } }
+@media (min-width: 1100px) { .records { grid-template-columns: repeat(4, minmax(0, 1fr)); } .records > :nth-child(3n+2) { margin-top: 0; } .records > :nth-child(even) { margin-top: var(--space-xl); } }
+.rec { --ink-dark: var(--bg); --ink-light: color-mix(in srgb, var(--text) 72%, var(--bg)); }
+.rec :is(a, button) { all: unset; box-sizing: border-box; display: grid; grid-template-areas: 'art' 'cap'; grid-template-columns: minmax(0, 1fr); row-gap: 0.75rem; width: 100%; cursor: pointer; }
+.rec :is(a, button):focus-visible { outline: 3px solid var(--text); outline-offset: 6px; }
+.rec-sleeve, .rec-disc { grid-area: art; width: 84%; aspect-ratio: 1; }
+.rec-disc { justify-self: end; display: grid; place-items: center; border-radius: 50%;
+  background: radial-gradient(circle, var(--accent) 0 16%, var(--vinyl-edge) 16.5% 18%, transparent 18.5%), repeating-radial-gradient(circle, var(--vinyl) 0 1.5px, var(--vinyl-groove) 1.5px 3px); box-shadow: 0 0 0 2px color-mix(in srgb, var(--text) 18%, transparent); }
+.rec-label { font-family: var(--font-display); font-weight: 900; font-size: clamp(0.8rem, 2.4vw, 1.1rem); color: var(--accent-text); }
+.rec-sleeve { position: relative; z-index: 1; overflow: hidden; isolation: isolate; container-type: inline-size; background: var(--ink-light); box-shadow: 0.45rem 0.45rem 0 var(--bg); }
+.rec-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; }
+.rec-sleeve::before { content: ''; position: absolute; inset: 0; z-index: 1; background: var(--ink-dark); mix-blend-mode: lighten; }
+.rec-type { position: absolute; inset: 0; z-index: 2; display: grid; grid-template-rows: auto 1fr auto; padding: 6cqi; color: var(--text); }
+.rec-artist { font-family: var(--font-display); font-weight: 900; font-size: 9cqi; line-height: 1; text-transform: uppercase; }
+.rec-name { align-self: end; font-family: var(--font-display); font-weight: 900; font-size: 13cqi; line-height: 0.95; text-transform: uppercase; }
+.rec-name > span { background: var(--bg); padding: 0 0.12em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.rec-no { justify-self: end; margin-top: 3cqi; font-family: var(--font-display); font-weight: 900; font-size: 6cqi; }
+.rec-cap { grid-area: cap; display: grid; gap: 0.2rem; padding-right: 16%; }
+.rec-cap .v2-vtitle { font-family: var(--font-display); font-weight: 900; font-size: var(--step-1); line-height: 1; text-transform: uppercase; }
+.rec-cap .vid-meta { margin: 0; }
+.rec :is(a, button):active .rec-sleeve { outline: 3px solid var(--text); outline-offset: 3px; }
+@media (hover: hover) and (pointer: fine) { .rec :is(a, button):hover .rec-disc { translate: 10% 0; } .rec :is(a, button):hover .rec-cap .v2-vtitle { text-decoration: underline; text-underline-offset: 3px; } }
+/* B: an accent band across the foot. */
+.rec-b { --ink-light: color-mix(in srgb, var(--accent) 55%, var(--text)); }
+.rec-b .rec-name > span { background: var(--accent); color: var(--accent-text); }
+/* C: a paper print in a sleeve: the photo inset, the name on the paper. */
+.rec-c { --ink-dark: color-mix(in srgb, var(--accent) 22%, var(--bg)); }
+.rec-c .rec-sleeve { background: var(--page-text); }
+.rec-c .rec-img, .rec-c .rec-sleeve::before { inset: 7cqi 7cqi 32cqi; width: 86cqi; height: 61cqi; }
+.rec-c .rec-type { color: var(--page-bg); }
+.rec-c .rec-name { font-size: 10cqi; line-height: 0.92; } .rec-c .rec-no { margin-top: 1cqi; font-size: 5cqi; } /* two lines + the number fit the paper strip */
+.rec-c .rec-name > span { background: none; padding: 0; }
+.rec-c .rec-artist { color: var(--page-bg); background: var(--page-text); justify-self: start; padding: 0 0.15em; }
+/* D: a giant outlined number over the photo. */
+.rec-d { --ink-dark: color-mix(in srgb, var(--accent) 30%, var(--bg)); --ink-light: color-mix(in srgb, var(--text) 80%, var(--bg)); }
+.rec-d .rec-no-l { display: none; }
+.rec-d .rec-no { position: absolute; top: -4cqi; right: 2cqi; margin: 0; font-size: 62cqi; line-height: 1; color: transparent; -webkit-text-stroke: 0.5cqi var(--text); }
+/* The light palette: inks flip (dark ink = text, light = paper). */
+html[data-palette='poster'] .rec { --ink-dark: color-mix(in srgb, var(--text) 80%, var(--bg)); --ink-light: var(--bg); }

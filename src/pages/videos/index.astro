@@ -1,34 +1,61 @@
 ---
 import { existsSync } from 'node:fs';
 import Base from '../../layouts/Base.astro';
-import HScroll from '../../components/HScroll.astro';
 import { videosPage, YOUTUBE, SHORTS, PHOTO_CREDITS as C } from '../../components/content.js';
 import { curly } from '../../lib/shows.js';
-// Owner 2026-11-18: a theatre. "Now showing" (the newest music video) on a big screen with its name in poster type, then every other
-// video on a film strip that slides past as you scroll (HScroll). No iframe until a press (hard rule 1).
+// Owner 2026-11-18: a record shop. "Now showing" is the stage (the newest music video, its name in poster type over the screen).
+// Under it, every video is a record: a designed sleeve (a real still from that video, two inks, four layouts) with the vinyl
+// peeking out. Pressing a record plays it on the stage (app.js, data-now). No iframe until a press (hard rule 1).
 const g = videosPage();
 const live = g.lead ? [g.lead, ...g.live] : g.live;
-const lead = g.music[0] ?? live[0] ?? null;
-const rest = [...g.music, ...live].filter((v) => v !== lead);
-const thumb = lead && existsSync(`public/media/videos/${lead.id}-1280.webp`) && existsSync(`public/media/videos/${lead.id}-640.webp`) ? `/media/videos/${lead.id}` : null;
-const leadMeta = lead && [lead.place ? `Live at ${lead.place}` : lead.kind === 'lyric-video' ? 'Lyric video' : 'Music video', lead.with].filter(Boolean).join(' · ');
+const all = [...g.music, ...live];
+const lead = all[0] ?? null;
+const pic = (id: string, dir: string, big: number) => existsSync(`public/media/${dir}/${id}-${big}.webp`) ? `/media/${dir}/${id}` : null;
+const meta = (v: Record<string, any>) => [v.place ? `Live at ${v.place}` : v.kind === 'lyric-video' ? 'Lyric video' : 'Music video', v.with].filter(Boolean).join(' · ');
+const name = (v: Record<string, any>) => curly(v.name ?? v.title);
+const pad = (n: number) => String(n).padStart(2, '0');
+const thumb = lead && existsSync(`public/media/videos/${lead.id}-640.webp`) ? `/media/videos/${lead.id}` : null;
 ---
 <Base image="videos" title="Videos | GLucak" current="videos" credits={[C.vladd, C.joseph, C.yt]} description="Watch GLucak: every music video, and Scenic Route live at Crooked Eye.">
   <section class="band band-vids" aria-labelledby="h-vids">
     <div class="wrap vids">
       <h1 class="spine" id="h-vids"><span class="tab">Videos</span> <span class="phrase phrase-watch">Watch</span></h1>
       {lead ? (
-        <div class="v2-vid now-showing">
+        <div class="v2-vid now-showing" id="now-showing">
           <p class="now-label">Now showing</p>
-          <a href={`https://www.youtube.com/watch?v=${lead.id}`} rel="noopener" data-yt={lead.id} data-title={curly(lead.name ?? lead.title)}>
+          <a href={`https://www.youtube.com/watch?v=${lead.id}`} rel="noopener" data-yt={lead.id} data-title={name(lead)}>
             <span class="v2-thumb">{thumb && <img class="yt-img" src={`${thumb}-640.webp`} srcset={`${thumb}-640.webp 640w, ${thumb}-1280.webp 1280w`} sizes="(min-width: 1200px) 1100px, 92vw" width="1280" height="720" alt="" loading="eager" fetchpriority="high" decoding="async" />}<span class="yt-play" aria-hidden="true"></span></span>
-            <span class="v2-vtitle">{curly(lead.name ?? lead.title)}</span>
+            <span class="v2-vtitle">{name(lead)}</span>
           </a>
-          <p class="vid-meta"><span>{leadMeta}</span></p>
+          <p class="vid-meta"><span>{meta(lead)}</span></p>
         </div>
       ) : <p class="vid-lead"><a class="go" href={YOUTUBE} rel="noopener">GLucak on YouTube</a></p>}
     </div>
   </section>
-  {rest.length > 0 && <HScroll id="reel" kind="video" title="The reel" sub="Every music video and live clip." items={rest} tail={{ href: SHORTS, text: 'New shorts most weeks on YouTube.' }} />}
-  {rest.length === 0 && <p class="wrap start-line vid-more"><a class="go" href={SHORTS} rel="noopener">New shorts most weeks on YouTube.</a></p>}
+  {all.length > 0 && (
+    <section class="band band-crate" aria-labelledby="h-crate">
+      <div class="wrap">
+        <h2 class="crate-h" id="h-crate">The records</h2>
+        <p class="crate-sub">Every music video and live clip. Pick one to play it up top.</p>
+        <ul class="records">
+          {all.map((v, i) => {
+            const art = pic(v.id, 'sleeves', 640);
+            return (
+              <li class={`rec rec-${'abcd'[i % 4]}`}>
+                <a class="rec-link" href={`https://www.youtube.com/watch?v=${v.id}`} rel="noopener" data-yt={v.id} data-title={name(v)} data-now data-meta={meta(v)}>
+                  <span class="rec-disc" aria-hidden="true"><span class="rec-label">{pad(i + 1)}</span></span>
+                  <span class="rec-sleeve" aria-hidden="true">
+                    {art && <img class="rec-img" src={`${art}-320.webp`} srcset={`${art}-320.webp 320w, ${art}-640.webp 640w`} sizes="(min-width: 900px) 22vw, 42vw" width="640" height="640" alt="" loading="lazy" decoding="async" />}
+                    <span class="rec-type"><span class="rec-artist">GLucak</span><span class="rec-name"><span>{name(v)}</span></span><span class="rec-no"><span class="rec-no-l">No. </span>{pad(i + 1)}</span></span>
+                  </span>
+                  <span class="rec-cap"><span class="v2-vtitle">{name(v)}</span><span class="vid-meta">{meta(v)}</span></span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+        <p class="start-line vid-more"><a class="go" href={SHORTS} rel="noopener">New shorts most weeks on YouTube.</a></p>
+      </div>
+    </section>
+  )}
 </Base>

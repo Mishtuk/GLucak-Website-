@@ -118,7 +118,8 @@ const ERA = JSON.parse(read('src/eras/identity.json')).colors;
 const rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
 const FRAMES = { 'a-print-phone-800': 'kealey', 'b-print-': 'kealey', 'v2/garage-toner-': 'garage', 'v2/stage-lines-': 'ce2', 'v2/belt-print-': 'ce4',
   'poster-print-': 'ce3', 'cd-live-': 'cdlive', 'cd-studio-': 'studio', 'photo-mccc-': 'mccc', 'photo-crooked-eye-': 'ce1',
-  'stills/eys-arm-': 'eys2', 'stills/yna-floor-': 'yna1', 'stills/yna-mic-': 'yna2', 'stills/rl-room-': 'rl1', 'stills/ddjf-garage-': 'ddjf1' }; // the About album's video stills (owner 2026-11-18)
+  'stills/eys-arm-': 'eys2', 'stills/yna-floor-': 'yna1', 'stills/yna-mic-': 'yna2', 'stills/rl-room-': 'rl1', 'stills/ddjf-garage-': 'ddjf1',
+  'sleeves/': 'sleeve' }; // the About album's video stills (owner 2026-11-18)
 const NOT_PHOTO = /^(covers|videos|og|mark-|shop|uploads|placeholder-cover|favicon|apple-touch|g-|hero-wall)/; // 29b: covers, video thumbs, logos, shop samples
 const frameOf = (f) => Object.entries(FRAMES).find(([k]) => f.startsWith(k))?.[1];
 const fixture = (d, v) => ({ date: d, type: 'show', venue: v, city: 'X' });

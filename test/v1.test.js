@@ -66,15 +66,17 @@ test('26c: lead is the flagged live row (else the newest live); music videos new
 });
 
 test('26g-4: order and scope on /videos/; Shorts are not listed, one link goes to the Shorts tab', () => {
-  // owner 2026-11-18: tab 1 Music videos (newest first, the lyric video last), tab 2 Live (the lead first)
-  assert.equal(ids[0], 'ZGlnFchIVVY');
-  assert.ok(ids.indexOf('ZGlnFchIVVY') < ids.indexOf('K-OZiNvQB14'));
-  assert.equal(ids[ids.indexOf('aZNW63M_C2E') - 1], 'LBQ4fqLVHSI', 'the lyric video ends the Music videos reel');
-  assert.equal(ids.at(-2), 'aZNW63M_C2E'); assert.equal(ids.at(-1), 'OOGT3GxlQJk');
+  // owner 2026-11-18: the stage plays the newest music video; the records run music videos (newest first, the lyric video last), then live
+  const rec = [...vids.slice(vids.indexOf('class="records"')).matchAll(/data-yt="([\w-]{11})"/g)].map((m) => m[1]);
+  assert.equal(ids[0], 'ZGlnFchIVVY'); assert.equal(rec[0], ids[0], 'the stage starts on record 1');
+  assert.equal(ids.length, rec.length + 1, 'the stage plus one record per video');
+  assert.ok(rec.indexOf('ZGlnFchIVVY') < rec.indexOf('K-OZiNvQB14'));
+  assert.equal(rec[rec.indexOf('aZNW63M_C2E') - 1], 'LBQ4fqLVHSI', 'the lyric video ends the music videos');
+  assert.equal(rec.at(-2), 'aZNW63M_C2E'); assert.equal(rec.at(-1), 'OOGT3GxlQJk');
   const rows = JSON.parse(src('src/data/videos.json'));
   const kinds = Object.fromEntries(rows.map((v) => [v.id, v.kind]));
-  for (const id of ids) assert.ok(kinds[id] && kinds[id] !== 'other', `${id} is not a Short`);
-  assert.equal(new Set(ids).size, ids.length, 'no card twice');
+  for (const id of rec) assert.ok(kinds[id] && kinds[id] !== 'other', `${id} is not a Short`);
+  assert.equal(new Set(rec).size, rec.length, 'no record twice');
   assert.match(vids, /href="https:\/\/www\.youtube\.com\/channel\/UCha7GtkOI9A0dzbTG3igbLg\/shorts"/);
 });
 
@@ -96,17 +98,20 @@ test('26g-5: credits on /videos/: the Vladd still, Joseph Lucak, GLucak on YouTu
 });
 
 test('26g-6: every card has a name, every poster is alt="" with size and a file, only the lead is eager, one h1; the button is real and labelled', () => {
-  const cards = [...vids.matchAll(/<(?:li|div) class="v2-vid[^"]*"[\s\S]*?<\/(?:li|div)>/g)].map((m) => m[0]);
-  assert.equal(cards.length, ids.length);
-  cards.forEach((c, i) => {
+  // owner 2026-11-18: the stage (16:9 poster, eager) and the records (a square sleeve each, lazy, data-now plays on the stage)
+  const stage = vids.match(/<div class="v2-vid now-showing"[\s\S]*?<\/div>/)[0];
+  const sImg = stage.match(/<img[^>]*>/)[0];
+  assert.ok(sImg.includes('alt=""') && sImg.includes('width="1280"') && sImg.includes('height="720"') && sImg.includes('loading="eager"'));
+  assert.match(stage, /<span class="v2-vtitle">[^<]+<\/span>/);
+  const recs = [...vids.matchAll(/<li class="rec rec-[a-d]">[\s\S]*?<\/li>/g)].map((m) => m[0]);
+  assert.equal(recs.length, ids.length - 1);
+  for (const c of recs) {
     assert.match(c, /<span class="v2-vtitle">[^<]+<\/span>/, 'name');
+    assert.match(c, / data-now /);
     const img = c.match(/<img[^>]*>/)?.[0];
-    assert.ok(img, 'poster');
-    assert.ok(img.includes('alt=""') && img.includes('width="1280"') && img.includes('height="720"'));
-    const file = img.match(/src="([^"]+)"/)[1];
-    assert.ok(existsSync(join(ROOT, 'public', file)), file);
-    assert.equal(/loading="eager"/.test(img), i === 0, 'only Now showing is eager');
-  });
+    assert.ok(img && img.includes('alt=""') && img.includes('width="640"') && img.includes('height="640"') && img.includes('loading="lazy"'), 'sleeve');
+    assert.ok(existsSync(join(ROOT, 'public', img.match(/src="([^"]+)"/)[1])));
+  }
   assert.equal(vids.split('<h1').length - 1, 1);
   assert.match(js, /b\.type = 'button'/);
   assert.match(js, /setAttribute\('aria-label', `Play /);
