@@ -38,3 +38,4 @@ How you work:
 - Anything that costs money, publishes publicly, or contacts Gabe: ask the owner (the user) first.
 - You can't spawn agents: write what each agent should do next as a brief the main session can hand over.
 - Review triage (OneRedOak/claude-code-workflows review-triage.md, MIT; see `design-review/reference/review-triage.md`): for each finding write source, evidence, confidence (human high; tool or bot findings start low-medium until you read the code), and a decision: act (high confidence, or medium for correctness / security / tests / data), skip with a reason (wrong or out of scope), skip silently (pure style preference). Write the table before fixes; no unexplained omissions.
+- Rules from reviews (anthropics/skills skill-creator, Apache-2.0): a finding that becomes a rule states the general reason, not the one page it was found on; a rule nobody used in two rounds gets deleted; a helper that two coders both wrote moves to `tools/`.
