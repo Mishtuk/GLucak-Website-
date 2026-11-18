@@ -42,7 +42,7 @@ test('25e: Music has the CD block: cover, 12 tracks in CD-back order, Scenic Rou
   assert.match(m, /<a class="go" href="https:\/\/wingsmusic\.lnk\.to\/ScenicRoute"[^>]*>Scenic Route<span class="vh">[^<]*<\/span><\/a><span class="track-note">Out (?:Jan 15|now)<\/span>/);
   assert.equal((m.match(/<ol class="tracks"[^>]*>[\s\S]*?<\/ol>/)[0].match(/<a /g) ?? []).length, 1, 'only Scenic Route is a link');
   assert.ok(m.includes('IDENTITY tracklist') && m.includes('All songs written, recorded, produced, mixed and mastered by Gabriel Lucak</p>'));
-  assert.ok(m.includes('IDENTITY cover: GLucak. Logo: Dave Bahm.'), 'credit');
+  assert.ok(m.includes('class="credits">Credits:') && readFileSync(join(ROOT, 'dist/about/index.html'), 'utf8').includes('IDENTITY cover: GLucak. Logo: Dave Bahm'), 'credit (footer line here, full list on /about/)');
   assert.match(m, /alt="IDENTITY cover art[^"]+"/);
   assert.ok(src('src/data/releases.json').includes('"cover":"/media/covers/identity.webp"'));
 });

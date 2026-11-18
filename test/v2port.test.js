@@ -31,7 +31,8 @@ test('Home: no image src repeats, and the credits cover the photos shown', () =>
   const h = home();
   const srcs = [...h.matchAll(/<img [^>]*?\bsrc="([^"]+)"/g)].map((m) => m[1]).filter((s) => !s.startsWith('data:') && !s.endsWith('.svg') && !/mark-identity/.test(s));
   assert.equal(new Set(srcs).size, srcs.length, `repeats: ${srcs.join(' ')}`);
-  assert.ok(h.includes('Photo: Alexander Kealey.') && h.includes('Video still: Joseph Lucak.') && h.includes('Video stills: GLucak on YouTube.') && h.includes('IDENTITY cover: GLucak.') && h.includes('Photos: from the IDENTITY CD.'));
+  const about = readFileSync(join(ROOT, 'dist/about/index.html'), 'utf8'); // the full credit list lives once on /about/ (OV5)
+  assert.ok(about.includes('Photo: Alexander Kealey') && about.includes('Video still: Joseph Lucak') && about.includes('Video stills: GLucak on YouTube') && about.includes('IDENTITY cover: GLucak') && about.includes('Photos: from the IDENTITY CD'));
   assert.ok(!h.includes('d-crowd'), 'the crowd photo is gone from Home');
 });
 
@@ -51,16 +52,17 @@ test('credits match the images each page shows; clamp gone; focusin handler; 200
   const content = readFileSync(join(ROOT, 'src/components/content.js'), 'utf8');
   const CREDIT_FOR = [[/\/media\/v2\/(belt|stage)-|videos\/OOGT3GxlQJk-/, 'Video stills: GLucak on YouTube.'], [/videos\/aZNW63M_C2E-/, 'Video still: Vladd (Vladdtime).'],[/covers\/identity/, 'IDENTITY cover: GLucak.'], [/\/media\/cd-/, 'Photos: from the IDENTITY CD.'], [/\/media\/v2\/garage-|videos\/K-OZiNvQB14-/, 'Video still: Joseph Lucak.'], [/a-era-grade/, 'Photo: Alexander Kealey.']];
   assert.ok(content.includes('CREDIT_FOR'));
+  const aboutCredits = readFileSync(join(ROOT, 'dist/about/index.html'), 'utf8').match(/class="credit-list">([^]*?)<\/ul>/)[1];
   for (const page of ['index.html', 'shows/index.html', 'about/index.html', 'music/index.html', 'videos/index.html']) {
     const h = readFileSync(join(ROOT, 'dist', page), 'utf8');
-    const credits = h.match(/class="credits">([^<]*)</)?.[1] ?? '';
+    const credits = aboutCredits; // the full list lives once on /about/ (OV5); the footer line is short
     const srcs = [...h.matchAll(/src="([^"]+)"/g)].map((m) => m[1]);
     for (const [re, c] of CREDIT_FOR) {
       if (c.startsWith('Photo:')) continue; // Kealey art on /shows/ is injected at serve time, not in the static HTML
-      assert.equal(srcs.some((s) => re.test(s)), credits.includes(c), `${page}: ${c}`);
+      if (srcs.some((s) => re.test(s))) assert.ok(credits.includes(c.replace(/\.$/, '')), `${page}: ${c} is in the About list`);
     }
   }
-  assert.ok(readFileSync(join(ROOT, 'dist/shows/index.html'), 'utf8').includes('Photo: Alexander Kealey.'));
+  assert.ok(readFileSync(join(ROOT, 'dist/shows/index.html'), 'utf8').includes('class="credits">Credits: Alexander Kealey,'));
   assert.ok(!/line-clamp/.test(css.match(/\.v2-vtitle \{[^}]*\}/)[0]));
   assert.match(readFileSync(join(ROOT, 'public/js/app.js'), 'utf8'), /focusin[^]*scrollIntoView\(\{ block: 'nearest', inline: 'nearest' \}\)/);
   assert.match(css, /@media \(max-width: 699px\) \{ @container \(width < 16rem\) \{ \.hero-actions \{ display: none; \} \} \}/);

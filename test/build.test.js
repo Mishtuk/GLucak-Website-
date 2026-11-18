@@ -108,7 +108,7 @@ test('port notes: no quote text, mark in header, one hero image, credits, no EXI
   assert.ok(!h.includes('Open in Spotify') && !h.includes('mission statement has always'));
   assert.equal((h.match(/fetchpriority="high"/g) ?? []).length, 1, 'only the chosen hero image is high priority');
   assert.ok(h.includes('class="stub-when">Out now<') && h.includes('<!--gl:now-->'));
-  assert.match(h, /class="credits">Photo: Alexander Kealey\./);
+  assert.match(h, /class="credits">Credits: Alexander Kealey, Joseph Lucak, GLucak, Dave Bahm<\/p>/);
   assert.ok(html('/about/').includes('class="credits"'));
   const media = readdirSync(join(DIST, 'media'));
   assert.ok(!media.some((f) => /\.jpe?g$/i.test(f)), 'no JPG originals in media');

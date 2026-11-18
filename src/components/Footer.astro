@@ -14,7 +14,7 @@ const join = home || signup ? '#join' : '/#join';
       {SOCIALS.map((s) => <li class={s.id === 'patreon' ? 'links-wide' : undefined}><a href={s.href} rel="noopener"><svg aria-hidden="true"><use href={`#i-${s.id}`} /></svg><span>{s.name}</span></a></li>)}
     </ul>
     <p class="footer-slogan">Rise, Live It Loud, Push Past Fear, The Time Is Now.</p>
-    {credits.length > 0 && <p class="credits">{credits.join(' ')}</p>}
+    {credits.length > 0 && <p class="credits">Credits: Alexander Kealey, Joseph Lucak, GLucak, Dave Bahm</p>}
     <div class="footer-row">
       <button class="motion-btn" id="motion" type="button" aria-pressed="true">Motion: on</button>
       <p class="legal">&copy; <span id="year">{new Date().getFullYear()}</span> GLucak. <a href="/privacy/">Privacy</a></p>

@@ -87,8 +87,8 @@ test("names: a 'with' line only where the name is in the video's own title", () 
 });
 
 test('26g-5: credits on /videos/: the Vladd still, Joseph Lucak, GLucak on YouTube; the Riverside poster maps to the YouTube credit', () => {
-  const credits = vids.match(/class="credits">([^<]*)</)[1];
-  for (const c of ['Video still: Vladd (Vladdtime).', 'Video still: Joseph Lucak.', 'Video stills: GLucak on YouTube.']) assert.ok(credits.includes(c), c);
+  const credits = src('dist/about/index.html'); // OV5: the full list lives once on /about/
+  for (const c of ['Video still: Vladd (Vladdtime).', 'Video still: Joseph Lucak.', 'Video stills: GLucak on YouTube.']) assert.ok(credits.includes(c.replace(/\.$/, '')), c);
   const content = src('src/components/content.js');
   assert.ok(content.includes('videos\\/OOGT3GxlQJk-/, PHOTO_CREDITS.yt'));
   assert.ok(content.includes('videos\\/aZNW63M_C2E-/, PHOTO_CREDITS.vladd'));
@@ -184,5 +184,5 @@ test("IG6 eval 3: Home's jump slot shows his face (live portrait), as graded, no
     assert.ok(!meta.exif && !meta.xmp && !meta.icc);
   }
   assert.ok(!existsSync(join(ROOT, 'public/media/cd-jump-352.webp')));
-  assert.ok(h.includes('Photos: from the IDENTITY CD.'), 'the CD credit still covers it');
+  assert.ok(src('dist/about/index.html').includes('Photos: from the IDENTITY CD'), 'the CD credit (full list on /about/) still covers it');
 });

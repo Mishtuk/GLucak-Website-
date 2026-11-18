@@ -103,3 +103,10 @@ test('R5: 404 and Shop have no sign-up band (their Join links go to Home); every
   for (const f of ['music/index.html', 'shows/index.html', 'about/index.html', 'videos/index.html']) assert.ok(dist(f).includes('class="footer-join"'), `${f}: keeps the band`);
   assert.ok(dist('404.html').includes('class="btn btn-solid" href="/music/"'), '404 ends on Listen');
 });
+
+test('C19: the footer credits are one line (content.md 2); the full list is on About once', () => {
+  const line = '<p class="credits">Credits: Alexander Kealey, Joseph Lucak, GLucak, Dave Bahm</p>';
+  for (const f of ['index.html', 'music/index.html', 'shows/index.html', 'videos/index.html', 'about/index.html']) assert.equal(dist(f).split(line).length - 1, 1, f);
+  const list = dist('about/index.html').match(/class="credit-list">([^]*?)<\/ul>/)[1];
+  for (const c of ['Alexander Kealey', 'Joseph Lucak', 'GLucak on YouTube', 'Vladd', 'IDENTITY CD', 'Dave Bahm']) assert.ok(list.includes(c), c);
+});
