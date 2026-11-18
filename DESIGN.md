@@ -137,7 +137,7 @@ era (D12 amended by the boss, 2026-11-05: era file field `mark`, section 4), so 
   exception), or set type in chrome to match it.
 - **Credit:** CREDITS.md says the logo is Gabe's or Dave Bahm's. Ask Gabe which, for the About page credits.
 
-### 3b. Photos (Gabe's; treatments per slot, 2026-11-05, D34)
+### 3b. Photos (Gabe's; treatments per slot, 2026-11-05, D34) Superseded by 29 (OV6): one photo language, hero A/B and the gallery.
 **Privacy rule (hard): No identifiable audience member on the site, ever; crops keep only Gabe, the stage and backs of heads
 (privacy, 2026-11-05).** Above all no minors: the child in Kealey's frame sits under the cross (source x 3060-3300, y 2780-3120).
 So the whole Kealey frame and the Paslier still (two fans' faces) are **never used**, in any size, on any page; the prototype's
