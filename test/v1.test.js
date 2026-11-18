@@ -144,12 +144,12 @@ test('26g-8: the Riverside poster files exist, are the privacy crop (800x450 fro
   assert.match(src('tools/fetch-video-thumbs.mjs'), /crop needs a 16:9 source/);
 });
 
-test('26e: the CSS is static, the nav breakpoint is 44rem, the Watch heading link and the scrolling sheet are in', () => {
+test('26e: the CSS is static, the nav fallback is 42rem (28e), the Watch heading link and the scrolling sheet are in', () => {
   const css = src('src/styles/global.css');
   const block = css.slice(css.indexOf('/* ---------- DESIGN 26. Videos page')).replace(/\/\*[\s\S]*?\*\//g, '');
   assert.ok(block.length > 1500);
   assert.ok(!/animation|transition|@keyframes|--accent/.test(block));
-  assert.match(css, /@container \(width < 44rem\) \{/);
+  assert.match(css, /@container \(width < 42rem\) \{/);
   assert.match(css, /\.go::after, \.h-go::after \{/);
   assert.match(css, /--w-watch: 2\.5775;/);
   assert.match(block, /\.sheet \{ max-height: calc\(100dvh - var\(--header-h\) - var\(--bar-h, 0px\)\); overflow-y: auto;/);

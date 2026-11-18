@@ -65,6 +65,7 @@
   --w-push: 5.9568;
   --w-now1: 3.3440;
   --w-now2: 2.7618;
+  --w-now: 6.3265; /* THE TIME IS NOW on one line: w-now1 + the nbsp 0.2207 + w-now2 (DESIGN 28e) */
   --w-rise: 1.5938;
   --w-watch: 2.5775; /* WATCH, Big Shoulders 900 uppercase, letter-spacing 0 (DESIGN 26e) */
   --w-date: 3.4794;
@@ -192,7 +193,7 @@ p { text-wrap: pretty; }
 .site-header:not(.is-solid):not(:has(details[open])) { background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 88%, transparent), color-mix(in srgb, var(--bg) 55%, transparent)); }
 .nav-desktop { display: none; gap: 0.25rem; }
 .nav-desktop a {
-  display: inline-flex; align-items: center; min-height: 48px; padding-inline: 0.85rem;
+  display: inline-flex; align-items: center; min-height: 48px; padding-inline: 0.6rem;
   font-weight: 700; font-size: 1.0625rem; text-decoration: none;
 }
 .nav-desktop a:hover { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 3px; }
@@ -211,12 +212,12 @@ p { text-wrap: pretty; }
   display: flex; align-items: center; min-height: 56px;
   font-family: var(--font-display); font-weight: 900; font-size: 2.25rem; text-transform: uppercase; text-decoration: none;
 }
-@media (min-width: 900px) {
-  :root { --header-h: 72px; }
+@media (min-width: 700px) {
   .nav-desktop { display: flex; }
   .header-listen { display: inline-flex; }
   .nav-mobile { display: none; }
 }
+@media (min-width: 900px) { :root { --header-h: 72px; } }
 
 /* ---------- Top: hero + Rise ---------- */
 .top { position: relative; isolation: isolate; overflow: clip; }
@@ -543,7 +544,6 @@ html:not([data-hero='b']) .credit-b { display: none; }
   .sl-1::after { content: '\00a0'; }
   .slogan { font-family: var(--font-display); white-space: nowrap; }
   .hero-actions { display: inline-flex; margin-top: var(--space-l); }
-  .hero-actions .btn { flex: none; min-width: 11rem; }
   .now { display: inline-flex; margin-left: var(--space-l); vertical-align: bottom; font-size: var(--step-0); }
   html[data-hero='b'] .name-row { --k: 1.9; }
   html[data-hero='b'] .slot { height: calc(var(--fs) * 1.34); }
@@ -555,9 +555,6 @@ html:not([data-hero='b']) .credit-b { display: none; }
   .cover { width: 160px; height: 160px; }
 
   .push-title { padding-block: 5rem 2rem; }
-  .lock-push .ln { display: inline; font-size: calc(100cqi / var(--w-push)); margin: 0; }
-  .ln-push1::after { content: '\00a0'; }
-  .lock-push { white-space: nowrap; font-size: 0; }
   .push-body { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--space-xl); align-items: end; }
   .bio-lead { font-size: var(--step-2); line-height: 1.25; }
   /* The finale stays huge, and the sign-up sits beside it, in the first view of the band. */
@@ -807,10 +804,12 @@ html[data-hero='ab'] .slot { display: none; }
 .lost-actions { display: flex; gap: var(--space-s) var(--space-l); align-items: center; margin-top: var(--space-l); }
 .lost-actions .btn { flex: 1; }
 .lost-home { margin-top: var(--space-xs); }
-@media (min-width: 900px) {
+@media (min-width: 700px) {
   .lost-title .ln { display: inline; font-size: calc(100cqi / var(--w-lost)); margin: 0; }
   .ln-lost1::after { content: '\00a0'; }
   .lost-title { white-space: nowrap; font-size: 0; }
+}
+@media (min-width: 900px) {
   .lost-actions { display: inline-flex; }
   .lost-actions .btn { flex: none; min-width: 11rem; }
 }
@@ -898,9 +897,13 @@ html[data-motion='off']::view-transition-new(*) { animation: none !important; }
 .site-header { container-type: inline-size; }
 .brand { line-height: 1; font-size: min(1.75rem, 11.5cqi); }
 @container (width < 19rem) { .mark + .brand-word { display: none; } } /* owner D64: the logo always stays; the word gives way */
-@container (width < 44rem) { /* DESIGN 26e: was 36rem; with Videos + Shop at 200% text the desktop row needs ~1379px */
+@container (width < 42rem) { /* DESIGN 28e: was 44rem (26e); the nav is from 700px now and the links are tighter (0.6rem) */
   .nav-desktop, .header-listen { display: none; }
   .nav-mobile { display: block; }
+}
+@container (width < 45rem) { /* with the Shop link on (SHOP_ENABLED=1) the row needs about 45rem */
+  .header-bar:has(.nav-desktop a[href$='shop/']) :is(.nav-desktop, .header-listen) { display: none; }
+  .header-bar:has(.nav-desktop a[href$='shop/']) .nav-mobile { display: block; }
 }
 
 /* Hero and 404 buttons: two flex: 1 buttons on one row, no wrap, so SHOWS ran off the screen. Now they wrap only when a
@@ -1192,13 +1195,16 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
   .ln-push2 { font-size: calc(var(--fitw) * 0.65 / var(--w-push2)); }
   .ln-date { font-size: calc(var(--fitw) * 0.45 / var(--w-date)); }
 }
-@media (min-width: 700px) { @supports not (width: 1cqi) { .ln-date { font-size: calc(var(--fitw) * 0.28 / var(--w-date)); } } }
+@media (min-width: 700px) { @supports not (width: 1cqi) {
+  .ln-date { font-size: calc(var(--fitw) * 0.28 / var(--w-date)); }
+  .lock-push .ln { font-size: calc(var(--fitw) * 0.4 / var(--w-push)); }
+  .lost-title .ln { font-size: calc(var(--fitw) * 0.5 / var(--w-lost)); }
+} }
+@media (min-width: 700px) and (max-width: 899px) { @supports not (width: 1cqi) { .lock-now .ln { font-size: calc(var(--fitw) * 0.65 / var(--w-now)); } } }
 @media (min-width: 900px) {
   @supports not (width: 1cqi) {
     html[data-hero='ab'] .name-row { --fs: calc(var(--fitw) / (var(--w-name) + var(--k) + 0.1)); }
     .sl-1, .sl-2 { font-size: calc(var(--fitw) / var(--w-slogan)); }
-    .lock-push .ln { font-size: calc(var(--fitw) * 0.4 / var(--w-push)); }
-    .lost-title .ln { font-size: calc(var(--fitw) * 0.5 / var(--w-lost)); }
     .ln-live { font-size: calc(var(--fitw) * 0.4 / var(--w-live)); }
     .ln-now1 { font-size: calc(var(--fitw) * 0.4 / var(--w-now1)); }
     .ln-now2 { font-size: calc(var(--fitw) * 0.4 / var(--w-now2)); }
@@ -1389,3 +1395,16 @@ li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* 
 .played-more > summary::after { content: ''; width: 0.7em; height: 0.56em; background: currentColor; rotate: 90deg;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M0 16H35M23 4l12 12-12 12' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 32'%3E%3Cpath d='M0 16H35M23 4l12 12-12 12' fill='none' stroke='%23000' stroke-width='4'/%3E%3C/svg%3E") center / contain no-repeat; }
 .played-more[open] > summary::after { rotate: -90deg; } /* instant: no transition */
+
+/* ---------- 28e. Lockups on one line from 700px, hero buttons natural width (DESIGN 28e) ---------- */
+@media (min-width: 700px) {
+  .lock-push .ln { display: inline; font-size: calc(100cqi / var(--w-push)); margin: 0; }
+  .ln-push1::after { content: '\00a0'; }
+  .lock-push { white-space: nowrap; font-size: 0; }
+  .hero-actions .btn { flex: none; min-width: 11rem; }
+}
+@media (min-width: 700px) and (max-width: 899px) {
+  .lock-now .ln { display: inline; font-size: calc(100cqi / var(--w-now)); margin: 0; }
+  .ln-now1::after { content: '\00a0'; }
+  .lock-now { white-space: nowrap; font-size: 0; }
+}
