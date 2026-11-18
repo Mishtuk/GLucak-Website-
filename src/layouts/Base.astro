@@ -6,8 +6,8 @@ import Footer from '../components/Footer.astro';
 import Icons from '../components/Icons.astro';
 import { era, HEADER_STYLE, SITE_URL } from '../components/content.js';
 
-interface Props { title: string; description?: string; home?: boolean; hero?: 'a' | 'b'; current?: 'music' | 'shows' | 'videos' | 'about'; credits?: string[]; image?: string }
-const { title, description = 'GLucak: Rise, Live It Loud, Push Past Fear, The Time Is Now.', home = false, hero = 'a', current, credits, image = 'home' } = Astro.props;
+interface Props { title: string; description?: string; home?: boolean; hero?: 'a' | 'b'; current?: 'music' | 'shows' | 'videos' | 'about'; credits?: string[]; image?: string; signup?: boolean }
+const { title, description = 'GLucak: Rise, Live It Loud, Push Past Fear, The Time Is Now.', home = false, hero = 'a', current, credits, image = 'home', signup = true } = Astro.props; // signup={false}: no sign-up band above the footer (404, Shop); Join then goes to Home's
 const ogImage = `${SITE_URL}/media/og/${image}.png`;
 
 // Era colors become custom properties (D12). Only #rrggbb values pass.
@@ -82,7 +82,7 @@ const table = (i) => `${lo[i].toFixed(3)} ${hi[i].toFixed(3)}`;
     <main id="main" class={home ? undefined : 'sub'}>
       <slot />
     </main>
-    <Footer home={home} credits={credits} />
-    <MobileBar home={home} current={current} />
+    <Footer home={home} credits={credits} signup={signup} />
+    <MobileBar home={home} current={current} signup={signup} />
   </body>
 </html>

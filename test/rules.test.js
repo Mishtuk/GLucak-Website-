@@ -93,3 +93,13 @@ test('C19: the shop samples say "once the merch is ready"', () => {
   assert.equal(rows.filter((r) => r.description.endsWith('go here once the merch is ready.')).length, 2);
   assert.ok(rows.every((r) => !/Gabe/.test(r.description)));
 });
+
+test('R5: 404 and Shop have no sign-up band (their Join links go to Home); every other page keeps it', () => {
+  for (const f of ['404.html', 'shop/index.html']) {
+    const h = dist(f);
+    assert.ok(!h.includes('class="footer-join"') && !h.includes('id="signup"'), `${f}: no sign-up band`);
+    assert.ok(h.includes('<a href="/#join"') && !h.includes('<a href="#join"'), `${f}: Join goes to Home`);
+  }
+  for (const f of ['music/index.html', 'shows/index.html', 'about/index.html', 'videos/index.html']) assert.ok(dist(f).includes('class="footer-join"'), `${f}: keeps the band`);
+  assert.ok(dist('404.html').includes('class="btn btn-solid" href="/music/"'), '404 ends on Listen');
+});
