@@ -83,7 +83,7 @@ function inject(html, path) {
     if (line) html = html.replace(/<!--gl:now-->[\s\S]*?<!--\/gl:now-->/, () => line);
   }
   if (ld) html = html.replace('<!--gl:shows-ld-->', () => showsLdHtml(rows));
-  return externalize(shows ? html.replace('<!--gl:shows-->', () => showsHtml(rows, new Date(), path === '/' ? { limit: 3, allLink: '/shows/' } : { past: true })) : html);
+  return externalize(shows ? html.replace('<!--gl:shows-->', () => showsHtml(rows, new Date(), path === '/' ? { limit: 2, allLink: '/shows/' } : { past: true })) : html);
 }
 
 const SPEC = { 'Speculation-Rules': '"/speculation-rules.json"' }; // DESIGN 27a: a header, so CSP needs no inline-speculation-rules
