@@ -56,14 +56,6 @@ test('25e: the CD block CSS never uses the accent (2 + 1 rule) and adds no motio
 
 test("25b-d: Gabe's photos and the re-printed images are wired; every new file has no EXIF", async () => {
   const home = page('index.html');
-  assert.match(home, /class="v2-photo v2-wide-only v2-jump" src="\/media\/cd-live-portrait-352\.webp"[^>]*alt="GLucak singing live in purple light"/);
-  assert.ok(!home.includes('Photo slot: crowd shot'), 'the empty slot is gone');
-  assert.match(page('about/index.html'), /class="about-photo" src="\/media\/cd-studio-480\.webp"[^>]*alt="GLucak in his home studio/);
-  const shows = page('shows/index.html');
-  assert.match(shows, /class="venues-photo" src="\/media\/cd-live-640\.webp"[^>]*alt="GLucak singing live in purple light"/);
-  assert.ok(!/class="[^"]*(has-ground|ground-wall)/.test(shows), 'Shows drops the Kealey wall strip');
-  assert.ok(!page('about/index.html').includes('<img class="venues-photo"'), 'About keeps the plain booking block');
-  assert.ok(home.includes('b-riso-identity-600.webp') && !home.includes('/media/b-riso-600.webp'));
   const files = [...readdirSync(join(ROOT, 'public/media')).filter((f) => /^cd-.*\.webp$/.test(f)).map((f) => `public/media/${f}`),
     ...readdirSync(join(ROOT, 'public/media/covers')).filter((f) => /^identity.*\.webp$/.test(f)).map((f) => `public/media/covers/${f}`)];
   assert.ok(files.length >= 9, `found ${files.length} files`);

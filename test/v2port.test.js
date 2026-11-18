@@ -50,7 +50,7 @@ test('phrase beside its content: 5 : 7 grid from 900px, phones stacked', () => {
 
 test('credits match the images each page shows; clamp gone; focusin handler; 200% Now-line rule', () => {
   const content = readFileSync(join(ROOT, 'src/components/content.js'), 'utf8');
-  const CREDIT_FOR = [[/\/media\/v2\/(belt|stage)-|videos\/OOGT3GxlQJk-/, 'Video stills: GLucak on YouTube.'], [/videos\/aZNW63M_C2E-/, 'Video still: Vladd (Vladdtime).'],[/covers\/identity/, 'IDENTITY cover: GLucak.'], [/\/media\/cd-/, 'Photos: from the IDENTITY CD.'], [/\/media\/v2\/garage-|videos\/K-OZiNvQB14-/, 'Video still: Joseph Lucak.'], [/a-era-grade/, 'Photo: Alexander Kealey.']];
+  const CREDIT_FOR = [[/\/media\/v2\/(belt|stage)-|poster-print-|photo-crooked-eye-|videos\/aZNW63M_C2E-/, 'Video still: Vladd (Vladdtime).'], [/videos\/OOGT3GxlQJk-/, 'Video stills: GLucak on YouTube.'],[/covers\/identity/, 'IDENTITY cover: GLucak.'], [/\/media\/cd-/, 'Photos: from the IDENTITY CD.'], [/\/media\/v2\/garage-|videos\/K-OZiNvQB14-/, 'Video still: Joseph Lucak.'], [/a-print-|b-print-/, 'Photo: Alexander Kealey.']];
   assert.ok(content.includes('CREDIT_FOR'));
   const aboutCredits = readFileSync(join(ROOT, 'dist/about/index.html'), 'utf8').match(/class="credit-list">([^]*?)<\/ul>/)[1];
   for (const page of ['index.html', 'shows/index.html', 'about/index.html', 'music/index.html', 'videos/index.html']) {

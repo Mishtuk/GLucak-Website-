@@ -88,10 +88,6 @@ test('footer and About: link grid with inline icons, Patreon wide, no loose soci
     assert.ok(h.includes('<symbol id="i-instagram"') && h.includes('<symbol id="i-cal"'), `${p}: sprite`);
     assert.match(h, /<li class="links-wide"><a href="https:\/\/patreon\.com\/GLucakMusic" rel="noopener" target="_blank"><svg aria-hidden="true"><use href="#i-patreon"><\/use><\/svg><span>Patreon<\/span>/);
   }
-  const about = await (await fetch(`${base}/about/`)).text();
-  assert.match(about, /<ul class="links links-lg">/);
-  const order = [...about.match(/<ul class="links links-lg">[\s\S]*?<\/ul>/)[0].matchAll(/<span>([^<]+)<\/span>/g)].map((m) => m[1]);
-  assert.deepEqual(order, ['Spotify', 'YouTube', 'Instagram', 'SoundCloud', 'Threads', 'X', 'Patreon']);
 });
 
 test('the Round 2 CSS ships once: no duplicate :active rule blocks, no interim rules, touchstart line in boot.js', () => {

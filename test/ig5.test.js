@@ -21,9 +21,7 @@ test('24b / 28d: For venues on Shows and About with no address = Request a show 
     for (const h of v.matchAll(/<h2[^>]*>([^<]*)<\/h2>/g)) assert.ok(!h[1].includes('.'), `title has no period: ${h[1]}`);
     assert.ok(!/Placeholder: booking email/.test(page(f)), `${f}: old placeholder line gone`);
   }
-  const about = page('about/index.html');
-  assert.ok(about.indexOf('class="venues"') > -1 && about.indexOf('class="venues"') < about.indexOf('Find GLucak'), 'About: before Find GLucak');
-  assert.ok(!/<h2>Booking<\/h2>/.test(about));
+  assert.ok(!/<h2>Booking<\/h2>/.test(page('about/index.html')));
   assert.match(page('shows/index.html'), /<div class="shows-side">[^]*<div class="venues">/);
 });
 

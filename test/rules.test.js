@@ -106,7 +106,103 @@ test('R5: 404 and Shop have no sign-up band (their Join links go to Home); every
 
 test('C19: the footer credits are one line (content.md 2); the full list is on About once', () => {
   const line = '<p class="credits">Credits: Alexander Kealey, Joseph Lucak, GLucak, Dave Bahm</p>';
-  for (const f of ['index.html', 'music/index.html', 'shows/index.html', 'videos/index.html', 'about/index.html']) assert.equal(dist(f).split(line).length - 1, 1, f);
+  for (const f of ['index.html', 'music/index.html', 'shows/index.html', 'videos/index.html']) assert.equal(dist(f).split(line).length - 1, 1, f);
+  assert.ok(!dist('about/index.html').includes('class="credits"'), 'DESIGN 29d: About prints the list once, no footer line');
   const list = dist('about/index.html').match(/class="credit-list">([^]*?)<\/ul>/)[1];
-  for (const c of ['Alexander Kealey', 'Joseph Lucak', 'GLucak on YouTube', 'Vladd', 'IDENTITY CD', 'Dave Bahm']) assert.ok(list.includes(c), c);
+  for (const c of ['Alexander Kealey', 'Joseph Lucak', 'GLucak on YouTube', 'Vladd', 'IDENTITY CD', 'Dave Bahm', 'Montgomery County']) assert.ok(list.includes(c), c);
+});
+
+// ---------- Overhaul OV6 (DESIGN 29g): one photo language ----------
+import sharp from 'sharp';
+const ERA = JSON.parse(read('src/eras/identity.json')).colors;
+const rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+const FRAMES = { 'a-print-phone-800': 'kealey', 'b-print-': 'kealey', 'v2/garage-toner-': 'garage', 'v2/stage-lines-': 'ce2', 'v2/belt-print-': 'ce4',
+  'poster-print-': 'ce3', 'cd-live-': 'cdlive', 'cd-studio-': 'studio', 'photo-mccc-': 'mccc', 'photo-crooked-eye-': 'ce1' };
+const NOT_PHOTO = /^(covers|videos|og|mark-|shop|uploads|placeholder-cover|favicon|apple-touch|g-|hero-wall)/; // 29b: covers, video thumbs, logos, shop samples
+const frameOf = (f) => Object.entries(FRAMES).find(([k]) => f.startsWith(k))?.[1];
+const fixture = (d, v) => ({ date: d, type: 'show', venue: v, city: 'X' });
+const shows2 = showsHtml([fixture('2030-01-01', 'A'), fixture('2030-01-02', 'B')], new Date('2029-12-01T12:00:00Z'));
+const DIST = join(ROOT, 'dist');
+const pages29 = Object.fromEntries(walk(DIST).filter((p) => !p.includes(join('dist', 'edit'))).map((p) => [p.slice(DIST.length + 1).replace(/\\/g, '/'), readFileSync(p, 'utf8')]));
+pages29['shows/index.html'] += shows2; // the fixture's poster art stands in for the injected shows
+const mediaRefs = (h) => [...h.matchAll(/(?:src|href|srcset)="([^"]+)"/g)].flatMap((m) => m[1].split(',').map((x) => x.trim().split(/\s+/)[0]))
+  .filter((u) => u.startsWith('/media/')).map((u) => u.slice(7)).filter((f) => !NOT_PHOTO.test(f) && /\.(webp|avif)$/.test(f));
+const used = new Map(); // frame -> Set of pages
+const files29 = new Set();
+for (const [p, h] of Object.entries(pages29)) for (const f of mediaRefs(h)) {
+  const fr = frameOf(f); assert.ok(fr, `${p}: unknown photo ${f}`); files29.add(f);
+  used.set(fr, (used.get(fr) ?? new Set()).add(p));
+}
+
+test('29g-1: every photo is a named frame; each frame is on one page only; the fixture prints poster-art once', () => {
+  for (const [fr, set] of used) assert.equal(set.size, 1, `${fr} is on ${[...set].join(', ')}`);
+  assert.equal(shows2.split('poster-art').length - 1, 1, 'two full shows: art on the first only');
+  assert.ok(used.size >= 9, `frames in use: ${[...used.keys()].join(', ')}`);
+});
+
+const magenta = async (file, flat) => {
+  const { data } = await sharp(join(ROOT, 'public/media', file)).flatten({ background: flat }).resize(300, null, { withoutEnlargement: true }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  let n = 0;
+  for (let i = 0; i < data.length; i += 3) {
+    const [r, g, b] = [data[i] / 255, data[i + 1] / 255, data[i + 2] / 255], mx = Math.max(r, g, b), d = mx - Math.min(r, g, b);
+    if (!d || d / mx <= 0.4 || mx <= 0.35) continue;
+    const h = 60 * (mx === r ? ((g - b) / d + 6) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4);
+    if (h >= 285 && h <= 330) n++;
+  }
+  return n / (data.length / 3);
+};
+
+test('29g-2: Print files hold two colours (99% within RGB 40 of bg or text); magenta is in no photo (hue 285-330, under 1%)', async () => {
+  const [bg, tx] = [rgb(ERA.bg), rgb(ERA.text)], near = (px, c) => Math.hypot(px[0] - c[0], px[1] - c[1], px[2] - c[2]) <= 40;
+  for (const f of files29) {
+    if (/^(a-print-|b-print-|v2\/belt-print-|poster-print-|v2\/stage-lines-|v2\/garage-toner-)/.test(f)) {
+      const { data } = await sharp(join(ROOT, 'public/media', f)).flatten({ background: { r: tx[0], g: tx[1], b: tx[2] } }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+      let ok = 0; for (let i = 0; i < data.length; i += 3) { const px = [data[i], data[i + 1], data[i + 2]]; if (near(px, bg) || near(px, tx)) ok++; }
+      assert.ok(ok / (data.length / 3) >= 0.99, `${f}: ${(100 * ok / (data.length / 3)).toFixed(1)}% in the two inks`);
+    }
+    const m = await magenta(f, { r: tx[0], g: tx[1], b: tx[2] }); assert.ok(m < 0.01, `${f}: ${(100 * m).toFixed(1)}% magenta`);
+  }
+});
+
+test('29g-3: Clean files are never upscaled; the new files carry no exif, icc or xmp', async () => {
+  const wide = async (f) => (await sharp(join(ROOT, 'public/media', f)).metadata()).width;
+  assert.ok(await wide('photo-mccc-478.webp') <= 478 && await wide('photo-crooked-eye-634.webp') <= 634 && await wide('cd-live-2400.webp') <= 4000 && await wide('poster-print-600.webp') <= 634);
+  for (const f of ['a-print-phone-800', 'b-print-600', 'b-print-1000', 'v2/belt-print-320', 'v2/belt-print-634', 'poster-print-600', 'cd-live-2400', 'photo-mccc-478', 'photo-crooked-eye-634']) {
+    const m = await sharp(join(ROOT, 'public/media', `${f}.webp`)).metadata();
+    assert.ok(!m.exif && !m.icc && !m.xmp, `${f} carries metadata`);
+  }
+});
+
+test('29g-4: About has the header photo, 3 plain-link gallery photos, the credits once and no script of its own', () => {
+  const h = dist('about/index.html');
+  const credits = [...read('src/components/content.js').match(/export const PHOTO_CREDITS = \{([^]*?)\n\};/)[1].matchAll(/(\w+): '([^']*)'/g)].map((m) => m[2]);
+  assert.ok(credits.length >= 7);
+  assert.ok(!h.includes('Find GLucak'));
+  assert.equal(h.split('class="credit-list"').length - 1, 1);
+  const list = h.match(/class="credit-list">([^]*?)<\/ul>/)[1];
+  for (const v of credits) assert.equal(list.split(`<li>${v.replace(/\.$/, '')}</li>`).length - 1, 1, v);
+  assert.ok(!h.includes('class="credits"'));
+  const img = h.match(/<img[^>]*class="[^"]*push-photo[^"]*"[^>]*>/)[0];
+  assert.match(img, /alt="[^"]+"/); assert.ok(img.includes('fetchpriority="high"') && !img.includes('loading="lazy"') && img.includes('2400w'));
+  const items = h.match(/<ul class="gallery-grid">([^]*?)<\/ul>/)[1].split('</li>').filter((x) => x.includes('<li'));
+  assert.equal(items.length, 3);
+  for (const li of items) {
+    const href = li.match(/^<li><a href="(\/media\/[^"]+\.webp)"><img [^>]*alt="[^"]+"[^>]*><\/a>$/)?.[1];
+    assert.ok(href, `a plain link around one img with alt: ${li}`); assert.ok(statSync(join(ROOT, 'public', href)).isFile());
+  }
+  const scripts = [...h.matchAll(/<script\b[^>]*>/g)].map((m) => m[0]).filter((s) => !s.includes('application/ld+json'));
+  assert.ok(scripts.every((s) => /src="\/js\/(boot|app)\.js"/.test(s)), `no script beyond Base: ${scripts}`);
+  for (const f of readdirSync(join(ROOT, 'public/js'))) assert.ok(!/gallery/.test(read(join('public/js', f))), `${f}: nothing touches .gallery`);
+});
+
+test('29g-5: the 29 CSS block moves nothing (no animation, transition, transform, filter, :hover, --accent) and .push-head::after is gone', () => {
+  const block = css.slice(css.lastIndexOf('/*', css.indexOf('DESIGN 29. One photo language'))).replace(/\/\*[^]*?\*\//g, '');
+  assert.ok(block.length > 300);
+  for (const w of ['animation', 'transition', 'transform', 'filter', ':hover', '--accent']) assert.ok(!block.includes(w), w);
+  assert.ok(!/\.push-head::after/.test(css));
+});
+
+test('29g-6: the old photos are off every page and the fixture', () => {
+  for (const [p, h] of Object.entries(pages29)) for (const w of ['cd-live-portrait', 'v2-jump', 'belt-plates', 'b-riso', 'a-night', 'c-poster', 'venues-photo']) assert.ok(!h.includes(w), `${p}: ${w}`);
+  assert.ok(!pages29['shows/index.html'].includes('cd-live'));
 });

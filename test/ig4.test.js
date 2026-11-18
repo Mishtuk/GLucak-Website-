@@ -55,12 +55,11 @@ test('23b.5: footer words have no periods, on every page', () => {
 
 test('23a: the new photo files are what the pages serve, once per slot, and the old files stay', () => {
   const home = page('index.html');
-  for (const f of ['v2/stage-lines-360', 'v2/stage-lines-634', 'v2/belt-plates-320', 'v2/belt-plates-634', 'v2/garage-toner-480', 'v2/garage-toner-874', 'a-night-phone-800']) {
+  for (const f of ['v2/stage-lines-360', 'v2/stage-lines-634', 'v2/belt-print-320', 'v2/belt-print-634', 'v2/garage-toner-480', 'v2/garage-toner-874', 'a-print-phone-800']) {
     assert.ok(home.includes(`/media/${f}.webp`), `${f} on Home`);
     assert.ok(existsSync(join(ROOT, 'public/media', `${f}.webp`)));
   }
   assert.ok(!/a-era-grade-phone-800|v2\/(stage|belt|garage)-\d/.test(home), 'Home serves no old file');
-  assert.ok(page('about/index.html').includes('d-crowd-screen-phone-800') && !/d-crowd-(phone-)?\d/.test(page('about/index.html')));
   for (const f of ['a-era-grade-phone-800', 'v2/belt-320', 'v2/stage-360', 'v2/garage-480', 'd-crowd-800']) assert.ok(existsSync(join(ROOT, 'public/media', `${f}.webp`)), `${f} stays in the repo`);
   assert.match(home, /alt="GLucak singing on stage at Crooked Eye Brewery"/);
 });

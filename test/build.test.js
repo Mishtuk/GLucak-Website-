@@ -109,7 +109,6 @@ test('port notes: no quote text, mark in header, one hero image, credits, no EXI
   assert.equal((h.match(/fetchpriority="high"/g) ?? []).length, 1, 'only the chosen hero image is high priority');
   assert.ok(h.includes('class="stub-when">Out now<') && h.includes('<!--gl:now-->'));
   assert.match(h, /class="credits">Credits: Alexander Kealey, Joseph Lucak, GLucak, Dave Bahm<\/p>/);
-  assert.ok(html('/about/').includes('class="credits"'));
   const media = readdirSync(join(DIST, 'media'));
   assert.ok(!media.some((f) => /\.jpe?g$/i.test(f)), 'no JPG originals in media');
 });
@@ -122,7 +121,7 @@ test('approved copy is on each page verbatim; no ASK GABE; no quote ships', () =
     '/': ['Live It Loud', bio[1], SIGNUP, 'Back my projects and merch. Get early access to songs only the inner circle knows exist.'],
     '/music/': ['Releases', 'Hear more on SoundCloud', 'Pre-save', 'IDENTITY tracklist', 'All songs written, recorded, produced, mixed and mastered by Gabriel Lucak', 'Remix album'],
     '/shows/': ['Live It Loud', 'Book GLucak'],
-    '/about/': [...bio, 'Find GLucak', 'Book GLucak', 'Epilepsy survivor', 'Healed by Christ since 2009', 'Back my projects and merch.', '>Credits<', 'Photo: Alexander Kealey'],
+    '/about/': [...bio, 'Book GLucak', 'Epilepsy survivor', 'Healed by Christ since 2009', 'Back my projects and merch.', '>Credits<', 'Photo: Alexander Kealey'],
   };
   for (const [p, texts] of Object.entries(want)) for (const t of texts) assert.ok(html(p).includes(t), `${p}: ${t}`);
   assert.ok(!html('/about/').includes('Two albums'), 'C17: the stale "Two albums" paragraph is gone');

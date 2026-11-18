@@ -172,17 +172,3 @@ test('IG6 eval 2: Music shows the IDENTITY block before the Releases grid', () =
   assert.equal((m.match(/<h1/g) ?? []).length, 1);
   assert.ok(!/<h3 class="tracks-h"/.test(m), 'no skipped heading level');
 });
-
-test("IG6 eval 3: Home's jump slot shows his face (live portrait), as graded, no metadata, old jump files gone", async () => {
-  const h = page('index.html');
-  assert.match(h, /class="v2-photo v2-wide-only v2-jump" src="\/media\/cd-live-portrait-352\.webp"[^>]*alt="GLucak singing live in purple light"/);
-  assert.ok(!h.includes('cd-jump-'));
-  for (const f of ['352', '704']) {
-    const meta = await sharp(join(ROOT, `public/media/cd-live-portrait-${f}.webp`)).metadata();
-    assert.equal(meta.width, Number(f));
-    assert.equal(meta.height, Number(f) * 1.25);
-    assert.ok(!meta.exif && !meta.xmp && !meta.icc);
-  }
-  assert.ok(!existsSync(join(ROOT, 'public/media/cd-jump-352.webp')));
-  assert.ok(src('dist/about/index.html').includes('Photos: from the IDENTITY CD'), 'the CD credit (full list on /about/) still covers it');
-});
