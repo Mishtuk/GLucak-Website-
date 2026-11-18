@@ -142,6 +142,13 @@ test('28c: every upcoming item has one hidden share button for its id; Played ha
   assert.ok(!up.includes('<img src=x') && up.includes('data-title="GLucak open mic at “&gt;&lt;img src=x onerror=alert(1)&gt;"') && up.includes('data-text="Open mic Nov 18') && up.includes('aria-label="Share: “&gt;&lt;img'));
 });
 
+test('28c: share button is hidden until JS enables it and has an aria-label', () => {
+  const out = showsHtml([row({ date: '2027-01-16' })], noon('2026-11-18'), {});
+  const btns = out.match(/<button class="share-[a-z]+"[^>]*>/g) || [];
+  assert.ok(btns.length >= 1);
+  for (const b of btns) assert.ok(/ hidden /.test(b) && /aria-label="Share: /.test(b));
+});
+
 test('28c: app.js share block: textContent only, no motion, URL built from location.origin', () => {
   const js = readFileSync(new URL('../public/js/app.js', import.meta.url), 'utf8');
   const blk = js.slice(js.indexOf('Share a show (DESIGN 28c'), js.indexOf('Swipe row'));
