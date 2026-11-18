@@ -112,3 +112,19 @@ test('folder redirect Location never starts with //', async () => {
   assert.equal(ok.status, 301);
   assert.equal(ok.headers.get('location'), '/shows/');
 });
+
+test('failed sign-ins and lockouts log one escaped line, never the password', async () => {
+  const lines = [], warn = console.warn;
+  console.warn = (...a) => lines.push(a.join(' '));
+  try {
+    const post = () => fetch(`${base}/edit/login`, { method: 'POST', headers: { origin: base, 'content-type': 'application/json', accept: 'application/json' },
+      body: JSON.stringify({ username: 'a\nb"c', password: 'hunter2-secret' }) });
+    const codes = [];
+    for (let i = 0; i < 6; i++) codes.push((await post()).status);
+    assert.deepEqual([codes[0], codes[5]], [401, 429]);
+  } finally { console.warn = warn; }
+  assert.equal(lines.length, 6);
+  assert.match(lines[0], /^\d{4}-\d\d-\d\dT[\d:.]+Z sign-in wrong: (::ffff:)?127\.0\.0\.1 "a\\nb\\"c"$/);
+  assert.match(lines[5], / sign-in locked: /);
+  assert.ok(!lines.join('\n').includes('hunter2'));
+});

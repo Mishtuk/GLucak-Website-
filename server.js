@@ -165,6 +165,8 @@ function redirect(req, res, location, extra = {}) {
   res.end();
 }
 
+// One line per failed sign-in or lockout. JSON.stringify escapes quotes and newlines in the name; the password is never passed in.
+const warnLogin = (why, ip, username) => console.warn(new Date().toISOString(), `sign-in ${why}:`, ip, JSON.stringify(username));
 const WRONG = "That name and password don't match. Check them and try again.";
 const LOCKED = 'Too many tries. Wait 15 minutes, then try again.';
 const STALE = (kind) => `Someone else saved the ${kind} just now, so yours didn't save. Reloading shows their changes but clears yours, so write down what you changed first.`;
@@ -214,9 +216,9 @@ async function handleEdit(req, res, url) {
     // 10 tries per IP per 15 minutes, 30 per minute across all IPs (each try costs a scrypt). 5 wrong passwords lock that
     // name from that IP for 15 minutes; 50 in an hour lock the name everywhere (known or not, so it reveals nothing).
     const ip = clientIp(req), userIp = `user:${username}|ip:${ip}`, user = `user:${username}`;
-    if (!allow(`ip:${ip}`, 10, 15 * 60e3) || !allow('login:all', 30, 60e3) || locked(userIp) || locked(user)) return fail(429, 'locked', LOCKED);
+    if (!allow(`ip:${ip}`, 10, 15 * 60e3) || !allow('login:all', 30, 60e3) || locked(userIp) || locked(user)) { warnLogin('locked', ip, username); return fail(429, 'locked', LOCKED); }
     const name = await checkLogin(EDITORS, username, b?.password);
-    if (!name) { recordFailure(userIp); recordFailure(user, Date.now(), USER_LOCK); return fail(401, 'wrong', WRONG); }
+    if (!name) { warnLogin('wrong', ip, username); recordFailure(userIp); recordFailure(user, Date.now(), USER_LOCK); return fail(401, 'wrong', WRONG); }
     clearFailures(userIp);
     clearFailures(user);
     console.log(new Date().toISOString(), 'editor signed in:', name);
