@@ -30,8 +30,8 @@ export function sameOrigin(headers, host) {
 export async function signup(fields, { ip, headers, host, env = process.env, fetchImpl = fetch, now = Date.now() }) {
   if (!sameOrigin(headers, host)) return { status: 403, body: { ok: false } };
   if (limited(ip, now)) return { status: 429, body: { ok: false } };
-  if (fields.website) return { status: 200, body: { ok: true } }; // a bot filled the hidden field: pretend it worked
-  const email = String(fields.email ?? '').trim();
+  if (fields?.website) return { status: 200, body: { ok: true } }; // a bot filled the hidden field: pretend it worked
+  const email = String(fields?.email ?? '').trim();
   if (!validEmail(email)) return { status: 400, body: { ok: false } };
   const { KIT_API_KEY: key, KIT_FORM_ID: form } = env;
   if (!key || !/^\d+$/.test(form ?? '')) return { status: 503, body: { ok: false } };

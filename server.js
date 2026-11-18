@@ -108,7 +108,7 @@ function handleSignup(req, res) {
   let raw = '', big = false;
   req.setEncoding('utf8');
   req.on('data', (c) => { if (!big) raw += c; if (raw.length > 2048) { big = true; raw = ''; } }); // keep reading, drop the excess, then answer 413
-  req.on('end', async () => {
+  const finish = async () => {
     const reply = (status, body) => {
       if (/json/.test(req.headers.accept ?? '')) return send(req, res, status, 'application/json', Buffer.from(JSON.stringify(body)), { 'Cache-Control': 'no-store' });
       res.writeHead(303, { ...baseHeaders(req), Location: `/?signup=${body.ok ? 'ok' : 'error'}#join`, 'Cache-Control': 'no-store' });
@@ -117,9 +117,11 @@ function handleSignup(req, res) {
     if (big) return reply(413, { ok: false });
     let fields = {};
     try { fields = /json/.test(req.headers['content-type'] ?? '') ? JSON.parse(raw || '{}') : Object.fromEntries(new URLSearchParams(raw)); } catch { return reply(400, { ok: false }); }
+    if (!fields || typeof fields !== 'object' || Array.isArray(fields)) fields = {}; // valid JSON that isn't an object (null, [], "x", 5): no email, so 400
     const r = await signup(fields, { ip: clientIp(req), headers: req.headers, host: req.headers.host });
     reply(r.status, r.body);
-  });
+  };
+  req.on('end', () => finish().catch((e) => fail(req, res, e))); // a throw in here must answer 500, never end the process
 }
 
 // X-Forwarded-* only when TRUST_PROXY=1 (behind the host's proxy); otherwise anyone could spoof them.
@@ -264,6 +266,15 @@ async function handleEdit(req, res, url) {
   return json(404, { error: 'not_found' });
 }
 
+/** A generic 500 (JSON when the caller asked for JSON); nothing from the error reaches the client. */
+function fail(req, res, e) {
+  console.error(new Date().toISOString(), 'request failed:', req.method, e?.message ?? e);
+  if (res.headersSent) return res.destroy();
+  const json = /json/.test(req.headers.accept ?? '');
+  res.writeHead(500, { ...baseHeaders(req), 'Content-Type': json ? 'application/json' : 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' });
+  res.end(json ? '{"ok":false}' : 'Something went wrong.');
+}
+
 function handle(req, res) {
   let url;
   try { url = new URL(req.url, `http://${req.headers.host ?? 'localhost'}`); } catch { // a junk Host header ('a b', '[')
@@ -313,6 +324,9 @@ function handle(req, res) {
   send(req, res, 200, type, readFileSync(file), { 'Cache-Control': p.startsWith('/_astro/') ? 'public, max-age=31536000, immutable' : 'public, max-age=86400' });
 }
 
-export const server = createServer(handle);
+export const server = createServer((req, res) => { try { handle(req, res); } catch (e) { fail(req, res, e); } });
 // Tests import this file without listening; `node server.js` listens.
-if (process.argv[1] && import.meta.filename === process.argv[1]) server.listen(PORT, () => console.log(`GLucak site on :${PORT}`));
+if (process.argv[1] && import.meta.filename === process.argv[1]) {
+  process.on('unhandledRejection', (e) => console.error(new Date().toISOString(), 'unhandled rejection:', e?.message ?? e));
+  server.listen(PORT, () => console.log(`GLucak site on :${PORT}`));
+}
