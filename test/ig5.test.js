@@ -11,14 +11,13 @@ const css = readFileSync(join(ROOT, 'src/styles/global.css'), 'utf8').replace(/\
 const block24a = css.slice(css.indexOf('/* ---------- DESIGN 24a.'), css.indexOf('DESIGN 24b.'));
 const venues = (h) => h.match(/<div class="venues">[^]*?<\/p>\s*<\/div>/)?.[0] ?? '';
 
-test('24b: For venues on Shows and About with no address = no button, no chip, no period in the heading', () => {
+test('24b / 28d: For venues on Shows and About with no address = Request a show to Instagram, no chip, no period in the heading', () => {
   for (const f of ['shows/index.html', 'about/index.html']) {
     const v = venues(page(f));
     assert.ok(v, `${f}: block present`);
     assert.match(v, /<h2>Book GLucak<\/h2>/);
-    assert.ok(!/Request a show|btn-line|mailto:/.test(v), `${f}: no button without the booking email`);
+    assert.ok(/<a class="btn btn-line" href="https:\/\/www\.instagram\.com\/glucakofficial\/"[^>]*target="_blank"[^>]*>Request a show/.test(v) && !/mailto:|>Listen</.test(v), `${f}: Request a show on Instagram, no Listen`);
     assert.ok(!/ph-chip|coming soon/i.test(v), `${f}: no chip`);
-    assert.match(v, /<a class="go" href="\/music\/">Listen<\/a>/);
     for (const h of v.matchAll(/<h2[^>]*>([^<]*)<\/h2>/g)) assert.ok(!h[1].includes('.'), `title has no period: ${h[1]}`);
     assert.ok(!/Placeholder: booking email/.test(page(f)), `${f}: old placeholder line gone`);
   }
@@ -28,11 +27,11 @@ test('24b: For venues on Shows and About with no address = no button, no chip, n
   assert.match(page('shows/index.html'), /<div class="shows-side">[^]*<div class="venues">/);
 });
 
-test('24b: the button exists only when BOOKING_EMAIL is set (component source)', () => {
+test('24b / 28d: the address line exists only when BOOKING_EMAIL is set (component source)', () => {
   const src = readFileSync(join(ROOT, 'src/components/ForVenues.astro'), 'utf8');
-  assert.match(src, /\{BOOKING_EMAIL && <a class="btn btn-line"/);
+  assert.match(src, /href=\{bookingHref\(\)\}/);
   assert.match(src, /\{BOOKING_EMAIL && <p class="venues-addr">/);
-  assert.match(src, /import \{ BOOKING_EMAIL \} from '\.\.\/lib\/shows\.js'/);
+  assert.match(src, /import \{ BOOKING_EMAIL, bookingHref \} from '\.\.\/lib\/shows\.js'/);
 });
 
 test('24c: Music has New here? Start with Go on the Releases row; the crate order is unchanged', () => {
