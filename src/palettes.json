@@ -1,0 +1,14 @@
+[
+  { "id": "identity", "name": "IDENTITY", "mood": "Midnight navy and stage magenta, from the IDENTITY art", "light": false,
+    "colors": { "bg": "#05024c", "text": "#f4f2ff", "muted": "#b7b2e3", "accent": "#d93cfb", "accent-text": "#05024c", "muted-inv": "#4a4590", "mark-ground": "#05024c" } },
+  { "id": "amber", "name": "Stage Amber", "mood": "One warm spot on a cold, dark stage", "light": false,
+    "colors": { "bg": "#121418", "text": "#f5efe6", "muted": "#b4ab9e", "accent": "#ffb000", "accent-text": "#121418", "muted-inv": "#5c544a", "mark-ground": "#121418" } },
+  { "id": "poster", "name": "Gig Poster", "mood": "Cream stock, black ink, one red stamp", "light": true,
+    "colors": { "bg": "#f2e9d8", "text": "#17130f", "muted": "#5e5246", "accent": "#c8201a", "accent-text": "#ffffff", "muted-inv": "#c9bca6", "mark-ground": "#17130f" } },
+  { "id": "green", "name": "Green Room", "mood": "Backstage green, chrome white, a coral pass", "light": false,
+    "colors": { "bg": "#062419", "text": "#e9f0ee", "muted": "#a6bcb3", "accent": "#ff7466", "accent-text": "#062419", "muted-inv": "#3f5a50", "mark-ground": "#062419" } },
+  { "id": "steel", "name": "Steel Flare", "mood": "Steel-blue night, one orange flare", "light": false,
+    "colors": { "bg": "#14283d", "text": "#edf3f8", "muted": "#a8bbcd", "accent": "#ff7a1a", "accent-text": "#14283d", "muted-inv": "#4a5f74", "mark-ground": "#14283d" } },
+  { "id": "redline", "name": "Redline", "mood": "Oxblood and ice: the loudest set", "light": false,
+    "colors": { "bg": "#2b0609", "text": "#fff1ea", "muted": "#e2b0aa", "accent": "#3ce6d4", "accent-text": "#2b0609", "muted-inv": "#7a3a3a", "mark-ground": "#2b0609" } }
+]
