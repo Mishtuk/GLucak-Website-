@@ -791,7 +791,7 @@ html[data-hero='ab'] .slot { display: none; }
 .poster-date { padding-right: 3.5rem; }
 .cal-link, .share-stamp {
   grid-area: date; justify-self: end; align-self: start; display: grid; place-items: center; width: 48px; height: 48px;
-  color: var(--bg); border: 3px solid var(--bg); border-radius: var(--radius-s);
+  color: var(--bg); border: 3px solid var(--bg); border-radius: var(--radius-s); padding: 0;
 }
 /* Rows: the glyph sits under the date. Its button is 48x48 but draws 24x24: the extra 12px on each side reaches into the
    row's padding and the gap above, where nothing else can be tapped, so the row stays 60px. */
@@ -1400,7 +1400,9 @@ html[data-header='solid'] .site-header { background: var(--bg) !important; borde
 }
 li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* the shared show, found on arrival; static */
 .share-btn[hidden], .share-stamp[hidden] { display: none; }
-.share-btn { justify-self: end; }
+.share-btn, .share-stamp { background: none; }
+.share-btn { justify-self: end; border: 0; }
+@container (width >= 17rem) { .row > .share-btn { justify-self: start; margin-left: 20px; } } /* beside the calendar glyph, not over the date */
 .share-msg { grid-column: 1 / -1; font-size: var(--step-0); font-weight: 700; overflow-wrap: anywhere; }
 .share-msg:empty { display: none; }
 .poster .share-msg { display: block; grid-column: auto; }
