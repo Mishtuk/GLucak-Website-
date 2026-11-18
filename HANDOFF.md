@@ -10,6 +10,13 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
+- **Desktop 2026-11-17 status:** round done and pushed (boss-approved, `docs/review/desktop-round-2026-11-17-review.md`): S1 / S7 /
+  sign-in log, poster = first full show, 'Shop', Dependabot, Welcome Home Pre-save, `--w-close` 10.65, **daily Actions workflow**
+  (`.github/workflows/daily.yml`, 09:00 UTC: npm ci, npm test, republish preview; owner OK'd; first run green). `npm test` 232/232.
+  Research in: `templates-round4`, `ig-design-tips-round2` (+ Whisper transcripts), `oversight-supply` (Reddit; free sections need
+  an account = owner OK). Running: design-skills research (impeccable, hallmark, shadcn: owner's tip). **Next:** designer (Opus)
+  round from the research with 390 + 1280 screenshot loop; small items: curly quotes in visible copy, speculation-rules prefetch,
+  platform links row. Owner: follow-up email to Gabe (Zelle for the deposit) drafted in chat, not sent by us.
 - **Desktop 2026-11-17 claim (back after Nov 7):** round plan `docs/review/desktop-round-2026-11-17.md` (green tests, Welcome Home
   Pre-save, S1 / S7 / sign-in log, poster = first full show, Dependabot, daily build). Files: `server.js`, `src/lib/`,
   `src/data/releases.json`, `test/{build,shows,server,products,signup-http}.test.js`, `.github/`. **Owner 2026-11-17: the Laptop
