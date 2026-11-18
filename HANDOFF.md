@@ -12,8 +12,8 @@
 ## Now working on
 - **Desktop 2026-11-17 claim (back after Nov 7):** round plan `docs/review/desktop-round-2026-11-17.md` (green tests, Welcome Home
   Pre-save, S1 / S7 / sign-in log, poster = first full show, Dependabot, daily build). Files: `server.js`, `src/lib/`,
-  `src/data/releases.json`, `test/{build,shows,server,products,signup-http}.test.js`, `.github/`. Asking the Laptop to release
-  `test/ig6.test.js`. New from Gabe (Nov 13): Welcome Home smart link `https://wingsmusic.lnk.to/383142-WelcomeHome`; new Spotify bio
+  `src/data/releases.json`, `test/{build,shows,server,products,signup-http}.test.js`, `.github/`. **Owner 2026-11-17: the Laptop
+  is unavailable; the Desktop holds ALL files** (Laptop's Nov 10 claim released by the owner; see CONTEXT.md). New from Gabe (Nov 13): Welcome Home smart link `https://wingsmusic.lnk.to/383142-WelcomeHome`; new Spotify bio
   is out (held until the owner's follow-up email is answered).
 - **Laptop 2026-11-11 round V1 DONE (DESIGN 26, D95):** `/videos/` built (Scenic Route live lead, Riverside clip with privacy crop, music videos, Shorts link; Play buttons, no iframe until pressed), Videos in nav + phone-bar Watch, Music leads with IDENTITY, Home jump slot is the live face crop, apple-touch icon on #05024c. `npm test` 227/227, Home 3735 at 390, 0 animations. Open for Gabe: who filmed the Riverside clip; confirm Emily Mae on You're Not Alone (not in its title, so no line).
 - **Laptop 2026-11-11 round IG6 DONE (Gabe's answers, DESIGN 25, D93):** Gabe's email of Nov 6 answered all 23 questions (`docs/research/gabe-answers-2026-11-06.md`, files `assets/from-gabe/identity-cd/`). Site is now the **IDENTITY era** (ground #05024c, accent magenta #d93cfb; era bug fixed: `html:root` so era colours beat global.css :root), prints re-skinned, his CD photos in slots, IDENTITY cover + 12-track list on Music, real shows (venue towns in `docs/research/venues-2026-11-11.md`, 5 medium-confidence + Cheshire left out: ask Gabe), Welcome Home Dec 18 ("Follow on Spotify", no pre-save), flashing videos blocked (FLASHING in content.js + test), QUOTES_APPROVED on (Home keeps RISE only), Healed by Christ subheader, Patreon line, credits. `npm test` 213/213, a11y200 0, Home 3735 at 390 (5.66 screens). **Owner:** Kit + Scenic Route sign-up giveaway, domains (glucak.com + slogan domain, Gabe said yes), Fourthwall later.
@@ -36,7 +36,7 @@
   PASS (`docs/review/ig-round/eval.md`); its 3 fixes (Spotify Play in screen one at 390; flatten white `.tab` labels; About
   1280 right column) are the next round. **Owner:** (a) on phones keep the full Spotify playlist player on Home or switch to the 80px compact one so Play is on screen one (D81, docs/review/ig-round2/gate.md); (b) pick the tint 0 / 5 / 10% from `docs/review/ig-round/design/tint-sheet.png`
   (designer recommends 5%). Claims stay on the same files for the next round (below).
-- **Laptop 2026-11-10 claim (next round, same files):** `DESIGN.md`, `src/styles/global.css`,
+- **(RELEASED by the owner 2026-11-17, Desktop holds all files)** Laptop 2026-11-10 claim (next round, same files): `DESIGN.md`, `src/styles/global.css`,
   `src/components/{Hero,Quote,VideoBlock,Signup,RiseBand,Footer}.astro`, `src/pages/index.astro`, `src/pages/{music,shows,about,shop}/`, `src/pages/404.astro`,
   `public/js/app.js`, `src/components/NoCover.astro`, `test/*.test.js` (Laptop-made), `docs/review/`, `docs/copy/`.
   Not server.js or src/lib/. Owner away; nothing published / paid / sent to Gabe.

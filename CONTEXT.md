@@ -115,6 +115,13 @@ there with `Laptop:`. The client's own email is in `README.md`; this file adds t
   based on that, then work on anything that needs working on." Gabe made the IDENTITY cover; Dave Bahm the IDENTITY logo and the
   lead singles' art. Never show the Running The Gauntlet lyric video or the Earned Your Stripes Visualizer (flashing).
 
+## Owner's instructions (2026-11-17, Desktop)
+- **The Laptop is unavailable for now:** "You don't have the laptop anymore for the current moment, so just get all the files
+  you can." The Desktop takes over every file, including the Laptop's claims (DESIGN.md, prototype/, src/pages, components,
+  global.css, its tests, docs/copy, docs/review). When the Laptop comes back it reads HANDOFF + the board before claiming again.
+- Gabe's email of 2026-11-13 (via the owner): Welcome Home smart link https://wingsmusic.lnk.to/383142-WelcomeHome; he posted a
+  new Spotify bio (held until he answers the owner's follow-up: "Reforaged" spelling, keep "Epilepsy survivor" on About?).
+
 ## Working together (Desktop and Laptop)
 - **Board:** issue #1 "Coordination board: Desktop and Laptop". Every comment starts with `Desktop:` or `Laptop:`
   (both machines post as Mishtuk; the prefix tells them apart).
