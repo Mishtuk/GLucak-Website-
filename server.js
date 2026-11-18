@@ -49,8 +49,10 @@ const CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inl
 
 function baseHeaders(req) {
   const h = { 'Content-Security-Policy': CSP, 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'strict-origin-when-cross-origin',
-    'X-Frame-Options': 'SAMEORIGIN', 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()' };
-  if (isHttps(req)) h['Strict-Transport-Security'] = 'max-age=31536000';
+    'X-Frame-Options': 'SAMEORIGIN', 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    'Cross-Origin-Opener-Policy': 'same-origin', 'Cross-Origin-Resource-Policy': 'same-origin', // CORP is on OUR responses only; the Spotify/YouTube frames are their documents
+    'X-Permitted-Cross-Domain-Policies': 'none', 'Origin-Agent-Cluster': '?1' };
+  if (isHttps(req)) { h['Strict-Transport-Security'] = 'max-age=31536000'; h['Content-Security-Policy'] = `${CSP}; upgrade-insecure-requests`; }
   return h;
 }
 
@@ -151,15 +153,21 @@ function editor(req, url) {
   return verifySession(readCookie(req.headers.cookie), SECRET, EDITORS);
 }
 
-/** The body bytes up to `max`, or null when bigger (the excess is read and dropped; 1 MB past `max` the socket is cut). */
+/** The body bytes up to `max`, or null when bigger (the excess is read and dropped; 1 MB past `max` the socket is cut).
+ *  A body that goes quiet for BODY_IDLE_MS also gives null with req.timedOut set; json() turns that into 408. */
 function readBody(req, max = BODY_MAX) {
   return new Promise((resolve) => {
     const parts = [];
     let size = 0;
-    req.on('data', (c) => { size += c.length; if (size <= max) parts.push(c); else if (size > max + 1024 * 1024) req.destroy(); });
-    req.on('end', () => resolve(size > max ? null : Buffer.concat(parts)));
-    req.on('error', () => resolve(null));
-    req.on('close', () => resolve(null)); // cut off or aborted; a no-op after 'end'
+    const idle = Number(env.BODY_IDLE_MS) || 10000;
+    let timer;
+    const arm = () => { clearTimeout(timer); timer = setTimeout(() => { req.timedOut = true; resolve(null); }, idle); };
+    arm();
+    const done = (v) => { clearTimeout(timer); resolve(v); };
+    req.on('data', (c) => { arm(); size += c.length; if (size <= max) parts.push(c); else if (size > max + 1024 * 1024) req.destroy(); });
+    req.on('end', () => done(size > max ? null : Buffer.concat(parts)));
+    req.on('error', () => done(null));
+    req.on('close', () => done(null)); // cut off or aborted; a no-op after 'end'
   });
 }
 
@@ -178,6 +186,7 @@ const NOT_IMAGE = "That file isn’t a photo we can use. Try a JPG, PNG or WebP.
 async function handleEdit(req, res, url) {
   const p = url.pathname;
   const json = (status, body, extra = {}) => {
+    if (req.timedOut && status === 413) { status = 408; body = { error: 'timeout', message: 'The upload stalled. Try again.' }; extra = { ...extra, Connection: 'close' }; }
     req.resume(); // drain any unread body
     send(req, res, status, 'application/json', Buffer.from(JSON.stringify(body)), { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex', ...extra });
   };
@@ -283,7 +292,7 @@ function fail(req, res, e) {
 function handle(req, res) {
   let url;
   try { url = new URL(req.url, `http://${req.headers.host ?? 'localhost'}`); } catch { // a junk Host header ('a b', '[')
-    res.writeHead(400, { Connection: 'close' });
+    res.writeHead(400, { ...baseHeaders(req), Connection: 'close' });
     return res.end();
   }
   if (req.method === 'POST' && url.pathname === '/api/signup') return handleSignup(req, res);
@@ -333,6 +342,7 @@ function handle(req, res) {
 }
 
 export const server = createServer((req, res) => { try { handle(req, res); } catch (e) { fail(req, res, e); } });
+server.requestTimeout = 30000; server.headersTimeout = 20000; server.keepAliveTimeout = 5000; // slowloris: Node's defaults are looser
 // Tests import this file without listening; `node server.js` listens.
 if (process.argv[1] && import.meta.filename === process.argv[1]) {
   process.on('unhandledRejection', (e) => console.error(new Date().toISOString(), 'unhandled rejection:', e?.message ?? e));
