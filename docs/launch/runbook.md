@@ -8,7 +8,7 @@ another host, swap only that section. Sections 1, 2 and 4-10 are host-neutral. C
 vendor's own page on the day. **No secrets go in this file.** Keep them in the host dashboard and the password manager.
 
 ## 1. What the site needs
-- Node >= 22.13. Build: `npm install && npm run build` (Astro, plus `sharp`, a native module). Start: `node server.js`.
+- Node >= 22.23.4. Build: `npm install && npm run build` (Astro, plus `sharp`, a native module). Start: `node server.js`.
 - One process and one persistent disk. It must not run as several copies (file writes and rate limits are in memory).
 - Outbound HTTPS to `api.kit.com`.
 - The build output (`dist/`) lives in the app folder; the live data lives in `DATA_DIR`. A redeploy rebuilds `dist/` and leaves `DATA_DIR` alone.
@@ -56,9 +56,10 @@ Free web services sleep and cannot have a disk, so use a paid one.
 1. Create a Render account (in Gabe's name, owner as a team member where roles exist). Connect the GitHub repo `Mishtuk/GLucak-Website-`.
 2. New > **Web Service**. Runtime Node. Region near New York. Instance type **Starter**. **One instance only.**
 3. Build command: `npm install && npm run build`. Start command: `node server.js`.
-4. Node version: the repo's `engines` asks for >= 22.13. If Render picks a lower one, set the `NODE_VERSION` env var to a 22.x or 24.x release (**verify** the current setting name in Render's docs).
+4. Node version: the repo's `engines` asks for >= 22.23.4 (Astro 7.4.12). If Render picks a lower one, set the `NODE_VERSION` env var to `22.23.4` or newer (a 22.x or 24.x release) (**verify** the current setting name in Render's docs).
 5. Add a **Disk**: 1 GB, mount path `/var/data`. Set `DATA_DIR=/var/data`. (Adding a disk disables zero-downtime deploys: expect a few seconds down per deploy.)
 6. Add the env vars from section 2.
+6b. Auto-rebuild: in Render, Settings > Deploy Hook, copy the URL. In GitHub (repo Settings > Secrets and variables > Actions) add a repository secret named **`RENDER_DEPLOY_HOOK`** with that URL. The `deploy` job in `.github/workflows/daily.yml` then POSTs it after each daily test pass; with no secret it prints "skipping" and does nothing.
 7. Health check path: `/`. First deploy; open the `*.onrender.com` URL and run the smoke test (section 7) there before touching DNS.
 8. Custom domain: Settings > Custom Domains > add `glucak.com` and `www.glucak.com`. Render shows the DNS targets and issues free TLS once DNS verifies. Use the exact values it shows in section 4.
 9. **Deploy hook** (Settings > Deploy Hook): copy the URL. It is a secret. Save it as a GitHub Actions secret named, for example, `RENDER_DEPLOY_HOOK`.
