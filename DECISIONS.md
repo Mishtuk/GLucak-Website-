@@ -406,3 +406,52 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
 - **Why:** from the before review (`docs/review/dr1/design-review.md`, 29/40): tonight's open mic was invisible, page changes
   still waited on the network, listen was Spotify-only at the player, and two craft-floor checks failed. Each pick is one change,
   token-only, no dependency, no flash risk.
+
+## D98 (Desktop boss, 2026-11-18, owner asleep, reversible): Overhaul, the accent and the photos (amends D34, DESIGN 1 item 4, DESIGN 3b)
+- **Ruling:** magenta fills only Listen, Tickets, Pre-save and Buy. Join and Patreon become `btn-line`; the video play square becomes
+  `--text` with a `--bg` triangle. Magenta leaves the photos: hero B's riso and Push Past Fear's tint are re-made as **print** (one ink in
+  `--text` on `--bg`) or left **clean**; no frame is used twice (the Shows poster gets another frame). D34's layout stays: hero A on
+  phones, B from 900px. Built in overhaul rounds OV3 (accent) and OV6 (photos, with a 2-up before/after sheet committed for the owner).
+- **Why:** design-ux G2 / G4 / G5: D34 picked the riso on the placeholder era, before D93 made magenta the accent; today Home 390 has 6
+  magenta fills and Listen no longer wins the eye. The owner can reverse from the sheet. `docs/review/overhaul/plan.md`.
+
+## D100 (Desktop boss, 2026-11-18, owner asleep, reversible): Overhaul, shows in date order (overturns the DESIGN 5 poster-first rule)
+- **Ruling:** upcoming shows always list in date order on Home and Shows. The next date (Today / Tomorrow / soonest) gets the big date
+  treatment. A full show keeps its art in a taller row with a "Full show" flag wherever it falls, plus one line above the list: "Next
+  full show: {date}, {venue}". Played shows the last 3, the rest under "All played (n)". Round OV2, DESIGN 28.
+- **Why:** design-ux S1 / S2: `upcomingHtml` put the Jan 16 poster above today's open mic, so "JAN 16" outshouted "Today". Gabe's
+  wish for more full shows is served by the flag and the line without misstating what is next.
+
+## D102 (Desktop boss, 2026-11-18, owner asleep, reversible): Overhaul, motion (amends D47 / DESIGN 8)
+- **Ruling:** the three heading fades are removed; every phrase is visible at load. The Menu sheet (D89 M1) and the D64 page fade
+  stay as they are. The designer's one authored moment (the GLUCAK name wipe, design-ux M1) is **not built** in the overhaul; it waits
+  for the owner.
+- **Why:** subtraction beats a new entrance: the fades were "one entrance on every section", and adding motion for an epilepsy-survivor
+  client while the owner is asleep is the wrong default, however gentle (CONTEXT hard rule 1; D47 "is it needed").
+
+## D104 (Desktop boss, 2026-11-18, owner asleep, reversible): Overhaul, share a show (overturns D96's rejection)
+- **Ruling:** each upcoming show row (and the full-show row) gets Share: `navigator.share` with title, date and the page link;
+  fallback copies the link and shows a static "Link copied". Same-origin JS only, no third party, no motion. Round OV2.
+- **Why:** design-ux S3: fans arrive from Instagram and share back; it is the cheapest thing that grows show turnout.
+
+## D106 (Desktop boss, 2026-11-18, owner asleep, reversible): Overhaul, Gabe edits releases, the bio and IDENTITY
+- **Ruling:** build it (overnight plan; promised Nov 3 and Nov 6). Edit tabs **Now + IDENTITY** (date, pre-save link), **Bio** (About
+  bio, Home sentence) and **Releases** (title, date, type, https smart link, cover upload). Stored like shows (`site.json` + a `releases`
+  entry in `LISTS`), rendered per request through `<!--gl:...-->` markers so a save is live without a rebuild; IDENTITY days-to-go moves
+  to request time. Text renders as escaped paragraphs, never HTML; per-field tests for `<script>`, `' OR 1=1 --` and `javascript:`.
+  Rounds OV4a (Now + IDENTITY, Bio, compact rows) then OV4b (Releases).
+- **Why:** the largest gap in all three reviews; without it Gabe emails us for every release (the Puck Live failure).
+
+## D108 (Desktop boss, 2026-11-18, owner asleep, reversible): Overhaul, conflicts between the three reviews
+- **Booking:** "Book GLucak" ends on "Request a show" to the Instagram DM until the glucak.com booking address exists; then
+  `BOOKING_EMAIL` is set and it becomes the mailto (design-ux S4 vs content). **Credits:** one line of names in the footer, the full
+  list once on About (design-ux A3 vs content). **D79 / D87 section word:** kept (wayfinding under 900px, not an eyebrow).
+  **Dec 4 Airport Square row:** stays (Gabe's data; he can delete it) and goes on the Gabe list. **Shop samples:** not renamed (D49);
+  only the doubled notices go. **Latest video:** Home skips Shorts now; the YouTube feed comes later.
+- **Why:** each call keeps a working path today without guessing Gabe's facts. `docs/review/overhaul/plan.md` section 2.
+
+## D110 (Desktop boss, 2026-11-18, owner asleep, reversible): Overnight decisions recorded (from `docs/review/overhaul/overnight-plan.md`)
+- **Ruling:** the repo stays public for now, no history rewrite (Gabe sent the art and photos for the site; private kills the free
+  Pages preview). Review screenshots go to `.work/` (git-excluded); each round commits its review .md files and at most 4 key shots.
+  Gabe-dependent items stay held; nothing that costs money, publishes beyond the preview workflow or contacts Gabe.
+- **Why:** the owner said "don't ask me any questions" and asked for these to be recorded so he can reverse them.
