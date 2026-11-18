@@ -176,7 +176,7 @@ test('30f: Music cover is never rotated, framed or filtered (D51); crate and Sho
   assert.ok(!/\.idn-cover[^{]*\{[^}]*(rotate|transform|filter|border|outline|box-shadow)/.test(r3), 'idn-cover touched only for its margin');
   assert.match(r3, /\.idn\.is-paper \.idn-cover \{ margin-top: calc\(-1 \* var\(--space-xl\) - 2\.5rem\); \}/);
   assert.match(r3, /\.crate > :nth-child\(even\) \{ margin-top: 3rem; \}/);
-  assert.match(r3, /\.shop-grid > :nth-child\(even\) \{ margin-top: 2\.5rem; \}/);
+  assert.match(r3, /\.shop-grid > :nth-child\(3n\+2\) \{ margin-top: 2\.5rem; \}/);
   assert.match(r3, /\.about-actions \{ grid-column: 9 \/ -1; position: sticky;/);
   assert.match(r3, /nth-child\(3\) img \{ aspect-ratio: 634 \/ 1128; \}/);
   assert.match(r3, /\.vid-grid > :nth-child\(1\) \{ grid-column: 1 \/ span 7; grid-row: span 2; \}/);

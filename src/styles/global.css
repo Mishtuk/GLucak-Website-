@@ -705,7 +705,7 @@ iframe.yt { width: 100%; border: 0; }
   .shop-grid, .shop-details, .shop-empty, .shop-demo { grid-column: 1 / -1; }
   .product-detail { grid-template-columns: minmax(0, 28rem) minmax(0, 1fr); }
 }
-@media (min-width: 1100px) { .shop-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
 
 /* With the shop on, the closing line gains "Shop." and is wider; re-fit it (Listen Shows Shop Join, measured in Chrome). */
 .ln-close:has(a[href$="/shop/"]) { --w-close: 10.65; } /* measured 10.629em (was 10.85 for "Shop."); shop off: 8.108em vs 8.1318 */
@@ -1292,6 +1292,10 @@ html[data-header='solid'] .site-header { background: var(--bg) var(--texture) !i
 /* One column, as the CD back; two from 72rem, where each column holds ANOTHER DIMENSION and SCENIC ROUTE + arrow on one line
    (two columns wrapped them at 390 and 900). */
 @media (min-width: 72rem) { .tracks { columns: 2; } }
+@media (max-width: 699px) { /* phones: the countdown row gets the full width so IDENTITY stays whole */
+  .idn { grid-template-areas: 'cover cover' 'state state' 'tracks-h tracks-h' 'tracks tracks' 'credit credit'; }
+  .idn-cover { max-width: 16rem; }
+}
 @media (min-width: 900px) {
   .idn { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: 'cover state' 'cover tracks-h' 'cover tracks' 'cover credit'; grid-template-rows: auto auto auto 1fr; column-gap: var(--space-xl); row-gap: var(--space-m); align-items: start; }
   .idn > .identity-state { grid-template-columns: auto minmax(0, 1fr); }
@@ -1414,6 +1418,7 @@ li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* 
 .gallery-grid a:active img { outline: 3px solid var(--text); outline-offset: -3px; } /* 16e: instant pressed */
 @media (min-width: 900px) {
   .about-body { align-items: start; } /* the bio starts level with the setlist */
+  .about-body { margin-top: var(--space-m); }
   /* the gallery runs full width under both columns as one row of three (no dead gap beside or under the bio) */
   .gallery { grid-column: 1 / -1; max-width: none; }
 }
@@ -1598,7 +1603,7 @@ html[data-palette='poster'] .band-live.edge-angle { background-color: color-mix(
   .played { margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); }
 }
 @media (min-width: 900px) {
-  .shows-side { margin-top: 6rem; }
+  .shows-side { margin-top: 6rem; position: sticky; top: calc(var(--header-h) + 1rem); align-self: start; }
   .poster:not(.is-plain) { margin-right: calc(-1 * var(--space-l)); } /* breaks out of its column, 0.75rem short of Watch */
 }
 
@@ -1643,7 +1648,7 @@ html[data-palette='poster'] .band-live.edge-angle { background-color: color-mix(
   .vid-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: start; }
   .vid-grid > :nth-child(1) { grid-column: 1 / span 7; grid-row: span 2; }
   .vid-grid > :nth-child(2), .vid-grid > :nth-child(3) { grid-column: 8 / -1; }
-  .vid-grid > :nth-child(4) { grid-column: 2 / span 5; }
+  .vid-grid > :nth-child(4) { grid-column: 2 / span 5; margin-top: -10rem; } /* tucks under card 1, which is shorter than the pair beside it */
   .vid-grid > :nth-child(5) { grid-column: 7 / span 5; margin-top: 2.5rem; }
   .vid-grid > :nth-child(n+6) { grid-column: span 4; }
 }
@@ -1652,5 +1657,4 @@ html[data-palette='poster'] .band-live.edge-angle { background-color: color-mix(
 .shop-banner { rotate: -1.5deg; }
 .shop-banner.taped::before { inset: 0 auto 0 0; width: 0.75rem; height: auto; top: 0; left: 0; z-index: auto; rotate: none; background: repeating-linear-gradient(-45deg, var(--bg) 0 3px, transparent 3px 9px); } /* the hatched stub stays; the tape is the right strip only */
 .shop-banner.taped::after { right: 0.5rem; }
-@media (min-width: 700px) { .shop-grid > :nth-child(even) { margin-top: 2.5rem; } }
-@media (min-width: 700px) and (max-width: 1099px) { .shop-grid > :nth-child(even) { margin-top: 0; } .shop-grid > :nth-child(3n+2) { margin-top: 2.5rem; } }
+@media (min-width: 700px) { .shop-grid > :nth-child(3n+2) { margin-top: 2.5rem; } } /* 3 columns from 700px; the middle one drops */
