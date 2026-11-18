@@ -117,6 +117,7 @@
     b.setAttribute('aria-label', `Play ${link.dataset.title || 'video'}`);
     b.dataset.yt = link.dataset.yt;
     b.dataset.title = link.dataset.title || '';
+    if ('now' in link.dataset) { b.dataset.now = ''; b.dataset.meta = link.dataset.meta || ''; b.className = link.className; } // a record: plays on the stage
     for (const n of link.childNodes) {
       if (n.nodeType === 1 && n.classList.contains('vh')) continue; // the new-tab hint does not apply to a button
       b.append(n.cloneNode(true));
@@ -134,6 +135,18 @@
   }
   function play(b) {
     stopVideos();
+    const stage = 'now' in b.dataset && document.querySelector('#now-showing button[data-yt]');
+    if (stage) { // Videos page: a record loads onto the Now showing screen, then plays there
+      const id = b.dataset.yt;
+      stage.dataset.yt = id; stage.dataset.title = b.dataset.title;
+      stage.setAttribute('aria-label', `Play ${b.dataset.title || 'video'}`);
+      const img = stage.querySelector('.yt-img');
+      if (img) { img.srcset = `/GLucak-Website-/media/videos/${id}-640.webp 640w, /media/videos/${id}-1280.webp 1280w`; img.src = `/GLucak-Website-/media/videos/${id}-640.webp`; }
+      stage.querySelector('.v2-vtitle').textContent = b.dataset.title;
+      document.querySelector('#now-showing .vid-meta span').textContent = b.dataset.meta;
+      document.getElementById('now-showing').scrollIntoView({ block: 'start' });
+      b = stage;
+    }
     const f = document.createElement('iframe');
     f.className = 'yt';
     f.src = `https://www.youtube-nocookie.com/embed/${b.dataset.yt}?autoplay=1&rel=0`; // autoplay is set only here, after the press
