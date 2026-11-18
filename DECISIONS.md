@@ -383,3 +383,24 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   (3) apple-touch icon ground `#111111` -> `#05024c` (`prototype/tools/resize.mjs`; only that icon regenerated and copied).
 - **Measured:** Home 390 = 3735 (unchanged), Videos 390 3037, 1280 2006, 0 running animations on Home / Videos / Music / Shows with motion on and reduced, no overflow.
   `npm test` 227/227 (`test/v1.test.js`: 14 tests). Home and Music keep their Spotify iframe; no YouTube iframe is in any built page.
+
+## D96 (Desktop designer, 2026-11-17): Round DR1 spec (DESIGN 27). Proposed; boss / owner confirm
+- **Picks (6, all S except 27d M):** (a) seamless page changes: speculation rules over an HTTP `Speculation-Rules` header to a
+  same-origin `/speculation-rules.json` (prefetch moderate, prerender conservative; `/edit/*`, `/api/*`, `.ics`, off-site links
+  excluded; CSP `script-src 'self'` unchanged) plus the phone bar held still in the D64 fade like the header; (b) "Today" /
+  "Tomorrow" on the next show's row / poster, and a show today or tomorrow now beats releases A and C in the Now line (**amends
+  D45**: B, then the new T, then A, C, D, E); (c) a platform row under the Spotify button on Home and Music: Apple Music (artist
+  URL verified 2026-11-17), YouTube, SoundCloud, plain links; (d) curly quotes in all visible copy, plus a `curly()` at render for
+  Gabe's and YouTube's text; (e) Shows from 72rem: Watch as lead + two, not a clipped sideways row; (f) selection, caret and
+  scrollbar in era tokens.
+- **Home height:** 27c adds 56px at 390 (3726 -> about 3782). Accepted: listen is main action 1, and the row is the
+  only listen path beside the player. No trim offered.
+- **Motion:** none added. DESIGN 8 / D64 stand (opacity-only root fade, off under reduce and the Motion switch); 27a removes a fade.
+- **Rejected:** shared-element view transitions (they move / scale, DESIGN 8); share button, per-page sign-up promises / a named
+  club, About chapters, free wallpaper, web manifest (later, or need Gabe / Kit); MusicEvent JSON-LD and full show first (already
+  built); Oversight sections (account + WebGL); shadcn / React / Tailwind / WebGL / tool installs; D81 player size and the tint
+  (owner's); video-row edge fade (27e removes the clipped row); Home's Watch thumbnail (content, self-updating). Craft-floor
+  conflicts left to the boss: the section word reads as an eyebrow (D79 / D87), Book GLucak ends on LISTEN (D91).
+- **Why:** from the before review (`docs/review/dr1/design-review.md`, 29/40): tonight's open mic was invisible, page changes
+  still waited on the network, listen was Spotify-only at the player, and two craft-floor checks failed. Each pick is one change,
+  token-only, no dependency, no flash risk.

@@ -2810,3 +2810,236 @@ a11y200 0 issues (the 44rem header, the scrolling sheet); keyboard: Tab to Play,
 Shorts as a vertical row (letterboxed; teasers go stale). Posters printed in the texture family (23a). A "Watch all" line under
 Home's row (+25px at 390). Videos as a section on Music (fans look for it on its own; Puck Live hid things). A ground on the page.
 An epilepsy warning line (only cleared videos show; a warning would suggest otherwise).
+
+## 27. Round DR1: seamless page changes, tonight's show, listen everywhere, curly quotes, Shows' Watch at 1280, browser surfaces (Desktop designer, 2026-11-17)
+
+Inputs: `docs/research/templates-round4-2026-11-17.md`, `ig-design-tips-round2-2026-11-17.md` (with section 7 transcripts),
+`oversight-supply-2026-11-17.md`, `design-skills-2026-11-17.md`, the project skill `design-review`. Before shots:
+`docs/review/dr1/before/` (5 pages x 390x844 / 1280x800 x motion on / reduced, full page + `-screen`; heights in `shots.txt`).
+Review: `docs/review/dr1/design-review.md` (29/40, craft floor FAILs: browser surfaces, straight quotes). Decision: **D96**.
+Six items, each one change, no new motion, no new dependency, no new colour. The coder touches only the files named per item.
+Already done (research was out of date): MusicEvent JSON-LD (`src/lib/shows.js` 99, injected per visit), the poster is the
+first full show (ceb38a9), Welcome Home has Pre-save.
+
+**Measured before (motion on / reduced, px):** Home 390 3726 / 3774, 1280 4447. Music 390 4356 / 4404, 1280 3365. Shows 390
+3029 / 3077, 1280 2393. About 390 2758 / 2806, 1280 2355. Videos 390 2989 / 3037, 1280 2019. 0 animations at rest everywhere.
+(The reduced set is 48px taller: "Motion: off (device setting)" wraps; unchanged by DR1.)
+
+### 27a. Seamless page changes: prefetch / prerender the next page, hold the phone bar still (all pages; owner note 1, D64)
+**Why:** the owner's note "transitions between pages should be more seamless" (CONTEXT 2026-11-06 item 1). D64 built the
+200ms root fade with the header held; what is left is the wait for the next page and, on phones, the bottom bar fading with
+the page. Ref: `templates-round4` line 43 (gap #2: speculation rules, "prefetch is not motion"), line 28 ("No speculation
+rules"), HANDOFF line 18.
+
+1. **Speculation rules over an HTTP header** (CSP stays `script-src 'self'`: no inline `<script type="speculationrules">`,
+   no `'inline-speculation-rules'`). New file **`public/speculation-rules.json`**, exactly:
+   ```json
+   {
+     "prefetch": [{ "source": "document", "eagerness": "moderate", "where": { "and": [
+       { "href_matches": "/*" },
+       { "not": { "href_matches": "/edit/*" } },
+       { "not": { "href_matches": "/api/*" } },
+       { "not": { "href_matches": "/*.ics" } },
+       { "not": { "selector_matches": "[target=_blank], [download], [rel~=nofollow]" } } ] } }],
+     "prerender": [{ "source": "document", "eagerness": "conservative", "where": { "and": [
+       { "href_matches": "/*" },
+       { "not": { "href_matches": "/edit/*" } },
+       { "not": { "href_matches": "/api/*" } },
+       { "not": { "href_matches": "/*.ics" } },
+       { "not": { "selector_matches": "[target=_blank], [download], [rel~=nofollow]" } } ] } }]
+   }
+   ```
+   Moderate prefetch = the HTML only (about 15-20 KB brotli) after a 200ms hover on desktop or the browser's link heuristics on
+   phones; conservative prerender = on pointer / touch down, so the page is ready when the finger lifts. Same-origin only
+   (`/*` resolves against the JSON's own URL). `/edit/*` (sign-in, no-store), `/api/*`, the `.ics` downloads and every
+   off-site link are never fetched ahead.
+   **`server.js`:** (a) in `send()`, when `type` starts with `text/html` and the path does not start with `/edit/`, add the header
+   `Speculation-Rules: "/speculation-rules.json"` (a quoted string: the header is a structured-field list). Simplest: pass it
+   in the `extra` of the two HTML `send` calls (static pages line ~324, `notFound` line ~103), not in `baseHeaders` (which also
+   covers JSON and redirects). (b) Serve `/speculation-rules.json` with `Content-Type: application/speculationrules+json`
+   (Chrome ignores the rules under any other type): one special case before the `TYPES` lookup, e.g.
+   `const type = p === '/speculation-rules.json' ? 'application/speculationrules+json' : TYPES[...]`. Cache as the other
+   static files (`public, max-age=86400`).
+   Not on the GitHub Pages preview (static host, no headers): there it is a harmless no-op. Safari / Firefox ignore it today.
+   No page JS runs anything on load that matters twice (sign-up is a press, YouTube a press, Spotify's iframe is deferred by
+   Chrome until a prerendered page is shown), so a prerender has no side effect.
+2. **Phone bar held still** like the header. `src/styles/global.css`, in the D64 block (lines 870-874), add:
+   ```css
+   .phone-bar { view-transition-name: phone-bar; }
+   ::view-transition-group(phone-bar), ::view-transition-old(phone-bar), ::view-transition-new(phone-bar) { animation: none; }
+   ```
+   Effect at 390: header and bottom bar stay put, only the page between them fades (200ms, opacity, as D64); the bar's
+   current-page rule swaps at once. At 1280 the bar is `display: none` (not captured), nothing changes.
+- **Reduced motion:** unchanged and still both switches: `@media (prefers-reduced-motion: reduce) { @view-transition
+  { navigation: none } }` and `html[data-motion='off']::view-transition-*(*) { animation: none !important }` (they already
+  cover `phone-bar` through `(*)`). Prefetch and prerender are not motion and stay on (they make the instant swap faster).
+  DESIGN 8 needs no change: no new animation, one less thing fading.
+- **Tests** (`test/dr1.test.js`, new): GET `/` and `/music/` (import `server` from `server.js` as `server.test.js` does) carry
+  `speculation-rules: "/speculation-rules.json"`; GET `/edit/` and `/api/...` JSON replies do not; GET `/speculation-rules.json`
+  is 200 with `content-type` `application/speculationrules+json`, parses as JSON, has `prefetch` and `prerender`, and both
+  `where` lists contain `/edit/*` and `/*.ics` exclusions; the CSP header is byte-identical to before (no `inline-speculation-rules`,
+  no `unsafe-inline` in `script-src`); no built page contains `type="speculationrules"`. `global.css` has
+  `.phone-bar { view-transition-name: phone-bar; }` and the `animation: none` line for `phone-bar`.
+- **Run check** (advisor, Chrome over CDP on `node server.js`): `Preload.enable`, load `/`, then hover the nav's Music link
+  250ms at 1280 (`Input.dispatchMouseEvent` mouseMoved): a `Preload.ruleSetUpdated` without `errorType`, then
+  `Preload.prefetchStatusUpdated` for `/music/` reaching `PrefetchSuccessfulButNotUsed` / Ready; console has no CSP violation.
+  Manual on a phone: Home -> Shows on the phone bar, the bar does not blink.
+
+### 27b. Tonight's show says so: "Today" / "Tomorrow" on the next show, and in the Now line (Home + Shows; amends D45)
+**Why:** today (Nov 17) there is an open mic at M.O.M's; Home's screen one says "Out now: Who I Am" and the row says "NOV 17" like
+any date (`before/home-390-on-screen.png`, `shows-390-on-screen.png`). Coming to a show is main action 2. Ref:
+`templates-round4` line 45 (gap #4: "Tonight / Tomorrow ... No live countdown").
+Everything below is rendered per visit by the server's `inject` (New York day, `etDay`), so it is never stale, and on the Pages
+preview it is right for the day of the daily republish (09:00 UTC = 4-5 AM in New York).
+
+1. **Rows and poster** (`src/lib/shows.js`). A show dated today gets the word **Today**, tomorrow **Tomorrow**; any other
+   date, nothing. `showsHtml` passes `today = etDay(now)` down through `upcomingHtml` to `rowHtml` / `posterHtml` (new option,
+   e.g. `{ today }`; Played rows never get it).
+   - Row: the word leads the existing kind line, `<span class="row-kind"><strong class="row-soon">Today</strong>, Open mic, 7:00 PM</span>`
+     (so "Today, Open mic, 7:00 PM"; "Tomorrow, Show, 6:00 PM").
+   - Poster (a full show): the word leads the meta line, `<p class="poster-meta"><strong class="row-soon">Today</strong>, 6:00 PM</p>`;
+     with no time and no "with", the meta line is just `<strong class="row-soon">Today</strong>`.
+   - CSS (`global.css`, next to `.row-kind` line 420): `.row-soon { color: var(--text); font-weight: 700; }` and
+     `.poster .row-soon { color: inherit; }` (the poster's own ink). **No accent** (the accent stays on Listen / Tickets /
+     Pre-save: the 2 + 1 rule, `ig-design-tips-round2` line 104), no badge, no box, no pulse.
+   - Sizes: 16px (`--step--1`) at 390 and 1280, same as the line it joins. At 390 "Tomorrow, Open mic, 7:00 PM" may wrap to a
+     second line in the 320 layout: allowed (`overflow-wrap: anywhere` is already on `.row-kind`).
+2. **Now line** (`nowHtml`, D45 order amended): **B** out today -> **new T: next show or open mic today or tomorrow** ->
+   A release 1-14 days ahead -> C release 1-7 days after -> D next show within 14 days -> E newest release. T's text uses D's
+   words: "Open mic today: M.O.M's, Doylestown, PA", "Show tomorrow: Riverside, Horsham, PA", linking `#shows` as D does
+   (today D already prints "today"; add "tomorrow" for a 1-day difference, keep `monD` otherwise). On 2026-11-17 Home's screen
+   one reads "Open mic today: M.O.M’s, Doylestown, PA" (with 27d's apostrophe). At 390 that is 39 characters at 16px bold:
+   one line in the 350px column (measure; two lines allowed, no overflow).
+- **Reduced motion:** static text, nothing to switch.
+- **Tests** (`test/shows.test.js`, existing helpers, fixed `now`): a row dated `now` has `row-soon">Today<`, the next day
+  `Tomorrow`, two days on and Played rows have no `row-soon`; a poster dated today has it in `poster-meta`; New York day
+  boundary (`2026-11-18T03:30:00Z` is still Nov 17 in New York -> "Today" on the Nov 17 row). `nowHtml`: a release C (4 days old)
+  plus an open mic today returns "Open mic today: ..." linking `#shows`; B (release out today) still wins over T; an open mic
+  tomorrow returns "Open mic tomorrow: ..."; a show 3 days out with C present still returns C (D45 unchanged there). Update
+  any existing `nowHtml` test that asserted C over a same-day show.
+
+### 27c. Listen everywhere: a platform row under the Spotify button (Home RISE card, Music)
+**Why:** where fans press Play, the only other way to listen is one smart link (Home has none beside the player; Music has one
+generic "Listen everywhere"). TY1 / Illenium / Sidney show a platform row. Ref: `templates-round4` line 44 (gap #3: "a quiet text
+row ... Plain links, no outline (one outline per screen)"), line 22 (TY1 "Listen now" row), HANDOFF line 18.
+
+- **URLs** (artist pages, so they never go stale; `src/components/content.js`):
+  `export const APPLE_MUSIC = 'https://music.apple.com/us/artist/glucak/1732285138';` (verified 2026-11-17: Go's smart link ->
+  the Go album on Apple Music -> its artist link; the page lists Go, One and Done and Who I Am under GLucak) and
+  `export const PLATFORMS = [{ name: 'Apple Music', href: APPLE_MUSIC }, { name: 'YouTube', href: YOUTUBE }, { name: 'SoundCloud', href: SOUNDCLOUD }];`
+  (YouTube and SoundCloud are the constants already there). No YouTube Music, Amazon, Tidal, Deezer: their artist URLs are not
+  verified, and the release smart links already reach them. Spotify is the button above.
+- **Markup** (`src/components/RiseBand.astro` 25-30, inside the existing `p.under-player#after-player`): after the Spotify button,
+  `{PLATFORMS.map((p) => <a class="under-link" href={p.href} rel="noopener">{p.name}</a>)}`; on Music (`release={false}`) the
+  existing "Listen everywhere" link stays last. Home's dead `r.soundcloud && ...` branch goes (no release has `soundcloud`).
+  Visible text is the accessible name (no aria-label, D57); `externalize` adds the new-tab hint and `target` as for every
+  off-site link (D64(4)).
+- **Look:** the existing `.under-player a` rule (700, 16px `--step--1`, min-height 48px tap rows, `text-underline-offset: 3px`)
+  and `.under-link:active` (global.css 825). No icons, no outline, no accent, no dots between them (D83); the 1.5rem column gap
+  separates them.
+  - **390:** the Spotify button keeps its full-width row; the three links sit on one line under it (about 100 + 70 + 100px plus
+    two 24px gaps = 318px in a 350px column); on Music, "Listen everywhere" wraps to a second line as it does today. **Cost: Home
+    390 +56px** (one 48px row + the 8px row gap): 3726 -> about 3782 (motion on). Music 390 +56 (the links share a row with nothing
+    today, "Listen everywhere" moves down one row). Logged in D96 (listen is main action 1; no trim offered).
+  - **1280:** all on the button's line (the card column and Music's right column are both about 680px); +0px. If
+    Home's line wraps at 900-1100px, that is allowed (flex-wrap already on).
+- **Reduced motion:** static.
+- **Tests** (`test/dr1.test.js`): `dist/index.html` and `dist/music/index.html` each contain, inside `.under-player`, links to
+  `https://music.apple.com/us/artist/glucak/1732285138`, the YouTube channel and `https://soundcloud.com/glucak`, in that order,
+  each with `target="_blank"` and the new-tab hint; Music still has "Listen everywhere"; the links have no `aria-label`.
+  Run check: at 390 the three Home links share one `top` (one line), no horizontal overflow at 320; Home 390 height <= 3790.
+
+### 27d. Curly quotes and apostrophes in all visible copy (every page, the sign-up, the edit screen)
+**Why:** craft-floor Copy FAIL; Charles Liu: "Straight quotes can come across as mechanical. Try using curly quotes instead."
+Ref: `ig-design-tips-round2` line 51 (N8 rule list), line 100 (transcript), line 105 ("Not used: curly quotes ... content.js
+visible strings: K'd, 's, n't. Worth doing, S"); HANDOFF line 18. Found by `.work/quotes.mjs` (visible text of `dist/*.html`):
+404 "isn't", "You're Not Alone" (Home, Shows, Videos), and in JS / server messages "You're on the list.", "That didn't go
+through.", "Saved. It's on the site now." and about 20 edit-screen messages; Gabe's data has "M.O.M's".
+
+1. **Our own strings, by hand** (helper-sized, Haiku): `'` -> `’` (U+2019) inside words and for closing; opening single `‘`;
+   double `“ ”`. Files: `src/pages/**/*.astro`, `src/components/*.{astro,js}` (visible strings only: `signupCopy`, labels,
+   notes), `src/lib/*.js` user-facing `message`/error strings (shows.js `ADDR_*`, signup.js, store.js, upload.js, auth.js, backup.js, products.js),
+   `server.js` JSON `message` strings, `public/js/{app,edit}.js` status strings. **Not** code quotes, HTML attributes, JSON
+   keys, CSS, regexes, test fixtures, `docs/`.
+2. **Data typed by Gabe or from YouTube, at render** (one helper, beside `esc` in `src/lib/shows.js`):
+   ```js
+   // ponytail: typographic quotes for display text only; "'90s" becomes ‘90s (rare in show/video names), fix by hand if it shows up.
+   export const curly = (s) => String(s ?? '').replace(/(^|[\s([{—-])"/g, '$1“').replace(/"/g, '”')
+     .replace(/(^|[\s([{—-])'/g, '$1‘').replace(/'/g, '’');
+   ```
+   Applied before `esc` to: show `venue`, `city`, `with` (rows, poster, Now line) in `shows.js`; video titles where
+   `VideoBlock.astro` 20 and `VideoCard.astro` 12 print them (the visible `.v2-vtitle` / card name, and the Play button's `aria-label` / iframe `title` in
+   `app.js` read `data-title`, so curly it where `data-title` is written); release titles in `content.js` `releases()`.
+   **Not** applied to JSON-LD, `.ics` text, `alt` matching tests, the edit screen's input values (Gabe edits the raw text),
+   or URLs.
+- **Reduced motion:** n/a.
+- **Tests:** (1) `test/dr1.test.js`: strip `<script>`, `<style>`, `<svg>` and tags from every `dist/**/*.html` and from the served
+  `/` and `/shows/` (fixture show "M.O.M's"): no `'` or `"` left in visible text (the `.work/quotes.mjs` logic, entities decoded).
+  (2) `public/js/app.js` and `edit.js`: no string literal matching `/[A-Za-z]'[A-Za-z]/` inside double-quoted or template
+  strings. (3) `curly("M.O.M's")` is `M.O.M’s`, `curly('"Hi"')` is `“Hi”`, `curly("")` is `""`. (4) Update the existing
+  asserts that quote the old strings (`edit.test.js` 149 / 204, `shop.test.js` 91 / 111, `signup-ui.test.js` 40 / 45,
+  `round2.test.js` 57) to the curly text.
+
+### 27e. Shows from 72rem: Watch as a lead plus two, not a clipped sideways row
+**Why:** `before/shows-1280-on.png`: in the 487px right column the row shows one card and a 40px cut of the next ("You're No"),
+a sideways scroll on a mouse page, with about 600px of empty column under Book GLucak. Ref: `ig-design-tips-round2` line 46
+(N7: carousels need an edge treatment; we choose no carousel), DESIGN 8 (no carousels), DESIGN 18b. Home (its own 7 : 5 split)
+and phones are unchanged.
+- **CSS** (`global.css` 1075 and 1143, the two `.shows-grid` 72rem rules), replace with:
+  ```css
+  @media (min-width: 72rem) {
+    .shows-grid .v2-vrow { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; }
+    .shows-grid .v2-vid:first-child { grid-column: 1 / -1; grid-row: auto; }
+  }
+  ```
+  At 1280: the newest video full column width (about 487 x 274 thumb), the next two side by side under it (about 235 x 132 each),
+  `--space-m` gaps; titles keep their 2-line clamp. The right column grows about 200px and still ends above the Played list, so
+  Shows 1280 stays 2393 (measure). Play square, focus ring, pressed states unchanged. `VideoBlock.astro` `sizes` already ask
+  for 34vw / 22vw from 900px (435 / 281px at 1280), enough for both widths; no change.
+- **Reduced motion:** static (nothing scrolls any more at this width).
+- **Tests** (`test/dr1.test.js`): `global.css` has no `.shows-grid .v2-vrow` rule with `overflow-x: auto` and has the
+  `grid-column: 1 / -1` rule. Run check at 1280 on `/shows/`: the three `.v2-vid` boxes are inside the column (right edge <= column
+  right), the first is wider than the other two, `.v2-vrow` `scrollWidth == clientWidth`, page height <= 2393 + 8.
+
+### 27f. Browser surfaces in the era colours: selection, caret, scrollbar (all pages)
+**Why:** craft-floor Verify "Browser surfaces ... the cheapest signal that a page was built rather than assembled"
+(`design-skills` line 35-36; `.claude/skills/design-review/reference/craft-floor.md`). None is set (grep: no `::selection`,
+`caret-color`, `scrollbar-color` in `src/styles`).
+- **CSS** (`global.css`, after the base `html` / `body` rules near the top, tokens only, so every era re-skins it):
+  ```css
+  ::selection { background: var(--text); color: var(--bg); }
+  html { scrollbar-color: var(--muted) var(--bg); }
+  input, textarea { caret-color: var(--text); }
+  ```
+  Selection is the same inversion as the pressed state (DESIGN 16e), not the accent (the accent stays on what is sold). On
+  IDENTITY: selected text `#05024c` on `#f4f2ff` (the page's own pair, about 17:1); scrollbar thumb `#b7b2e3` on `#05024c`
+  (non-text 3:1 floor: measure, expected about 9:1). The poster (light paper) inherits the same selection: dark on light
+  inverted is still the page pair, fine. Edit screen: same tokens.
+- **Reduced motion:** n/a (no motion).
+- **Tests** (`test/dr1.test.js`): `global.css` has `::selection` with `var(--text)` / `var(--bg)`, `scrollbar-color` with
+  `var(--muted)`, `caret-color: var(--text)`; no literal colour in those three rules (`test/tokens.test.js` style).
+
+### 27g. After the build
+- Re-shoot: `npm run build && node .work/dr1-shots.mjs after` -> `docs/review/dr1/after/` (same 40 shots + `shots.txt`).
+  Expected heights: Home 390 about 3782, Music 390 about 4412, everything else as before (Shows 1280 2393). 0 animations at rest.
+- Review with the `design-review` skill (separate agent from the builder), boss gate: no P0 / P1, no craft-floor FAIL, reduced set
+  intact, no horizontal scroll at 390 / 320 / 1280, strict CSP page loads with no console error. One fix round, then the boss.
+- Order for the coder (one batch, 6 visible changes is over the 3-change habit, so two commits are fine): 27d (mechanical) and
+  27f first, then 27a, 27b, 27c, 27e.
+
+### 27h. Rejected this round, and why
+- **Shared-element view transitions** (cover / poster keep their place across pages): DESIGN 8 / D64 say opacity only; a shared
+  element moves and scales. Holding the phone bar (27a) gives the "seamless" feel with no new motion. Revisit only with a logged
+  motion decision.
+- **Share button** (`navigator.share`, round4 #6), **per-page sign-up promises / a named club** (#5: Kit isn't set up; we can't
+  promise "dates before they're posted"), **About as dated chapters** (#7: Gabe's words), **free wallpaper** (#8: Gabe's OK on
+  art), **web manifest** (#10: low value now): later rounds.
+- **Full shows first on /shows/** (#1b): done as the poster (ceb38a9). **MusicEvent JSON-LD** (#1a): already built.
+- **Oversight Supply sections** (Vinyl deck, Jewelcase flip, Collage, Pavement): need an account (owner OK) and are WebGL / motion
+  heavy; reference only, none needed for DR1.
+- **shadcn / React / Tailwind, any WebGL, hallmark / impeccable tooling installs**: wrong stack or owner OK needed.
+- **D81 player size and the tint pick**: the owner's.
+- **Video-row edge-fade mask** (N7): 27e removes the clipped row at 1280; on phones the 82% card peek already shows the swipe.
+- **Home's Watch lead thumbnail** (the newest upload, a muddy still): content, not design; the row updates itself by rule
+  (Hard rule 3). **"Book GLucak" ending on LISTEN** and **the section word as an eyebrow**: D91 / D79 / D87 rulings, reported
+  to the boss in the review, not changed.
