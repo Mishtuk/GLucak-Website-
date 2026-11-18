@@ -75,7 +75,7 @@ test('copy ig6: sign-up now wording, About lines, Patreon line, credits heading'
   const about = page('about/index.html');
   assert.match(about, /<span class="epi-head">Epilepsy survivor<\/span> <span class="epi-sub">Healed by Christ since 2009<\/span>/);
   assert.ok(about.includes('>Credits</h2>') && !about.includes('Photo credits'));
-  for (const h of [home, about]) assert.ok(h.includes('Back my projects and merch. Get early access to songs only the inner circle knows exist.'));
+  for (const h of [home, about]) assert.ok(h.includes('Help back my projects and merch, and get early access to songs only my inner circle knows exist.'));
 });
 
 test('copy ig6: the remix album is labelled; every coming lnk.to tile reads Pre-save; no smart link never says Pre-save', () => {

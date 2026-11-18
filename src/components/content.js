@@ -42,7 +42,7 @@ export const GO = 'https://wingsmusic.lnk.to/370407-Go';
 export const IDENTITY_TRACKS = ['IDENTITY', 'ChurchBoy', 'Single Kids', 'WYLD LOVE', 'Life Blood', 'Mayday Mayday', 'Light', 'Mere Reflection', 'Another Dimension', 'Trenches', 'Finish Strong', 'Scenic Route'];
 export const IDENTITY_TRACKS_HEADING = 'IDENTITY tracklist';
 export const IDENTITY_CREDIT = 'All songs written, recorded, produced, mixed and mastered by Gabriel Lucak'; // the CD back, sentence case, no final period (copy ig6 5)
-export const PATREON_LINE = 'Back my projects and merch. Get early access to songs only the inner circle knows exist.'; // copy ig6 3, option A
+export const PATREON_LINE = 'Help back my projects and merch, and get early access to songs only my inner circle knows exist.'; // copy ig6 3, option A
 export const SCENIC_DAY = '2027-01-15';
 /** Sign-up wording (copy ig6 1a): Kit is not set up, so only a heads-up is promised. After Scenic Route's day the old line returns. */
 export function signupCopy(today = etDay()) {

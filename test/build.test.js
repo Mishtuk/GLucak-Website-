@@ -118,10 +118,10 @@ test('approved copy is on each page verbatim; no ASK GABE; no quote ships', () =
     'Despite facing various difficulties and struggles over the years, Epilepsy survivor and Producer-Rapper/DJ GLucak has shown no intent to give up on either his Faith in God or his mission in creating energetic music to bring others to Christ.',
     'Nevertheless, no matter the musical style or genre, be it his debut single or his upcoming 3rd album (rumored to be his best work yet), the mission statement has always been the same: Rise, Live It Loud, Push Past Fear, The Time Is Now.'];
   const want = {
-    '/': ['Live It Loud', bio[1], SIGNUP, 'Back my projects and merch. Get early access to songs only the inner circle knows exist.'],
+    '/': ['Live It Loud', bio[1], SIGNUP, 'Help back my projects and merch, and get early access to songs only my inner circle knows exist.'],
     '/music/': ['Releases', 'Hear more on SoundCloud', 'Pre-save', 'IDENTITY tracklist', 'All songs written, recorded, produced, mixed and mastered by Gabriel Lucak', 'Remix album'],
     '/shows/': ['Live It Loud', 'Book GLucak'],
-    '/about/': [...bio, 'Book GLucak', 'Epilepsy survivor', 'Healed by Christ since 2009', 'Back my projects and merch.', '>Credits<', 'Photo: Alexander Kealey'],
+    '/about/': [...bio, 'Book GLucak', 'Epilepsy survivor', 'Healed by Christ since 2009', 'Help back my projects and merch', '>Credits<', 'Photo: Alexander Kealey'],
   };
   for (const [p, texts] of Object.entries(want)) for (const t of texts) assert.ok(html(p).includes(t), `${p}: ${t}`);
   assert.ok(!html('/about/').includes('Two albums'), 'C17: the stale "Two albums" paragraph is gone');
