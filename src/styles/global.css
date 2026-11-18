@@ -432,11 +432,11 @@ html[data-shows='none'] .quote-live { display: none; }
 }
 .yt-play {
   position: absolute; left: 50%; top: 42%; translate: -50% -50%; width: 72px; height: 72px;
-  background: var(--accent);
+  background: var(--text);
 }
 .yt-play::before {
   content: ''; position: absolute; left: 54%; top: 50%; translate: -50% -50%;
-  border-block: 14px solid transparent; border-left: 22px solid var(--accent-text);
+  border-block: 14px solid transparent; border-left: 22px solid var(--bg);
 }
 
 /* ---------- Push Past Fear ---------- */
@@ -836,7 +836,8 @@ a, button, summary, label { -webkit-tap-highlight-color: transparent; }
 .tile-link:active .tile-text :is(.tile-artists, .tile-meta, .tile-type) { color: var(--bg); }
 .product-link:active .product-name { background: var(--text); color: var(--bg); }
 .yt:active { border-style: solid; border-color: var(--text); }
-.yt:active .yt-play { background: var(--text); }
+.yt:active .yt-play, .v2-vid :is(a, button):active .yt-play { background: var(--bg); }
+.yt:active .yt-play::before, .v2-vid :is(a, button):active .yt-play::before { border-left-color: var(--text); }
 .ed-btn:not(:disabled):not([aria-disabled='true']):active, .ed-tab:active, .ed-main:not([aria-disabled='true']):active,
 .ed-file-wrap:active .ed-file { background: var(--text); color: var(--bg); border-color: var(--text); }
 /* .phone-bar a:active stays as built: accent ground, accent-text. */

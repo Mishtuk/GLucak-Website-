@@ -28,7 +28,7 @@ test('23b.2: the SHOWS link in the hero (and 404, Full bio) is a .go arrow link,
   assert.ok(!/btn-line/.test(hero), 'no outlined button in the hero');
   assert.match(page('index.html'), /<a class="go" href="\/about\/">Full bio<\/a>/);
   assert.match(page('404.html'), /<a class="go" href="\/shows\/" aria-label="See upcoming shows">Shows<\/a>/);
-  assert.ok(!/class="btn btn-line"/.test(page('404.html')));
+  assert.ok(!/<a class="btn btn-line"/.test(page('404.html'))); // 28g: the Join submit is a button, now an outline
   const go = css.match(/\n\.go \{([^}]*)\}/)[1];
   assert.ok(/min-height: 52px/.test(go) && !/animation|transition/.test(go));
   assert.match(css, /\.go:active,/);

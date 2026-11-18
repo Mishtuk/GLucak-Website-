@@ -17,3 +17,29 @@ test('28h: no .fade / fade-wait anywhere, no order: -1 on .v2-rel, the player co
   const h = dist('index.html');
   assert.ok(h.indexOf('class="player-box"') > -1 && h.indexOf('class="player-box"') < h.indexOf('class="v2-rel"'));
 });
+
+import { showsHtml } from '../src/lib/shows.js';
+
+test('28g: btn-solid only on Listen, Pre-save, Tickets, Buy (every built page but /edit/)', () => {
+  for (const p of walk(join(ROOT, 'dist'))) {
+    if (p.includes(`${join('dist', 'edit')}`)) continue;
+    const h = readFileSync(p, 'utf8');
+    for (const m of h.matchAll(/<(a|button)\b[^>]*class="[^"]*\bbtn-solid\b[^"]*"[^>]*>([^<]*)</g)) assert.match(m[2].trim(), /^(Listen|Pre-save|Tickets|Buy)$/, `${p}: btn-solid "${m[2]}"`);
+  }
+});
+
+test('28g: Home at 390 has at most 3 magenta fills (not the header Listen) with a fixture of a full show with a link', () => {
+  const home = dist('index.html').replace(/<!--gl:shows-->/, showsHtml([
+    { date: '2026-11-18', time: '19:00', type: 'open-mic', venue: 'A', city: 'C' },
+    { date: '2026-11-19', time: '19:00', type: 'show', venue: 'B', city: 'C', link: 'https://x.example/t' },
+    { date: '2026-11-20', time: '19:00', type: 'open-mic', venue: 'D', city: 'C' }], new Date('2026-11-18T17:00:00Z'), { limit: 3, allLink: '/shows/' }));
+  const fills = [...home.matchAll(/<a\b[^>]*class="[^"]*\bbtn-solid\b[^"]*"/g)].filter((m) => !m[0].includes('header-listen')).length;
+  const tickets = (home.match(/class="btn btn-show"[^>]*>Tickets</g) || []).length;
+  assert.ok(fills + tickets <= 3, `fills ${fills}, tickets ${tickets}`); // hero Listen + release Listen, + Tickets when a full show is in the first three
+});
+
+test('28g: the video play square is ink, not accent', () => {
+  const rule = css.match(/\n\.yt-play \{[^}]*\}/)[0];
+  assert.ok(rule.includes('background: var(--text)') && !rule.includes('--accent'));
+  assert.ok(!/\.yt-play::before \{[^}]*--accent/.test(css));
+});

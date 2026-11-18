@@ -20,7 +20,7 @@ test('20c: About has the Listen / Shows / Patreon setlist from 900px; the solid 
   const set = h.match(/<ul class="about-set">([^]*?)<\/ul>/)[1];
   assert.deepEqual([...set.matchAll(/<a href="([^"]+)"[^>]*>([^<]+)</g)].map((m) => [m[1], m[2]]).map(([u, t]) => [u.startsWith('http') ? 'ext' : u, t]),
     [['/music/', 'Listen'], ['/shows/', 'Shows'], ['ext', 'Patreon']]);
-  assert.match(h, /<a class="btn btn-solid about-patreon"/);
+  assert.match(h, /<a class="btn btn-line about-patreon"/);
   assert.match(css, /@media \(min-width: 900px\) \{\s*\.about-actions \{ display: block; align-self: start; \}\s*\.about-patreon \{ display: none; \}/);
   assert.ok(!/\.about-set[^{]*\{[^}]*(transition: (?!none)|animation|(?<!text-)transform)/.test(css), "no motion on the setlist");
 });
