@@ -116,6 +116,8 @@ there with `Laptop:`. The client's own email is in `README.md`; this file adds t
   lead singles' art. Never show the Running The Gauntlet lyric video or the Earned Your Stripes Visualizer (flashing).
 
 ## Owner's instructions (2026-11-17, Desktop)
+- **Every resource the owner shares** (template sites, Instagram accounts, Reddit posts, skills, UI kits) goes in
+  `docs/research/RESOURCES.md` with its use and limits, so every agent and the Laptop can reference it.
 - **The Laptop is unavailable for now:** "You don't have the laptop anymore for the current moment, so just get all the files
   you can." The Desktop takes over every file, including the Laptop's claims (DESIGN.md, prototype/, src/pages, components,
   global.css, its tests, docs/copy, docs/review). When the Laptop comes back it reads HANDOFF + the board before claiming again.
