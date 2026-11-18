@@ -62,22 +62,8 @@ Free web services sleep and cannot have a disk, so use a paid one.
 6b. Auto-rebuild: in Render, Settings > Deploy Hook, copy the URL. In GitHub (repo Settings > Secrets and variables > Actions) add a repository secret named **`RENDER_DEPLOY_HOOK`** with that URL. The `deploy` job in `.github/workflows/daily.yml` then POSTs it after each daily test pass; with no secret it prints "skipping" and does nothing.
 7. Health check path: `/`. First deploy; open the `*.onrender.com` URL and run the smoke test (section 7) there before touching DNS.
 8. Custom domain: Settings > Custom Domains > add `glucak.com` and `www.glucak.com`. Render shows the DNS targets and issues free TLS once DNS verifies. Use the exact values it shows in section 4.
-9. **Deploy hook** (Settings > Deploy Hook): copy the URL. It is a secret. Save it as a GitHub Actions secret named, for example, `RENDER_DEPLOY_HOOK`.
-10. **Daily rebuild** (needed so the IDENTITY days-to-go and release flips update). A Render cron job cannot touch the disk, but it can call a deploy hook, and a redeploy is a fresh build. Use a free GitHub Actions workflow in the public repo:
-
-        on:
-          schedule:
-            - cron: '5 5 * * *'   # UTC; 00:05 or 01:05 New York
-          workflow_dispatch:
-        jobs:
-          rebuild:
-            runs-on: ubuntu-latest
-            steps:
-              - run: curl -fsS -X POST "$HOOK"
-                env:
-                  HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
-
-    A deploy takes a minute or two with a few seconds down. Run it once by hand (`workflow_dispatch`) before launch and check Render's Events log. (The workflow file is a Coder item in the checklist.)
+9. **Deploy hook**: done in 6b (the URL is a secret; it lives only in the GitHub secret `RENDER_DEPLOY_HOOK`).
+10. **Daily rebuild** (needed so the IDENTITY days-to-go and release flips update): the `deploy` job in `.github/workflows/daily.yml` (6b) POSTs the hook after the 09:00 UTC tests pass. Do not add a second rebuild workflow. Run `daily` once by hand (`workflow_dispatch`) before launch and check Render's Events log; a deploy takes a minute or two with a few seconds down.
 11. Logs: Render dashboard > Logs. Snapshots: Render snapshots the disk every 24 h and keeps 7 days; a restore from a snapshot wipes later changes. **Treat this as a convenience, not the backup** (section 10).
 12. Rollback: Render dashboard > Events > pick the last good deploy > Rollback (**verify** the button name on the day). Locate it before launch day.
 
