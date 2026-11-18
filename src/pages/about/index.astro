@@ -2,9 +2,22 @@
 import Base from '../../layouts/Base.astro';
 import PushPhoto from '../../components/PushPhoto.astro';
 import ForVenues from '../../components/ForVenues.astro';
+import Reel from '../../components/Reel.astro';
 import site from '../../data/site.json';
 import { bioHtml } from '../../lib/site.js';
 import { PATREON, PATREON_LINE, PHOTO_CREDITS as C } from '../../components/content.js';
+// Owner 2026-11-18: the Photos grid became an album to flip through. Real photos only; each one's credit is in CREDIT_FOR (content.js).
+// Stills: frames from his music videos (tools/film: the same downloads), 1280 + 480 webp in /media/stills.
+const ALBUM = [
+  { src: '/media/cd-studio-960.webp', thumb: '/media/cd-studio-480.webp', srcset: '/media/cd-studio-480.webp 480w, /media/cd-studio-960.webp 960w', w: 960, h: 960, alt: 'GLucak in his home studio, headphones on, his gear on the floor around him', cap: 'In the home studio' },
+  { src: '/media/photo-crooked-eye-634.webp', w: 634, h: 1128, alt: 'GLucak pointing up as he sings at Crooked Eye Brewery', cap: 'Scenic Route, live at Crooked Eye Brewery' },
+  { src: '/media/stills/yna-floor-1280.webp', thumb: '/media/stills/yna-floor-480.webp', srcset: '/media/stills/yna-floor-480.webp 480w, /media/stills/yna-floor-1280.webp 1280w', w: 1280, h: 720, alt: 'GLucak sitting on the floor writing, pages scattered around him', cap: 'You’re Not Alone: writing it down' },
+  { src: '/media/stills/rl-room-1280.webp', thumb: '/media/stills/rl-room-480.webp', srcset: '/media/stills/rl-room-480.webp 480w, /media/stills/rl-room-1280.webp 1280w', w: 1280, h: 720, alt: 'GLucak standing in a white room lit by a strip of lights', cap: 'Rapping Like (Oh Yeah)' },
+  { src: '/media/photo-mccc-478.webp', w: 478, h: 477, alt: 'GLucak on stage, one arm out, a drum kit behind him', cap: 'On stage at Montgomery County Community College' },
+  { src: '/media/stills/ddjf-garage-1280.webp', thumb: '/media/stills/ddjf-garage-480.webp', srcset: '/media/stills/ddjf-garage-480.webp 480w, /media/stills/ddjf-garage-1280.webp 1280w', w: 1280, h: 720, alt: 'GLucak dancing in a garage beside a car on a jack', cap: 'Duck, Dodge, Jump, Fight!' },
+  { src: '/media/stills/yna-mic-1280.webp', thumb: '/media/stills/yna-mic-480.webp', srcset: '/media/stills/yna-mic-480.webp 480w, /media/stills/yna-mic-1280.webp 1280w', w: 1280, h: 720, alt: 'GLucak singing into a mic on a stand against a white wall', cap: 'You’re Not Alone, at the mic' },
+  { src: '/media/stills/eys-arm-1280.webp', thumb: '/media/stills/eys-arm-480.webp', srcset: '/media/stills/eys-arm-480.webp 480w, /media/stills/eys-arm-1280.webp 1280w', w: 1280, h: 720, alt: 'GLucak on stage with one arm up, a drum kit and amps behind him', cap: 'Earned Your Stripes, arm up' },
+];
 ---
 <Base image="about" title="About | GLucak" current="about" description="GLucak: Horsham producer-rapper and DJ. Energetic, faith-based EDM, rap and rock.">
   <section class="band band-push" aria-labelledby="h-push">
@@ -29,12 +42,8 @@ import { PATREON, PATREON_LINE, PHOTO_CREDITS as C } from '../../components/cont
         <a class="btn btn-line about-patreon" href={PATREON} rel="noopener">Patreon</a>
       </div>
       <section class="gallery" aria-labelledby="h-photos">
-        <h2 class="prose-h" id="h-photos">Photos</h2>
-        <ul class="gallery-grid">
-          <li><a href="/media/cd-studio-960.webp"><img class="graded" src="/media/cd-studio-480.webp" srcset="/media/cd-studio-480.webp 480w, /media/cd-studio-960.webp 960w" sizes="(min-width: 900px) 18vw, (min-width: 34rem) 17rem, 47vw" width="960" height="960" alt="GLucak in his home studio, headphones on, his gear on the floor around him" loading="lazy" /></a></li>
-          <li><a href="/media/photo-mccc-478.webp"><img class="graded" src="/media/photo-mccc-478.webp" width="478" height="477" alt="GLucak on stage, one arm out, a drum kit behind him" loading="lazy" /></a></li>
-          <li><a href="/media/photo-crooked-eye-634.webp"><img class="graded" src="/media/photo-crooked-eye-634.webp" width="634" height="1128" alt="GLucak pointing up as he sings at Crooked Eye Brewery" loading="lazy" /></a></li>
-        </ul>
+        <h2 class="prose-h" id="h-photos">Photo album</h2>
+        <Reel id="album" label="Photo album" kind="photo" items={ALBUM} />
       </section>
     </div>
     <div class="wrap prose is-paper">

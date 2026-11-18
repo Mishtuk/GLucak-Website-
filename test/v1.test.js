@@ -66,10 +66,11 @@ test('26c: lead is the flagged live row (else the newest live); music videos new
 });
 
 test('26g-4: order and scope on /videos/; Shorts are not listed, one link goes to the Shorts tab', () => {
-  assert.equal(ids[0], 'aZNW63M_C2E');
-  assert.equal(ids[1], 'OOGT3GxlQJk');
+  // owner 2026-11-18: tab 1 Music videos (newest first, the lyric video last), tab 2 Live (the lead first)
+  assert.equal(ids[0], 'ZGlnFchIVVY');
   assert.ok(ids.indexOf('ZGlnFchIVVY') < ids.indexOf('K-OZiNvQB14'));
-  assert.equal(ids.at(-1), 'LBQ4fqLVHSI');
+  assert.equal(ids[ids.indexOf('aZNW63M_C2E') - 1], 'LBQ4fqLVHSI', 'the lyric video ends the Music videos reel');
+  assert.equal(ids.at(-2), 'aZNW63M_C2E'); assert.equal(ids.at(-1), 'OOGT3GxlQJk');
   const rows = JSON.parse(src('src/data/videos.json'));
   const kinds = Object.fromEntries(rows.map((v) => [v.id, v.kind]));
   for (const id of ids) assert.ok(kinds[id] && kinds[id] !== 'other', `${id} is not a Short`);
@@ -104,7 +105,7 @@ test('26g-6: every card has a name, every poster is alt="" with size and a file,
     assert.ok(img.includes('alt=""') && img.includes('width="1280"') && img.includes('height="720"'));
     const file = img.match(/src="([^"]+)"/)[1];
     assert.ok(existsSync(join(ROOT, 'public', file)), file);
-    assert.equal(/loading="eager"/.test(img), i === 0, 'only the lead is eager');
+    assert.equal(/loading="eager"/.test(img), i === 0 || i === ids.indexOf('aZNW63M_C2E'), 'only the first of each reel is eager');
   });
   assert.equal(vids.split('<h1').length - 1, 1);
   assert.match(js, /b\.type = 'button'/);

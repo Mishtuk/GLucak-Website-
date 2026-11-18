@@ -123,13 +123,16 @@
     b.addEventListener('click', () => play(b));
     return b;
   }
-  function play(b) {
-    for (const [f, old] of buttons) { // stops the video that is playing
+  function stopVideos() { // stops the video that is playing
+    for (const [f, old] of buttons) {
       const name = f.nextElementSibling;
       if (name && name.classList.contains('v2-vtitle')) name.remove();
       f.replaceWith(old);
       buttons.delete(f);
     }
+  }
+  function play(b) {
+    stopVideos();
     const f = document.createElement('iframe');
     f.className = 'yt';
     f.src = `https://www.youtube-nocookie.com/embed/${b.dataset.yt}?autoplay=1&rel=0`; // autoplay is set only here, after the press
@@ -145,6 +148,73 @@
   }
   document.querySelectorAll('a[data-yt]').forEach((a) => {
     if (videoOk(a.dataset.yt)) a.replaceWith(makeButton(a));
+  });
+
+  /* Reels (owner 2026-11-18, src/components/Reel.astro): flip one page at a time. Instant unless Motion is on. A flip stops a playing video. */
+  document.querySelectorAll('[data-reel]').forEach((reel) => {
+    const track = reel.querySelector('.reel-track');
+    const slides = [...track.children];
+    const picks = [...reel.querySelectorAll('.reel-pick')];
+    const now = reel.querySelector('.reel-now');
+    const nav = reel.querySelector('.reel-nav');
+    const prev = reel.querySelector('.reel-prev');
+    const next = reel.querySelector('.reel-next');
+    let cur = 0;
+    const mark = (i) => {
+      cur = i;
+      now.textContent = String(i + 1).padStart(2, '0');
+      picks.forEach((p, k) => (k === i ? p.setAttribute('aria-current', 'true') : p.removeAttribute('aria-current')));
+      prev.disabled = i === 0; next.disabled = i === slides.length - 1;
+    };
+    const go = (i) => {
+      i = Math.max(0, Math.min(slides.length - 1, i));
+      if (i !== cur) stopVideos();
+      track.scrollTo({ left: slides[i].offsetLeft - slides[0].offsetLeft, behavior: root.dataset.motion === 'on' ? 'smooth' : 'auto' });
+      mark(i);
+    };
+    nav.hidden = slides.length < 2;
+    prev.addEventListener('click', () => go(cur - 1));
+    next.addEventListener('click', () => go(cur + 1));
+    picks.forEach((p, k) => p.addEventListener('click', (e) => { e.preventDefault(); go(k); }));
+    track.addEventListener('keydown', (e) => { if (e.target === track && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { e.preventDefault(); go(cur + (e.key === 'ArrowRight' ? 1 : -1)); } });
+    let raf = 0; // a swipe: the count follows the page that snapped into place
+    track.addEventListener('scroll', () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const step = slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : 0;
+        if (!step) return; // a hidden tab: no layout
+        const i = Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / step)));
+        if (i !== cur) { stopVideos(); mark(i); }
+      });
+    }, { passive: true });
+    track.tabIndex = 0;
+    mark(0);
+  });
+
+  /* Tabs (Videos page): Music videos / Live. Arrow keys move between tabs. Switching stops a playing video. */
+  document.querySelectorAll('.tabs[role="tablist"]').forEach((list) => {
+    const tabs = [...list.querySelectorAll('[role="tab"]')];
+    const pick = (t, focus) => {
+      tabs.forEach((x) => {
+        const on = x === t;
+        x.setAttribute('aria-selected', String(on));
+        if (on) x.removeAttribute('tabindex'); else x.tabIndex = -1;
+        document.getElementById(x.getAttribute('aria-controls')).hidden = !on;
+      });
+      document.getElementById(t.getAttribute('aria-controls')).querySelectorAll('.reel-track').forEach((tr) => tr.dispatchEvent(new Event('scroll'))); // the count follows where the shown reel is
+      stopVideos();
+      if (focus) t.focus();
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => pick(t));
+      t.addEventListener('keydown', (e) => {
+        const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (d) { e.preventDefault(); pick(tabs[(i + d + tabs.length) % tabs.length], true); }
+      });
+    });
+    list.hidden = false;
+    list.parentElement.classList.add('tabs-on');
+    pick(tabs.find((t) => t.getAttribute('aria-selected') === 'true') ?? tabs[0]);
   });
 
   /* Share a show (DESIGN 28c, D104): the phone's own share sheet; else copy the link; else show it. Same-origin, no motion. */

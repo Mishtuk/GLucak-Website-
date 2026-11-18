@@ -1,0 +1,53 @@
+---
+import { existsSync } from 'node:fs';
+import { curly } from '../lib/shows.js';
+// Owner 2026-11-18: "a visual album to flip through". One page at a time on a scroll-snap track, the next one peeking; a numbered
+// strip under it. app.js (data-reel) adds Prev / Next, keeps the count and the strip in step, and stops a playing video on a flip.
+// Without JS it is a swipeable row plus anchor links. Flips are instant unless Motion is on (then smooth). No animation, no autoplay.
+// kind 'video': items are videos.json rows (the facade of VideoCard: no player until a press). kind 'photo': { src, w, h, srcset?, alt, cap }.
+interface Props { id: string; label: string; kind: 'video' | 'photo'; items: Record<string, any>[] }
+const { id, label, kind, items } = Astro.props;
+const pad = (n: number) => String(n).padStart(2, '0');
+const thumb = (v: Record<string, any>) => existsSync(`public/media/videos/${v.id}-1280.webp`) && existsSync(`public/media/videos/${v.id}-640.webp`) ? `/media/videos/${v.id}` : null;
+const meta = (v: Record<string, any>) => [v.place ? `Live at ${v.place}` : v.kind === 'lyric-video' ? 'Lyric video' : 'Music video', v.with].filter(Boolean).join(' · ');
+const n = items.length;
+---
+<div class:list={['reel', `reel-${kind}`]} data-reel id={id}>
+  <div class="reel-bar">
+    <p class="reel-count"><span class="reel-now">01</span><span class="reel-of"> / {pad(n)}</span></p>
+    <div class="reel-nav" hidden>
+      <button type="button" class="reel-prev" aria-label={`Previous in ${label}`}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <button type="button" class="reel-next" aria-label={`Next in ${label}`}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>
+  <ol class="reel-track" aria-label={label}>
+    {items.map((it, i) => (
+      <li class="reel-slide" id={`${id}-${i + 1}`}>
+        {kind === 'video' ? (
+          <div class="v2-vid">
+            <span class="reel-num" aria-hidden="true">{pad(i + 1)}</span>
+            <a href={`https://www.youtube.com/watch?v=${it.id}`} rel="noopener" data-yt={it.id} data-title={curly(it.name ?? it.title)}>
+              <span class="v2-thumb">{thumb(it) && <img class="yt-img" src={`${thumb(it)}-640.webp`} srcset={`${thumb(it)}-640.webp 640w, ${thumb(it)}-1280.webp 1280w`} sizes="(min-width: 900px) 62vw, 86vw" width="1280" height="720" alt="" loading={i ? 'lazy' : 'eager'} decoding="async" />}<span class="yt-play" aria-hidden="true"></span></span>
+              <span class="v2-vtitle">{curly(it.name ?? it.title)}</span>
+            </a>
+            <p class="vid-meta"><span>{meta(it)}</span></p>
+          </div>
+        ) : (
+          <figure class="reel-page is-paper">
+            <span class="reel-num" aria-hidden="true">{pad(i + 1)}</span>
+            <img src={it.src} srcset={it.srcset} sizes="(min-width: 900px) 40vw, 86vw" width={it.w} height={it.h} alt={it.alt} loading={i > 1 ? 'lazy' : undefined} decoding="async" />
+            <figcaption>{it.cap}</figcaption>
+          </figure>
+        )}
+      </li>
+    ))}
+  </ol>
+  <ol class="reel-strip" aria-label={`${label}: pick one`}>
+    {items.map((it, i) => (
+      <li><a class="reel-pick" href={`#${id}-${i + 1}`} aria-current={i === 0 ? 'true' : undefined}>
+        {kind === 'video' ? (thumb(it) && <img src={`${thumb(it)}-640.webp`} width="640" height="360" alt="" loading="lazy" decoding="async" />) : <img src={it.thumb ?? it.src} width={it.w} height={it.h} alt="" loading="lazy" decoding="async" />}
+        <span class="reel-pick-n">{pad(i + 1)}</span><span class="vh">{kind === 'video' ? curly(it.name ?? it.title) : it.cap}</span>
+      </a></li>
+    ))}
+  </ol>
+</div>

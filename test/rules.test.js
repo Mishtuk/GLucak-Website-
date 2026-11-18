@@ -117,7 +117,8 @@ import sharp from 'sharp';
 const ERA = JSON.parse(read('src/eras/identity.json')).colors;
 const rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
 const FRAMES = { 'a-print-phone-800': 'kealey', 'b-print-': 'kealey', 'v2/garage-toner-': 'garage', 'v2/stage-lines-': 'ce2', 'v2/belt-print-': 'ce4',
-  'poster-print-': 'ce3', 'cd-live-': 'cdlive', 'cd-studio-': 'studio', 'photo-mccc-': 'mccc', 'photo-crooked-eye-': 'ce1' };
+  'poster-print-': 'ce3', 'cd-live-': 'cdlive', 'cd-studio-': 'studio', 'photo-mccc-': 'mccc', 'photo-crooked-eye-': 'ce1',
+  'stills/eys-arm-': 'eys2', 'stills/yna-floor-': 'yna1', 'stills/yna-mic-': 'yna2', 'stills/rl-room-': 'rl1', 'stills/ddjf-garage-': 'ddjf1' }; // the About album's video stills (owner 2026-11-18)
 const NOT_PHOTO = /^(covers|videos|og|mark-|shop|uploads|placeholder-cover|favicon|apple-touch|g-|hero-wall)/; // 29b: covers, video thumbs, logos, shop samples
 const frameOf = (f) => Object.entries(FRAMES).find(([k]) => f.startsWith(k))?.[1];
 const fixture = (d, v) => ({ date: d, type: 'show', venue: v, city: 'X' });
@@ -184,11 +185,12 @@ test('29g-4: About has the header photo, 3 plain-link gallery photos, the credit
   assert.ok(!h.includes('class="credits"'));
   const img = h.match(/<img[^>]*class="[^"]*push-photo[^"]*"[^>]*>/)[0];
   assert.match(img, /alt="[^"]+"/); assert.ok(img.includes('fetchpriority="high"') && !img.includes('loading="lazy"') && img.includes('2400w'));
-  const items = h.match(/<ul class="gallery-grid">([^]*?)<\/ul>/)[1].split('</li>').filter((x) => x.includes('<li'));
-  assert.equal(items.length, 3);
-  for (const li of items) {
-    const href = li.match(/^<li><a href="(\/media\/[^"]+\.webp)"><img [^>]*alt="[^"]+"[^>]*><\/a>$/)?.[1];
-    assert.ok(href, `a plain link around one img with alt: ${li}`); assert.ok(statSync(join(ROOT, 'public', href)).isFile());
+  // owner 2026-11-18: the gallery is a photo album reel. Every page: one photo with alt and a caption, a real file.
+  const pages = h.match(/<ol class="reel-track"[^>]*>([^]*?)<\/ol>/)[1].split('</li>').filter((x) => x.includes('<li'));
+  assert.equal(pages.length, 8);
+  for (const li of pages) {
+    const src = li.match(/<img src="(\/media\/[^"]+\.webp)"[^>]*alt="[^"]+"/)?.[1];
+    assert.ok(src && /<figcaption>[^<]+<\/figcaption>/.test(li), `one img with alt and a caption: ${li}`); assert.ok(statSync(join(ROOT, 'public', src)).isFile());
   }
   const scripts = [...h.matchAll(/<script\b[^>]*>/g)].map((m) => m[0]).filter((s) => !s.includes('application/ld+json'));
   assert.ok(scripts.every((s) => /src="\/js\/(boot|app)\.js"/.test(s)), `no script beyond Base: ${scripts}`);

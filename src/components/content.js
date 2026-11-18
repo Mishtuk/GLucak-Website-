@@ -31,7 +31,8 @@ export const CREDIT_FOR = [
   [/photo-mccc-/, PHOTO_CREDITS.mccc],
   [/covers\/identity|identity-art-/, PHOTO_CREDITS.identity],
   [/\/media\/cd-/, PHOTO_CREDITS.cd],
-  [/\/media\/v2\/garage-|videos\/K-OZiNvQB14-/, PHOTO_CREDITS.joseph],
+  [/\/media\/v2\/garage-|videos\/K-OZiNvQB14-|stills\/ddjf-/, PHOTO_CREDITS.joseph],
+  [/stills\/(eys|yna|rl)-/, PHOTO_CREDITS.yt], // the About album's music video stills
   [/a-print-|b-print-/, PHOTO_CREDITS.kealey],
 ];
 export const SITE_URL = (import.meta.env.SITE_URL ?? 'https://glucak.com').replace(/\/$/, '');

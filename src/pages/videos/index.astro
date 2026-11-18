@@ -1,26 +1,33 @@
 ---
 import Base from '../../layouts/Base.astro';
-import VideoCard from '../../components/VideoCard.astro';
+import Reel from '../../components/Reel.astro';
 import { videosPage, YOUTUBE, SHORTS, PHOTO_CREDITS as C } from '../../components/content.js';
-// DESIGN 26: Scenic Route live (lead), the Riverside clip, then every music video. No iframe until a press. Shorts: one link out.
+// Owner 2026-11-18: a theatre, not a scatter. Two tabs (Music videos, Live), each a reel to flip through: one big screen, the next
+// peeking, a numbered strip. No iframe until a press (hard rule 1). Without JS: both reels, one under the other, with their headings.
 const g = videosPage();
+const live = g.lead ? [g.lead, ...g.live] : g.live;
+const panels = [
+  g.music.length > 0 && { id: 'mv', name: 'Music videos', items: g.music, kind: 'video' as const },
+  live.length > 0 && { id: 'live', name: 'Live', items: live, kind: 'video' as const },
+].filter(Boolean) as { id: string; name: string; items: Record<string, any>[]; kind: 'video' }[];
 ---
-<Base image="videos" title="Videos | GLucak" current="videos" credits={[C.vladd, C.joseph, C.yt]} description="Watch GLucak: Scenic Route live at Crooked Eye, and every music video.">
+<Base image="videos" title="Videos | GLucak" current="videos" credits={[C.vladd, C.joseph, C.yt]} description="Watch GLucak: every music video, and Scenic Route live at Crooked Eye.">
   <section class="band band-vids" aria-labelledby="h-vids">
-    <div class="wrap vids-top">
+    <div class="wrap vids">
       <h1 class="spine" id="h-vids"><span class="tab">Videos</span> <span class="phrase phrase-watch">Watch</span></h1>
-      {g.lead ? <VideoCard v={g.lead} lead tag="div" /> : <p class="vid-lead"><a class="go" href={YOUTUBE} rel="noopener">GLucak on YouTube</a></p>}
-      {g.live.length > 0 && <ul class="vid-list vid-also">{g.live.map((v) => <VideoCard v={v} tag="li" />)}</ul>}
-      {g.music.length === 0 && <p class="start-line vid-more"><a class="go" href={SHORTS} rel="noopener">New shorts most weeks on YouTube.</a></p>}
+      {panels.length > 1 && (
+        <div class="tabs" role="tablist" aria-label="Videos" hidden>
+          {panels.map((p, i) => <button type="button" role="tab" id={`t-${p.id}`} aria-controls={`p-${p.id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? undefined : '-1'}>{p.name} <span class="tab-n">{p.items.length}</span></button>)}
+        </div>
+      )}
+      {panels.map((p) => (
+        <section class="tab-panel" id={`p-${p.id}`} role={panels.length > 1 ? 'tabpanel' : undefined} aria-labelledby={`h-${p.id}`}>
+          <h2 class="prose-h tab-h" id={`h-${p.id}`}>{p.name}</h2>
+          <Reel id={p.id} label={p.name} kind={p.kind} items={p.items} />
+        </section>
+      ))}
+      {panels.length === 0 && <p class="vid-lead"><a class="go" href={YOUTUBE} rel="noopener">GLucak on YouTube</a></p>}
+      <p class="start-line vid-more"><a class="go" href={SHORTS} rel="noopener">New shorts most weeks on YouTube.</a></p>
     </div>
   </section>
-  {g.music.length > 0 && (
-    <section class="band band-mv edge-tear" aria-labelledby="h-mv">
-      <div class="wrap">
-        <h2 id="h-mv" class="prose-h">Music videos</h2>
-        <ul class="vid-list vid-grid">{g.music.map((v) => <VideoCard v={v} tag="li" />)}</ul>
-        <p class="start-line vid-more"><a class="go" href={SHORTS} rel="noopener">New shorts most weeks on YouTube.</a></p>
-      </div>
-    </section>
-  )}
 </Base>

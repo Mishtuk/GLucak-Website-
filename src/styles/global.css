@@ -1313,14 +1313,9 @@ html[data-header='solid'] .site-header { background: var(--bg) var(--texture) !i
 
 /* ---------- DESIGN 26. Videos page (round V1). Static: no animation, no transition. ---------- */
 .band-vids { padding-top: var(--space-l); }
-.vids-top { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: 'head' 'lead' 'also'; gap: var(--space-m); }
-.vids-top > .spine { grid-area: head; }
-.vids-top > .vid-lead { grid-area: lead; }
-.vids-top > .vid-also { grid-area: also; margin-top: var(--space-s); }
+.vids { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-m); }
 .phrase-watch { font-size: 3.5rem; line-height: 0.82; text-box: trim-both cap alphabetic; }
-.vid-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-l) var(--space-m); margin: 0; }
-.vid-grid { margin-top: var(--space-m); }
-.vid-lead .v2-vtitle { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; }
+.reel .v2-vtitle { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; }
 .vid-meta { display: flex; flex-wrap: wrap; gap: 0.25rem 0.6rem; margin-top: 0.25rem; color: var(--muted); font-size: var(--step--1); font-variant-numeric: tabular-nums; }
 .vid-more { margin-top: var(--space-xl); }
 .v2-vid button { all: unset; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.4rem; width: 100%; cursor: pointer; }
@@ -1328,11 +1323,11 @@ html[data-header='solid'] .site-header { background: var(--bg) var(--texture) !i
 @media (hover: hover) { .v2-vid button:hover .v2-vtitle { text-decoration: underline; text-underline-offset: 3px; } }
 .v2-vid button:active .v2-thumb { border-color: var(--text); }
 .v2-vid button:active .v2-vtitle { background: var(--text); color: var(--bg); }
-@media (min-width: 700px) { .vid-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 900px) {
-  .vids-top { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: 'head lead' 'also lead'; grid-template-rows: auto 1fr; column-gap: var(--space-xl); }
-  .vids-top > .vid-also { align-self: end; margin-top: 0; max-width: 20rem; } /* clearly under the lead: 320 vs 672px at 1280 */
-  .vids-top > .spine { container-type: inline-size; }
+  .vids { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: var(--space-xl); }
+  .vids > :not(.spine, .tabs) { grid-column: 1 / -1; }
+  .vids > .spine { container-type: inline-size; }
+  .vids > .tabs { align-self: end; justify-self: end; }
   .phrase-watch { font-size: calc(100cqi / var(--w-watch)); } /* fills the 5fr column: 149px tall at 1280 */
 }
 /* The Watch heading links to /videos/ (Home h3, Shows h2): 0px added (measured); a 47px tap box, padding cancelled by margin. */
@@ -1408,19 +1403,9 @@ li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* 
 .push-photo { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; object-position: 40% 20%; background: var(--bg-2); }
 @media (min-width: 700px) { .push-photo { aspect-ratio: 5 / 2; object-position: 50% 15%; } }
 @media (min-width: 900px) { .push-photo { aspect-ratio: 3 / 1; max-height: 28rem; } }
-.gallery { max-width: 34rem; margin-top: var(--space-l); }
-.gallery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-xs); margin-top: var(--space-s); }
-.gallery-grid li { position: relative; }
-.gallery-grid li:nth-child(3) { grid-column: 2; grid-row: 1 / span 2; } /* the tall still beside the two squares */
-.gallery-grid a { display: block; height: 100%; }
-.gallery-grid img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; background: var(--bg-2); }
-.gallery-grid li:nth-child(3) img { position: absolute; inset: 0; height: 100%; aspect-ratio: auto; object-position: 50% 15%; }
-.gallery-grid a:active img { outline: 3px solid var(--text); outline-offset: -3px; } /* 16e: instant pressed */
 @media (min-width: 900px) {
   .about-body { align-items: start; } /* the bio starts level with the setlist */
   .about-body { margin-top: var(--space-m); }
-  /* the gallery runs full width under both columns as one row of three (no dead gap beside or under the bio) */
-  .gallery { grid-column: 1 / -1; max-width: none; }
 }
 
 /* =====================================================================================================================
@@ -1491,7 +1476,7 @@ li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* 
 
 /* 30a hover: an outline around the art, instant, nothing moves. */
 @media (hover: hover) and (pointer: fine) {
-  :is(.tile-link, .product-link, .v2-vid a, .gallery-grid a):hover :is(.tile-art, .product-media, .v2-thumb, img) { outline: 2px solid var(--text); outline-offset: 4px; }
+  :is(.tile-link, .product-link, .v2-vid a, .reel-pick):hover :is(.tile-art, .product-media, .v2-thumb, img) { outline: 2px solid var(--text); outline-offset: 4px; }
 }
 
 /* ---------- 30e. Home (DESIGN 30e). Hero from 900px: GLUCAK whole across the top, his print taped in 5fr (loop5 P2 fixed). ---------- */
@@ -1614,10 +1599,6 @@ html[data-palette='poster'] .band-live.edge-angle { background-color: color-mix(
   .prose.is-paper::after { right: 0.5rem; }
 }
 @media (min-width: 700px) {
-  .gallery-grid { gap: var(--space-m); align-items: start; }
-  .gallery-grid li:nth-child(2) { margin-top: 3rem; }
-  .gallery-grid li:nth-child(3) { grid-column: 1; grid-row: auto; }
-  .gallery-grid li:nth-child(3) img { position: static; height: auto; aspect-ratio: 1; }
   .wrap.prose.is-paper { width: min(100% - 2 * var(--gutter) - 8vw, var(--container) - 8vw); margin: var(--space-xl) auto 0 calc(max(var(--gutter), (100% - var(--container)) / 2) + 8vw); padding: var(--space-xl); }
 }
 @media (min-width: 900px) {
@@ -1625,32 +1606,6 @@ html[data-palette='poster'] .band-live.edge-angle { background-color: color-mix(
   .bio { grid-column: 1 / span 7; }
   .about-actions { grid-column: 9 / -1; position: sticky; top: calc(var(--header-h) + 1rem); }
   .gallery { grid-column: 1 / -1; }
-  .gallery-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
-  .gallery-grid li:nth-child(1) { grid-column: 1 / span 5; }
-  .gallery-grid li:nth-child(2) { grid-column: 6 / span 3; margin-top: 5rem; }
-  .gallery-grid li:nth-child(3) { grid-column: 9 / -1; margin-top: -3rem; }
-  .gallery-grid li:nth-child(3) img { aspect-ratio: 634 / 1128; }
-}
-
-/* ---------- Round 3: Videos. The music videos on a torn bg-2 band; a mosaic from 900px, staggered pairs at 700-899, bled and
-   indented cards on phones. ---------- */
-.band-mv { background-color: var(--bg-2); }
-.band-mv :is(.v2-thumb, .nocover) { background-color: var(--bg); } /* one step off the bg-2 ground */
-@media (max-width: 699px) {
-  .vid-grid > li { margin-inline: calc(-1 * var(--gutter)); }
-  .vid-grid .v2-vtitle { display: block; }
-  .vid-grid :is(.v2-vtitle, .vid-meta) { padding-inline: var(--gutter); }
-  .vid-grid > li:nth-child(even) { margin-inline: 12% 0; }
-  .vid-grid > li:nth-child(even) :is(.v2-vtitle, .vid-meta) { padding-inline: 0 var(--gutter); }
-}
-@media (min-width: 700px) and (max-width: 899px) { .vid-grid > :nth-child(even) { margin-top: 2rem; } }
-@media (min-width: 900px) {
-  .vid-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: start; }
-  .vid-grid > :nth-child(1) { grid-column: 1 / span 7; grid-row: span 2; }
-  .vid-grid > :nth-child(2), .vid-grid > :nth-child(3) { grid-column: 8 / -1; }
-  .vid-grid > :nth-child(4) { grid-column: 2 / span 5; margin-top: -10rem; } /* tucks under card 1, which is shorter than the pair beside it */
-  .vid-grid > :nth-child(5) { grid-column: 7 / span 5; margin-top: 2.5rem; }
-  .vid-grid > :nth-child(n+6) { grid-column: span 4; }
 }
 
 /* ---------- Round 3: Shop (D49: two static touches only). The sample notice is taped and slightly crooked; the grid staggers. ---------- */
@@ -1685,3 +1640,51 @@ html[data-palette='poster'] .band-live.edge-angle { background-color: color-mix(
 /* The light palette (Gig Poster): inks flip. Video multiplies onto the paper (white -> --bg), lighten lifts black to a mid ink. */
 html[data-palette='poster'] .hero-film { --film-ink: color-mix(in srgb, var(--text) 42%, var(--bg)); background: var(--bg); }
 html[data-palette='poster'] .hero-film::before { background: var(--film-ink); }
+
+/* ---------- Reels (owner 2026-11-18, Reel.astro): albums to flip through, a page at a time with the next one peeking. Static: no
+   transition or animation; a flip is a scroll (smooth only while Motion is on, app.js). Videos: tabs over two reels. ---------- */
+.reel-bar { display: flex; align-items: end; justify-content: space-between; gap: var(--space-s); margin-bottom: var(--space-s); }
+.reel-count { margin: 0; font-family: var(--font-display); font-weight: 900; font-size: var(--step-3); line-height: 0.8; font-variant-numeric: tabular-nums; }
+.reel-of { color: var(--muted); font-size: 0.5em; }
+.reel-nav { display: flex; gap: var(--space-xs); }
+.reel-nav[hidden] { display: none; }
+.reel-nav button { display: grid; place-items: center; width: 3rem; height: 3rem; padding: 0; border: 2px solid var(--text); background: var(--bg); color: var(--text); cursor: pointer; }
+.reel-nav svg { width: 1.5rem; height: 1.5rem; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: square; }
+.reel-nav button:disabled { border-color: var(--line); color: var(--muted); cursor: default; }
+.reel-nav button:not(:disabled):active { background: var(--text); color: var(--bg); }
+.reel-track { display: grid; grid-auto-flow: column; grid-auto-columns: 86%; gap: var(--space-m); overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; margin: 0; padding: 0 0 var(--space-xs); list-style: none; }
+.reel-track::-webkit-scrollbar { display: none; }
+.reel-track::after { content: ''; } /* a blank end column, so the last page can snap to the left edge too */
+.reel-track:focus-visible { outline: 3px solid var(--text); outline-offset: 4px; }
+.reel-slide { scroll-snap-align: start; min-width: 0; }
+.reel-slide > * { position: relative; }
+.reel-num { position: absolute; z-index: 2; top: 0; left: 0; padding: 0.15em 0.4em; background: var(--accent); color: var(--accent-text); font-family: var(--font-display); font-weight: 900; font-size: var(--step-1); line-height: 1; pointer-events: none; }
+.reel-slide:has(iframe) .reel-num { display: none; }
+.reel-strip { display: grid; grid-auto-flow: column; grid-auto-columns: 6.5rem; gap: var(--space-xs); overflow-x: auto; scrollbar-width: none; margin: var(--space-s) 0 0; padding: 5px; list-style: none; }
+.reel-strip::-webkit-scrollbar { display: none; }
+.reel-pick { position: relative; display: block; color: var(--text); text-decoration: none; }
+.reel-pick img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; background: var(--bg-2); filter: grayscale(1) brightness(0.7); }
+.reel-pick[aria-current] img { filter: none; outline: 3px solid var(--accent); outline-offset: 2px; }
+.reel-pick-n { position: absolute; left: 0; bottom: 0; padding: 0.05em 0.35em; background: var(--bg); font-family: var(--font-display); font-weight: 900; font-size: var(--step--1); line-height: 1.2; }
+.reel-pick:active img { outline: 3px solid var(--text); outline-offset: 2px; }
+/* Photo album: paper pages, the whole photo on each (contain), a two-page spread from 700px. */
+.reel-photo .reel-track { grid-auto-columns: 80%; }
+.reel-page { margin: 0; padding: var(--space-s) var(--space-s) var(--space-xs); }
+.reel-page img { display: block; width: 100%; height: min(60vh, 30rem); object-fit: contain; background: var(--bg-2); }
+.reel-page figcaption { margin-top: 0.5rem; font-size: var(--step--1); }
+.reel-page .reel-num { top: var(--space-s); left: var(--space-s); }
+.reel-photo .reel-pick img { aspect-ratio: 1; }
+@media (min-width: 700px) { .reel-photo .reel-track { grid-auto-columns: calc((100% - var(--space-m)) / 2); } }
+/* Videos: a screen on bg-2 (edge to edge on phones); the tabs sit right of WATCH from 900px. */
+.vids .reel { padding: var(--space-m) var(--space-m) var(--space-s); background: var(--bg-2); }
+.vids .reel :is(.v2-thumb, .nocover) { background-color: var(--bg); }
+@media (max-width: 699px) { .vids .reel { margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); } }
+@media (min-width: 900px) { .reel-video .reel-track { grid-auto-columns: 74%; } .reel-video .reel-num { font-size: var(--step-3); } }
+.tabs { display: flex; flex-wrap: wrap; width: fit-content; border: 2px solid var(--text); }
+.tabs[hidden] { display: none; }
+.tabs [role='tab'] { min-height: 3rem; padding: 0.4rem 1rem; border: 0; background: transparent; color: var(--text); font-family: var(--font-display); font-weight: 900; font-size: var(--step-1); text-transform: uppercase; cursor: pointer; }
+.tabs [aria-selected='true'] { background: var(--text); color: var(--bg); }
+.tabs [role='tab']:not([aria-selected='true']):active { background: var(--bg-2); }
+.tab-n { font-size: 0.7em; vertical-align: 0.15em; }
+.tabs-on .tab-h { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.tab-panel + .tab-panel { margin-top: var(--space-l); }

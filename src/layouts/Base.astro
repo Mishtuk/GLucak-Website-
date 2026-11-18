@@ -39,7 +39,9 @@ const palCss = pals.map((p) =>
   `html[data-palette='${p.id}'] img.print{filter:url(#print-${p.id})}` +
   (p.light ? `html[data-palette='${p.id}'] .poster-art{mix-blend-mode:lighten}` : '')).join('');
 // Print photos hold exactly bg and text (29a): a discrete table sends grey under 0.5 to the palette bg and the rest to its text.
-const tv = (p, i) => `${(parseInt(p.colors.bg.slice(1 + 2 * i, 3 + 2 * i), 16) / 255).toFixed(3)} ${(parseInt(p.colors.text.slice(1 + 2 * i, 3 + 2 * i), 16) / 255).toFixed(3)}`;
+// A light palette (paper bg, dark text) swaps them: shadows take the dark ink, so the photo stays a positive, not a negative (owner 2026-11-18).
+const ch = (h, i) => (parseInt(h.slice(1 + 2 * i, 3 + 2 * i), 16) / 255).toFixed(3);
+const tv = (p, i) => (p.light ? `${ch(p.colors.text, i)} ${ch(p.colors.bg, i)}` : `${ch(p.colors.bg, i)} ${ch(p.colors.text, i)}`);
 const table = (i) => `${lo[i].toFixed(3)} ${hi[i].toFixed(3)}`;
 ---
 <!doctype html>
