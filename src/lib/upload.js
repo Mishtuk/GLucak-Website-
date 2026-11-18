@@ -8,8 +8,14 @@ export const MAX_SIDE = 1200;
 export const TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 export const UPLOAD_NAME = /^[a-f0-9]{32}\.webp$/;
 
+/** First wall: the file's own first bytes must be JPEG, PNG or WebP, checked before sharp (libvips) parses anything. */
+const MAGIC = [Buffer.from([0xff, 0xd8, 0xff]), Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])];
+export const hasImageMagic = (b) => Buffer.isBuffer(b)
+  && (MAGIC.some((m) => b.subarray(0, m.length).equals(m)) || (b.length >= 12 && b.toString('latin1', 0, 4) === 'RIFF' && b.toString('latin1', 8, 12) === 'WEBP'));
+
 /** WebP buffer, or throws Error('not_image' | 'too_many_pixels'). */
 export async function toWebp(buf) {
+  if (!hasImageMagic(buf)) throw new Error('not_image');
   const { default: sharp } = await import('sharp'); // lazy: the public site runs even if sharp’s binary is missing
   let meta;
   try { meta = await sharp(buf).metadata(); } catch { throw new Error('not_image'); }
