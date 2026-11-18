@@ -9,6 +9,20 @@
 - Team agents: `.claude/agents/` (boss, designer, coder, mediator, researcher, copywriter). Research: `docs/research/`.
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
+## Morning summary (2026-11-18, overnight run finished ~10:00 ET)
+- **Overhaul OV1-OV6 done + 5 loops of test / repo research / revamp done.** Design score 29 -> 34/40, audit 18/20; `npm test` 316/316;
+  all 8 pages clean at 320-1600 (no overflow, no animation, motion switch + reduced motion honoured, CSP self only). `loop5-test.md`.
+- **Gabe's edit screen now does everything promised Nov 3 / Nov 6:** Shows, Releases (cover upload), IDENTITY date + pre-save, Bio,
+  Products; backup / restore covers all of it.
+- **Security:** timeouts + headers (SEC1), CSP frame-ancestors / base-uri 'none', uploads checked by magic bytes, scrypt s2,
+  sign-out revokes on every device, no-secrets test, `.npmrc ignore-scripts=true`. `npm audit`: 10 high, all picomatch ReDoS in
+  Astro's build-time globbing (no fix exists upstream; not reachable from server.js, which serves static dist).
+- **Repos:** 5 loops, 54 repos credibility + harm-scanned via `gh api` only (`repo-safety-log.md`); none harmful; only our own
+  rules / tests adopted, nothing installed. Instagram: 2 loops, nothing new usable.
+- **Owner calls (nothing done on them):** About header is Gabe's violet grade (swap for a Print frame?); Home hero "G [photo] LUCAK"
+  wordmark split (owner taste); HELD list in `docs/review/overhaul/plan.md` section 5 (new bio "Reforaged", venue towns, Discord,
+  giveaway / Kit, host purchase + `RENDER_DEPLOY_HOOK`, glucak.com booking address). Decisions taken without you: D98-D116 (reversible).
+
 ## Now working on
 - **OVERNIGHT 2026-11-18 (owner asleep, no questions, 5 loops): follow `docs/review/overhaul/overnight-plan.md`.** Wake-up
   scheduled ~03:47 ET (done); paused at ~80% usage after OV4a; owner resumed it 09:03 ET (13:43 one-shot cancelled); hourly heartbeat 14:30-20:30 stays as fallback (session-only cron). Progress log: append one line per finished step below.
@@ -21,6 +35,7 @@
   - OV4b gated + pushed (`ov4b-gate.md`): Releases tab (5 tabs Shows | Releases | IDENTITY | Bio | Products), live crate / Home latest / Now line via `src/lib/releases.js` + markers, releases + covers in backup / restore (IDENTITY never read from a file). Loop 3 repos (10, none harmful, `repos-loop3`) -> html-a11y test, CSP frame-ancestors / base-uri 'none' + XFO DENY, boss rule. 297 tests. NEXT: OV6 spec (DESIGN 29, designer running), OV5 content fixes, then loops 4-5.
   - OV5 pushed (85c4536..bb11c52): bio interim drops the wrong "Two albums" paragraph (C17), Home latest video skips Shorts, Shorts line, shop wording (no Preview / Sample:), no sign-up band on 404 + Shop, footer credits one line; Home 390 = 3811px (cap 3861). DESIGN 29 + D116 (OV6 spec, deviations ruled) pushed 022d836. 302 tests. NEXT: OV6 build (coder running), its review + gate, then loops 4-5.
   - OV6 gated + pushed (`ov6-gate.md`, sheet `ov6-sheet.png`): one photo language (Print + Clean), each frame once, magenta in no photo, About header = CD live shot + Photos gallery (plain links), Vladd credit; review 33/40, 17/20. Loop 4 repos (12, none harmful) -> uploads checked by magic bytes, scrypt s2 (N=2^15 p=3, old hashes verify), sign-out revokes on every device. 314 tests. OVERHAUL OV1-OV6 DONE. NEXT: loop 5 (full test loop at 320/390/768/1280/1600 + IG check + last repo round + revamp), then the morning summary.
+  - Loop 5 done: full test loop 34/40 + 18/20 (`loop5-test.md`), About gallery one full-width row from 900px; repo round 5 (9 repos, all reference) + IG (5 new reels, none usable); `.npmrc ignore-scripts=true` (npm ci + build + tests verified), `test/secrets.test.js`. 316 tests. ALL LOOPS DONE; heartbeat cron removed.
 - **Desktop 2026-11-18: OVERHAUL in progress (owner: "deep dive review of the website in all aspects ... an overhaul";
   use the past emails `docs/research/email-thread-digest.md` + everything learned).** Reviews: `docs/review/overhaul/design-ux.md`
   (29/40 across all widths; direction "the gig poster that is always current"; top: shows in date order not poster-first, edit
