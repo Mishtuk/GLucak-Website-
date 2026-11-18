@@ -10,6 +10,16 @@
 - **Keep this file current:** update "Now working on" and "Status" with every milestone push.
 
 ## Now working on
+- **Desktop 2026-11-18: OVERHAUL in progress (owner: "deep dive review of the website in all aspects ... an overhaul";
+  use the past emails `docs/research/email-thread-digest.md` + everything learned).** Reviews: `docs/review/overhaul/design-ux.md`
+  (29/40 across all widths; direction "the gig poster that is always current"; top: shows in date order not poster-first, edit
+  screen gets Releases / Now + IDENTITY / Bio tabs (promised Nov 3 + 6), one-tap Listen at 700-899px, Now line as a ticket stub,
+  magenta only on Listen / Tickets / Pre-save / Buy, Spotify `theme=0`; argues to change D34, the DESIGN 5 poster rule, D47, D96
+  share; must keep: type, slogan bands, era system, cover grid, Videos, phone bar, footer, 404, Today / Tomorrow, calendar, section
+  word), `content.md` (promises 10 done / 5 partly / 2 missing: gallery, Discord; stale bio "two albums"; booking has no
+  address; videos.json hand-fed), `technical.md` (running / check). **Next:** boss merges the three into
+  `docs/review/overhaul/plan.md` (keep / change list + ordered rounds to Jan 11), then designer -> coder -> shots -> design-review
+  -> boss gate per round. Local review server was on :8095 (DEV_EDITOR=1, DATA_DIR=.work/review-data); stop it when done.
 - **Desktop 2026-11-18: round DR1 DONE (DESIGN 27, D96 approved, `docs/review/dr1/gate.md`):** speculation-rules prefetch over a
   header + still phone bar, Today / Tomorrow on the next show (Now line rule T, amends D45), Apple Music / YouTube / SoundCloud
   row under Spotify, curly quotes everywhere (`curly()` before escaping), Shows Watch lead + two at 1280, era selection / caret /
