@@ -92,3 +92,66 @@ test('30h-3: top bar markup and CSS (static half)', () => {
   assert.ok(!/transition|animation/.test(bar), 'no motion on the header');
   assert.match(css, /\.is-condensed \.mark-head \{ height: 24px; \}/);
 });
+
+// ---- Round 2 (Home). The browser half of 30h-4 / 30h-5 (band signatures at 768 and 1280, the 390 sheet and card, Home height, running animations) is .work/pw2-check.mjs.
+const blk = css.slice(css.indexOf('30. Poster wall'));
+const stripC = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '');
+
+test('30h-4: Home bands take the poster-wall classes; the old hero slot and the ab block are gone', () => {
+  assert.match(home, /class="band band-live edge-angle"/);
+  assert.match(home, /class="wrap v2-split is-paper taped"/);
+  assert.match(home, /<form class="signup ticket"/);
+  assert.match(home, /<footer class="site-footer edge-tear"/);
+  assert.match(home, /<figure class="hero-print taped" aria-hidden="true">/);
+  assert.ok(!/class="slot"|class="n-g">G<\/span><span class="slot"/.test(home), 'no .slot in the name');
+  assert.ok(!/\.slot\b/.test(css) && !/data-hero='ab'\]/.test(css), 'the ab slot CSS is deleted, not overridden');
+  assert.equal((home.match(/<h1\b/g) ?? []).length, 1);
+  const hp = home.match(/<figure class="hero-print[^]*?<\/figure>/)[0];
+  assert.match(hp, /srcset="\/media\/b-print-600\.webp 600w, \/media\/b-print-1000\.webp 1000w"/);
+  assert.match(hp, /alt=""/);
+});
+
+test('30h-4: Home layout rules (mirror, banner, sheet, ticket) are in block 30e and scoped to Home', () => {
+  assert.match(css, /html\[data-home\] \.band-rise > \.wrap\.v2-split \{ grid-template-columns: minmax\(0, 7fr\) minmax\(0, 5fr\); \}/);
+  assert.match(css, /html\[data-home\] \.band-live > \.wrap\.v2-split \{ display: grid; grid-template-columns: repeat\(12, minmax\(0, 1fr\)\)/);
+  assert.match(css, /\.band-push\.v2-push > \.wrap\.v2-split \{[^}]*'p1 side' 'p1 bio' 'p1 act'/);
+  assert.match(css, /\.is-paper \.tab \{ left: var\(--space-m\); color: var\(--page-text\); \}/);
+  assert.match(css, /\.footer-join \.ticket \{ background-color: var\(--bg\); \}/);
+  assert.match(css, /\.v2-push > \.wrap\.is-paper \{ width: auto; margin: 0\.75rem var\(--space-m\) 0 0;/);
+});
+
+test('30h-5: block 30 has no transition or animation; any .rise-in rule sits under data-motion=on and no-preference; no hard-coded colour but the mask stops', () => {
+  const b = stripC(blk);
+  assert.ok(!/\b(transition|animation)\s*:/.test(b), 'no transition or animation');
+  assert.ok(!/@keyframes|scroll-timeline|animation-timeline/.test(b));
+  for (const m of b.matchAll(/[^{}]*\.rise-in[^{]*\{/g)) assert.match(m[0], /data-motion='on'/);
+  if (/\.rise-in/.test(b)) assert.match(b, /@media \(prefers-reduced-motion: no-preference\)/);
+  for (const ln of b.split('\n')) for (const m of ln.matchAll(/#[0-9a-fA-F]{3,8}\b/g)) assert.ok(/mask/.test(ln) && /^#(0000|000)$/.test(m[0]), `colour literal ${m[0]}`);
+});
+
+test('30h-5: every block-30 :hover rule is inside (hover: hover) and (pointer: fine)', () => {
+  const b = stripC(blk);
+  const at = [...b.matchAll(/:hover/g)].map((m) => m.index);
+  assert.ok(at.length >= 1);
+  for (const i of at) {
+    const open = b.lastIndexOf('@media (hover: hover) and (pointer: fine) {', i);
+    assert.ok(open >= 0, `a :hover at ${i} has no (hover: hover) and (pointer: fine) media`);
+    // the media block must still be open at i: brace depth from `open` stays > 0
+    let depth = 0; for (let k = b.indexOf('{', open); k < i; k++) { if (b[k] === '{') depth++; else if (b[k] === '}') depth--; }
+    assert.ok(depth > 0, `a :hover at ${i} sits outside the hover media block`);
+  }
+});
+
+test('30h-5: every img.print is a Print file; no filter on covers, Clean .graded or .mark; CSP script-src stays self', () => {
+  const PRINT = /(data:image\/gif|a-print-phone|b-print|poster-print|poster-art|garage-toner|stage-lines|belt-print)/;
+  for (const page of ['index', 'music/index', 'shows/index', 'about/index', 'videos/index']) {
+    const h = read(`dist/${page}.html`);
+    for (const m of h.matchAll(/<img\b[^>]*>/g)) {
+      const tag = m[0], cls = (tag.match(/class="([^"]*)"/) ?? [])[1] ?? '';
+      if (/\bprint\b/.test(cls)) assert.match(tag, PRINT, `${page}: img.print is not a Print file: ${tag.slice(0, 120)}`);
+      if (/covers\//.test(tag) || /\bmark\b/.test(cls)) assert.ok(!/\bprint\b|\bduo\b/.test(cls), `${page}: filter class on a cover or mark`);
+    }
+  }
+  assert.ok(!/\.(mark|v2-cover|cover|idn-cover|tile-art)[^{]*\{[^}]*filter\s*:/.test(stripC(blk)), 'no filter on covers or the mark');
+  assert.match(read('server.js'), /script-src 'self'; style-src 'self' 'unsafe-inline'/);
+});
