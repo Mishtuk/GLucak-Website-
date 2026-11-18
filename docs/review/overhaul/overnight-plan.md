@@ -25,9 +25,13 @@ reduced) -> design-review skill + sloplint (`docs/review/dr1/sloplint-notes.md` 
 Astro 7.4.12 + engines + `npm audit fix`, cache validators, Spotify `theme=0`, shows in date order, one-tap Listen 700-899px,
 titles / og tags, delete list (except history).
 **Loops 2-5:** (a) test loop: build, shots at 320 / 390 / 768 / 1280 / 1600, design-review + sloplint + a11y walk; list what
-can improve; (b) repo research: find 3-6 NEW GitHub repos like the owner's (design skills, anti-slop rules, DESIGN.md
-collections, accessibility, Astro / CSS craft, music-artist sites), credibility-check each, vendor only safe text; record in
-RESOURCES.md; (c) revamp round from (a) + (b) through the same gate; push.
+can improve; (b) repo research (owner, 00:27): find NEW GitHub repos in three areas each loop: **website design** (design skills,
+anti-slop rules, DESIGN.md collections, accessibility, Astro / CSS craft, music-artist sites), **website security** (headers /
+CSP, form + auth hardening, Node server checklists, dependency hygiene) and **Claude workflow** (agent / skill / review-loop
+setups, prompt and handoff practices); credibility-check each, vendor only safe text; record in RESOURCES.md. Plus
+**Instagram research**: the accounts in `docs/research/ig-design-tips*.md` and `ig-security-reels.md` (Charles Liu,
+@game_feel_prompts, the security reel channels): new posts since the last round, transcribed with yt-dlp + faster-whisper
+(steps in RESOURCES.md "How to get at them"), checked against our site, read only; (c) revamp round from (a) + (b) through the same gate; push.
 
 ## Credibility check for any repo (all must pass before anything is used)
 - Real project: stars and forks in proportion, age > 2 months, several commits over time, real issues / PRs, a known
