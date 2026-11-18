@@ -55,6 +55,7 @@ export const SOUNDCLOUD = 'https://soundcloud.com/glucak';
 export const PATREON = 'https://patreon.com/GLucakMusic';
 export const APPLE_MUSIC = 'https://music.apple.com/us/artist/glucak/1732285138'; // artist page, never stale (verified 2026-11-17)
 export const YOUTUBE = 'https://www.youtube.com/channel/UCha7GtkOI9A0dzbTG3igbLg';
+export const BANDSINTOWN = 'https://www.bandsintown.com/a/15654461-glucak';
 export const SHORTS = `${YOUTUBE}/shorts`; // DESIGN 26: the Videos page links here instead of listing Shorts
 // id = the icon symbol (Icons.astro). Order is the footer's (DESIGN 16b).
 export const SOCIALS = [
@@ -63,6 +64,7 @@ export const SOCIALS = [
   { id: 'x', name: 'X', href: 'https://x.com/GLucakOfficial' },
   { id: 'youtube', name: 'YouTube', href: YOUTUBE },
   { id: 'spotify', name: 'Spotify', href: 'https://open.spotify.com/artist/1SxMTO4oSXDbNSNzxx7cVX' },
+  { id: 'bandsintown', name: 'Bandsintown', href: BANDSINTOWN },
   { id: 'soundcloud', name: 'SoundCloud', href: SOUNDCLOUD },
   { id: 'patreon', name: 'Patreon', href: PATREON },
 ];
