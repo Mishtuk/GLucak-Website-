@@ -699,8 +699,8 @@ iframe.yt { width: 100%; border: 0; }
 }
 @media (min-width: 1100px) { .shop-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
-/* With the shop on, the closing line gains "Shop." and is wider; re-fit it (measured: Listen. Shows. Shop. Join.). */
-.ln-close:has(a[href$="/shop/"]) { --w-close: 10.85; } /* measured 10.443em */
+/* With the shop on, the closing line gains "Shop." and is wider; re-fit it (Listen Shows Shop Join, measured in Chrome). */
+.ln-close:has(a[href$="/shop/"]) { --w-close: 10.65; } /* measured 10.629em (was 10.85 for "Shop."); shop off: 8.108em vs 8.1318 */
 /* D34 'ab': hero A under 900px, hero B (riso photo in the name) from 900px up. Same geometry as B's desktop rules. */
 html[data-hero='ab'] .slot { display: none; }
 @media (min-width: 900px) {
