@@ -1647,3 +1647,10 @@ html[data-palette='poster'] .band-live.edge-angle { background-color: color-mix(
   .vid-grid > :nth-child(5) { grid-column: 7 / span 5; margin-top: 2.5rem; }
   .vid-grid > :nth-child(n+6) { grid-column: span 4; }
 }
+
+/* ---------- Round 3: Shop (D49: two static touches only). The sample notice is taped and slightly crooked; the grid staggers. ---------- */
+.shop-banner { rotate: -1.5deg; }
+.shop-banner.taped::before { inset: 0 auto 0 0; width: 0.75rem; height: auto; top: 0; left: 0; z-index: auto; rotate: none; background: repeating-linear-gradient(-45deg, var(--bg) 0 3px, transparent 3px 9px); } /* the hatched stub stays; the tape is the right strip only */
+.shop-banner.taped::after { right: 0.5rem; }
+@media (min-width: 700px) { .shop-grid > :nth-child(even) { margin-top: 2.5rem; } }
+@media (min-width: 700px) and (max-width: 1099px) { .shop-grid > :nth-child(even) { margin-top: 0; } .shop-grid > :nth-child(3n+2) { margin-top: 2.5rem; } }
