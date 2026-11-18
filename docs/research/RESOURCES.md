@@ -25,6 +25,20 @@ first, then the research file named in each row for the details. Add new resourc
 | Owner's 4 security / design reels + their channels | 2026-11-11 | Security habits | Checked against our code | `ig-security-reels.md` |
 | Taste skill (design-taste-frontend) and frontend-design | installed | Anti-slop design guidance | In `designer.md` | user-level skills |
 
+## GitHub repos the owner shared (2026-11-18)
+Details and safety reads: `design-repos-a-2026-11-18.md` (1-4) and `design-repos-b-2026-11-18.md` (5-9). Nothing installed unless noted.
+| Repo | Use it for | Verdict / limits |
+|---|---|---|
+| https://github.com/nateherkai/scroll-craft | `taste.md` refuse list + motion rules (transform / opacity only, hover only on `(hover: hover) and (pointer: fine)`), phone hero step-down | Text rules only. The plugin's scroll-scrub / pinned engine is rejected (hard rule 1). `scripts/kie.mjs` calls a paid API with a key |
+| https://github.com/singhharsh1708/scrollcraft | nothing | Rejected: canvas frame-scrub + scroll audio; writes Google Fonts links (breaks CSP) |
+| https://github.com/VoltAgent/awesome-claude-design | the 9-section DESIGN.md template | Reference list only |
+| https://github.com/nishaj0/claude-for-everything | a list; led to jakubkrehel **better-accessibility** (motion gate, WCAG 2.2.2 pause rule, `scroll-padding-top` under the sticky header) | List has no licence. better-accessibility is the only install candidate (read all its .md first). Skip modern-web-guidance (`npx @latest` each use), unslop, oil-ui, ui-ux-pro-max (scripts) |
+| https://github.com/pbakaus/impeccable | scored critique / audit / craft floor | Vendored as text: `.claude/skills/design-review/` |
+| https://github.com/bitwize-music-studio/claude-ai-music-skills | CC0 text: platform caption limits, copy formulas, voice-checker prose classes 8-11 | Plugin rejected: Suno AI-music pipeline, PostToolUse hooks, MCP server |
+| https://github.com/voltagent/awesome-design-md (local copy in the user's `.claude\design-md\`) | DESIGN.md structure: front-matter token table, Do's / Don'ts, Iteration guide, Known gaps. Closest to us: nike, spotify, ferrari, spacex, theverge | Structure, not their visuals |
+| https://github.com/xjli360/awesome-design-md-ecommerce | shop card anatomy: ecm-records (catalog line, square corners), dr-strange-records (format / NEW chips), hume-band (spec table) | Reference only; most files "inspiration_only"; its Python scripts not run |
+| https://github.com/withastro/astro | upgrade 7.4.5 -> 7.4.12 (needs Node >= 22.23.4; check the host) | Recommended. Reject ClientRouter (our native view transition + reduced motion already), sitemap integration; `astro:assets`, `security.csp` later |
+
 ## How to get at them
 - **Instagram reels:** read-only. `python -m yt_dlp -f b -o "%(id)s.%(ext)s" https://www.instagram.com/reel/<ID>/` works without login
   (the profile listing doesn't: get IDs in Chrome). Transcribe with faster-whisper on CPU (`medium.en`; CUDA libs are missing). Feed
