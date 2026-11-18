@@ -464,3 +464,12 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   Instagram profile with a "press Message" hint (no unverified DM URL); IDENTITY Pre-save stays an outline button; 700-899px
   headlines set on one line as at 900px. Heights marked "about" are measured at each round's gate.
 - **D114** (Desktop, 2026-11-18, OV2/3 fix round 1; owner asleep, reversible): amends D39. Home cap is 5.85 screens at 390x660 (3861px). Why: the 28j sound and Next-release lines the owner asked for put Home at 3859; the review's option A (sound at step -1, `.next-rel` margin 0) only saved 6px (3853, the line stays two lines), so it was not kept. Revert by trimming 31px elsewhere and restoring 5.8.
+
+## D116 (Desktop boss, 2026-11-18, owner away, reversible): DESIGN 29 accepted for OV6, with its deviations
+- **Ruling:** DESIGN 29 (two photo treatments, Print + Clean; each frame used once; magenta in no photo; About header = CD live shot,
+  no text on it; gallery of plain links) is the OV6 spec. 29j deviations: 1 (Book GLucak loses its photo), 2 (25h amended), 3 (`?hero=a/b`
+  removed, D34 default kept), 4 (the two existing one-ink prints count as Print), 5 (stills of the videos CREDITS.md credits by name count
+  as cleared; they are Gabe's own videos, on the site since 18c), 7, 8 and 9 (jump / looking CD photos stay off; his art is not re-graded)
+  accepted. 6 (belt and stage stills credited to Vladd) only if the coder confirms in `tools/photo` that both come from the Scenic Route
+  live clip; otherwise the credit stays.
+- **Why:** each keeps the hard rules (real photos only, no re-grading Gabe's art) and removes a duplicate frame or a dead option.

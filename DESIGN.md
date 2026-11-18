@@ -3500,3 +3500,261 @@ about 1500. 0 running animations everywhere.
 5. 28e makes the 700-899 lockups one line (as the 900 layout) instead of a vw cap: the fit (K1) is kept and each line still fills.
 **Not done here:** the design-review skill run on new shots (nothing is built yet; it runs at each round's gate); a prototype
 (every item reuses an existing component). Boss: log the 28 picks as a D entry if accepted.
+
+## 29. Overhaul OV6: one photo language, About's header, the Photos gallery (Desktop designer, 2026-11-18)
+Sources: `docs/review/overhaul/plan.md` OV6 (C21, R4, A7), `design-ux.md` G4, G5, A1, A3, A4, `content.md` (gallery, credits),
+D98, D108, D34, D51, sections 3b, 18c, 23a, 24a, 25b-25f, 28g, `assets/from-gabe/CREDITS.md`, `social/INDEX.md`. **Looked at every
+frame** (the Kealey original, the 12 files the site serves, the four CD photos, the MCCC and Paslier stills, the Crooked Eye and
+garage stills) and **measured** each for magenta (script below, in 29h). Mocked over CDP on the static `dist` (built 09:12 today,
+reduced motion, Spotify and YouTube blocked, shows not injected): no `src/` edit; mock in the session scratchpad. **This section
+replaces 3b's slot table and 23a / 25b / 25c's placements wherever they disagree.** Hard rules held: nothing moves, nothing new
+can flash, no script added (the gallery is plain links), no AI, no upscaling, real photos only, CSP unchanged.
+
+### 29a. The two treatments
+| | **Print** | **Clean** |
+|---|---|---|
+| What | Our own sources (Kealey, the video stills) as art: one ink on one stock | Gabe's own graded CD photos, and stills shown as photos (the gallery): the pixels as they are |
+| Colours | Exactly two, both from the era file: `bg` and `text`. No `accent`, no mid colour, no tint. Two polarities: **paper** (`bg` ink on `text` paper) and **stock** (`text` ink on `bg` stock) | The source's own. No curve, no tint, no screen, no grain |
+| Process | Plates are binary (ink or no ink), 45° clustered dot (`halftone()` / `plate()`, as now); the two existing one-ink members (`stage-lines` line screen, `garage-toner` grain) stay as they are: they already pass the colour rule | `sharp(src).extract(crop).resize(w)` with `w` <= the crop's width, `.webp({ quality: 80, effort: 6 })` (64 for the 2400 file); sharp's default strips EXIF / ICC / XMP |
+| Saved | `.webp({ lossless: true, effort: 6 })` | lossy as above |
+| CSS | `class="graded"` (`filter: none`); no `filter`, no `mix-blend-mode` except the poster's existing `darken` | the same: `class="graded"` |
+| Test (29g) | >= 99% of pixels within RGB distance 40 of `bg` or `text` (alpha flattened onto `text`) | magenta share < 1% |
+
+**Magenta in no photo, measured:** magenta share = pixels with hue 285-330°, saturation > 0.4, value > 0.35 (the accent `#d93cfb`
+is hue 289°), at 300px wide. Today: `belt-plates` 22.0%, `b-riso-identity` 9.8%, `a-night-phone` 4.4%, CD **jump** 7.1%, CD
+**looking** 3.1%, Crooked Eye still `-3` clean 19.0%, `-4` clean 12.0%. Passing: CD **live** 0.0%, CD **studio** 0.0%, MCCC clean
+0.7%, Crooked Eye `-1` clean 0.1%, garage clean 0.1%; every Print file 0.0% by construction. So the jump and looking photos stay
+off the site (deviation 9); the two Crooked Eye stills that carry the stage's pink are used only as Print.
+**Not photos (exempt from 29a and 29b):** release covers (D51: never touched; the IDENTITY cover is 1.1%), YouTube title cards and
+thumbnails (a video's thumbnail is the video, shown wherever it is), Logo D, the share images' covers, the shop samples.
+
+### 29b. Frame-to-place map (each frame on one page, in one slot)
+A **frame** is one photograph; crops and treatments of it are the same frame (18c). The hero's wall (`hero-wall-1600`, a colourless
+mask of the Kealey pallet wall painted `--line` into `--bg`) is the hero slot's own ground, same frame, same slot.
+
+| Frame (source) | Place | Treatment | Files (`public/media/`) | Credit |
+|---|---|---|---|---|
+| **Kealey** DSC_0832 (`live-alexander-kealey.jpg`) | **Home hero only**: A under 900px, B from 900px (+ the wall) | Print, **stock** (A, text sits on it); Print, **paper** (B, no text on it) | `a-print-phone-800` (800x1000, new); `b-print-600` (600x424), `b-print-1000` (1000x706), new | Photo: Alexander Kealey |
+| **Garage** `yt-K-OZiNvQB14-1` | Home RISE, from 900px | Print, paper (unchanged) | `v2/garage-toner-480/874` | Video still: Joseph Lucak |
+| **Crooked Eye, stage wide** `yt-aZNW63M_C2E-2` | Home LIVE IT LOUD, from 900px | Print, stock (unchanged) | `v2/stage-lines-360/634` | Video stills: Vladd (Vladdtime) |
+| **Crooked Eye, arm raised** `yt-aZNW63M_C2E-4` | Home PUSH PAST FEAR, every width | Print, paper (replaces the two plates) | `v2/belt-print-320` (320x569), `-634` (634x1128), new | Vladd |
+| **Crooked Eye, mic and kit** `yt-aZNW63M_C2E-3` | **Shows: the first full show's poster art** (Home hides poster art, `.v2-main .poster-art`) | Print, paper, torn foot (the (c) cut) | `poster-print-600` (600x750, new; no 1000: the source is 634 wide) | Vladd |
+| **CD inside, live** `identity-cd-inside-live.png` | **About header** (leaves Shows' Book GLucak and Home's p2 slot) | Clean | `cd-live-640`, `cd-live-1280` (exist), `cd-live-2400` (2400x1200, new) | Photos: from the IDENTITY CD |
+| **CD studio** `photo-studio.png` | About, Photos gallery (moves from the actions column) | Clean | `cd-studio-480/960` (exist) | IDENTITY CD |
+| **MCCC still** `live-mccc-msp.png` | About, Photos gallery (leaves `?hero=b`) | Clean, native size | `photo-mccc-478` (478x477, new) | Video: Montgomery County Community College, MSP program group |
+| **Crooked Eye, pointing** `yt-aZNW63M_C2E-1` | About, Photos gallery | Clean, native size | `photo-crooked-eye-634` (634x1128, new) | Vladd |
+| Paslier still, CD jump, CD looking | **nowhere** (fan faces, 3b; magenta, 29a) | - | - | - |
+
+Count: 9 frames, 9 places, 0 repeats. Home 390: hero + belt (2). Home 1280: hero, garage, stage, belt (4; the CD live portrait in
+p2 goes). Shows: the poster art (1, first full show only). About: header + 3 gallery (4). Music, Videos, 404: covers and video
+thumbnails only. **Poster rule:** with two or more full shows booked, only the first gets art (no frame twice on one page); later
+full shows are the paper poster without art. Old files stay in `public/media/` unreferenced (R7 removes them later).
+
+### 29c. Processing (`tools/photo/run.mjs`, `tools/photo/texture.mjs`; seeds fixed, same pixels every run)
+Add `const PUB = ROOT + 'public/media/';` and option **`o`** to run.mjs (`--only=o`), writing straight to `public/media/` in the
+era given (default `src/eras/identity.json`; era swap = re-run). Change run.mjs line 19's default era to `identity.json` too.
+```js
+// ======================= (o) OV6 (DESIGN 29): Print and Clean =======================
+const CE = (n) => ROOT + `assets/from-gabe/social/yt-aZNW63M_C2E-${n}.webp`, CD = ROOT + 'assets/from-gabe/identity-cd/';
+// Print, paper: era bg ink on era text paper, one 45° screen. Density as the (c) poster: the light falls to paper.
+async function printPaper(src, reg, w, h, pitch, seed) {
+  const img = await load(src, reg, w, h), L = await printTone(img, pitch);
+  const d = new Float32Array(w * h); for (let i = 0; i < L.length; i++) d[i] = 1 - smooth(0.1, 0.78, L[i]);
+  const pap = await paper(w, h, seed);
+  inkOn(pap, await halftone(d, w, h, { pitch, angle: 45, seed: seed + 4, rough: 0.07, gain: 0.85 }), BG, null, 0.97);
+  return pap;
+}
+async function clean(src, reg, w, name, quality = 80) { // never wider than the crop; sharp strips metadata
+  if (w > reg.width) throw new Error(`${name}: would upscale`);
+  await sharp(src).extract(reg).resize(w).webp({ quality, effort: 6 }).toFile(PUB + name + '.webp');
+}
+async function optO() {
+  const keal = { left: 950, top: 1250, width: 1700, height: 1200 };               // hero B's crop (3b), unchanged
+  await savePub(await printPaper(KEALEY, keal, 1000, 706, 6.2, 141), 'b-print-1000');
+  await savePub(await printPaper(KEALEY, keal, 600, 424, 4.4, 142), 'b-print-600');
+  const full = { left: 0, top: 0, width: 634, height: 1128 };                      // the arm-raised still, whole
+  await savePub(await printPaper(CE(4), full, 634, 1128, 7, 143), 'v2/belt-print-634');
+  await savePub(await printPaper(CE(4), full, 320, 569, 4.4, 144), 'v2/belt-print-320');
+  await savePub(await poster(600, 750, 6, 145, CE(3), { left: 0, top: 0, width: 634, height: 792 }), 'poster-print-600');
+  await clean(CD + 'identity-cd-inside-live.png', { left: 0, top: 0, width: 4000, height: 2000 }, 2400, 'cd-live-2400', 64);
+  await clean(MCCC, { left: 0, top: 0, width: 478, height: 477 }, 478, 'photo-mccc-478');
+  await clean(CE(1), full, 634, 'photo-crooked-eye-634');
+}
+```
+- `poster(w, h, pitch, seed, src = KEALEY, reg = { left: 1210, top: 1330, width: 1080, height: 1350 })`: the two new parameters
+  replace the hard-coded `load(KEALEY, ...)` (line 243); `optC` is unchanged.
+- `savePub(img, name)` = `save()` with `PUB` instead of `OUT`, `'lossless'`. Add `o: optO` to `OPTS`; `'o'` is **not** in the
+  default `--only` list (it writes site files).
+- **Hero A, `a-print-phone-800`** (texture.mjs, `night()` lines 149-167, renamed `printNight()`): keep the crop, the wall key and
+  `T`; **delete the accent plate** (`dA` and its `inkOver`) and print one `text` plate on the `bg` stock:
+  `dW[i] = Math.min(smooth(0.06, 0.85, t), 1 - 0.85 * z)` (full tone range on Gabe, at most 15% ink under the name), angle 45,
+  pitch 4.4, `dx`/`dy` 0 (no second plate to miss). `textCheck` zone unchanged; **must print >= 4.5:1** in the name zone (night
+  riso was 6.29). Save as `a-print-phone-800`.
+- Halftone scale (3b) holds: `b-print` 0.79x at 1280 / 1x (the 1000 file on 2x); `poster-print-600` at 23rem is 0.61x on 1x and
+  1.23x upsampled on 2x (accepted, as the (f) stills); `belt-print` as `belt-plates`.
+
+### 29d. Markup and CSS by place
+**Home hero (`src/components/Hero.astro`).** Line 18: `/media/a-night-phone-800.webp` -> `/media/a-print-phone-800.webp`. Line 29:
+`b-riso-identity-600` / `-1000` -> `b-print-600` / `-1000`. **Delete the `'a'` and `'b'` variants** (lines 16-17 ternary keeps only
+the `'ab'` branch; line 26-28's `variant === 'b'` span goes; `variant` prop and its comment go): they serve the tinted era grade
+and the MCCC frame (deviation 3). `src/pages/index.astro` 19 / 21: `HERO = 'ab'` stays (Base still prints `data-hero`); drop the
+`C.mccc` spread. The coder may delete CSS that matches only `data-hero='b'` / `'a'` (grep `data-hero='b'`, `.credit-b`); not required.
+
+**Home Push Past Fear (`src/pages/index.astro`).** Line 47: `belt-plates-320/634` -> `belt-print-320/634` (src, srcset; alt, sizes
+unchanged). **Delete line 48** (the `v2-jump` CD live portrait) and line 7's unused `PushPhoto` import. `global.css` 1151:
+`grid-template-areas: 'side bio' 'p1 bio' 'p1 act'; grid-template-rows: auto auto 1fr;`. Delete `.v2-jump` (1298-1299).
+
+**Shows poster (`src/lib/shows.js`).** `POSTER_ART`: `src="/media/poster-print-600.webp"`, drop `srcset` and `sizes`, keep
+`width="600" height="750" alt="" loading="lazy"`. Art on the **first full show only**: `upcomingHtml` passes `art: true` to the
+first `posterHtml` call whose row is `type === 'show'`; `posterHtml(r, { today, lead, art = false })` prints `POSTER_ART` only when
+`art && !plain`. `global.css` `.poster-art` (413): `object-position: 50% 40%` (the square holds his head to the tear; the file is
+4:5). `mix-blend-mode: darken` stays (the paper takes the card's paper and grain, as before).
+
+**Shows Book GLucak.** `src/pages/shows/index.astro`: `<ForVenues />` (no `photo`). `src/components/ForVenues.astro`: delete the
+`photo` prop and the `<img class="venues-photo">`; `global.css` delete `.venues-photo` (1307).
+
+**About (`src/pages/about/index.astro`), top to bottom:**
+1. **Header photo** (`src/components/PushPhoto.astro`, whole file):
+```astro
+---
+// DESIGN 29d: About's header photo, Gabe's CD live shot as he graded it (Clean). No text on it: PUSH PAST FEAR sits under it.
+---
+<img class="graded push-photo" src="/media/cd-live-1280.webp" srcset="/media/cd-live-640.webp 640w, /media/cd-live-1280.webp 1280w, /media/cd-live-2400.webp 2400w" sizes="100vw" width="2400" height="1200" alt="GLucak singing into the mic in purple light" fetchpriority="high" />
+```
+   In the page: `<PushPhoto />` (no `eager` prop; it is the page's LCP). It stays the first child of `.push-head`, the h1 after it.
+2. The h1, the bio and the actions as now, **minus** the studio `<img class="about-photo">` (line 32).
+3. **Photos**, a new last child of `.about-body`, after `.about-actions`:
+```astro
+<section class="gallery" aria-labelledby="h-photos">
+  <h2 class="prose-h" id="h-photos">Photos</h2>
+  <ul class="gallery-grid">
+    <li><a href="/media/cd-studio-960.webp"><img class="graded" src="/media/cd-studio-480.webp" srcset="/media/cd-studio-480.webp 480w, /media/cd-studio-960.webp 960w" sizes="(min-width: 900px) 18vw, (min-width: 34rem) 17rem, 47vw" width="960" height="960" alt="GLucak in his home studio, headphones on, his gear on the floor around him" loading="lazy" /></a></li>
+    <li><a href="/media/photo-mccc-478.webp"><img class="graded" src="/media/photo-mccc-478.webp" width="478" height="477" alt="GLucak on stage, one arm out, a drum kit behind him" loading="lazy" /></a></li>
+    <li><a href="/media/photo-crooked-eye-634.webp"><img class="graded" src="/media/photo-crooked-eye-634.webp" width="634" height="1128" alt="GLucak pointing up as he sings at Crooked Eye Brewery" loading="lazy" /></a></li>
+  </ul>
+</section>
+```
+   Each link opens the file itself in the same tab (Back returns); the img's alt is the link's name. No `target`, no `data-*`, no
+   script, nothing in `public/js/` touches `.gallery`. A new photo Gabe clears later is one more `<li>` (items 4+ flow as squares).
+4. `.prose`: ForVenues, then **delete "Find GLucak"** (the h2 and the `links-lg` list, lines 37-40, and `links`/`ORDER`/`SOCIALS`
+   in the frontmatter if unused), then **Credits once**: `{Object.values(C).map((c) => <li>{c.replace(/\.$/, '')}</li>)}` (every
+   credit on the site, each once: Kealey, MCCC, Joseph Lucak, GLucak on YouTube, IDENTITY cover + Dave Bahm, IDENTITY CD, Vladd).
+5. **About's footer prints no credits line** (whatever form OV5 gives the footer line, About passes none): the list in 4 is the one
+   place. Other pages keep the footer line (D108).
+
+**CSS** (`global.css`): **replace** `.push-photo` (465-466), **delete** `.push-head::after` (467), `.about-photo` (1301-1303); change
+`.push-title` (468) to `padding-block: var(--space-m) 0;` and delete its 900px override (574). Append:
+```css
+/* ---------- DESIGN 29. One photo language (OV6): About's header photo and the Photos gallery. Static: no transition,
+   animation, transform, filter or hover effect; nothing differs between motion on, off and reduced. No --accent. ---------- */
+.push-photo { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; object-position: 40% 20%; background: var(--bg-2); }
+@media (min-width: 700px) { .push-photo { aspect-ratio: 5 / 2; object-position: 50% 15%; } }
+@media (min-width: 900px) { .push-photo { aspect-ratio: 3 / 1; max-height: 28rem; } }
+.gallery { max-width: 34rem; margin-top: var(--space-l); }
+.gallery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-xs); margin-top: var(--space-s); }
+.gallery-grid li { position: relative; }
+.gallery-grid li:nth-child(3) { grid-column: 2; grid-row: 1 / span 2; } /* the tall still beside the two squares */
+.gallery-grid a { display: block; height: 100%; }
+.gallery-grid img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; background: var(--bg-2); }
+.gallery-grid li:nth-child(3) img { position: absolute; inset: 0; height: 100%; aspect-ratio: auto; object-position: 50% 15%; }
+.gallery-grid a:active img { outline: 3px solid var(--text); outline-offset: -3px; } /* 16e: instant pressed */
+@media (min-width: 900px) {
+  .about-body > .bio { grid-row: span 2; }
+  .gallery { grid-column: 2; max-width: none; }
+}
+```
+Focus: the site's global `:focus-visible` ring on the link. Header crop: at 390 (3:2, 260px) the frame loses 10% each side, Gabe
+head to waist; at 768 (5:2, 307px) and 1280 (3:1, 427px) the full width, head to belly (mock: he reads at both, no text on him).
+
+**Credits map (`src/components/content.js` 28-35):** `[/\/media\/v2\/(belt|stage)-|poster-print-|photo-crooked-eye-|videos\/aZNW63M_C2E-/,
+PHOTO_CREDITS.vladd]` (the belt and stage stills are frames of Vladd's Scenic Route clip, CREDITS.md; they were credited "GLucak
+on YouTube": deviation 6); `[/videos\/OOGT3GxlQJk-/, PHOTO_CREDITS.yt]`; `[/photo-mccc-/, PHOTO_CREDITS.mccc]`;
+`[/a-print-|b-print-/, PHOTO_CREDITS.kealey]`; the cd, identity and joseph rows unchanged. Page credit props follow (Shows:
+Vladd, Joseph Lucak if the Watch row shows Duck Dodge; no `cd`, no `kealey`).
+
+**Share images (`tools/og.mjs` 23-25):** home `a-era-grade-1600` -> `b-print-1000`; about -> `cd-live-1280`; shows `c-poster-1000`
+-> `poster-print-600` (`background-position: 50% 40%`). Re-run `node tools/og.mjs` after the build.
+
+### 29e. Heights (static `dist`, reduced motion; before -> after in the mock; shows not injected, so Shows / Home are lists-empty)
+| Page | 390 | 768 | 1280 |
+|---|---|---|---|
+| About | 2978 -> **2927** (-51: Find GLucak out, the studio photo becomes a third of a collage) | 2431 -> **2603** (+172: the header grows from 189 to 307px) | 2387 -> **2648** (+261: header 427px; the gallery fills the right column, which ends ~200px under the bio) |
+| Home | 3650 -> **3650** (no layout change; D39 cap untouched) | - | 4294 -> **4119** (-175: p2 gone) |
+| Shows | 1824 -> **1658** (-166: Book GLucak's photo out) | - | 2077 -> **1818** (-259) |
+About screen one: 390x844 = header photo 260 + PUSH PAST FEAR + "Epilepsy survivor"; 1280x800 = photo, the full lockup, the bio's
+first lines and LISTEN. No horizontal overflow at 390 / 768 / 1280 (mock). The gate re-measures on the real build with shows.
+
+### 29f. Motion and reduced motion
+No motion is added and none is needed: every photo is a still file; the gallery has no hover zoom, no fade-in, no transition and
+no script; pressed is the instant 16e swap. So `prefers-reduced-motion`, `html[data-motion='off']` and motion on render the same
+pixels. The D64 page fade (gated) is unchanged. Halftones are static (no shifting plate, no animated grain); no image flashes. At
+rest: 0 running animations on Home, Shows and About (motion on and reduced).
+
+### 29g. Tests to add (`test/rules.test.js`, block "29"; real asserts, R6)
+1. **One frame, one place.** A `FRAMES` map in the test (`'a-print-phone-800' / 'b-print-': 'kealey'`, `'v2/garage-toner-': 'garage'`,
+   `'v2/stage-lines-': 'ce2'`, `'v2/belt-print-': 'ce4'`, `'poster-print-': 'ce3'`, `'cd-live-': 'cdlive'`, `'cd-studio-': 'studio'`,
+   `'photo-mccc-': 'mccc'`, `'photo-crooked-eye-': 'ce1'`). For every built page (and `showsHtml` with a fixture of two full shows
+   for /shows/): every `/media/` src, srcset entry and `href` outside `covers/`, `videos/`, `og/`, `mark-`, `shop/`, `uploads/`,
+   `placeholder-cover`, `favicon`, `apple-touch`, `g-`, `hero-wall` must match a key (an unknown photo fails); each frame appears
+   on one page only (hero A and B are one slot). The fixture renders `poster-art` exactly once.
+2. **Two treatments.** Print files (`a-print-`, `b-print-`, `v2/belt-print-`, `poster-print-`, `v2/stage-lines-`, `v2/garage-toner-`):
+   >= 99% of pixels within RGB 40 of `identity.json` `bg` or `text` (alpha flattened onto `text`). Every mapped file: magenta share
+   < 1% (29a definition, sharp raw at 300px). Today's numbers: Print 99.6-100%, magenta 0.0-0.7%.
+3. **Clean is clean.** `photo-mccc-478` <= 478 wide, `photo-crooked-eye-634` <= 634, `cd-live-2400` <= 4000, `poster-print-600` <=
+   634 (no upscaling); every new file has no `exif`, `icc` or `xmp` (sharp metadata).
+4. **About.** No "Find GLucak"; exactly one `class="credit-list"`, holding each `PHOTO_CREDITS` value once; no `class="credits"`
+   in About's footer; `.push-photo` has a non-empty alt, `fetchpriority="high"`, no `loading="lazy"`, `2400w` in srcset; the
+   gallery has 3 `<li>`, each one `<a href="/media/...webp">` (file exists in `public/media/`) wrapping one `<img>` with a non-empty
+   alt; About's HTML has no `<script` beyond Base's, and `public/js/` has no `gallery` string.
+5. **CSS.** The 29 block has no `animation`, `transition`, `transform`, `filter`, `:hover` or `--accent`; no `.push-head::after` rule.
+6. **Home / Shows.** No `cd-live-portrait`, `v2-jump`, `belt-plates`, `b-riso`, `a-night`, `c-poster`, `venues-photo` in any built
+   page or the `showsHtml` fixture; Shows has no `cd-live`.
+**Round tests this breaks (delete the assert, per R6; the rule lives on in 1-6):** `ig4.test.js` 58-63, `ig6.test.js` 59-66,
+`v1.test.js` 178-181, `v2port.test.js` 52 (CREDIT_FOR mirror), `ig5.test.js` 25 (Find GLucak). **Update, don't delete:**
+`build.test.js` 125 drops `'Find GLucak'` from About's list. `build.test.js` 167 (old files exist) still passes (R7 keeps them).
+
+### 29h. Files
+`tools/photo/run.mjs` (option `o`, `poster()` params, default era), `tools/photo/texture.mjs` (`printNight`), new files in
+`public/media/`: `a-print-phone-800`, `b-print-600`, `b-print-1000`, `v2/belt-print-320`, `v2/belt-print-634`, `poster-print-600`,
+`cd-live-2400`, `photo-mccc-478`, `photo-crooked-eye-634` (all `.webp`); `src/components/Hero.astro`, `PushPhoto.astro`,
+`ForVenues.astro`, `content.js` (CREDIT_FOR); `src/lib/shows.js` (POSTER_ART, first-full-show art); `src/pages/index.astro`,
+`about/index.astro`, `shows/index.astro`; `src/styles/global.css`; `tools/og.mjs` + re-made `public/media/og/*.png`;
+`test/rules.test.js` (+ the R6 deletions above, `build.test.js` 125); DESIGN 3b gets one line: "Superseded by 29 (OV6)".
+Magenta check used for 29a (scratch, not shipped; the test reimplements it): hue 285-330, s > 0.4, v > 0.35, at 300px wide.
+
+### 29i. The owner's 2-up before / after sheet (one of the round's 4 committed shots)
+`docs/review/overhaul/ov6-2up.png`: two columns, **BEFORE** (the commit before OV6) | **AFTER**, each cell 640px wide, 16px gap,
+a 28px label strip per row; reduced motion, Spotify / YouTube blocked, the same fixture (today's open mic + the Jan 16 full show
+with a link). Made with sharp from the gate's shots in `.work/ov6/` (before shots taken first, from a worktree at the parent commit).
+| Row | Shot | Width (shot -> cell) | Shows the owner |
+|---|---|---|---|
+| 1 | Home screen one | 1280x800 -> 0.5 | hero B: magenta riso -> one-ink print on paper |
+| 2 | Home screen one | 390x844 -> 1x | hero A: night riso -> one-ink print on the ground; GLUCAK still reads |
+| 3 | Home PUSH PAST FEAR band (element clip) | 1280 -> 0.5 | two plates + CD portrait -> one print beside the bio |
+| 4 | Shows, the full show's poster (element clip) | 1280 -> 0.5 | the Kealey cut (a repeat of the hero) -> the Crooked Eye print |
+| 5 | About screen one | 768x1024 -> 0.833 | A1: purple dots behind the lockup -> his CD live shot over the lockup |
+| 6 | About, header to the end of Photos (clip 0-1400) | 1280 -> 0.5 | the gallery in the right column, Find GLucak gone, credits once |
+Rows 1, 2 and 5 are the D98 reversal points: if the owner prefers the riso, the old files are still in `public/media/` (R7).
+
+### 29j. Deviations (for the boss)
+1. **Shows' Book GLucak loses its photo** (S4 "photo kept", 25c): the CD live frame becomes About's header, the only wide frame
+   left besides the hero's. Shows still shows him live in the poster art.
+2. **25h amended:** it rejected the CD live shot as About's header because PUSH PAST FEAR would sit on his graded purple (~3:1).
+   Here no text sits on it; the lockup is under it on the ground.
+3. **D34's `?hero=a` / `?hero=b` alternates removed** (they serve the tinted era grade and the MCCC frame, now in the gallery).
+   D34's default (A under 900, B from 900) is unchanged.
+4. **"Exactly two" with three screens:** Print allows the two existing one-ink members (stage lines, garage toner; the owner's
+   11-11 "try it in different ways") because they meet Print's colour rule. If the boss reads two treatments as one screen, re-print
+   those two with `printPaper` / the 45° dot under the same names (4 files, no markup change).
+5. **"Cleared in CREDITS.md":** I read it as covering the stills of the two videos CREDITS.md credits by name (Vladd's Scenic Route
+   clip, Joseph Lucak's Duck, Dodge), on the site since 18c. Strict reading (only the file table): the gallery is studio + MCCC (2),
+   the poster is the MCCC still printed (`poster-print-478`, crop 382x477, `left: 48`), and the Crooked Eye stills already on Home
+   are a separate question.
+6. **Credit fix:** the belt and stage stills move from "Video stills: GLucak on YouTube" to Vladd (same clip as the Videos lead).
+7. **Files outside plan.md's OV6 list:** `index.astro`, `shows/index.astro`, `ForVenues.astro`, `content.js`, `texture.mjs`,
+   `og.mjs`, tests.
+8. **No hairlines** in the collage (design-ux A4 "hairline-tied"): gaps only, after 19c removed rules.
+9. **Gabe's jump and looking CD photos stay off the site** (magenta 7.1% / 3.1%); D51 forbids re-grading his art. They come back
+   only if the boss exempts his own grade from "magenta in no photo" (then: gallery items 4 and 5, Clean, credit IDENTITY CD).
+**Not done here:** the print files themselves (the coder runs `--only=o`; the c-poster-identity file, made by the same `poster()`,
+already passes the Print test at 99.6%, so the look is proven); the design-review skill (runs at the OV6 gate on the built shots).
