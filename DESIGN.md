@@ -277,6 +277,7 @@ the IDENTITY row in `src/data/releases.json` (`date` 2027-08-13 from Gabe's own 
 `releaseDate` / `presaveLink`. With no date, the state in section 7 applies. `tracks` waits on Gabe's answers (D10).
 
 ## 5. Home, top to bottom
+> **Changed by section 28 (overhaul, 2026-11-18):** shows in date order with the next date big (28a, D100); the Now line is a ticket stub (28f); nav + Listen from 700px (28e); player first at every width (28h).
 Target about 5 phone screens. All heights below are measured at 390px.
 
 > **Changed by section 18 (v2 picks, 2026-11-06):** the header is a solid band (18e); RISE is the release card (18a); the
@@ -446,6 +447,7 @@ Same header, footer, bar, tokens and tabs. Each page opens with its one fitted p
 | **Link not known yet** | Build fails rather than ships `#`. In the prototype these are dashed links. |
 
 ## 8. Motion (hard rule)
+> **Amended by section 28h (D102, 2026-11-18):** the three heading fades are removed; the glow was already gone (23b). Left: the D64 page fade and the 23c Menu sheet, both behind both switches.
 Exactly two motions exist on Home.
 1. **Glow:** one layer behind hero and player, a radial gradient painted once and moved only by `transform` and `opacity`: 24s,
    ease-in-out, alternate, opacity .68 to .88, shift about 12% of its width. Stops when hero + Rise no longer fill the bottom of the
@@ -476,6 +478,7 @@ before it (and the audit's row 2 fix) keeps keyboard users from having to walk t
 Text at 200% (1.4.4 / 1.4.10): section 17.
 
 ## 10. Gabe's edit screen
+> **Changed by section 28i (D106, 2026-11-18):** tabs Shows | Releases | IDENTITY | Bio | Products, compact rows, Played folded, Delete inside the form, "See it on the site".
 **The look of `/edit/` (sign-in, tabs, rows, editor form, upload, save bar, every message state) is section 15.** This
 section keeps the scope.
 One simple form page per thing, large fields, plain words, phone friendly. Built on Riverside's admin pattern; every field escaped on
@@ -3043,3 +3046,457 @@ and phones are unchanged.
 - **Home's Watch lead thumbnail** (the newest upload, a muddy still): content, not design; the row updates itself by rule
   (Hard rule 3). **"Book GLucak" ending on LISTEN** and **the section word as an eyebrow**: D91 / D79 / D87 rulings, reported
   to the boss in the review, not changed.
+
+## 28. Overhaul OV2-OV5: shows time-true, one tap at every width, the accent rule, Gabe's edit tabs (Desktop designer, 2026-11-18)
+
+Inputs: `docs/review/overhaul/plan.md` (rounds OV2-OV5, lines 97-132), `design-ux.md`, `content.md`, D98-D110, the
+`design-review` craft floor. Evidence: the 126 shots in `.work/overhaul-shots/` (320 / 390 / 768 / 1280 / 1600, plus 390 and
+1280 reduced; heights in `shots.txt`). **Specified against the code, not a running build** (a coder was building OV1; no
+server, build or test was run for this section), so every height below marked "about" is the reviewer's to measure.
+**Measured before (shots.txt, px):** Home 390 3782, 768 4539, 1280 4447. Shows 390 3029, 768 3094, 1280 2393. Edit 320 4216,
+390 3847. 0 running animations at rest on every page.
+
+**Hard rules for every item below.** No new motion of any kind: no transition, animation, smooth scroll or scale is added; every
+state change is an instant swap (16e), so reduced motion and the Motion switch have nothing new to stop. The heading fades are
+**removed** (28h). Nothing flashes. No third-party script (CSP `script-src 'self'` unchanged; share is the browser's own
+`navigator.share`). No new photo, colour role or font; tokens only (IDENTITY: text/bg 16.96:1, muted/bg 9.37, muted/bg-2 8.25,
+accent-text/accent 5.35, ink/paper 16.96). Every value from data goes into HTML through `esc()` on the server or
+`textContent` / `dataset` in the browser, never as markup. Targets 48px. Section 17 (200% text) holds for every new element.
+
+**Contents:** 28a shows in date order, 28b Played folds, 28c share a show, 28d Request a show + cost ("Free"), 28e nav + lockups
+from 700px, 28f the Now stub, 28g the accent rule, 28h player first + fades out, 28i the edit tabs, 28j sound line, Welcome Home
+line, Shows intro, About opener (placement only), 28k order, heights, deviations.
+
+### 28a. Shows in date order: the next date is the big one; a full show is the paper poster wherever it falls (Home, Shows; OV2)
+**Source:** design-ux S1 (lines 109-113) and H4 (96-97); plan C1 (line 30); **D100** (overturns DESIGN 5 "first full show is the poster").
+
+**Rule.** `upcoming` stays in `splitShows` order (date, then time). Item 1 is the **lead**. Every other item renders in its own
+date place: an open mic as a `.row` (as built), a full show (`type: 'show'`) as the **poster** card (paper + art, as built) with a
+small date. So size says "next", paper says "full show", and the two never disagree.
+
+| Item | Ground | Date | Art | Kind word |
+|---|---|---|---|---|
+| Lead, open mic | page ground (`.poster.is-plain`) | fitted `.ln-date` (as the poster today) | none | in the meta line, as rows: "Today, Open mic, 7:00 PM" |
+| Lead, full show | paper (`.poster`, as built) | fitted `.ln-date` | yes (Shows; Home hides it, 1060) | **Full show** (bold) |
+| Later full show | paper (`.poster`) | small: `.date-sm` | yes (Shows; hidden on Home) | **Full show** (bold) |
+| Later open mic | `.row` (as built) | `.row-date` | no | as built |
+
+**"Full show" flag:** the words `<strong class="flag">Full show</strong>` lead the poster's meta line after Today / Tomorrow
+("Today, **Full show**, 6:00 PM, Free"). Text in the card's ink, weight 800. **Not** a filled chip (DESIGN 19: no filled
+labels) and **not** a label above the date (craft floor: eyebrows banned).
+
+**Markup** (`src/lib/shows.js`): `posterHtml(r, { today, lead })`. `lead && r.type === 'open-mic'` adds class `is-plain` and drops
+`POSTER_ART`. `!lead` swaps the date to `<p class="poster-date"><span class="date-sm">${dateTag(r)}</span></p>` (no `fit`, no `ln`).
+Every `<li>` (lead, poster, row; upcoming only) gets `id="s-${showId(r)}"` (the share target, 28c). Tools: the calendar link and
+the share stamp (28c) sit together in `<span class="poster-tools">` in the date's grid area (phones) / the cal area (card 37rem+).
+`upcomingHtml(list, limit, today)`: `list.slice(0, limit)`, item 0 `posterHtml(.., { lead: true })`, then
+`r.type === 'show' ? posterHtml(r, { today }) : rowHtml(r, { today })`.
+
+**"Next full show" line.** When an upcoming full show exists and it is **not** the lead:
+- **/shows/:** one line above the list: `<p class="next-full"><a class="text-link" href="#s-{id}">Next full show: Jan 16, Riverside</a></p>`
+  (`monD(date)`, venue only, `curly()` + `esc()`).
+- **Home:** the same link, shorter ("Next full show: Jan 16", href `/shows/#s-{id}`), shares one row with "All shows" under the list:
+  `<p class="shows-foot"><a class="text-link" href="/shows/">All shows</a><a class="text-link" href="/shows/#s-{id}">Next full show: Jan 16</a></p>`.
+  At 390 both fit one 48px row (about 80 + 24 + 175px of 350), so it costs Home **0px** (D39; deviation note in 28k).
+
+**CSS** (`global.css`, a new block "28a" after 16c):
+```css
+/* 28a: the lead and the full-show card. Two stamps (calendar, share) at the date's end on phones: 7rem reserved, always,
+   so the date never resizes when JS shows the share stamp (CLS 0). */
+.poster-date { padding-right: 7rem; }
+.poster-tools { grid-area: date; justify-self: end; align-self: start; display: flex; gap: 0.5rem; }
+.poster-tools .cal-link { grid-area: auto; }
+.date-sm { display: block; font-family: var(--font-display); font-weight: 900; font-size: var(--step-3); line-height: 0.82;
+  text-transform: uppercase; text-box: trim-both cap alphabetic; white-space: nowrap; }
+.flag { font-weight: 800; }
+.poster.is-plain { background: none; color: var(--text); padding-inline: 0; border-bottom: 2px solid var(--line);
+  grid-template-columns: minmax(0, 1fr); grid-template-areas: 'date' 'place' 'meta' 'btn'; }
+.poster.is-plain :is(.cal-link, .share-stamp) { color: var(--text); border-color: var(--text); }
+.poster.is-plain .btn-show { background: var(--text); color: var(--bg); border-color: var(--text); } /* Details: paper, not accent */
+.poster.is-plain .row-soon { color: var(--text); }
+.poster.is-plain .poster-meta { color: var(--muted); }
+.next-full { margin-bottom: var(--space-xs); }
+.shows-foot { display: flex; flex-wrap: wrap; column-gap: var(--space-l); }
+@container (min-width: 37rem) {
+  .poster-date { padding-right: 0; }
+  .poster-tools { grid-area: cal; justify-self: start; }
+  .poster.is-plain { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto 1fr;
+    grid-template-areas: 'date place' 'date meta' 'cal btn'; column-gap: var(--space-l); }
+  .poster.is-plain .poster-place { align-self: end; }
+}
+.v2-main .poster.is-plain { grid-template-areas: 'date' 'place' 'meta' 'btn'; } /* Home's single-column override (1062) is for paper cards: scope it to .poster:not(.is-plain) */
+li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* the shared show, found on arrival; static */
+```
+Pressed states join 16e: `.share-stamp:active` as `.cal-link:active` (bg / text swap on paper; on `.is-plain` the text / bg swap).
+
+**Per width** (container = `.shows`):
+- **390** (container 350): lead date fitted to 350 - 7rem = 238px (`--w-date` 3.4794: about 68px font, about 55px caps); place
+  `--step-1` 800; meta 16px; Details (if a link) under them. Lead about 140px tall (today's Home poster 152). Rows 60px.
+  A later full show: the paper card as built at 390 (art 55% right), date `--step-3` (37px).
+- **768** (Shows container about 716; Home container 716): `is-plain` two columns of 350: date fitted to the left half (about
+  100px font), place / meta / Details right, "Add to calendar" and "Share" words under the date. Paper cards as built 37rem+.
+- **1280** (Shows 7fr about 680; Home 7fr about 680): same as 768. Riverside's card: as today's `shows-1280-screen` but its date
+  at `--step-3` (56px), and it sits after the open mics.
+- **Reduced motion:** nothing moves; `:target` is a static outline.
+
+**Files:** `src/lib/shows.js` (`posterHtml`, `rowHtml`, `upcomingHtml`, `showsHtml` gets the next-full line + Home foot row),
+`src/styles/global.css`, `src/components/Icons.astro` (28c icon). `src/pages/shows/index.astro`, `src/pages/index.astro`:
+no change (the server fills `gl:shows`).
+**Tests** (`test/shows.test.js`; replace "poster is the first full show, never an open mic", line 88):
+1. today open mic + Jan 16 full show + Nov 19 open mic -> items in date order; item 1 is `class="poster is-plain"` with `ln-date`;
+   the Jan 16 `<li class="poster"` comes last, has `date-sm`, no `ln-date`, and contains `<strong class="flag">Full show</strong>`.
+2. When the full show is first: it is `class="poster"` (no `is-plain`) with `ln-date`, and no `next-full` line is printed.
+3. `/shows/` output has `class="next-full"` with `href="#s-` + `showId`, Home output (`limit: 3, allLink`) has `class="shows-foot"`
+   with both links; neither when no full show is upcoming.
+4. Every upcoming `<li>` has `id="s-…"` equal to `showId`; Played rows have none. Venue `<script>` stays escaped in the line.
+
+### 28b. Played folds: the last 3, then "All played (n)" (Shows; OV2)
+**Source:** design-ux S2 (lines 114-115); plan C2 (line 31); D100.
+
+`playedHtml(list)`: `<div class="played"><h2>Played</h2><ul class="rows">{first 3}</ul>` then, only when `list.length > 3`,
+`<details class="played-more"><summary>All played ({list.length})</summary><ul class="rows">{the rest}</ul></details></div>`.
+n is the total (the three above plus the rest = all). Rows unchanged (no calendar, no share). Same function in the empty state.
+```css
+.played .row-date { color: var(--muted); }            /* 9.37:1 on bg */
+.played-more > summary { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 48px; font-weight: 700;
+  text-decoration: underline; text-underline-offset: 3px; list-style: none; cursor: pointer; }
+.played-more > summary::-webkit-details-marker { display: none; }
+.played-more > summary::after { /* the .go arrow mask, turned to point down; static */ content: ''; width: 0.7em; height: 0.56em;
+  background: currentColor; mask: (same data URI as .go::after) center / contain no-repeat; rotate: 90deg; }
+.played-more[open] > summary::after { rotate: -90deg; } /* instant: no transition */
+```
+Add `.played-more > summary:active` to the 16e pressed list. **390 / 768 / 1280:** same; at 1280 the Played list sits in the
+7fr column as built. Shows 390 drops 5 rows x 60 = **about 300px** (3029 -> about 2730 before 28a / 28c / 28j).
+**Files:** `src/lib/shows.js` (`playedHtml`), `global.css`. **Test** (`shows.test.js`): 8 past rows -> 3 rows before `<details`,
+summary text `All played (8)`, 5 rows inside; 3 past rows -> no `<details>`; 0 -> no Played.
+
+### 28c. Share a show (Home, Shows; OV2)
+**Source:** design-ux S3 (lines 118-120); plan A2 (line 59); **D104** (overturns D96's rejection).
+
+**Where.** Every upcoming item: the lead, each paper card, each row. Never on Played.
+- **Lead and paper cards:** a 48px **share stamp** beside the calendar stamp in `.poster-tools` (same look as `.cal-link`: 3px
+  ink border, 24px glyph). From card 37rem the two stamps show words: "Add to calendar", "Share" (`.share-word`, shown where
+  `.cal-word` is).
+- **Rows:** a glyph button in the row's `cal` cell, to the right of the calendar glyph. Both draw 24px inside 48px tap boxes with
+  no overlap: calendar glyph x 0-24 (box -12..36, as built), share glyph x 48-72 (box 36..84, reaching 12px into the column gap,
+  where nothing else is). The row stays 60px.
+
+**Markup** (`shows.js`, a `shareBtn(r, kind)` helper), built **hidden**; app.js shows it only when the browser can share or copy:
+```html
+<button class="share-stamp" type="button" hidden data-share="/shows/#s-{id}" data-title="GLucak at {venue}"
+  data-text="{Open mic|Show} {Mon D}{, 7:00 PM}: {venue}, {city}" aria-label="Share: {venue}, {Mon D}">
+  <svg class="cal-icon" aria-hidden="true"><use href="#i-share"/></svg><span class="share-word">Share</span></button>
+<span class="share-msg" role="status"></span>
+```
+(rows: class `share-btn`, no word; every attribute value through `esc(curly(...))`; open mics: title "GLucak open mic at {venue}",
+the .ics SUMMARY wording). The `.share-msg` is the item's last child: in a row `grid-column: 1 / -1`; in a card it sits in the
+`btn` area under Tickets. `.share-msg:empty { display: none; }`, otherwise 16px, weight 700, the item's ink colour,
+`overflow-wrap: anywhere`.
+**Icon** (`Icons.astro`, beside `i-cal`, same stroke rules): `<symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M5 11v10h14V11"/></symbol>`.
+**CSS:** `.share-btn` copies `.cal-btn` (48 box, 12px padding, `margin: -12px`) with `justify-self: end`; `.share-stamp` copies
+`.cal-link`; their `:active` copy `.cal-btn:active` / `.cal-link:active`. In the 17rem container rule (17, rows at 200%) the
+share glyph sits beside the calendar glyph in the `date cal` row (`justify-self: end`, the calendar moves left of it).
+
+**Behaviour** (`public/js/app.js`, new block after Videos; textContent only):
+```js
+/* Share a show (DESIGN 28c, D104): the phone's own share sheet; else copy the link; else show it. Same-origin, no motion. */
+if (navigator.share || navigator.clipboard?.writeText) document.querySelectorAll('[data-share]').forEach((b) => {
+  b.hidden = false;
+  b.addEventListener('click', async () => {
+    const url = new URL(b.dataset.share, location.origin).href, msg = b.closest('li')?.querySelector('.share-msg');
+    document.querySelectorAll('.share-msg').forEach((m) => { m.textContent = ''; }); // one message on the page at a time
+    if (navigator.share) { try { await navigator.share({ title: b.dataset.title, text: b.dataset.text, url }); return; } catch (e) { if (e.name === 'AbortError') return; } }
+    try { await navigator.clipboard.writeText(url); if (msg) msg.textContent = 'Link copied'; }
+    catch { if (msg) msg.textContent = `Copy this link: ${url}`; }
+  });
+});
+```
+States: share sheet open = the OS's own UI (we show nothing); copied = static "Link copied" until the next share tap or page
+change (no timer, no fade); copy refused = "Copy this link: https://glucak.com/shows/#s-…" as plain text; no JS or neither API =
+no button (no dead control). **390 / 768 / 1280:** rows glyph only at every width; cards stamp at 390, words from 37rem.
+**Reduced motion / Motion switch:** nothing animates (the copy message is a text swap).
+**Files:** `src/lib/shows.js`, `public/js/app.js`, `src/components/Icons.astro`, `global.css`.
+**Tests:** `shows.test.js`: every upcoming item has exactly one `data-share="/shows/#s-{showId}"` with `hidden`; none on Played;
+a venue of `"><img src=x onerror=alert(1)>` appears only escaped in `data-title`, `data-text` and `aria-label`. A static test on
+`app.js`: the share block uses `textContent` only (no `innerHTML`, `insertAdjacentHTML`, `outerHTML`), sets no `transition` /
+`animate`, and the URL is built with `new URL(…, location.origin)`. Manual (reviewer): Chrome desktop (copy path) and an iPhone
+or Android (share sheet).
+
+### 28d. "Request a show" while `BOOKING_EMAIL` is unset, and "Free" on Riverside (Shows, About; OV2)
+**Source:** design-ux S4 (lines 116-117), content.md line 61 (booking) and lines 40 / 59 (Free); plan C3 / C4 (lines 32-33); **D108**.
+
+**Request a show.** `shows.js` exports one helper used by `ForVenues.astro` and the empty state:
+`bookingHref = BOOKING_EMAIL ? 'mailto:' + BOOKING_EMAIL + '?subject=' + encodeURIComponent('Booking: [date / venue]') : INSTAGRAM`.
+The For venues action row becomes **only** `<a class="btn btn-line" href={bookingHref}>Request a show</a>` (the "Listen" go link
+goes: the block's job is booking). While unset: `aria-label="Request a show on Instagram"` (ext.js appends "(opens in a new tab)"
+and `target="_blank"` at build and on the server), plus one muted line under the row:
+`<p class="venues-hint">Opens Instagram. Press Message to ask about a date.</p>` (16px, `--muted`, 9.37:1). Once `BOOKING_EMAIL` is
+set: the mailto, no hint, the address line as built (24b). Empty state: "Follow" + "Request a show" (both `btn-line`, 28g), same href.
+The link is the profile, `INSTAGRAM` (already in SOCIALS, verified), not a DM deep link (deviation note in 28k).
+**Per width:** the button sits left, natural width (as `.venues-act` today) at 390, 768, 1280. **Reduced motion:** n/a.
+
+**Cost / "Free".** New optional show field **`cost`**: string, trimmed, 1-40 characters, one line (the address rule: refuse
+`[\x00-\x1f\x7f-\x9f  ]`, message "Put the cost on one line."), empty = unset. Rendered as the last part of the meta /
+kind line through `lead()` (so `curly()` + `esc()`): "Today, Full show, 6:00 PM, Free". Not in JSON-LD, not in the .ics (YAGNI).
+`src/data/shows.json`: the Riverside Jan 16 row gets `"cost": "Free"` (Gabe confirmed, content.md 40). Gabe edits it in OV4a
+(28i, field "Cost (optional)").
+**Files:** `src/lib/shows.js` (`validateShow`, `bookingHref`, `emptyHtml`, `lead` parts), `src/components/ForVenues.astro`,
+`src/data/shows.json`, `global.css` (`.venues-hint { color: var(--muted); font-size: var(--step--1); }`).
+**Tests:** `shows.test.js`: `cost` `<script>` / `' OR 1=1 --` render escaped; a newline in `cost` is refused; 41 characters
+refused; Riverside's served row shows ", Free". `build.test.js` (or the new `test/rules.test.js`): built `/shows/` and `/about/`
+have "Request a show" with `href="https://www.instagram.com/glucakofficial/"` and `target="_blank"`, and the `.venues` block has
+no `>Listen<`; a unit test of `bookingHref` with a set address (imported override or a pure function taking the address) gives
+the mailto with the encoded subject.
+
+### 28e. Nav + Listen from 700px, lockups one line from 700px (every page; OV3)
+**Source:** design-ux G1 (lines 63-64), H3 (94-95); plan C5 / C6 (lines 34-35); CONTEXT hard rule 3.
+
+**Header.** In `global.css` line 214 the block `@media (min-width: 900px) { :root { --header-h: 72px; } .nav-desktop …
+.header-listen … .nav-mobile … }` splits: `--header-h: 72px` stays at 900px; `.nav-desktop { display: flex; }`,
+`.header-listen { display: inline-flex; }`, `.nav-mobile { display: none; }` move to `@media (min-width: 700px)`.
+Room at 700 (wrap 646px): brand 182 + nav 4 links + Listen about 97 + two 16px gaps. Make it fit:
+- `.nav-desktop a { padding-inline: 0.6rem; }` (was 0.85rem) at every width: the nav is about 297px, the bar about 608 of 646.
+- The 200% fallback (17, line 908) `@container (width < 44rem)` becomes **`width < 42rem`** (672px at 100%, so it never fires at
+  700; at 200% text the tighter links need about 41rem x 2). With the Shop link on (`SHOP_ENABLED=1`) the row needs about 45rem:
+  add `@container (width < 45rem) { .header-bar:has(.nav-desktop a[href='/shop/']) :is(.nav-desktop, .header-listen) { display: none; }
+  .header-bar:has(.nav-desktop a[href='/shop/']) .nav-mobile { display: block; } }`. The coder measures both at 700 / 768 / 899 and
+  adjusts these two numbers only.
+- Phone bar: unchanged (gone from 700, as built).
+**Per width:** 390: Menu (as built). 768: brand, Music Shows Videos About, Listen (60px header). 1280: same as today, links 0.6rem padding.
+
+**Lockups 700-899px** (the fitted phrases; K1 keeps the fit, so they still fill their line):
+- PUSH PAST FEAR (Home, About): the one-line rule now at 900 (`.lock-push .ln { display: inline; … }`, `.ln-push1::after`,
+  `.lock-push { white-space: nowrap; font-size: 0; }`, line 565) moves to `@media (min-width: 700px)`. 768: about 120px font
+  (about 97px caps) instead of two lines about 145 + 330px.
+- THE TIME IS NOW (Home): one line **only 700-899** (from 900 it is in the 5fr column, stacked, as built). Add class `lock-now` to
+  its `.fit`; `--w-now: 6.3265` (= `--w-now1` 3.3440 + the nbsp 0.2207, measured from `--w-push` minus its parts + `--w-now2`
+  2.7618; re-measure with `node prototype/check.mjs --measure`); `@media (min-width: 700px) and (max-width: 899px) { .lock-now .ln {
+  display: inline; font-size: calc(100cqi / var(--w-now)); margin: 0; } .ln-now1::after { content: '\00a0'; } .lock-now { white-space:
+  nowrap; font-size: 0; } }`. 768: about 113px font instead of about 210 + 260px.
+- WRONG TURN (404): its 900 one-line rule (line 817) moves to 700, same pattern.
+- LIVE IT LOUD is one line already; GLUCAK (hero) unchanged. No-container-unit fallbacks (the `@supports not (width: 1cqi)` block): add the same
+  `.lock-now` line with `* 0.65`, and move the push / lost lines' `900px` guard to 700.
+- Hero buttons 700-899: `.hero-actions .btn { flex: none; min-width: 11rem; }` moves from 900 to 700 (Listen no longer stretches 600px).
+Home 768 should drop **about 500px** (4539 -> about 4000; 28a removes the 180px-font JAN 16 too). Over 6rem is D-ruled (D14 / K1).
+**Reduced motion:** n/a. **Files:** `global.css` (199, 214-217, 543, 565, 817, 908, the `@supports not (width: 1cqi)` block), `src/pages/index.astro`
+(`lock-now`). `Header.astro`: no change.
+**Tests:** `test/rules.test.js`: CSS has a `@media (min-width: 700px)` block with `.nav-desktop { display: flex; }`,
+`.header-listen { display: inline-flex; }`, `.nav-mobile { display: none; }`, and `@container (width < 42rem)`; no
+`min-width: 900px` block still holds `.nav-desktop { display: flex`. Update `test/v1.test.js` 147-152 (the 44rem assert) in the
+same commit. Shots: add widths **700 and 899** to `.work/overhaul-shots.mjs`; `xs:false` at 700 / 768 / 899 for every page, nav
+and Listen visible (Shop off and on).
+
+### 28f. The Now line becomes a ticket stub (Home hero; OV3)
+**Source:** design-ux H1 (lines 87-90); plan C7 (line 36); D45 / D57 / D96 (the pick order stays exactly as built).
+
+**What it is.** One link, a paper stub under the hero buttons: the "when" in the display face on the left, a perforation, the
+place on two lines, an arrow. Paper (`--text`) with the grain, ink (`--bg`): the poster pair, 16.96:1. Static.
+**Words** (`nowHtml`, same order B, T, A, C, D, E; source text in normal case, CSS uppercases the when; spans separated by a
+space so the accessible name reads "Today Chambers 19 Open mic, 7:00 PM, Doylestown, PA", D57: no aria-label):
+
+| Case | when | place (line 1) | sub (line 2) | href |
+|---|---|---|---|---|
+| B release today | Out today | title | type ("Single", "Remix album") | release link |
+| T show today / tomorrow | Today / Tomorrow | venue | "Open mic" or "Show", time, city | `#shows` |
+| A release in 1-14 days | Out Dec 18 | title | type | release link |
+| C release 1-7 days ago, E newest | Out now | title | type | release link |
+| D show within 14 days | Nov 20 | venue | kind, time, city | `#shows` |
+
+Never "Pre-save" (D45). Type words: `{ single: 'Single', ep: 'EP', album: 'Album' }`, `remix` -> "Remix album".
+```html
+<a class="stub" href="#shows"><span class="stub-when">Today</span> <span class="stub-what"><span class="stub-place">Chambers 19</span>
+ <span class="stub-sub">Open mic, 7:00 PM, Doylestown, PA</span></span></a>
+```
+`Hero.astro`'s static fallback (inside the `gl:now` markers) prints the same shape for `releases()[0]`: "Out now / {title} / {type}".
+```css
+.now { display: block; margin-top: var(--space-s); }                      /* replaces .now and .now a (298-299) */
+.stub { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; column-gap: 0.75rem;
+  min-height: 48px; max-width: 100%; padding: 0.375rem 0.75rem; line-height: 1.25; text-decoration: none;
+  background: var(--text); background-image: var(--texture); color: var(--bg); border-radius: var(--radius-s); }
+.stub-when { font-family: var(--font-display); font-weight: 900; font-size: 1.5rem; line-height: 1; letter-spacing: 0.02em;
+  text-transform: uppercase; white-space: nowrap; }
+.stub-what { display: grid; min-width: 0; padding-left: 0.75rem; border-left: 2px dashed var(--bg); font-size: var(--step--1); }
+.stub-place { font-weight: 800; }
+.stub-place, .stub-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stub::after { /* .go's arrow mask, 1.1rem x 0.9rem, currentColor */ }
+.stub[target='_blank']::after { /* .go[target=_blank]'s diagonal */ }
+.stub:active { background: var(--bg); color: var(--text); outline: 2px solid var(--text); outline-offset: -2px; }
+.stub:active .stub-what { border-left-color: var(--text); }
+@media (hover: hover) { .stub:hover .stub-place { text-decoration: underline; text-underline-offset: 3px; } }
+@media (min-width: 700px) { .stub { width: fit-content; max-width: min(100%, 30rem); } }
+@media (min-width: 900px) { .now { display: inline-block; margin: 0 0 0 var(--space-l); vertical-align: bottom; } .stub { max-width: 26rem; } }
+```
+The dashed 2px perforation is the ticket's own device in ink, not an accent side stripe (craft floor "coloured border-left" is
+about callouts; argued here, the reviewer may overrule). In 16e replace `.now a:active` with `.stub:active` (above).
+**Per width.** **320 / 390:** full width of the hero text column under Listen / Shows; two 16px lines + 12px padding = **52px**
+(<= 56px, plan line 109); a long venue ends in an ellipsis (the full words are in the link's name and one tap away in the row).
+**768:** under the buttons, natural width up to 30rem. **1280:** inline beside the buttons (as the Now line today), up to 26rem.
+**Reduced motion / Motion switch:** static (no transition on any state).
+**Files:** `src/lib/shows.js` (`nowHtml` markup only), `src/components/Hero.astro`, `global.css`.
+**Tests:** `shows.test.js` "Now line" tests (115-145, 211) keep their cases and now assert `class="stub"`, the `stub-when` words
+in the table, exactly one `<a ` per result, escaping and http(s)-only intact. `rules.test.js`: the `.stub` rules hold no
+`transition` / `animation`; `.stub` has `min-height: 48px`. Height <= 56px at 320 and 390: the reviewer adds
+`document.querySelector('.stub')?.getBoundingClientRect().height` to `shots.txt` (one line in `.work/overhaul-shots.mjs`).
+
+### 28g. Magenta only on the main actions (every page; OV3)
+**Source:** design-ux G2 (lines 65-68); plan C8 (line 37); **D98**; IG round 2 N3 / N5.
+
+**Rule:** a magenta (`--accent`) fill at rest exists only on **Listen, Tickets, Pre-save, Buy**. Allowed is not required: the
+IDENTITY Pre-save stays `btn-line` (it is months away; Home keeps its count low). Changes:
+| Element | File | Now | After |
+|---|---|---|---|
+| Join (sign-up submit) | `Signup.astro` | `btn btn-solid` | `btn btn-line` |
+| Patreon, Home | `index.astro` 51 | `btn btn-solid` | `btn btn-line` |
+| Patreon, About (phones) | `about/index.astro` 31 | `btn btn-solid about-patreon` | `btn btn-line about-patreon` |
+| Empty state "Follow" | `shows.js` `emptyHtml` | `btn btn-solid` | `btn btn-line` |
+| Video play square | `global.css` 440-447 | `--accent`, `--accent-text` triangle | `background: var(--text)`; `::before` `border-left-color: var(--bg)` |
+| Play square pressed | `global.css` 846 | `background: var(--text)` | `.yt:active .yt-play, .v2-vid :is(a, button):active .yt-play { background: var(--bg); }` + `::before { border-left-color: var(--text); }` |
+Unchanged: header Listen, hero Listen, release Listen, 404 Listen, poster Tickets, shop Buy (all solid); the phone bar's pressed
+accent (a press, not a fill at rest). `btn-line` on the band: 3px `--text` border, `--bg` 62% ground, hover / pressed swap (as built).
+**Count at 390, Home:** hero Listen + release Listen = **2** (header Listen is hidden under 700); 3 when a full show with Tickets
+falls in Home's first three. 1280: + header Listen.
+**Reduced motion:** n/a. **Files:** as the table. **Tests** (`test/rules.test.js`): (1) walk `dist/**/*.html` (skip `/edit/`):
+every element with class `btn-solid` has visible text Listen, Pre-save, Tickets or Buy (`products.js` Buy included); (2) served
+Home with a fixture (today open mic, tomorrow full show with a link, a third show) counts `btn-solid` not `header-listen` plus
+Tickets inside `<li class="poster` = <= 3; (3) the `.yt-play {` rule has `background: var(--text)` and no `--accent`.
+Update `test/ig2.test.js` 23 (it asserts `btn btn-solid about-patreon`).
+
+### 28h. Player first at every width; heading fades removed (Home, Music; OV3)
+**Source:** design-ux H2 (lines 91-93), the D47 row of the rulings table (line 171); plan C9 / R3 (lines 38, 53); **D102**.
+- **Player first.** Delete `@media (min-width: 900px) { .v2-card > .v2-rel { order: -1; } }` (global.css, v2 port block).
+  RiseBand's DOM already puts `.rise-play` first; fix its comment ("from 900px CSS order puts the cover row first" -> "player
+  first at every width, DESIGN 28h"). **390:** unchanged. **768:** unchanged (single column). **1280:** the card reads player
+  (352px), platform row, then the release row and the quote; the left column (RISE + garage photo) unchanged.
+- **Fades out.** Remove class `fade` from the three `<h2>` in `src/pages/index.astro` (30, 43, 61); delete the CSS block 339-344
+  (`.fade.fade-wait …` and the print rule); delete `app.js` 43-51 ("Headings fade in once"). Every phrase is visible at load with
+  or without JS. The M1 name wipe is **not** built (D102). Motion left on the site: the D64 page fade and the 23c Menu sheet, both
+  inside both switches, as built. Section 8 ("exactly two motions") is amended by this.
+- **Reduced motion:** nothing to switch off any more for headings.
+**Files:** `global.css`, `src/components/RiseBand.astro` (comment), `src/pages/index.astro`, `public/js/app.js`.
+**Tests** (`rules.test.js`): no `.fade` / `fade-wait` in `global.css`, `app.js` or any `dist` HTML; no `order: -1` on `.v2-rel`;
+in built `/` the `player-box` comes before `class="v2-rel"`. Replace `build.test.js` 182-193 (the D47 fade test) with "no phrase is
+ever `opacity: 0`" and delete `test/v2port.test.js` 16. Shots: 0 running animations at 390 / 1280, both motion states.
+
+### 28i. Gabe's edit screen: five tabs, compact rows, the save bar (/edit/; OV4a, OV4b)
+**Source:** design-ux E1-E3 (lines 150-159), KEEP line 149; content.md lines 81-82; plan C11 / A1 (lines 40, 58), OV4a / OV4b
+(113-125); **D106**; DESIGN 10 (scope) and 15 (the look, kept: fields, buttons, message glyphs, sign-in, backup, sign-out ask).
+
+**Intro** (under "Edit the site", `.ed-help`, new): "Change your shows, releases, IDENTITY and bio here. Each tab saves on its own."
+**Tabs, in this order:** Shows | Releases | IDENTITY | Bio | Products. (Releases ships in OV4b; until then four tabs.) The tab
+is named **IDENTITY**, not "Now + IDENTITY": it has to fit 320, and the Now line is not typed in, it follows Shows and Releases
+(the tab's help says so; deviation in 28k).
+```css
+.ed-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; background: var(--text);
+  border: 2px solid var(--text); border-radius: var(--radius-s); }            /* the 2px gap draws the rules between cells */
+.ed-tab { min-height: 52px; padding: 0.4rem 0.25rem; font-size: 1.0625rem; background: var(--bg); }
+.ed-tab:last-child { grid-column: span 2; }                                    /* phones: Shows Releases IDENTITY / Bio Products */
+@container (min-width: 36rem) { .ed-tabs { grid-template-columns: repeat(5, minmax(0, 1fr)); } .ed-tab:last-child { grid-column: auto; } }
+@container (width < 17rem) { .ed-tabs { grid-template-columns: minmax(0, 1fr); } .ed-tab:last-child { grid-column: auto; } }
+.ed-tab[data-dirty]::after { content: ''; display: inline-block; width: 0.6rem; height: 0.6rem; margin-left: 0.4rem;
+  border: 2px solid currentColor; border-radius: 50%; }                         /* unsaved: the dirty ring, never colour alone */
+```
+Selected tab inverted (as built). A tab with unsaved changes gets `data-dirty` and a `.vh` " (not saved)" in its name.
+**Keys:** ArrowLeft / ArrowRight move to the previous / next tab with wrap, Home / End to the first / last (edit.js `tabs` array of
+5; today's "two tabs: either arrow goes to the other" goes).
+**Per width** (`.ed` = min(100% - 2rem, 46rem)): **320** cells 93px (IDENTITY about 77px at 17px 800: fits), **390** 116px,
+**768 / 1280** five across, 145px each, the card 736px centred.
+
+**Compact rows (Shows, Releases, Products).** One strip per item, Edit at the end; everything else is inside the open form.
+- Head grid: `grid-template-columns: 4.25rem minmax(0, 1fr) auto` (Shows: the date) / `48px minmax(0, 1fr) auto` (Releases cover,
+  Products photo; thumbs 48px, was 64). Row `padding: 0.375rem 0.375rem 0.375rem 0.75rem`, list `gap: var(--space-xs)`, row
+  **60px** (two text lines 16-18px beside the 48px Edit). Title (800) and meta (muted) one line each, `white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis`. "Show 1" / "Product 1" become `.vh` (screen readers keep the number).
+- **Edit** (`.ed-btn ed-edit`, `min-width: 4.5rem`) moves into the head as its 3rd column; its word is **Edit**, then **Close**
+  while open (`aria-expanded` as built). The `.ed-actions` grid under the head is removed.
+- **Inside the open form:** Products start with a Move up | Move down row (two equal `.ed-btn`, as built, disabled at the ends);
+  every form **ends** with a dashed rule (`border-top: 2px dashed var(--line); margin-top: var(--space-l); padding-top: var(--space-m)`)
+  and **Delete this show / release / product** (`.ed-btn ed-plain`, natural width, left), the same `confirm()` words as today.
+- On open: `form.scrollIntoView({ block: 'nearest' })` (instant; the html `scroll-padding` 1rem / 10rem keeps it clear of the
+  sticky bar: E3).
+- Errors: `.bad` + the "!" and the message under the head (as built); a bad row inside a closed Played fold opens the fold.
+- **Played (Shows):** after the upcoming list, `<details class="ed-played"><summary class="ed-btn ed-plain">Played (8)</summary>
+  <ol class="ed-list">…</ol></details>`, summary full width, 52px, the 28b arrow. Save reads upcoming then Played rows in that
+  order (one `rows('shows')` array, so error row numbers still match). Past rows keep the dashed border and grey date (15).
+- **Shows form** gains **Cost (optional)** after City: placeholder "Free", hint "Like Free or $10 at the door. Shown on the site.",
+  `maxLength 40`. Order: Date | Time, Type, Venue, City, Cost, Street address, With, Link.
+**Heights:** 9 upcoming x 68 + the 52px Played bar = about 660px of rows at 390 (today 17 cards, about 2,600). Edit 390 about
+3847 -> about 1500.
+
+**Releases tab (OV4b).** Help: "Your releases, newest first. They show on the Music page; the newest one is also on Home. Change
+anything, then press Save." Add release (dashed `.ed-add`, as Add show) puts an open row at the top. Rows sorted by date, newest
+first (no Move buttons). **IDENTITY is not in this list** (it has its own tab: one place per fact). Row: cover thumb (hatched with
+no cover), title, meta "Single, Dec 18, 2026" + the `.ed-tag` **Coming** when the date is after today (New York), Edit.
+Form, in order: **Title** (required, 120); **Type** (`select`: Single, EP, Album, Remix album; Remix album saves `type: album,
+remix: true`); **Date** (date, required; hint "The day it comes out. Until then the site shows Pre-save."); **Link** (url,
+required, https only; placeholder "https://"; hint "Your smart link (like wingsmusic.lnk.to/…) or the Spotify link."); **Artists
+(optional)** (hint "Only if someone joins you, like: GLucak, J-BOY"); **Cover**: the product upload block as built (120px
+preview, "Upload a cover", path field "Filled in when you upload a cover below. Empty it to remove the cover."; hint "Square JPG,
+PNG or WebP, up to 5 MB. No art yet? Leave it empty: the site shows the title on a plain sleeve."); then Delete. Save bar "Save releases".
+
+**IDENTITY tab (OV4a).** No rows: fields straight on the panel (`.ed-field`, as built). Help: "IDENTITY’s countdown and Pre-save
+button, on Home and the Music page." Fields: **Release date** (date, required); **Pre-save link** (url, https only; hint "Where
+Pre-save goes. From release day the same button says Listen."). Under them a plain line, recomputed in the browser on input,
+`.ed-hint` style but `--text`: "On the site today: August 13, 2027, 268 days to go" ("Out now" on or after the day). Then a second
+`.ed-help`: "The ticket under your name on Home picks itself every day: a show today or tomorrow first, then a release coming or
+just out, then your next show. To change it, change Shows or Releases." Save bar "Save IDENTITY".
+
+**Bio tab (OV4a).** Fields: **Home sentence** (`textarea`, rows 4, `maxLength` 400, hint "Shows on Home under PUSH PAST FEAR. One or
+two sentences."); **About bio** (`textarea`, rows 14, `min-height: 20rem`, `maxLength` 4000, hint "Shows on the About page. Leave an
+empty line between paragraphs. Plain text: links and bold don’t work here."). Save bar "Save bio". Both fill with today's text
+(the `site.json` seed, OV4a).
+IDENTITY and Bio both live in `site.json`: saving one tab must never save or clear the other tab's unsaved edits, and never
+409 on Gabe's own earlier save (one shared version, updated from every reply; the server merges the fields each tab sends).
+
+**Save bar (every tab).** As section 15 (sticky, message then button on phones, beside from 700px, 4px top edge when dirty or
+failed) plus, after a successful save only, **See it on the site** (`<a class="ed-see text-link" target="_blank" rel="noopener">`,
+48px, weight 700, hidden in every other state): Shows -> `/shows/`, Releases -> `/music/`, IDENTITY -> `/music/`, Bio ->
+`/about/`, Products -> `/shop/`. Phones: it wraps under the "Saved" message (the bar is about 48px taller only while it says
+Saved; the 10rem scroll-padding covers it). From 700px: message and link share the left cell (`display: flex; flex-wrap: wrap;
+gap: 0 1rem`), Save button right (16rem).
+**Reduced motion:** the edit screen has no motion; `scrollIntoView` is instant; `<details>` opens at once.
+**Files:** `src/pages/edit/index.astro` (tabs, panels, the `<style is:global>` block), `public/js/edit.js` (tabs, shell, rows,
+the Played fold, new tabs, `ed-see`), plus OV4a / OV4b's server, store and data files (plan 113-125). `docs/guide/gabe-guide.md`
+gets one paragraph per new tab.
+**Tests** (`test/edit.test.js`, static where no DOM): the page has 5 (OV4b) / 4 (OV4a) `role="tab"` buttons in the order above,
+each with `aria-controls` to an existing `role="tabpanel"`; `edit.js` handles `ArrowLeft`, `ArrowRight`, `Home`, `End`; no
+`innerHTML` / `insertAdjacentHTML` in `edit.js` (kept); the Delete button is appended to `box.form`, not to the row head; the
+Shows panel has `ed-played`; `scrollIntoView` has no `smooth`; `ed-see` exists and is `hidden` by default. Server tests per field
+(OV4a / OV4b): `<script>`, `' OR 1=1 --`, `javascript:` stay inert or are refused; Cost newline refused.
+
+### 28j. Placement for OV5's new lines (Home, Shows, About)
+**Source:** content.md section 3 item 1 (line 93), line 38, line 60, line 66; plan A3-A6 (lines 60-63). Words verbatim from content.md.
+- **Sound line** "EDM, rap and rock. Raw lyrics, real faith, high energy.": the last line of the hero, after the Now stub
+  (`Hero.astro`, `<p class="sound">`), 16px, weight 700, `--text`, `max-width: 30rem`, `margin-top: var(--space-xs)`. It sits on the
+  hero's bottom ramp (solid `bg` at the foot), not over his face; the reviewer measures >= 4.5:1 at 390 (hero A). 390: two lines,
+  about 50px. 768: one line under the stub. 1280: one line under the buttons row.
+- **Welcome Home line** "Next: Welcome Home, Dec 18. Pre-save.": in RISE, after the release article, before the quote
+  (`RiseBand.astro`, `<p class="next-rel">`), 16px, weight 700; **Pre-save** is a text link (underlined) with the `.h-go` tap trick
+  (10px padding-block, -10px margin: a 44-48px target at no height). From the soonest coming release that is not IDENTITY; "Pre-save"
+  only for an `lnk.to` link (`tileAction`), else the sentence ends at the date; hidden when nothing is coming. Not an accent fill
+  (28g count). About 36px at 390.
+- **Shows intro** (content.md line 60): first line of the Shows column, above "Next full show" (`shows/index.astro`, `.prose > p`
+  style, `max-width: 34rem`).
+- **About opener** (content.md line 66): the first paragraph of the About bio, same style as the bio paragraphs; it goes into the
+  `site.json` seed so Gabe can edit it in the Bio tab.
+**Reduced motion:** n/a. **Tests:** OV5's (strings verbatim, `build.test.js`); `rules.test.js` checks `.next-rel` holds no
+`btn-solid`.
+
+### 28k. Order, heights, deviations
+**Order:** OV2 = 28a + 28b + 28c + 28d (one shows.js pass). OV3 = 28h first (subtraction), then 28g, 28e, 28f. OV4a = 28i tabs +
+rows + IDENTITY + Bio + Cost field; OV4b = the Releases tab. OV5 = 28j.
+**Home 390 and the D39 cap (5.8 x 660 = 3828px; today 3782):** 28a -12 (lead 140 vs 152), "Next full show" 0 (Home foot row),
+28f +4, 28h 0, 28j sound line about +50 and Welcome Home about +36: about **3860, over by about 30**. **Pre-decided trim if the
+measured height is over 3828 after OV5:** Home lists the lead + 1 more (`limit: 2`); "All shows" and "Next full show" stay one tap
+away (saves 60). Logged as part of this spec so no new ruling is needed; any other trim goes to the boss.
+**Expected after (about):** Home 390 3770-3830, 768 about 4000, 1280 about 4450; Shows 390 about 2750, 1280 about 2350; Edit 390
+about 1500. 0 running animations everywhere.
+**Deviations from plan.md, and why:**
+1. Home shows "Next full show" beside "All shows" under the list, not above it (above it on /shows/): Home has 46px left under D39.
+2. The edit tab is "IDENTITY", not "Now + IDENTITY": five tabs must fit 320; the Now line is automatic and the tab's help explains it.
+3. "Request a show" goes to the Instagram profile (`INSTAGRAM`, verified, content.md 61), with a hint to press Message, not a DM
+   deep link (unverified URL scheme; plan says "Instagram DM").
+4. IDENTITY Pre-save stays an outline (D98 allows Pre-save; it does not require it) so Home holds <= 3 fills; empty-state Follow
+   joins the outline list (not in D98's list either).
+5. 28e makes the 700-899 lockups one line (as the 900 layout) instead of a vw cap: the fit (K1) is kept and each line still fills.
+**Not done here:** the design-review skill run on new shots (nothing is built yet; it runs at each round's gate); a prototype
+(every item reuses an existing component). Boss: log the 28 picks as a D entry if accepted.

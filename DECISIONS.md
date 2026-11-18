@@ -455,3 +455,11 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   Pages preview). Review screenshots go to `.work/` (git-excluded); each round commits its review .md files and at most 4 key shots.
   Gabe-dependent items stay held; nothing that costs money, publishes beyond the preview workflow or contacts Gabe.
 - **Why:** the owner said "don't ask me any questions" and asked for these to be recorded so he can reverse them.
+
+## D112 (Desktop, 2026-11-18, main session, owner asleep, reversible): DESIGN 28 accepted for OV2-OV4
+- DESIGN 28a-28k is the spec for OV2 (shows date order, Played fold, share, Request a show + `cost` "Free"), OV3 (nav + Listen
+  from 700px, ticket-stub Now line, magenta rule, player first, fades out) and the OV4 edit-screen design (28i).
+- Accepted deviations from plan.md: Home "Next full show" shares the row with "All shows" (D39 height cap; pre-set trim = Home
+  lists 2 shows if over); the edit tab is "IDENTITY" not "Now + IDENTITY" (five tabs at 320); Request a show links to his verified
+  Instagram profile with a "press Message" hint (no unverified DM URL); IDENTITY Pre-save stays an outline button; 700-899px
+  headlines set on one line as at 900px. Heights marked "about" are measured at each round's gate.
