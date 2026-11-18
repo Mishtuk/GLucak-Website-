@@ -1,0 +1,236 @@
+V:\GLucakWebsite\dist\404.html
+  FAIL 20 :1 no Hallmark stamp on the first non-empty line of any CSS | fix: The stamp comment is line 1 of the CSS; only @charset may precede it
+  FAIL 24a :1 padding: .4rem 1.5rem on .btn where --space-l exists | fix: Use var(--space-l)
+  FAIL 24a :1 padding-inline: 1rem on .btn-show where --space-m exists | fix: Use var(--space-m)
+  FAIL 24a :1 padding-bottom: calc(var(--tab-h) + 1rem) on .hero-inner where --space-m exists
+  FAIL 34 :1 overflow-x: hidden on body (breaks sticky) | fix: Use overflow-x: clip on both html and body, never hidden
+  FAIL 48 :1 colour literal #000 outside tokens (-webkit-mask-image on .hero-photo img) | fix: Lift the value into the token block
+  FAIL 48 :1 colour literal #000 outside tokens (mask-image on .hero-photo img)
+  FAIL 62 :1 html[data-motion=on] .fade.fade-wait .phrase is hidden at rest (opacity: 0) and depends on a script to appear | fix: Visible by default: scope the hidden state under a .js class the script adds, or animate from visible with @starting-style
+  FAIL 67 :1 .tracks-h: uppercase tracked 0.04em at 18px in a label role | fix: Labels, captions, table heads, nav links and meta are the body face (or the theme's label face), a step smaller, sentence case, untracked
+  REFLEX 24b :1 margin-block: -10px (off the 4px scale) on .h-go | fix: Use the 4px spacing scale
+  REFLEX 24b :1 padding-block: 10px (off the 4px scale) on .h-go
+  WARN 3 :1 side stripe border-left: 4px solid var(--text) on .quote | fix: Hairline all round, none, or an accent square
+  WARN 3 :1 side stripe border-left: 22px solid var(--accent-text) on .yt-play:before
+  WARN 41 :1 dark surface (L 18%) on .hero-photo sets no text colour | fix: Swap text to paper in the same rule
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=b] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .site-footer sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=ab] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card .nocover sets no text colour
+  WARN F6 :1 numeric selector .product-detail .product-price at display size without tabular figures | fix: Add font-variant-numeric: tabular-nums
+  WARN F6 :1 numeric selector .product-detail .product-status at display size without tabular figures
+V:\GLucakWebsite\dist\about\index.html
+  FAIL 20 :1 no Hallmark stamp on the first non-empty line of any CSS
+  FAIL 24a :1 padding: .4rem 1.5rem on .btn where --space-l exists
+  FAIL 24a :1 padding-inline: 1rem on .btn-show where --space-m exists
+  FAIL 24a :1 padding-bottom: calc(var(--tab-h) + 1rem) on .hero-inner where --space-m exists
+  FAIL 34 :1 overflow-x: hidden on body (breaks sticky)
+  FAIL 48 :1 colour literal #000 outside tokens (-webkit-mask-image on .hero-photo img)
+  FAIL 48 :1 colour literal #000 outside tokens (mask-image on .hero-photo img)
+  FAIL 62 :1 html[data-motion=on] .fade.fade-wait .phrase is hidden at rest (opacity: 0) and depends on a script to appear
+  FAIL 67 :1 .tracks-h: uppercase tracked 0.04em at 18px in a label role
+  REFLEX 24b :1 margin-block: -10px (off the 4px scale) on .h-go
+  REFLEX 24b :1 padding-block: 10px (off the 4px scale) on .h-go
+  WARN 3 :1 side stripe border-left: 4px solid var(--text) on .quote
+  WARN 3 :1 side stripe border-left: 22px solid var(--accent-text) on .yt-play:before
+  WARN 41 :1 dark surface (L 18%) on .hero-photo sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=b] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .site-footer sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=ab] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card .nocover sets no text colour
+  WARN F6 :1 numeric selector .product-detail .product-price at display size without tabular figures
+  WARN F6 :1 numeric selector .product-detail .product-status at display size without tabular figures
+V:\GLucakWebsite\dist\edit\index.html
+  FAIL 20 :1 no Hallmark stamp on the first non-empty line of any CSS
+  FAIL 24a :1 padding: .4rem 1.5rem on .btn where --space-l exists
+  FAIL 24a :1 padding-inline: 1rem on .btn-show where --space-m exists
+  FAIL 24a :1 padding-bottom: calc(var(--tab-h) + 1rem) on .hero-inner where --space-m exists
+  FAIL 24a :2 padding: .5rem 1rem on .ed-btn where --space-m exists
+  FAIL 24a :2 padding: .5rem 1rem on .ed-tab where --space-m exists
+  FAIL 34 :1 overflow-x: hidden on body (breaks sticky)
+  FAIL 48 :1 colour literal #000 outside tokens (-webkit-mask-image on .hero-photo img)
+  FAIL 48 :1 colour literal #000 outside tokens (mask-image on .hero-photo img)
+  FAIL 62 :1 html[data-motion=on] .fade.fade-wait .phrase is hidden at rest (opacity: 0) and depends on a script to appear
+  FAIL 67 :1 .tracks-h: uppercase tracked 0.04em at 18px in a label role
+  REFLEX 24b :1 margin-block: -10px (off the 4px scale) on .h-go
+  REFLEX 24b :1 padding-block: 10px (off the 4px scale) on .h-go
+  WARN 3 :1 side stripe border-left: 4px solid var(--text) on .quote
+  WARN 3 :1 side stripe border-left: 22px solid var(--accent-text) on .yt-play:before
+  WARN 41 :1 dark surface (L 18%) on .hero-photo sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=b] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .site-footer sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=ab] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card .nocover sets no text colour
+  WARN 41 :2 dark surface (L 18%) on .ed-card sets no text colour
+  WARN F6 :1 numeric selector .product-detail .product-price at display size without tabular figures
+  WARN F6 :1 numeric selector .product-detail .product-status at display size without tabular figures
+  WARN F7 :2 same container recipe on 6 selectors (.ed-card, .ed input, .ed select, .ed textarea...) | fix: Vary weight, radius, or fill by role; not every box is the same box
+  WARN F15 :1 3 different column gaps across multi-column sections (.75rem, .35em, .5rem) | fix: One column gap for every multi-column section
+  WARN F23 :1 the document lacks a meta description | fix: Name the language, title the page in its own words, and describe it in one sentence for link previews
+V:\GLucakWebsite\dist\index.html
+  FAIL 20 :1 no Hallmark stamp on the first non-empty line of any CSS
+  FAIL 24a :1 padding: .4rem 1.5rem on .btn where --space-l exists
+  FAIL 24a :1 padding-inline: 1rem on .btn-show where --space-m exists
+  FAIL 24a :1 padding-bottom: calc(var(--tab-h) + 1rem) on .hero-inner where --space-m exists
+  FAIL 34 :1 overflow-x: hidden on body (breaks sticky)
+  FAIL 48 :1 colour literal #000 outside tokens (-webkit-mask-image on .hero-photo img)
+  FAIL 48 :1 colour literal #000 outside tokens (mask-image on .hero-photo img)
+  FAIL 50 :1 bare 1fr track holds images (.identity-state) | fix: Use minmax(0, 1fr) for image tracks
+  FAIL 50 :1 bare 1fr track holds images (.idn>.identity-state)
+  FAIL 62 :1 html[data-motion=on] .fade.fade-wait .phrase is hidden at rest (opacity: 0) and depends on a script to appear
+  FAIL 67 :1 .tracks-h: uppercase tracked 0.04em at 18px in a label role
+  REFLEX 24b :1 margin-block: -10px (off the 4px scale) on .h-go
+  REFLEX 24b :1 padding-block: 10px (off the 4px scale) on .h-go
+  WARN 3 :1 side stripe border-left: 4px solid var(--text) on .quote
+  WARN 3 :1 side stripe border-left: 22px solid var(--accent-text) on .yt-play:before
+  WARN 41 :1 dark surface (L 18%) on .hero-photo sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=b] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .site-footer sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=ab] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card .nocover sets no text colour
+  WARN F6 :1 numeric selector .product-detail .product-price at display size without tabular figures
+  WARN F6 :1 numeric selector .product-detail .product-status at display size without tabular figures
+V:\GLucakWebsite\dist\music\index.html
+  FAIL 20 :1 no Hallmark stamp on the first non-empty line of any CSS
+  FAIL 24a :1 padding: .4rem 1.5rem on .btn where --space-l exists
+  FAIL 24a :1 padding-inline: 1rem on .btn-show where --space-m exists
+  FAIL 24a :1 padding-bottom: calc(var(--tab-h) + 1rem) on .hero-inner where --space-m exists
+  FAIL 34 :1 overflow-x: hidden on body (breaks sticky)
+  FAIL 48 :1 colour literal #000 outside tokens (-webkit-mask-image on .hero-photo img)
+  FAIL 48 :1 colour literal #000 outside tokens (mask-image on .hero-photo img)
+  FAIL 50 :1 bare 1fr track holds images (.identity-state)
+  FAIL 50 :1 bare 1fr track holds images (.idn>.identity-state)
+  FAIL 62 :1 html[data-motion=on] .fade.fade-wait .phrase is hidden at rest (opacity: 0) and depends on a script to appear
+  FAIL 67 :1 .tracks-h: uppercase tracked 0.04em at 18px in a label role
+  REFLEX 24b :1 margin-block: -10px (off the 4px scale) on .h-go
+  REFLEX 24b :1 padding-block: 10px (off the 4px scale) on .h-go
+  WARN 3 :1 side stripe border-left: 4px solid var(--text) on .quote
+  WARN 3 :1 side stripe border-left: 22px solid var(--accent-text) on .yt-play:before
+  WARN 41 :1 dark surface (L 18%) on .hero-photo sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=b] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .site-footer sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=ab] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card .nocover sets no text colour
+  WARN 58 :2 hero paragraph runs 13 words | fix: One sentence, twelve words or fewer
+  WARN F6 :1 numeric selector .product-detail .product-price at display size without tabular figures
+  WARN F6 :1 numeric selector .product-detail .product-status at display size without tabular figures
+V:\GLucakWebsite\dist\privacy\index.html
+  FAIL 20 :1 no Hallmark stamp on the first non-empty line of any CSS
+  FAIL 24a :1 padding: .4rem 1.5rem on .btn where --space-l exists
+  FAIL 24a :1 padding-inline: 1rem on .btn-show where --space-m exists
+  FAIL 24a :1 padding-bottom: calc(var(--tab-h) + 1rem) on .hero-inner where --space-m exists
+  FAIL 34 :1 overflow-x: hidden on body (breaks sticky)
+  FAIL 48 :1 colour literal #000 outside tokens (-webkit-mask-image on .hero-photo img)
+  FAIL 48 :1 colour literal #000 outside tokens (mask-image on .hero-photo img)
+  FAIL 62 :1 html[data-motion=on] .fade.fade-wait .phrase is hidden at rest (opacity: 0) and depends on a script to appear
+  FAIL 67 :1 .tracks-h: uppercase tracked 0.04em at 18px in a label role
+  REFLEX 24b :1 margin-block: -10px (off the 4px scale) on .h-go
+  REFLEX 24b :1 padding-block: 10px (off the 4px scale) on .h-go
+  WARN 3 :1 side stripe border-left: 4px solid var(--text) on .quote
+  WARN 3 :1 side stripe border-left: 22px solid var(--accent-text) on .yt-play:before
+  WARN 41 :1 dark surface (L 18%) on .hero-photo sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=b] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .site-footer sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=ab] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card .nocover sets no text colour
+  WARN 58 :2 hero paragraph runs 35 words
+  WARN F6 :1 numeric selector .product-detail .product-price at display size without tabular figures
+  WARN F6 :1 numeric selector .product-detail .product-status at display size without tabular figures
+V:\GLucakWebsite\dist\shop\index.html
+  FAIL 20 :1 no Hallmark stamp on the first non-empty line of any CSS
+  FAIL 24a :1 padding: .4rem 1.5rem on .btn where --space-l exists
+  FAIL 24a :1 padding-inline: 1rem on .btn-show where --space-m exists
+  FAIL 24a :1 padding-bottom: calc(var(--tab-h) + 1rem) on .hero-inner where --space-m exists
+  FAIL 34 :1 overflow-x: hidden on body (breaks sticky)
+  FAIL 48 :1 colour literal #000 outside tokens (-webkit-mask-image on .hero-photo img)
+  FAIL 48 :1 colour literal #000 outside tokens (mask-image on .hero-photo img)
+  FAIL 62 :1 html[data-motion=on] .fade.fade-wait .phrase is hidden at rest (opacity: 0) and depends on a script to appear
+  FAIL 67 :1 .tracks-h: uppercase tracked 0.04em at 18px in a label role
+  REFLEX 24b :1 margin-block: -10px (off the 4px scale) on .h-go
+  REFLEX 24b :1 padding-block: 10px (off the 4px scale) on .h-go
+  WARN 3 :1 side stripe border-left: 4px solid var(--text) on .quote
+  WARN 3 :1 side stripe border-left: 22px solid var(--accent-text) on .yt-play:before
+  WARN 41 :1 dark surface (L 18%) on .hero-photo sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=b] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .site-footer sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=ab] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card .nocover sets no text colour
+  WARN F6 :1 numeric selector .product-detail .product-price at display size without tabular figures
+  WARN F6 :1 numeric selector .product-detail .product-status at display size without tabular figures
+V:\GLucakWebsite\dist\shows\index.html
+  FAIL 20 :1 no Hallmark stamp on the first non-empty line of any CSS
+  FAIL 24a :1 padding: .4rem 1.5rem on .btn where --space-l exists
+  FAIL 24a :1 padding-inline: 1rem on .btn-show where --space-m exists
+  FAIL 24a :1 padding-bottom: calc(var(--tab-h) + 1rem) on .hero-inner where --space-m exists
+  FAIL 34 :1 overflow-x: hidden on body (breaks sticky)
+  FAIL 48 :1 colour literal #000 outside tokens (-webkit-mask-image on .hero-photo img)
+  FAIL 48 :1 colour literal #000 outside tokens (mask-image on .hero-photo img)
+  FAIL 62 :1 html[data-motion=on] .fade.fade-wait .phrase is hidden at rest (opacity: 0) and depends on a script to appear
+  FAIL 67 :1 .tracks-h: uppercase tracked 0.04em at 18px in a label role
+  REFLEX 24b :1 margin-block: -10px (off the 4px scale) on .h-go
+  REFLEX 24b :1 padding-block: 10px (off the 4px scale) on .h-go
+  WARN 3 :1 side stripe border-left: 4px solid var(--text) on .quote
+  WARN 3 :1 side stripe border-left: 22px solid var(--accent-text) on .yt-play:before
+  WARN 41 :1 dark surface (L 18%) on .hero-photo sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=b] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .site-footer sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=ab] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card .nocover sets no text colour
+  WARN 58 :2 hero paragraph runs 14 words
+  WARN F6 :1 numeric selector .product-detail .product-price at display size without tabular figures
+  WARN F6 :1 numeric selector .product-detail .product-status at display size without tabular figures
+V:\GLucakWebsite\dist\v2\index.html
+  FAIL 20 :1 no Hallmark stamp on the first non-empty line of any CSS
+  FAIL 24a :1 padding: .4rem 1.5rem on .btn where --space-l exists
+  FAIL 24a :1 padding-inline: 1rem on .btn-show where --space-m exists
+  FAIL 24a :1 padding-bottom: calc(var(--tab-h) + 1rem) on .hero-inner where --space-m exists
+  FAIL 34 :1 overflow-x: hidden on body (breaks sticky)
+  FAIL 48 :1 colour literal #000 outside tokens (-webkit-mask-image on .hero-photo img)
+  FAIL 48 :1 colour literal #000 outside tokens (mask-image on .hero-photo img)
+  FAIL 50 :1 bare 1fr track holds images (.identity-state)
+  FAIL 50 :1 bare 1fr track holds images (.idn>.identity-state)
+  FAIL 62 :1 html[data-motion=on] .fade.fade-wait .phrase is hidden at rest (opacity: 0) and depends on a script to appear
+  FAIL 67 :1 .tracks-h: uppercase tracked 0.04em at 18px in a label role
+  REFLEX 24b :1 margin-block: -10px (off the 4px scale) on .h-go
+  REFLEX 24b :1 padding-block: 10px (off the 4px scale) on .h-go
+  WARN 3 :1 side stripe border-left: 4px solid var(--text) on .quote
+  WARN 3 :1 side stripe border-left: 22px solid var(--accent-text) on .yt-play:before
+  WARN 41 :1 dark surface (L 18%) on .hero-photo sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=b] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .site-footer sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=ab] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card .nocover sets no text colour
+  WARN F6 :1 numeric selector .product-detail .product-price at display size without tabular figures
+  WARN F6 :1 numeric selector .product-detail .product-status at display size without tabular figures
+V:\GLucakWebsite\dist\videos\index.html
+  FAIL 20 :1 no Hallmark stamp on the first non-empty line of any CSS
+  FAIL 24a :1 padding: .4rem 1.5rem on .btn where --space-l exists
+  FAIL 24a :1 padding-inline: 1rem on .btn-show where --space-m exists
+  FAIL 24a :1 padding-bottom: calc(var(--tab-h) + 1rem) on .hero-inner where --space-m exists
+  FAIL 34 :1 overflow-x: hidden on body (breaks sticky)
+  FAIL 48 :1 colour literal #000 outside tokens (-webkit-mask-image on .hero-photo img)
+  FAIL 48 :1 colour literal #000 outside tokens (mask-image on .hero-photo img)
+  FAIL 62 :1 html[data-motion=on] .fade.fade-wait .phrase is hidden at rest (opacity: 0) and depends on a script to appear
+  FAIL 67 :1 .tracks-h: uppercase tracked 0.04em at 18px in a label role
+  REFLEX 24b :1 margin-block: -10px (off the 4px scale) on .h-go
+  REFLEX 24b :1 padding-block: 10px (off the 4px scale) on .h-go
+  WARN 3 :1 side stripe border-left: 4px solid var(--text) on .quote
+  WARN 3 :1 side stripe border-left: 22px solid var(--accent-text) on .yt-play:before
+  WARN 41 :1 dark surface (L 18%) on .hero-photo sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=b] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .site-footer sets no text colour
+  WARN 41 :1 dark surface (L 18%) on html[data-hero=ab] .slot sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card sets no text colour
+  WARN 41 :1 dark surface (L 18%) on .v2-card .nocover sets no text colour
+  WARN F6 :1 numeric selector .product-detail .product-price at display size without tabular figures
+  WARN F6 :1 numeric selector .product-detail .product-status at display size without tabular figures
+sloplint: 98 FAIL, 20 REFLEX, 107 WARN across 10 file(s).

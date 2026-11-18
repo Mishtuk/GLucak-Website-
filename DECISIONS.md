@@ -393,6 +393,8 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   URL verified 2026-11-17), YouTube, SoundCloud, plain links; (d) curly quotes in all visible copy, plus a `curly()` at render for
   Gabe's and YouTube's text; (e) Shows from 72rem: Watch as lead + two, not a clipped sideways row; (f) selection, caret and
   scrollbar in era tokens.
+- **Music at 1280 (reviewer, accepted):** the 27c row plus Listen everywhere needs ~746px in a 681px column, so it wraps: Music 1280
+  3365 -> 3421 (+56), not +0 as specced. Accepted; Listen everywhere is the smart link to every other platform.
 - **Home height:** 27c adds 56px at 390 (3726 -> about 3782). Accepted: listen is main action 1, and the row is the
   only listen path beside the player. No trim offered.
 - **Motion:** none added. DESIGN 8 / D64 stand (opacity-only root fade, off under reduce and the Motion switch); 27a removes a fade.
