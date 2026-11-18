@@ -155,7 +155,7 @@ test('Music: artists credit shown on the tile; upcoming releases are tiles in th
 
 test('Spotify box keeps the loading / blocked note under the iframe; no era-word placeholder line on Music', () => {
   const h = html('/');
-  assert.match(h, /<div class="player-box"><p class="player-note">Loading the Spotify player\./);
+  assert.match(h, /<div class="player-box"><p class="player-note">Player not loading\? Play it on Spotify below\.<\/p>/);
   assert.ok(!html('/music/').includes('Era word:'));
 });
 

@@ -80,3 +80,10 @@ test('C18: the Home latest video is the newest non-Short (a kind "other" Short n
   assert.equal(first, lead.id);
   assert.notEqual(first, short.id);
 });
+
+test('C19: player fallback and the Shorts line are the content.md strings', () => {
+  assert.ok(dist('index.html').includes('<p class="player-note">Player not loading? Play it on Spotify below.</p>'));
+  const v = dist('videos/index.html');
+  assert.equal((v.match(/>New shorts most weeks on YouTube\.</g) ?? []).length, 1);
+  assert.ok(!v.includes('Shorts most weeks:') && !v.includes('>On YouTube<'));
+});

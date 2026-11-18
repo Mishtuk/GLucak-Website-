@@ -11,7 +11,7 @@ const g = videosPage();
       <h1 class="spine" id="h-vids"><span class="tab">Videos</span> <span class="phrase phrase-watch">Watch</span></h1>
       {g.lead ? <VideoCard v={g.lead} lead tag="div" /> : <p class="vid-lead"><a class="go" href={YOUTUBE} rel="noopener">GLucak on YouTube</a></p>}
       {g.live.length > 0 && <ul class="vid-list vid-also">{g.live.map((v) => <VideoCard v={v} tag="li" />)}</ul>}
-      {g.music.length === 0 && <p class="start-line vid-more">Shorts most weeks: <a class="go" href={SHORTS} rel="noopener">On YouTube</a></p>}
+      {g.music.length === 0 && <p class="start-line vid-more"><a class="go" href={SHORTS} rel="noopener">New shorts most weeks on YouTube.</a></p>}
     </div>
   </section>
   {g.music.length > 0 && (
@@ -19,7 +19,7 @@ const g = videosPage();
       <div class="wrap">
         <h2 id="h-mv" class="prose-h">Music videos</h2>
         <ul class="vid-list vid-grid">{g.music.map((v) => <VideoCard v={v} tag="li" />)}</ul>
-        <p class="start-line vid-more">Shorts most weeks: <a class="go" href={SHORTS} rel="noopener">On YouTube</a></p>
+        <p class="start-line vid-more"><a class="go" href={SHORTS} rel="noopener">New shorts most weeks on YouTube.</a></p>
       </div>
     </section>
   )}
