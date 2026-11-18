@@ -72,10 +72,11 @@ export function rowHtml(r, { past = false } = {}) {
 // Kept for callers that want one plain row.
 export const showHtml = rowHtml;
 
-const upcomingHtml = (list) => {
-  const [first, ...rest] = list;
-  const items = first.type === 'show' ? posterHtml(first) + rest.map((r) => rowHtml(r)).join('') : list.map((r) => rowHtml(r)).join('');
-  return `<ul class="shows">${items}</ul>`;
+/** The poster is the first full show (open mics may come before it by date); the rest are rows by date, the poster not repeated. limit counts the poster. */
+const upcomingHtml = (list, limit = Infinity) => {
+  const poster = list.find((r) => r.type === 'show');
+  const rows = list.filter((r) => r !== poster).slice(0, poster ? limit - 1 : limit);
+  return `<ul class="shows">${(poster ? posterHtml(poster) : '') + rows.map((r) => rowHtml(r)).join('')}</ul>`;
 };
 const playedHtml = (list) => list.length ? `<div class="played"><h2>Played</h2><ul class="rows">${list.map((r) => rowHtml(r, { past: true })).join('')}</ul></div>` : '';
 const emptyHtml = (played) => `<div class="empty"><p class="empty-line">No shows booked right now</p><div class="empty-actions"><a class="btn btn-solid" href="${INSTAGRAM}" rel="noopener">Follow</a>${BOOKING_EMAIL ? `<a class="btn btn-line" href="mailto:${esc(BOOKING_EMAIL)}?subject=Show%20request">Request a show</a>` : ''}</div>${playedHtml(played)}</div>`;
@@ -89,7 +90,7 @@ export function showsHtml(rows, now = new Date(), { limit = Infinity, past = fal
   const ok = rows.filter((r) => { try { return validateShow(r); } catch { return false; } });
   const s = splitShows(ok, now);
   if (!s.upcoming.length) return emptyHtml(past ? s.past : s.past.slice(0, 3));
-  let out = upcomingHtml(s.upcoming.slice(0, limit));
+  let out = upcomingHtml(s.upcoming, limit);
   if (allLink) out += `<a class="text-link" href="${esc(allLink)}">All shows</a>`;
   if (past) out += playedHtml(s.past);
   return out;

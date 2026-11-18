@@ -90,7 +90,13 @@ test('poster is the first full show, never an open mic', () => {
   const show = showsHtml([row({ venue: 'Big' }), row({ date: '2026-12-13', venue: 'Next' })], now);
   assert.match(show, /<li class="poster">.*Big, C/);
   assert.equal((show.match(/class="poster"/g) || []).length, 1);
-  assert.doesNotMatch(showsHtml([row({ type: 'open-mic' }), row({ date: '2026-12-13' })], now), /class="poster"/);
+  // open mics first by date: the poster is still the first full show, not repeated as a row; Home limit 3 = poster + next 2 by date
+  const mics = [row({ type: 'open-mic', date: '2026-12-10', venue: 'M1' }), row({ type: 'open-mic', date: '2026-12-11', venue: 'M2' }), row({ type: 'open-mic', date: '2026-12-12', venue: 'M3' }), row({ date: '2026-12-13', venue: 'Big' })];
+  const home = showsHtml(mics, now, { limit: 3 });
+  assert.match(home, /<li class="poster">.*Big, C/);
+  assert.equal((home.match(/Big, C/g) || []).length, 1);
+  assert.ok(home.includes('M1, C') && home.includes('M2, C') && !home.includes('M3, C'));
+  assert.doesNotMatch(showsHtml([row({ type: 'open-mic' }), row({ type: 'open-mic', date: '2026-12-13' })], now), /class="poster"/);
 });
 
 test('empty state: never blank, Played rows if any, no Request button without a booking email', () => {
