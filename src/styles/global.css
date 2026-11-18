@@ -591,8 +591,8 @@ iframe.yt { width: 100%; border: 0; }
 .releases .release { margin-top: 0; }
 .prose { display: grid; gap: var(--space-s); margin-top: var(--space-l); }
 .prose > p { max-width: 44rem; }
-.band-push .prose { margin-top: var(--space-xl); }
-.identity-state:has(.identity-lg) { margin-top: var(--space-xl); } /* margin on the block, so the mark centres on the word */
+.band-push .prose { margin-top: var(--space-l); }
+.identity-state:has(.identity-lg) { margin-top: var(--space-l); } /* margin on the block, so the mark centres on the word */
 .prose h2, .prose-h { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); text-transform: uppercase; line-height: 1; }
 .footer-join { margin-bottom: var(--space-l); }
 .sheet a[aria-current='page'] { box-shadow: inset 6px 0 0 var(--text); padding-left: 1rem; } /* 30b: an indicator bar */
@@ -1484,7 +1484,7 @@ li[id^='s-']:target { outline: 3px solid var(--text); outline-offset: 2px; } /* 
 
 /* 30a-4 Ticket: a paper stub with a half-circle notch cut from each short side. */
 .ticket {
-  padding: var(--space-s) calc(var(--space-m) + 12px); background: var(--bg-2) var(--texture);
+  padding: 0.5rem calc(var(--space-m) + 12px); background: var(--bg-2) var(--texture);
   -webkit-mask: radial-gradient(circle 12px at 0 50%, #0000 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 12px at 100% 50%, #0000 97%, #000) right / 51% 100% no-repeat;
   mask: radial-gradient(circle 12px at 0 50%, #0000 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 12px at 100% 50%, #0000 97%, #000) right / 51% 100% no-repeat;
 }
@@ -1542,10 +1542,11 @@ html[data-home] .band-live :is(.v2-thumb, .nocover) { background: var(--bg); } /
 }
 
 /* About: the paper sheet. Taped, flush left on phones, overlapping Shows by 2rem from 700px; the tab hangs off its top. Home only. */
-.band-push.v2-push { border-top: 0; background: none; padding-block: 0 var(--space-xl); }
+.band-push.v2-push { border-top: 0; background: none; padding-block: 0 var(--space-l); }
 .is-paper .tab { left: var(--space-m); color: var(--page-text); }
 .band > .wrap.is-paper { position: relative; } /* beats `.band > .wrap { position: static }`: the tab and the tape hang off the sheet */
-.v2-push > .wrap.is-paper { width: auto; margin: 0.75rem var(--space-m) 0 0; padding: var(--space-m) var(--space-m) var(--space-m) var(--gutter); }
+.v2-push > .wrap.is-paper { width: auto; margin: 0.75rem var(--space-m) 0 0; padding: 0.75rem var(--space-m) 0.75rem var(--gutter); }
+@media (max-width: 699px) { .v2-push > .wrap.is-paper::after { right: -0.8rem; } } /* keeps the tape inside the viewport (no 1px scroll) */
 @media (min-width: 700px) {
   .v2-push > .wrap.is-paper { width: min(100% - 2 * var(--gutter) - 6vw, var(--container) - 6vw); margin: -2rem 0 0 max(var(--gutter), calc((100% - var(--container)) / 2)); padding: var(--space-xl); }
 }
@@ -1557,3 +1558,20 @@ html[data-home] .band-live :is(.v2-thumb, .nocover) { background: var(--bg); } /
   html[data-home] .band-now .v2-identity .v2-photo { width: 8rem; }
 }
 @media (min-width: 900px) { html[data-home] .band-now .v2-identity { margin-left: 4rem; } }
+
+/* PW2 gate fixes. */
+@media (min-width: 900px) and (max-width: 1039px) { /* the 7fr column is too tight for IDENTITY beside its art and a 4rem step */
+  html[data-home] .band-now .v2-identity { grid-template-columns: minmax(0, 1fr); justify-items: start; margin-left: 0; }
+  html[data-home] .band-now .v2-identity .v2-photo { width: 12rem; }
+}
+@media (min-width: 700px) and (max-width: 899px) {
+  html[data-home] .band-now .now-grid { align-items: start; }
+  /* About sheet: heading across the top, the belt print (4:5) under it beside the bio */
+  .band-push.v2-push > .wrap.v2-split { grid-template-columns: 30% minmax(0, 1fr); grid-template-areas: 'side side' 'p1 bio' 'p1 act'; align-items: start; }
+  .v2-push .v2-belt { align-self: start; height: auto; min-height: 0; aspect-ratio: 4 / 5; }
+}
+/* Gig Poster: a slightly deeper ground on Shows so the angled edge reads (text 11.9:1, muted 4.9:1 there). */
+html[data-palette='poster'] .band-live.edge-angle { background-color: color-mix(in srgb, var(--text) 10%, var(--bg)); }
+/* The Colours pill sat on the Spotify card at phone width: tuck it to the left edge, above the bar. */
+@media (max-width: 699px) { .pal { right: auto; left: 12px; } .pal-sheet { right: auto; left: 0; } }
+@media (max-width: 699px) { html[data-home] .band:not(.v2-push) { padding-bottom: calc(var(--section) - 0.75rem); } } /* phone height cap: 12px off each of Rise, Shows, Join */
