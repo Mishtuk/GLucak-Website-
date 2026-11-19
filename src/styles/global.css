@@ -1740,7 +1740,9 @@ html[data-palette='poster'] .hero-film::before { background: var(--film-ink); }
 /* The light palette: inks flip (dark ink = text, light = paper). */
 html[data-palette='poster'] .rec { --ink-dark: color-mix(in srgb, var(--text) 80%, var(--bg)); --ink-light: var(--bg); }
 /* Records, Motion on (app.js layoutHs, data-hs='row'): the band's wrap sticks under the header and the page scroll sets the row's scrollLeft. */
-.band-crate.is-pinned { padding-block: 0; }
+.band-crate.is-pinned { padding-block: 0; background-image: none; } /* owner: the ground holds still while the records travel; the grain is painted on the stuck layer below */
+.band-crate.is-pinned > .wrap { isolation: isolate; }
+.band-crate.is-pinned > .wrap::before { content: ''; position: absolute; z-index: -1; inset: 0 calc(50% - 50cqi); background: var(--bg-2) var(--texture); }
 .band-crate.is-pinned > .wrap { position: sticky; top: var(--header-h); height: calc(100svh - var(--header-h) - var(--bar-h)); display: flex; flex-direction: column; justify-content: center; }
 .band-crate.is-pinned .records { overflow-x: hidden; scroll-snap-type: none; scrollbar-width: none; margin-top: var(--space-m); padding-block: var(--space-m); }
 .band-crate.is-pinned .vid-more { margin-top: var(--space-s); }
