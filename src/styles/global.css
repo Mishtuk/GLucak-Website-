@@ -479,6 +479,10 @@ html[data-shows='none'] .quote-live { display: none; }
 .push-body { display: grid; gap: var(--space-m); margin-top: var(--space-m); }
 .bio { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xs); overflow-wrap: anywhere; }
 .bio-lead { font-size: var(--step-0); line-height: 1.4; font-weight: 500; overflow-wrap: anywhere; }
+/* About (owner 2026-11-18): no tab strip, the photo sits right under the header; the bio quote is poster type like the title */
+.sub:has(> .band-push:first-child) { padding-top: var(--header-h); }
+.sub > .band-push:first-child { border-top: 0; }
+.about-body .bio-lead { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.75rem, 1.1rem + 2.4vw, 3rem); line-height: 0.98; text-transform: uppercase; letter-spacing: 0.01em; overflow-wrap: normal; }
 .push-actions { display: flex; flex-wrap: wrap; gap: var(--space-s) var(--space-l); align-items: center; }
 /* About from 900px (DESIGN 20c): the right column opens with a setlist of actions, no fill (the header's LISTEN is the
    view's one accent). Phones keep the solid Patreon button. */
