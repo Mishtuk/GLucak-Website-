@@ -15,16 +15,17 @@ test('release card: cover, Listen and the player in one panel; the player leads 
   assert.ok(card.indexOf('class="player"') < card.indexOf('>Listen<'));
 });
 
-test('video row: latest + 2 featured, local thumbnails that exist, facade kept, 3 across from 700px', () => {
+test('Home records band: after Shows, before About; facade kept, local sleeves exist, no iframe before a press', () => {
   const h = home();
-  const row = h.match(/<ul class="v2-vrow">[^]*?<\/ul>/)[0];
-  assert.equal((row.match(/<li class="v2-vid">/g) ?? []).length, 3);
-  assert.equal((row.match(/data-yt="[\w-]{11}"/g) ?? []).length, 3);
-  const thumbs = [...row.matchAll(/src="(\/media\/videos\/[\w-]+-640\.webp)"/g)].map((m) => m[1]);
-  assert.equal(thumbs.length, 3);
-  for (const t of thumbs) assert.ok(existsSync(join(ROOT, 'public', t)), t);
-  assert.ok(!/ytimg\.com/.test(h));
-  assert.match(css, /@media \(min-width: 700px\) \{ \.v2-vrow \{[^}]*repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.ok(h.includes('class="band band-crate"') && /<dialog class="rec-open" id="rec-open"/.test(h) && h.includes('href="/videos/"'));
+  assert.ok(h.indexOf('id="shows"') < h.indexOf('class="band band-crate"') && h.indexOf('class="band band-crate"') <h.indexOf('id="about"'));
+  const row = h.match(/<ul class="records">[^]*?<\/ul>/)[0];
+  const n = (row.match(/<li class="rec /g) ?? []).length;
+  assert.ok(n > 0 && (row.match(/data-yt="[\w-]{11}"/g) ?? []).length === n);
+  const art = [...row.matchAll(/src="(\/media\/sleeves\/[\w-]+-320\.webp)"/g)].map((m) => m[1]);
+  assert.ok(art.length > 0);
+  for (const t of art) assert.ok(existsSync(join(ROOT, 'public', t)), t);
+  assert.ok(!/<iframe[^>]*youtube/.test(h) && !/ytimg\.com/.test(h));
 });
 
 test('Home: no image src repeats, and the credits cover the photos shown', () => {
@@ -72,7 +73,6 @@ test('18h: D1 video grid from 900px, lock-push on FEAR, no-break kicker date, de
   assert.match(css, /@media \(min-width: 900px\) \{\s*\.v2-vrow \{ grid-template-columns: minmax\(0, 2fr\) minmax\(0, 1fr\); \}\s*\.v2-vid:first-child \{ grid-row: 1 \/ span 2; \}/);
   const h = home();
   assert.match(h, /<span class="phrase fit lock-push"><span class="ln ln-push1">Push Past/);
-  assert.match(h, /sizes="\(min-width: 900px\) 34vw, 82vw"/);
   assert.match(h, /sizes="\(min-width: 900px\) 40vw, 30vw"/);
   const k = h.match(/<p class="v2-kicker">([^]*?)<\/p>/)[1];
   assert.match(k, /[A-Z][a-z]{2} \d{1,2}, \d{4}/, 'the date has no breaking spaces');

@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import RiseBand from '../components/RiseBand.astro';
-import VideoBlock from '../components/VideoBlock.astro';
+import Records from '../components/Records.astro';
 import Signup from '../components/Signup.astro';
 import { PATREON, PATREON_LINE, PHOTO_CREDITS as C, SITE_URL, SOCIALS, era } from '../components/content.js';
 import site from '../data/site.json';
@@ -32,10 +32,11 @@ const HERO = 'ab'; // D34: A (GLUCAK over the photo) under 900px, B (photo in th
       </div>
       <div class="v2-main">
         <div id="shows-mount"><Fragment set:html="<!--gl:shows-->" /></div>
-        <VideoBlock />
       </div>
     </div>
   </section>
+
+  <Records more />
 
   <section class="band band-push v2-push" id="about" aria-labelledby="h-push">
     <div class="wrap v2-split is-paper taped">

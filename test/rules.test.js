@@ -71,14 +71,14 @@ test('28j: the new lines sit where 28j puts them (Home hero, RISE, Shows, About)
   assert.ok(dist('about/index.html').includes('<p>Reforged and ready for the next era'));
 });
 
-test('C18: the Home latest video is the newest non-Short (a kind "other" Short never leads the row)', () => {
+test('C18: the Home records band has the Videos page records, and no Short leads it', () => {
   const vids = JSON.parse(read('src/data/videos.json'));
-  const lead = vids.filter((v) => v.kind !== 'other' && v.date).sort((a, b) => b.date.localeCompare(a.date))[0];
   const short = vids.filter((v) => v.kind === 'other').sort((a, b) => b.date.localeCompare(a.date))[0];
-  const h = dist('index.html');
-  const first = h.match(/<ul class="v2-vrow">\s*<li class="v2-vid">\s*<a href="https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})"/)?.[1];
-  assert.equal(first, lead.id);
-  assert.notEqual(first, short.id);
+  const ids = (h) => [...h.matchAll(/class="rec-link" href="https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})"/g)].map((m) => m[1]);
+  const home = ids(dist('index.html'));
+  assert.ok(home.length > 0);
+  assert.deepEqual(home, ids(dist('videos/index.html')));
+  assert.notEqual(home[0], short.id);
 });
 
 test('C19: player fallback and the Shorts line are the content.md strings', () => {
@@ -137,7 +137,10 @@ for (const [p, h] of Object.entries(pages29)) for (const f of mediaRefs(h)) {
 }
 
 test('29g-1: every photo is a named frame; each frame is on one page only; the fixture prints poster-art once', () => {
-  for (const [fr, set] of used) assert.equal(set.size, 1, `${fr} is on ${[...set].join(', ')}`);
+  for (const [fr, set] of used) {
+    if (fr === 'sleeve') { assert.deepEqual([...set].sort(), ['index.html', 'videos/index.html']); continue; } // owner 2026-11-18: records on Home and Videos
+    assert.equal(set.size, 1, `${fr} is on ${[...set].join(', ')}`);
+  }
   assert.equal(shows2.split('poster-art').length - 1, 1, 'two full shows: art on the first only');
   assert.ok(used.size >= 9, `frames in use: ${[...used.keys()].join(', ')}`);
 });

@@ -149,7 +149,7 @@ test("26g-7: Videos is in every page's nav and menu; the phone bar Watch goes to
   }
   assert.match(vids.match(/<nav class="phone-bar"[\s\S]*?<\/nav>/)[0], /<a href="\/videos\/" aria-current="page">/);
   assert.match(vids.match(/<nav class="nav-desktop"[\s\S]*?<\/nav>/)[0], /<a href="\/videos\/" aria-current="page">Videos/);
-  assert.match(page('index.html'), /id="shows-video"[^>]*>\s*<h3><a class="h-go" href="\/videos\/">Watch/);
+  assert.match(page('index.html'), /<h2 class="crate-h" id="h-crate"><a class="h-go" href="\/videos\/">Records/);
   assert.match(page('shows/index.html'), /id="shows-video"[^>]*>\s*<h2><a class="h-go" href="\/videos\/">Watch/);
   assert.ok(readFileSync(join(ROOT, 'dist/sitemap.xml'), 'utf8').includes('/videos/'));
 });

@@ -55,7 +55,7 @@ test('24a: grounds are on 404, Music and Shows only; Home carries none of the ne
   assert.ok(!/class="[^"]*has-ground/.test(page('shows/index.html')), 'D93: Shows drops the Kealey wall strip');
   assert.ok(!/class="[^"]*has-ground/.test(page('about/index.html')), 'no ground on About');
   const home = page('index.html');
-  for (const w of ['has-ground', 'venues', 'start-line']) assert.ok(!new RegExp(`class="[^"]*\\b${w}\\b`).test(home), `Home has no ${w} element`);
+  for (const w of ['has-ground', 'venues']) /* start-line: the records band's link line (owner 2026-11-18) */assert.ok(!new RegExp(`class="[^"]*\\b${w}\\b`).test(home), `Home has no ${w} element`);
   assert.match(home, /class="band band-rise"/);
 });
 

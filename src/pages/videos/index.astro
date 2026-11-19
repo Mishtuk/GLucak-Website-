@@ -1,7 +1,8 @@
 ---
 import { existsSync } from 'node:fs';
 import Base from '../../layouts/Base.astro';
-import { videosPage, YOUTUBE, SHORTS, PHOTO_CREDITS as C } from '../../components/content.js';
+import Records from '../../components/Records.astro';
+import { videosPage, YOUTUBE, PHOTO_CREDITS as C } from '../../components/content.js';
 import { curly } from '../../lib/shows.js';
 // Owner 2026-11-18: a record shop. "Now showing" is the stage (the newest music video, its name in poster type over the screen).
 // Under it, every video is a record: a designed sleeve (a real still from that video, two inks, four layouts) with the vinyl
@@ -10,10 +11,8 @@ const g = videosPage();
 const live = g.lead ? [g.lead, ...g.live] : g.live;
 const all = [...g.music, ...live];
 const lead = all[0] ?? null;
-const pic = (id: string, dir: string, big: number) => existsSync(`public/media/${dir}/${id}-${big}.webp`) ? `/media/${dir}/${id}` : null;
 const meta = (v: Record<string, any>) => [v.place ? `Live at ${v.place}` : v.kind === 'lyric-video' ? 'Lyric video' : 'Music video', v.with].filter(Boolean).join(' · ');
 const name = (v: Record<string, any>) => curly(v.name ?? v.title);
-const pad = (n: number) => String(n).padStart(2, '0');
 const thumb = lead && existsSync(`public/media/videos/${lead.id}-640.webp`) ? `/media/videos/${lead.id}` : null;
 ---
 <Base image="videos" title="Videos | GLucak" current="videos" credits={[C.vladd, C.joseph, C.yt]} description="Watch GLucak: every music video, and Scenic Route live at Crooked Eye.">
@@ -32,39 +31,5 @@ const thumb = lead && existsSync(`public/media/videos/${lead.id}-640.webp`) ? `/
       ) : <p class="vid-lead"><a class="go" href={YOUTUBE} rel="noopener">GLucak on YouTube</a></p>}
     </div>
   </section>
-  {all.length > 0 && (
-    <section class="band band-crate" data-hs="row" aria-labelledby="h-crate">
-      <div class="wrap">
-        <h2 class="crate-h" id="h-crate">Records</h2>
-        <p class="crate-sub">Every music video and live clip. Scroll to flip through, then press a record to open it.</p>
-        <ul class="records">
-          {all.map((v, i) => {
-            const art = pic(v.id, 'sleeves', 640);
-            return (
-              <li class={`rec rec-${'abcd'[i % 4]}`}>
-                <a class="rec-link" href={`https://www.youtube.com/watch?v=${v.id}`} rel="noopener" data-yt={v.id} data-title={name(v)} data-meta={meta(v)}>
-                  <span class="rec-disc" aria-hidden="true"><span class="rec-label">{pad(i + 1)}</span></span>
-                  <span class="rec-sleeve" aria-hidden="true">
-                    {art && <img class="rec-img" src={`${art}-320.webp`} srcset={`${art}-320.webp 320w, ${art}-640.webp 640w`} sizes="(min-width: 900px) 22vw, 42vw" width="640" height="640" alt="" loading="lazy" decoding="async" />}
-                    <span class="rec-type"><span class="rec-artist">GLucak</span><span class="rec-name"><span>{name(v)}</span></span><span class="rec-no"><span class="rec-no-l">No. </span>{pad(i + 1)}</span></span>
-                  </span>
-                  <span class="rec-cap"><span class="v2-vtitle">{name(v)}</span><span class="vid-meta">{meta(v)}</span></span>
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-        <p class="start-line vid-more"><a class="go" href={SHORTS} rel="noopener">New shorts most weeks on YouTube.</a></p>
-      </div>
-    </section>
-  )}
-  <dialog class="rec-open" id="rec-open" aria-labelledby="ro-title">
-    <div class="ro-in">
-      <div class="ro-head">
-        <div><h2 id="ro-title"></h2><p class="vid-meta ro-meta"></p></div>
-        <button type="button" class="ro-close">Close</button>
-      </div>
-      <div class="ro-stage"><span class="ro-disc" aria-hidden="true"></span><div class="ro-screen"></div></div>
-    </div>
-  </dialog>
+  <Records />
 </Base>
