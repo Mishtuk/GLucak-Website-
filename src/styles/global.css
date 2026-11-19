@@ -881,15 +881,14 @@ html[data-motion='off']::view-transition-new(*) { animation: none !important; }
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
     html[data-motion='on'] .rec { view-timeline: --rec inline; animation-name: rec-flow; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: --rec; }
-    html[data-motion='on'] .rec + .rec { margin-left: calc(var(--rec-w) * -0.18 - var(--space-m)); } /* cover flow: neighbours tuck in behind the front record */
     html[data-motion='on'] .rec-disc { animation-name: rec-out; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: --rec; }
   }
   @keyframes rec-flow {
-    0%, 30% { transform: perspective(60rem) rotateY(-42deg) scale(0.8); z-index: 0; }
+    0%, 30% { transform: perspective(50rem) rotateY(-62deg) scale(0.68); z-index: 0; }
     50% { transform: none; z-index: 5; }
-    70%, 100% { transform: perspective(60rem) rotateY(42deg) scale(0.8); z-index: 0; }
+    70%, 100% { transform: perspective(50rem) rotateY(62deg) scale(0.68); z-index: 0; }
   }
-  @keyframes rec-out { 0%, 35%, 65%, 100% { translate: 0 0; } 50% { translate: 30% 0; } } /* one slot off centre is fully turned (about 23% of the timeline at 1280) */
+  @keyframes rec-out { 0%, 35%, 65%, 100% { translate: 0 0; } 50% { translate: 40% 0; } } /* one slot off centre is fully turned (about 27% of the timeline at 1280) */
   ::view-transition-group(rec-open) { animation-duration: 0.5s; animation-timing-function: var(--ease); }
   ::view-transition-old(rec-open), ::view-transition-new(rec-open) { height: 100%; object-fit: cover; }
   html[data-motion='on'] .rec-open[open] .ro-disc { transition: translate 0.4s var(--ease) 0.3s; } /* the cover opens to the vinyl */
@@ -1081,7 +1080,7 @@ html[data-header='solid'] .site-header { background: var(--bg) var(--texture) !i
    nothing moves by itself, the next card peeks), so no extra height. From 700px: three across. position: relative on the
    row keeps the new-tab hint (.vh, absolute) inside the scroller. */
 .v2-videos { margin-top: var(--space-l); }
-.v2-vrow { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 82%; gap: var(--space-m); overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; padding-bottom: var(--space-xs); }
+.v2-vrow { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 82%; gap: clamp(2.5rem, 8cqi, 8rem); overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; padding-bottom: var(--space-xs); }
 .v2-vid { min-width: 0; scroll-snap-align: start; }
 .v2-vid a { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.4rem; text-decoration: none; }
 .v2-vid iframe.yt { display: block; }
@@ -1690,10 +1689,10 @@ html[data-palette='poster'] .hero-film::before { background: var(--film-ink); }
    it in two inks (multiply onto the light ink, lighten up to the dark ink, so every palette re-inks it) and one of four cover
    layouts, with the vinyl standing out behind it. Static; with Motion on, a fine-pointer hover slides the vinyl out a little. ---------- */
 .now-showing { scroll-margin-top: calc(var(--header-h) + 1rem); }
-.band-crate { background-color: var(--bg-2); }
+.band-crate { background-color: var(--bg-2); container-type: inline-size; } /* cqi = the full band width: the row runs edge to edge */
 .crate-h { font-family: var(--font-display); font-weight: 900; font-size: clamp(3rem, 1.5rem + 7vw, 8rem); line-height: 0.82; text-transform: uppercase; text-box: trim-both cap alphabetic; }
 .crate-sub { margin-top: var(--space-s); color: var(--muted); }
-.records { --rec-w: min(58vw, 21rem); display: flex; gap: var(--space-m); overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; margin: var(--space-l) 0 0; padding: var(--space-l) calc(50% - var(--rec-w) / 2) var(--space-m); list-style: none; }
+.records { --rec-w: min(58vw, 21rem); display: flex; gap: var(--space-m); overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; margin: var(--space-l) calc(50% - 50cqi) 0; padding: var(--space-l) calc(50cqi - var(--rec-w) / 2) var(--space-m); list-style: none; }
 .rec { position: relative; flex: 0 0 var(--rec-w); scroll-snap-align: center; --ink-dark: var(--bg); --ink-light: color-mix(in srgb, var(--text) 72%, var(--bg)); }
 .rec :is(a, button) { all: unset; box-sizing: border-box; display: grid; grid-template-areas: 'art' 'cap'; grid-template-columns: minmax(0, 1fr); row-gap: 0.75rem; width: 100%; cursor: pointer; }
 .rec :is(a, button):focus-visible { outline: 3px solid var(--text); outline-offset: 6px; }
