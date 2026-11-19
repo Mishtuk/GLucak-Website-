@@ -191,15 +191,17 @@
       img.alt = '';
       if (nc) { screen.replaceChildren(nc.cloneNode(true)); return null; }
       img.src = b.dataset.cover; screen.replaceChildren(img);
+      img.addEventListener('error', () => { const own = b.querySelector('.rec-img'); if (own && own.currentSrc && img.src !== own.currentSrc) img.src = own.currentSrc; else img.remove(); }); // a cover that fails: the one the record already shows, else nothing (never a broken icon)
       return img;
     }
     const img = new Image(), icon = document.createElement('span');
     img.className = 'yt-img'; img.alt = '';
-    img.srcset = `/GLucak-Website-/media/videos/${b.dataset.yt}-640.webp 640w, /media/videos/${b.dataset.yt}-1280.webp 1280w`;
+    img.srcset = `/GLucak-Website-/media/videos/${b.dataset.yt}-640.webp 640w, /GLucak-Website-/media/videos/${b.dataset.yt}-1280.webp 1280w`;
     img.sizes = '(min-width: 1200px) 1100px, 92vw';
     img.src = `/GLucak-Website-/media/videos/${b.dataset.yt}-640.webp`;
     icon.className = 'yt-play'; icon.setAttribute('aria-hidden', 'true');
     screen.replaceChildren(img, icon);
+    img.addEventListener('error', () => { const f = `/GLucak-Website-/media/sleeves/${b.dataset.yt}-640.webp`; if (!img.src.endsWith(f)) { img.removeAttribute('srcset'); img.src = f; } else img.remove(); }); // a missing still falls back to the sleeve's own picture
     return img;
   };
   const named = (el, on) => { el.style.viewTransitionName = on ? 'rec-open' : ''; };
@@ -225,7 +227,7 @@
       vt.finished.finally(() => { named(screen, false); embed(); });
       return;
     }
-    dlg.showModal(); embed();
+    Promise.race([img ? img.decode().catch(() => {}) : 0, new Promise((r) => setTimeout(r, 600))]).then(() => { if (opener === b && !dlg.open) { dlg.showModal(); embed(); } }); // the picture is ready before the dialog shows: no blank frame
   }
   function closeRec() {
     if (!dlg.open) return;
@@ -319,7 +321,6 @@
   });
 
   /* Swipe row: a focused card scrolls fully into view (instant, no smooth motion) */
-  document.querySelectorAll('.v2-vrow').forEach((r) => r.addEventListener('focusin', (e) => e.target.closest('.v2-vid')?.scrollIntoView({ block: 'nearest', inline: 'nearest' })));
 
   const year = $('#year');
   if (year) year.textContent = String(new Date().getFullYear());

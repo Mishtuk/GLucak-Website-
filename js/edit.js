@@ -1,5 +1,5 @@
 // Gabe's edit screen: Shows | Releases | IDENTITY | Bio | Products tabs. Builds every row with createElement and sets data only through
-// textContent / value. Talks to /edit/login, /edit/logout, /edit/api/shows, /edit/api/releases, /edit/api/site, /edit/api/products and /edit/api/upload
+// textContent / value. Talks to /edit/login, /GLucak-Website-/edit/logout, /GLucak-Website-/edit/api/shows, /GLucak-Website-/edit/api/releases, /GLucak-Website-/edit/api/site, /GLucak-Website-/edit/api/products and /edit/api/upload
 // (same origin, session cookie on Path=/edit).
 (() => {
   const $ = (id) => document.getElementById(id);
