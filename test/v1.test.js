@@ -19,7 +19,7 @@ test('26g-1: /videos/ has no player, no autoplay and no YouTube image before a p
   assert.ok(!/<iframe/i.test(vids) && !/autoplay/i.test(vids) && !vids.includes('youtube.com/embed') && !vids.includes('i.ytimg.com'));
   assert.equal(js.split('autoplay=1').length - 1, 1, 'autoplay=1 appears once');
   assert.ok(js.indexOf('autoplay=1') > js.indexOf('function play('), 'inside play()');
-  assert.match(js, /addEventListener\('click', \(\) => play\(b\)\)/, 'play() runs only from the click handler');
+  assert.match(js, /addEventListener\('click', \(\) => \{ if \(!centre\(b\)\) play\(b\); \}\)/, 'play() runs only from the click handler');
   assert.equal(js.split(/(?<![.\w])play\(/).length - 1, 2, 'play( is defined once and called once'); // film.play() (the Home film) is a method, not this
   for (const f of ['index.html', 'shows/index.html']) assert.ok(!/<iframe[^>]*youtube/i.test(page(f)), `${f}: no YouTube iframe`);
 });
@@ -118,6 +118,15 @@ test('26g-6: every card has a name, every poster is alt="" with size and a file,
   assert.match(js, /f\.title = `\$\{b\.dataset\.title \|\| 'Video'\}: video`/);
   assert.match(js, /f\.focus\(\)/);
   assert.match(js, /for \(const \[f, old\] of buttons\)/, 'one player at a time');
+});
+
+test('26g-6b: records are a scroll-snap cover flow; its motion sits after D64, gated, before the poster wall; opening uses a view transition', () => {
+  const css = src('src/styles/global.css');
+  assert.match(css, /\.records \{[^}]*scroll-snap-type: x mandatory/);
+  const i = css.indexOf('@keyframes rec-flow');
+  assert.ok(i > 0 && i < css.indexOf('30. Poster wall'));
+  assert.ok(css.lastIndexOf('@media (prefers-reduced-motion: no-preference)', i) > css.indexOf('D64'));
+  assert.ok(js.includes('startViewTransition') && js.includes('vt-rec'));
 });
 
 test("26g-7: Videos is in every page's nav and menu; the phone bar Watch goes to /videos/; Home and Shows headings link to it; sitemap lists it", () => {

@@ -36,7 +36,7 @@ const thumb = lead && existsSync(`public/media/videos/${lead.id}-640.webp`) ? `/
     <section class="band band-crate" aria-labelledby="h-crate">
       <div class="wrap">
         <h2 class="crate-h" id="h-crate">Records</h2>
-        <p class="crate-sub">Every music video and live clip. Pick one to play it up top.</p>
+        <p class="crate-sub">Every music video and live clip. Swipe or tap to bring one forward, then press it to play.</p>
         <ul class="records">
           {all.map((v, i) => {
             const art = pic(v.id, 'sleeves', 640);

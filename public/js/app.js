@@ -20,6 +20,7 @@
 
   /* ---------- Motion switch ---------- */
   const reduceQuery = matchMedia('(prefers-reduced-motion: reduce)');
+  const motionOn = () => root.dataset.motion === 'on' && !reduceQuery.matches;
   const btn = $('#motion');
   const stored = () => { try { return localStorage.getItem('motion'); } catch { return null; } };
   const store = (v) => { try { localStorage.setItem('motion', v); } catch { /* the switch still works for this visit */ } };
@@ -109,6 +110,14 @@
   }
 
   /* ---------- Videos (DESIGN 26f): a link to YouTube until JS runs; then a Play button; the privacy-enhanced player loads only after a press ---------- */
+  const centre = (b) => { // a record off-centre is brought forward first
+    const row = b.closest('.records'); if (!row) return false;
+    const r = row.getBoundingClientRect(), c = b.getBoundingClientRect();
+    const off = c.left + c.width / 2 - (r.left + r.width / 2);
+    if (Math.abs(off) <= c.width / 3) return false;
+    row.scrollBy({ left: off, behavior: motionOn() ? 'smooth' : 'instant' });
+    return true;
+  };
   const videoOk = (id) => /^[\w-]{11}$/.test(id ?? '');
   const buttons = new Map(); // open iframe -> the button it replaced (one player at a time)
   function makeButton(link) {
@@ -122,7 +131,7 @@
       if (n.nodeType === 1 && n.classList.contains('vh')) continue; // the new-tab hint does not apply to a button
       b.append(n.cloneNode(true));
     }
-    b.addEventListener('click', () => play(b));
+    b.addEventListener('click', () => { if (!centre(b)) play(b); });
     return b;
   }
   function stopVideos() { // stops the video that is playing
@@ -136,7 +145,22 @@
   function play(b) {
     stopVideos();
     const stage = 'now' in b.dataset && document.querySelector('#now-showing button[data-yt]');
-    if (stage) { // Videos page: a record loads onto the Now showing screen, then plays there
+    const load = (b) => {
+      const f = document.createElement('iframe');
+      f.className = 'yt';
+      f.src = `https://www.youtube-nocookie.com/embed/${b.dataset.yt}?autoplay=1&rel=0`; // autoplay is set only here, after the press
+      f.title = `${b.dataset.title || 'Video'}: video`;
+      f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+      f.allowFullscreen = true;
+      f.style.aspectRatio = '16 / 9';
+      const name = b.querySelector('.v2-vtitle');
+      b.replaceWith(f);
+      if (name) f.after(name.cloneNode(true));
+      buttons.set(f, b);
+      f.focus();
+    };
+    if (!stage) { load(b); return; }
+    const swap = () => { // Videos page: a record loads onto the Now showing screen, then plays there
       const id = b.dataset.yt;
       stage.dataset.yt = id; stage.dataset.title = b.dataset.title;
       stage.setAttribute('aria-label', `Play ${b.dataset.title || 'video'}`);
@@ -145,29 +169,32 @@
       stage.querySelector('.v2-vtitle').textContent = b.dataset.title;
       document.querySelector('#now-showing .vid-meta span').textContent = b.dataset.meta;
       document.getElementById('now-showing').scrollIntoView({ block: 'start' });
-      b = stage;
+    };
+    const sleeve = b.querySelector('.rec-sleeve'), screen = stage.querySelector('.v2-thumb');
+    if (document.startViewTransition && motionOn() && sleeve && screen) { // the sleeve turns into the screen
+      sleeve.style.viewTransitionName = 'rec-open';
+      root.classList.add('vt-rec');
+      const vt = document.startViewTransition(async () => {
+        sleeve.style.viewTransitionName = ''; screen.style.viewTransitionName = 'rec-open';
+        swap();
+        const img = stage.querySelector('.yt-img');
+        await Promise.race([img ? img.decode().catch(() => {}) : null, new Promise((r) => setTimeout(r, 500))]);
+      });
+      vt.finished.finally(() => { screen.style.viewTransitionName = ''; root.classList.remove('vt-rec'); load(stage); });
+      return;
     }
-    const f = document.createElement('iframe');
-    f.className = 'yt';
-    f.src = `https://www.youtube-nocookie.com/embed/${b.dataset.yt}?autoplay=1&rel=0`; // autoplay is set only here, after the press
-    f.title = `${b.dataset.title || 'Video'}: video`;
-    f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
-    f.allowFullscreen = true;
-    f.style.aspectRatio = '16 / 9';
-    const name = b.querySelector('.v2-vtitle');
-    b.replaceWith(f);
-    if (name) f.after(name.cloneNode(true));
-    buttons.set(f, b);
-    f.focus();
+    swap(); load(stage);
   }
   document.querySelectorAll('a[data-yt]').forEach((a) => {
     if (videoOk(a.dataset.yt)) a.replaceWith(makeButton(a));
   });
+  document.querySelectorAll('.records').forEach((row) => { row.scrollLeft = (row.scrollWidth - row.clientWidth) / 2; }); // open on the middle record, neighbours on both sides
+  document.querySelectorAll('.records').forEach((row) => row.addEventListener('focusin', (e) => centre(e.target.closest('.rec :is(a, button)') || e.target)));
 
   /* Pinned galleries (owner 2026-11-18, HScroll.astro). Motion on: the strip sticks and scrolling down slides it sideways, coupled to
      the scroll (nothing moves on its own). Motion off / reduced / unsupported: a plain swipe row. Run by showMotion() and on resize. */
   function layoutHs() {
-    const on = root.dataset.motion === 'on' && !reduceQuery.matches;
+    const on = motionOn();
     document.querySelectorAll('[data-hs]').forEach((s) => {
       const pin = s.querySelector('.hs-pin'), track = s.querySelector('.hs-track');
       track.style.translate = '';
