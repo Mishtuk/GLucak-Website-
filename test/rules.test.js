@@ -138,7 +138,7 @@ for (const [p, h] of Object.entries(pages29)) for (const f of mediaRefs(h)) {
 
 test('29g-1: every photo is a named frame; each frame is on one page only; the fixture prints poster-art once', () => {
   for (const [fr, set] of used) {
-    if (fr === 'sleeve') { assert.deepEqual([...set].sort(), ['index.html', 'videos/index.html']); continue; } // owner 2026-11-18: records on Home and Videos
+    if (fr === 'sleeve') { assert.deepEqual([...set].sort(), ['index.html', 'shows/index.html', 'videos/index.html']); continue; } // owner 2026-11-18: records on Home, Shows and Videos
     assert.equal(set.size, 1, `${fr} is on ${[...set].join(', ')}`);
   }
   assert.equal(shows2.split('poster-art').length - 1, 1, 'two full shows: art on the first only');

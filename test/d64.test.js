@@ -49,13 +49,13 @@ test('shows.js and products.js links become new-tab links in the server output',
   assert.match(externalize(showsHtml(rows, new Date('2026-11-06T12:00:00Z'), {})), /href="https:\/\/t\.example\/a" rel="noopener" target="_blank">Tickets<span class="vh">/);
 });
 
-test('video block: <img> points at files that exist', () => {
+test('shows records: <img> points at files that exist', () => {
   const h = page('shows/index.html');
-  const img = h.match(/<img class="yt-img"[^>]*>/)?.[0];
-  assert.ok(img, 'thumbnail img');
+  const img = h.match(/<img class="rec-img"[^>]*>/)?.[0];
+  assert.ok(img, 'sleeve img');
   assert.match(img, /alt=""/);
   assert.match(img, /loading="lazy"/);
-  for (const m of img.matchAll(/(\/media\/videos\/[\w-]+-(?:640|1280)\.webp)/g)) assert.ok(existsSync(join(ROOT, 'public', m[1])), m[1]);
+  for (const m of img.matchAll(/(\/media\/sleeves\/[\w-]+-(?:320|640)\.webp)/g)) assert.ok(existsSync(join(ROOT, 'public', m[1])), m[1]);
   assert.ok(h.includes('data-yt='), 'facade kept');
   assert.ok(!/https:\/\/i\.ytimg\.com/.test(h), 'no third-party image request');
 });

@@ -119,8 +119,7 @@ test('27c platform row under the Spotify button on Home and Music', () => {
 });
 
 // ---------- 27e ----------
-test('27e Shows Watch from 72rem: lead plus two, no sideways scroll rule', () => {
-  assert.ok(!/\.shows-grid \.v2-vrow[^}]*overflow-x: auto/.test(css));
-  assert.ok(css.includes('.shows-grid .v2-vid:first-child { grid-column: 1 / -1; grid-row: auto; }'));
-  assert.ok(css.includes('.shows-grid .v2-vrow { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; }'));
+test('27e Shows Watch: three static records, no tilt, no sideways page scroll', () => {
+  assert.ok(css.includes('.records:not(.records-static) .rec {'));
+  assert.ok(css.includes('.records-static { --rec-w: 62%;'));
 });

@@ -1,174 +1,181 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { SOCIALS } from '../../components/content.js';
-// Privacy and terms in one page. Written from what the code really does (server.js, src/lib/signup.js, public/js/*.js).
-// Change the code's data handling -> change this page and its date. No personal email, address or phone here, ever.
+// Privacy Policy and Terms of Use in one page. Written from what the code really does (server.js, src/lib/signup.js, public/js/*.js).
+// Change the code's data handling -> change this page and its dates. No personal email, address or phone here, ever.
+// The contents list numbers itself from these arrays; keep the order in step with the numbered headings below.
 const instagram = SOCIALS.find((s) => s.id === 'instagram').href;
 const PRIVACY = [
-  ['who', 'Who runs this site'],
-  ['collect', 'What we collect and why'],
-  ['email-list', 'Email list'],
-  ['contact-us', 'Messages and booking'],
-  ['shop-data', 'Shop'],
-  ['players', 'Players, links and other services'],
-  ['storage', 'Cookies and browser storage'],
-  ['logs', 'Server logs'],
-  ['keep', 'How long we keep data'],
-  ['security', 'Security'],
-  ['children', 'Children'],
-  ['rights', 'Your choices and rights'],
+  ['intro', 'Introduction'],
+  ['collect', 'Information We Collect'],
+  ['use-info', 'How We Use Information'],
+  ['disclosure', 'Disclosure of Information'],
+  ['third-party', 'Third-Party Services'],
+  ['storage', 'Cookies and Local Storage'],
+  ['retention', 'Data Retention'],
+  ['security', 'Data Security'],
+  ['children', 'Children’s Privacy'],
+  ['rights', 'Your Rights and Choices'],
   ['dnt', 'Do Not Track and Global Privacy Control'],
-  ['privacy-changes', 'Changes to this policy'],
+  ['privacy-changes', 'Changes to This Policy'],
+  ['privacy-contact', 'Contact'],
 ];
 const TERMS = [
-  ['use', 'Using this site'],
-  ['ownership', 'Music, videos, photos and words'],
-  ['names', 'Names and logos'],
-  ['other-sites', 'Other sites and services'],
-  ['shows-terms', 'Shows and releases'],
-  ['shop-terms', 'Shop items'],
-  ['health', 'Photosensitivity and motion'],
-  ['as-is', 'No warranties'],
-  ['liability', 'Limits on liability'],
-  ['indemnity', 'Misuse'],
-  ['law', 'Governing law'],
-  ['severability', 'If part of this is invalid'],
-  ['terms-changes', 'Changes to these terms'],
+  ['acceptance', 'Acceptance of Terms'],
+  ['ownership', 'Intellectual Property'],
+  ['trademarks', 'Trademarks'],
+  ['permitted-use', 'Permitted Use'],
+  ['other-sites', 'Third-Party Links and Services'],
+  ['shows-terms', 'Events and Releases'],
+  ['shop-terms', 'Merchandise'],
+  ['health', 'Photosensitivity and Accessibility Notice'],
+  ['as-is', 'Disclaimer of Warranties'],
+  ['liability', 'Limitation of Liability'],
+  ['indemnity', 'Indemnification'],
+  ['law', 'Governing Law and Venue'],
+  ['severability', 'Severability'],
+  ['terms-changes', 'Changes to These Terms'],
   ['contact', 'Contact'],
 ];
 ---
-<Base title="Privacy and terms | GLucak" description="What this site does with your information, and the terms for using it.">
+<Base title="Privacy and terms | GLucak" description="Privacy Policy and Terms of Use for the GLucak website.">
   <section class="band" aria-labelledby="h-privacy">
     <div class="wrap prose legal-page">
       <h1 id="h-privacy" class="prose-h">Privacy and terms</h1>
-      <p class="muted">Last updated: November 18, 2026</p>
-      <p>This page explains what this site does with your information, and the terms for using it. We keep it short and plain. The short version: we collect very little, we never sell it, and the site has no ads or tracking.</p>
+      <p class="muted">Effective date: November 18, 2026<br />Last updated: November 18, 2026</p>
+      <p>This page contains two documents: the Privacy Policy, which describes how information is collected and used on this website, and the Terms of Use, which govern your use of it. Please read both carefully.</p>
 
       <nav class="legal-toc" aria-labelledby="h-contents">
         <h2 id="h-contents" class="legal-toc-h">Contents</h2>
-        <p><a href="#privacy">Privacy</a></p>
-        <ul>{PRIVACY.map(([id, t]) => <li><a href={`#${id}`}>{t}</a></li>)}</ul>
-        <p><a href="#terms">Terms and disclaimers</a></p>
-        <ul>{TERMS.map(([id, t]) => <li><a href={`#${id}`}>{t}</a></li>)}</ul>
+        <p><a href="#privacy">Privacy Policy</a></p>
+        <ul>{PRIVACY.map(([id, t], i) => <li><a href={`#${id}`}>{`${i + 1}. ${t}`}</a></li>)}</ul>
+        <p><a href="#terms">Terms of Use</a></p>
+        <ul>{TERMS.map(([id, t], i) => <li><a href={`#${id}`}>{`${i + 1}. ${t}`}</a></li>)}</ul>
       </nav>
 
-      <h2 id="privacy">Privacy</h2>
+      <h2 id="privacy">Privacy Policy</h2>
 
-      <h3 id="who">Who runs this site</h3>
-      <p>This site is run by GLucak, the artist, in Pennsylvania, USA. When this page says “we” or “us”, it means GLucak. Mishtuk Web Design builds and looks after the site for him.</p>
+      <h3 id="intro">1. Introduction</h3>
+      <p>1.1 This Privacy Policy applies to the website at which it is published (the “Site”). The Site is operated by GLucak, a musical artist based in Pennsylvania, USA (“GLucak”, “we”, “us” or “our”). Mishtuk Web Design builds and looks after the Site on behalf of GLucak.</p>
+      <p>1.2 In this Privacy Policy, “you” or “User” means any person who visits or uses the Site. This Privacy Policy describes the information we collect, how we use it and the choices available to you.</p>
+      <p>1.3 We do not sell, rent or trade personal information. The Site does not display advertising and does not use tracking technologies.</p>
 
-      <h3 id="collect">What we collect and why</h3>
-      <p>You can use this whole site without telling us who you are. There are no accounts for fans. We only collect:</p>
+      <h3 id="collect">2. Information We Collect</h3>
+      <p>2.1 <strong>Information you provide.</strong> The Site may be used in full without identifying yourself, and there are no user accounts for visitors. The only personal information you may provide to us through the Site is your email address, if you choose to join the email list by entering it and pressing Join.</p>
+      <p>2.2 <strong>Information collected automatically.</strong> As with any website, when your device requests a page, basic technical information is transmitted, such as your IP address and browser type. This information is processed as described in Section 2.3 and Section 7.</p>
+      <p>2.3 <strong>Server logs.</strong> The company that hosts the Site may keep standard request logs, which may include IP address, date and time, the page requested and browser type. Our own server records errors and sign-ins to the private editing area used by the Site’s team. A record of a failed sign-in includes the IP address and the name entered.</p>
+      <p>2.4 <strong>Information we do not collect.</strong> We do not use analytics, advertising, tracking pixels or device fingerprinting. The Site has no contact form. The shop is currently a preview only; no item can be purchased and the shop collects no information.</p>
+
+      <h3 id="use-info">3. How We Use Information</h3>
+      <p>3.1 We use your email address solely to send you news about shows and new music.</p>
+      <p>3.2 We use technical information and logs solely to operate the Site, diagnose errors and protect the Site against abuse.</p>
+      <p>3.3 To prevent spam and repeated sign-in attempts, the Site counts attempts per IP address over a period of a few minutes. These counts are held only in the server’s memory and are not saved.</p>
+
+      <h3 id="disclosure">4. Disclosure of Information</h3>
+      <p>4.1 <strong>Email service.</strong> When you join the email list, your email address is sent from our server to Kit, our email service provider, which stores the list and sends the emails. Your browser does not communicate with Kit directly when you sign up. Kit may record whether an email was opened or a link was clicked, in accordance with the <a href="https://kit.com/privacy">Kit privacy policy</a>.</p>
+      <p>4.2 <strong>Hosting.</strong> The company that hosts the Site processes requests to the Site and may keep the logs described in Section 2.3.</p>
+      <p>4.3 We do not otherwise sell, rent, trade or share your personal information with third parties.</p>
+
+      <h3 id="third-party">5. Third-Party Services</h3>
+      <p>5.1 The Site embeds and links to services operated by third parties (“Third-Party Services”). Each Third-Party Service is governed by its own terms and privacy policy, and we do not control the information it collects.</p>
+      <p>5.2 <strong>Spotify.</strong> The playlist player on the Home and Music pages loads from Spotify as you scroll to it. The player for an individual release on the Music page loads only after you press it. See the <a href="https://www.spotify.com/us/legal/privacy-policy/">Spotify privacy policy</a>.</p>
+      <p>5.3 <strong>YouTube.</strong> Videos load from YouTube’s privacy-enhanced service (youtube-nocookie.com), and only after you press Play. Until then, the preview image is served from our own server. See the <a href="https://policies.google.com/privacy">Google privacy policy</a>.</p>
+      <p>5.4 <strong>External links.</strong> Links to Instagram, Threads, X, YouTube, Spotify, Apple Music, Bandsintown, SoundCloud, Patreon and music stores open those sites, which have their own policies. Requests to book a show are made through GLucak’s Instagram; anything you send there is handled by Instagram under its own policy, and we use it only to reply to you.</p>
+      <p>5.5 Once a player loads or you follow a link, the relevant Third-Party Service may set its own cookies. The Site’s fonts and images are served from our own server, so no other content loads from third parties.</p>
+
+      <h3 id="storage">6. Cookies and Local Storage</h3>
+      <p>6.1 The Site sets no cookies for visitors. It stores at most two settings in your browser’s local storage:</p>
       <ul>
-        <li>Your email address, if you join the email list. We use it to send you news about shows and new music.</li>
-        <li>Basic technical details that every website gets, like your IP address and browser type, when your device asks for a page. We use these to run the site and stop abuse. See Server logs below.</li>
+        <li><code>motion</code>: your choice of Motion on or off from the switch in the footer.</li>
+        <li><code>palette</code>: a color preview used only by the Site’s owner. Visitors do not normally have this setting.</li>
       </ul>
-      <p>We do not use analytics, ads, tracking pixels or fingerprinting. We never sell, rent or trade your information.</p>
+      <p>6.2 Neither setting identifies you, and neither is sent to us. You may clear them at any time in your browser settings.</p>
+      <p>6.3 The private editing area used by the Site’s team uses one sign-in cookie, <code>gl_edit</code>, which is sent only to that area.</p>
 
-      <h3 id="email-list">Email list</h3>
-      <p>You join the list only by typing your email address and pressing Join. Your address goes from our server to Kit, our email service, which stores the list and sends the emails. Your browser never talks to Kit directly when you sign up.</p>
-      <p>Every email has an unsubscribe link. Use it at any time and you will stop getting emails. Kit may record whether an email was opened or a link was clicked, under its own policy. Read the <a href="https://kit.com/privacy">Kit privacy policy</a>.</p>
-      <p>To stop spam, the sign-up form counts tries per IP address for a few minutes. That count lives only in the server’s memory and is not saved.</p>
+      <h3 id="retention">7. Data Retention</h3>
+      <p>7.1 Your email address remains on the list until you unsubscribe or ask us to delete it.</p>
+      <p>7.2 The attempt counts described in Section 3.3 are kept in memory for minutes and are erased when the server restarts.</p>
+      <p>7.3 Logs are kept only for as long as needed to operate and protect the Site.</p>
 
-      <h3 id="contact-us">Messages and booking</h3>
-      <p>This site has no contact form. Requests to book a show go through GLucak’s Instagram. Anything you send there is handled by Instagram under its own policy, and we only use it to reply to you.</p>
+      <h3 id="security">8. Data Security</h3>
+      <p>We take reasonable measures to protect the Site and your information, including HTTPS, strict security settings and limits on repeated attempts. No website is completely secure, however, and we cannot guarantee that information will never be lost or accessed without authorization.</p>
 
-      <h3 id="shop-data">Shop</h3>
-      <p>The shop is a preview for now. Nothing on it can be bought, and it collects no information. When it opens, the Buy button will take you to the store’s own checkout page. You will pay there, under that store’s terms and privacy policy. We never see or store your card details.</p>
+      <h3 id="children">9. Children’s Privacy</h3>
+      <p>The Site is not directed to children under 13. Consistent with the Children’s Online Privacy Protection Act (COPPA), we do not knowingly collect personal information from children under 13. If you believe a child under 13 has joined the email list, please contact us as described in Section 13 and we will delete the address.</p>
 
-      <h3 id="players">Players, links and other services</h3>
+      <h3 id="rights">10. Your Rights and Choices</h3>
+      <p>10.1 You may:</p>
       <ul>
-        <li>Spotify: the playlist player on the Home and Music pages loads from Spotify as you scroll to it. A release’s player on the Music page loads only after you press it. Read the <a href="https://www.spotify.com/us/legal/privacy-policy/">Spotify privacy policy</a>.</li>
-        <li>YouTube: videos load from YouTube’s privacy-enhanced service (youtube-nocookie.com), and only after you press Play. Before that, the picture you see is stored on our own server. Read the <a href="https://policies.google.com/privacy">Google privacy policy</a>.</li>
-        <li>Links to Instagram, Threads, X, YouTube, Spotify, Apple Music, Bandsintown, SoundCloud, Patreon and music stores open those sites. They have their own policies, and we don’t control what they collect.</li>
+        <li>unsubscribe from the email list at any time using the link included in every email;</li>
+        <li>ask us what personal information we hold about you, and ask us to correct or delete it; and</li>
+        <li>turn off Motion, and clear the Site’s local storage, at any time.</li>
       </ul>
-      <p>Once a player loads or you follow a link, that service may set its own cookies. Our fonts and images come from our own server, so nothing else loads from other companies.</p>
+      <p>10.2 Residents of California, other US states, the European Union and the United Kingdom may have additional rights under applicable law. We honor these requests regardless of where you live. We may need to verify that a request comes from you before acting on it.</p>
 
-      <h3 id="storage">Cookies and browser storage</h3>
-      <p>This site sets no cookies for fans. It saves at most two small settings in your browser’s local storage:</p>
+      <h3 id="dnt">11. Do Not Track and Global Privacy Control</h3>
+      <p>We do not track Users across websites, and we do not sell or share personal information for advertising. Accordingly, there is no tracking for a Do Not Track or Global Privacy Control signal to disable. We nevertheless honor these signals.</p>
+
+      <h3 id="privacy-changes">12. Changes to This Policy</h3>
+      <p>Before the Site begins to use information in any new way, we will update this Privacy Policy and the “Last updated” date at the top of this page.</p>
+
+      <h3 id="privacy-contact">13. Contact</h3>
+      <p>Questions and requests about this Privacy Policy may be sent to GLucak by message on <a href={instagram}>Instagram</a>. If you are on the email list, you may also reply to any email from the list.</p>
+
+      <h2 id="terms">Terms of Use</h2>
+
+      <h3 id="acceptance">1. Acceptance of Terms</h3>
+      <p>1.1 These Terms of Use (the “Terms”) govern your use of the Site operated by GLucak. Terms defined in the Privacy Policy above have the same meaning in these Terms.</p>
+      <p>1.2 By accessing or using the Site, you agree to be bound by these Terms. If you do not agree, you must not use the Site.</p>
+
+      <h3 id="ownership">2. Intellectual Property</h3>
+      <p>2.1 The music, videos, photographs, artwork and text on the Site (the “Content”) are owned by GLucak or by the photographers and collaborators credited on each page.</p>
+      <p>2.2 Except as permitted in Section 4, you may not copy, download, re-upload, sell, sample, remix or otherwise reproduce the Content, or use it to train artificial intelligence systems, without prior written permission.</p>
+
+      <h3 id="trademarks">3. Trademarks</h3>
+      <p>The GLucak name, logos and album art identify the artist. You may not use them in any manner that suggests GLucak made, sells or endorses a product or service that he does not. Other names and logos on the Site belong to their respective owners.</p>
+
+      <h3 id="permitted-use">4. Permitted Use</h3>
+      <p>You may listen to, watch and share links to the Content for your own personal, non-commercial use. You agree not to misuse the Site or use it in violation of these Terms or applicable law.</p>
+
+      <h3 id="other-sites">5. Third-Party Links and Services</h3>
+      <p>The Site links to and embeds Third-Party Services, such as Spotify, YouTube, Instagram, Bandsintown and Patreon. We are not responsible for their content, policies, prices or availability. Your use of a Third-Party Service is subject to that service’s own terms.</p>
+
+      <h3 id="shows-terms">6. Events and Releases</h3>
+      <p>Show dates, times, venues, prices and release dates are subject to change. You should confirm details with the venue or ticket seller before travelling. We are not responsible for changes or cancellations, a venue’s rules or conduct, tickets purchased from third parties, or travel and other costs.</p>
+
+      <h3 id="shop-terms">7. Merchandise</h3>
+      <p>The shop is currently a preview, and no item can be purchased. When the shop opens, the Buy button will take you to the store’s own checkout page, where payment is made under that store’s terms and privacy policy. We will not see or store your card details. Descriptions, stock and prices are subject to change.</p>
+
+      <h3 id="health">8. Photosensitivity and Accessibility Notice</h3>
+      <p>8.1 The Site contains video, moving images and motion effects. If you have photosensitive epilepsy or are sensitive to motion or flashing light, please use caution.</p>
       <ul>
-        <li><code>motion</code>: your Motion on or off choice from the footer switch.</li>
-        <li><code>palette</code>: a color preview used only by the site’s owner. Fans normally never have it.</li>
+        <li>The Motion switch in the footer turns off the Site’s motion. Your choice is remembered on that device.</li>
+        <li>The Site also follows your device’s reduced-motion setting.</li>
+        <li>The Site’s own design does not use flashing, and we omit videos known to contain flashing lights.</li>
+        <li>Music videos play from YouTube, and third-party music videos may contain flashing. Watch with care, and stop if you feel unwell.</li>
       </ul>
-      <p>Neither one identifies you, and neither is sent to us. You can clear them any time in your browser settings. The private edit area for the site’s team uses one sign-in cookie, <code>gl_edit</code>, which is only sent to that area.</p>
+      <p>8.2 GLucak is an epilepsy survivor, and the Site was built with that in mind. This notice is not medical advice. If you have questions about your health, consult a doctor.</p>
 
-      <h3 id="logs">Server logs</h3>
-      <p>Like any website, the company that hosts this site may keep standard logs of requests, such as IP address, date, page and browser. Our own server writes notes about errors and about sign-ins to the private edit area. A failed sign-in note includes the IP address and the name typed. These logs are used only to run and protect the site.</p>
+      <h3 id="as-is">9. Disclaimer of Warranties</h3>
+      <p>We work to keep the Site accurate and available. However, to the maximum extent permitted by applicable law, the Site and the Content are provided “as is” and “as available”, without warranties of any kind, whether express or implied, including any warranty that the Site will be error-free, uninterrupted or fit for a particular purpose.</p>
 
-      <h3 id="keep">How long we keep data</h3>
-      <p>Your email address stays on the list until you unsubscribe or ask us to delete it. The sign-up and sign-in limits are kept in memory for minutes and are gone when the server restarts. Logs are kept only as long as needed to run and protect the site.</p>
+      <h3 id="liability">10. Limitation of Liability</h3>
+      <p>To the maximum extent permitted by applicable law, GLucak and the people who help operate the Site will not be liable for any indirect, incidental, special or consequential loss or damage arising from your use of, or inability to use, the Site. Some jurisdictions do not allow these limitations, so some or all of them may not apply to you.</p>
 
-      <h3 id="security">Security</h3>
-      <p>We take reasonable steps to protect the site and your information. The site uses HTTPS, strict security settings and limits on repeated tries. No website is perfectly secure, though, so we can’t promise that information will never be lost or seen by someone it shouldn’t be.</p>
+      <h3 id="indemnity">11. Indemnification</h3>
+      <p>To the maximum extent permitted by applicable law, you agree to indemnify GLucak against any claim, and the resulting costs, arising from your misuse of the Site or your breach of these Terms.</p>
 
-      <h3 id="children">Children</h3>
-      <p>This site is not directed to children under 13. We don’t knowingly collect personal information from children under 13, as the US law COPPA requires. If you believe a child under 13 has joined the email list, contact us and we will delete their address.</p>
+      <h3 id="law">12. Governing Law and Venue</h3>
+      <p>These Terms are governed by the laws of the Commonwealth of Pennsylvania, USA, without regard to its conflict of law rules.</p>
 
-      <h3 id="rights">Your choices and rights</h3>
-      <ul>
-        <li>Unsubscribe from the email list at any time with the link in any email.</li>
-        <li>Ask us what information we hold about you, and ask us to correct or delete it.</li>
-        <li>Turn off Motion, and clear the site’s browser storage, whenever you like.</li>
-      </ul>
-      <p>People in California, other US states, the EU and the UK may have extra rights under their local laws. We honor these requests no matter where you live. To ask, see Contact below. We may need to confirm the request comes from you.</p>
+      <h3 id="severability">13. Severability</h3>
+      <p>If any provision of these Terms is held to be unenforceable, the remaining provisions will remain in full force and effect.</p>
 
-      <h3 id="dnt">Do Not Track and Global Privacy Control</h3>
-      <p>We don’t track you across sites, and we don’t sell or share your information for ads. So there is nothing for a Do Not Track or Global Privacy Control signal to switch off. We honor them all the same.</p>
+      <h3 id="terms-changes">14. Changes to These Terms</h3>
+      <p>We may update these Terms from time to time. The “Last updated” date at the top of this page identifies the current version. Your continued use of the Site after a change constitutes acceptance of the updated Terms.</p>
 
-      <h3 id="privacy-changes">Changes to this policy</h3>
-      <p>If the site starts doing something new with information, we will update this page and the date at the top first.</p>
-
-      <h2 id="terms">Terms and disclaimers</h2>
-
-      <h3 id="use">Using this site</h3>
-      <p>By using this site, you agree to these terms. If you don’t agree, please don’t use it.</p>
-
-      <h3 id="ownership">Music, videos, photos and words</h3>
-      <p>The music, videos, photos, artwork and words on this site belong to GLucak or to the photographers and collaborators named on each page. You’re welcome to listen, watch and share links for your own personal, non-commercial use.</p>
-      <p>Please don’t copy, download, re-upload, sell, sample or remix them, or use them to train AI, without written permission.</p>
-
-      <h3 id="names">Names and logos</h3>
-      <p>The GLucak name, logos and album art identify the artist. Please don’t use them in a way that suggests GLucak made, sells or supports something he doesn’t. Other names and logos on this site belong to their owners.</p>
-
-      <h3 id="other-sites">Other sites and services</h3>
-      <p>This site links to and embeds other services, like Spotify, YouTube, Instagram, Bandsintown and Patreon. We’re not responsible for their content, policies, prices or whether they are working. Using them means agreeing to their terms.</p>
-
-      <h3 id="shows-terms">Shows and releases</h3>
-      <p>Show dates, times, venues, prices and release dates can change. Always check with the venue or ticket seller before you travel. We’re not responsible for changes, cancellations, a venue’s rules or conduct, tickets bought elsewhere, or travel and other costs.</p>
-
-      <h3 id="shop-terms">Shop items</h3>
-      <p>The shop is a preview. When it opens, descriptions, stock and prices can change, and the store’s own terms at checkout will apply to your order.</p>
-
-      <h3 id="health">Photosensitivity and motion</h3>
-      <p>This site has video, moving pictures and motion effects. If you have photosensitive epilepsy or are sensitive to motion or flashing, please take care.</p>
-      <ul>
-        <li>The Motion switch in the footer turns the site’s motion off. Your choice is remembered on that device.</li>
-        <li>The site also follows your device’s reduced-motion setting.</li>
-        <li>We keep flashing off the site’s own design, and we leave out videos we know have flashing lights.</li>
-        <li>Music videos play from YouTube, and other people’s content can contain flashing. Watch with care, and stop if you feel unwell.</li>
-      </ul>
-      <p>GLucak is an epilepsy survivor, and this site was built with that in mind. This notice is not medical advice. If you have questions about your health, talk to a doctor.</p>
-
-      <h3 id="as-is">No warranties</h3>
-      <p>We work to keep this site accurate and working, but it is provided “as is” and “as available”. To the extent the law allows, we make no promises of any kind about it, including that it is error-free, always available or fit for any purpose.</p>
-
-      <h3 id="liability">Limits on liability</h3>
-      <p>To the extent the law allows, GLucak and the people who help run this site are not liable for any indirect, incidental or consequential loss or damage from using this site, or from not being able to use it. Some places don’t allow these limits, so they may not all apply to you.</p>
-
-      <h3 id="indemnity">Misuse</h3>
-      <p>If you misuse this site or break these terms, and that leads to a claim against GLucak, you agree to cover the resulting costs, to the extent the law allows.</p>
-
-      <h3 id="law">Governing law</h3>
-      <p>These terms are governed by the laws of Pennsylvania, USA, without regard to its conflict of law rules.</p>
-
-      <h3 id="severability">If part of this is invalid</h3>
-      <p>If any part of these terms can’t be enforced, the rest still applies.</p>
-
-      <h3 id="terms-changes">Changes to these terms</h3>
-      <p>We may update these terms. The date at the top shows the latest version. Using the site after a change means you accept the new terms.</p>
-
-      <h3 id="contact">Contact</h3>
-      <p>For privacy questions or requests, send GLucak a message on <a href={instagram}>Instagram</a>. If you’re on the email list, you can also reply to any email from the list.</p>
+      <h3 id="contact">15. Contact</h3>
+      <p>Questions about these Terms may be sent to GLucak by message on <a href={instagram}>Instagram</a>. If you are on the email list, you may also reply to any email from the list.</p>
     </div>
   </section>
 </Base>

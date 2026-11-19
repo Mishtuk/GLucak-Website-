@@ -4,20 +4,26 @@ import { videosPage, SHORTS } from './content.js';
 import { curly } from '../lib/shows.js';
 // Owner 2026-11-18: the records cover flow on Home and Videos. Every video is a record: a designed sleeve (a real still) with the vinyl
 // peeking out; pressing one opens it in the dialog (app.js). No iframe until a press (hard rule 1). `more`: on Home, an "All videos" link.
-const { more = false } = Astro.props;
+// `compact` (/shows/, owner 2026-11-18): the first 3 as a plain still row under a "Watch" heading; no pin, no cover-flow tilt.
+const { more = false, compact = false } = Astro.props;
 const g = videosPage();
-const all = [...g.music, ...(g.lead ? [g.lead, ...g.live] : g.live)];
+const every = [...g.music, ...(g.lead ? [g.lead, ...g.live] : g.live)];
+const all = compact ? every.slice(0, 3) : every;
 const pic = (id: string, dir: string, big: number) => existsSync(`public/media/${dir}/${id}-${big}.webp`) ? `/media/${dir}/${id}` : null;
-const meta = (v: Record<string, any>) => [v.place ? `Live at ${v.place}` : v.kind === 'lyric-video' ? 'Lyric video' : 'Music video', v.with].filter(Boolean).join(more ? ', ' : ' · '); // Home prints no middle dot (test 20d)
+const meta = (v: Record<string, any>) => [v.place ? `Live at ${v.place}` : v.kind === 'lyric-video' ? 'Lyric video' : 'Music video', v.with].filter(Boolean).join(more || compact ? ', ' : ' · '); // Home prints no middle dot (test 20d)
 const name = (v: Record<string, any>) => curly(v.name ?? v.title);
 const pad = (n: number) => String(n).padStart(2, '0');
+const W = compact ? 'div' : 'section';
+const Wrap = compact ? Fragment : 'div';
 ---
 {all.length > 0 && (
-  <section class="band band-crate" data-hs="row" aria-labelledby="h-crate">
-    <div class="wrap">
-      <h2 class="crate-h" id="h-crate">{more ? <a class="h-go" href="/videos/">Records<span class="vh"> all videos</span></a> : 'Records'}</h2>
-      <p class="crate-sub">Every music video and live clip. Scroll to flip through, then press a record to open it.</p>
-      <ul class="records">
+  <W class={compact ? 'records-watch' : 'band band-crate'} id={compact ? 'shows-video' : undefined} data-hs={compact ? undefined : 'row'} aria-labelledby={compact ? undefined : 'h-crate'}>
+    <Wrap {...(compact ? {} : { class: 'wrap' })}>
+      {compact
+        ? <h2><a class="h-go" href="/videos/">Watch<span class="vh"> all videos</span></a></h2>
+        : <h2 class="crate-h" id="h-crate">{more ? <a class="h-go" href="/videos/">Records<span class="vh"> all videos</span></a> : 'Records'}</h2>}
+      {!compact && <p class="crate-sub">Every music video and live clip. Scroll to flip through, then press a record to open it.</p>}
+      <ul class={compact ? 'records records-static' : 'records'}>
         {all.map((v, i) => {
           const art = pic(v.id, 'sleeves', 640);
           return (
@@ -34,9 +40,9 @@ const pad = (n: number) => String(n).padStart(2, '0');
           );
         })}
       </ul>
-      <p class="start-line vid-more">{more ? <a class="go" href="/videos/">All videos</a> : <a class="go" href={SHORTS} rel="noopener">New shorts most weeks on YouTube.</a>}</p>
-    </div>
-  </section>
+      {!compact && <p class="start-line vid-more">{more ? <a class="go" href="/videos/">All videos</a> : <a class="go" href={SHORTS} rel="noopener">New shorts most weeks on YouTube.</a>}</p>}
+    </Wrap>
+  </W>
 )}
 <dialog class="rec-open" id="rec-open" aria-labelledby="ro-title">
   <div class="ro-in">

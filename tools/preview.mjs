@@ -36,7 +36,7 @@ mkdirSync(join(OUT, 'edit'), { recursive: true });
 writeFileSync(join(OUT, 'edit', 'index.html'), '<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex"><title>Edit | GLucak preview</title><body style="font:18px system-ui;background:#111;color:#f5f5f5;padding:2rem"><h1>Preview only</h1><p>The edit screen works on the real site, not on this preview.</p><p><a style="color:#ff4d2e" href="' + BASE + '">Back to the site</a></p>');
 
 // Root-absolute paths -> the Pages base. Only our own paths ("/x", not "//host").
-const fix = (s) => s.replace(/((?:href|src|action|srcset|content)=["'])\/(?!\/)/g, `$1${BASE}`)
+const fix = (s) => s.replace(/((?:href|src|action|srcset|content|data-[\w-]+)=["'])\/(?!\/)/g, `$1${BASE}`) // data-* too: data-cover feeds the release dialog
   .replace(/(,\s*)\/(?!\/)(?=[\w-]+\/)/g, `$1${BASE}`)
   .replace(/url\((["']?)\/(?!\/)/g, `url($1${BASE}`);
 const walk = (d) => readdirSync(d).flatMap((n) => { const f = join(d, n); return statSync(f).isDirectory() ? walk(f) : [f]; });
@@ -44,7 +44,7 @@ for (const f of walk(OUT)) if (/\.(html|css|js|webmanifest)$/.test(f)) {
   let s = readFileSync(f, 'utf8');
   // The preview is the owner's: the Colors button always shows there (the real site still needs ?palettes).
   if (f.endsWith('app.js')) s = s.replace("new URLSearchParams(location.search).has('palettes')", 'true');
-  if (f.endsWith('.js')) s = s.replace(/(['"`])\/(media|edit|shows|shop|api)\//g, `$1${BASE}$2/`);
+  if (f.endsWith('.js')) s = s.replace(/(['"`]|,\s*)\/(media|edit|shows|shop|api)\//g, `$1${BASE}$2/`); // and the 2nd+ entries of a srcset list (the 1280 stills broke on the preview)
   else s = fix(s);
   if (f.endsWith('.html')) s = s.replace('<head>', `<head><meta name="robots" content="noindex">`);
   writeFileSync(f, s);

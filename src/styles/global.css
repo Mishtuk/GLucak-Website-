@@ -454,7 +454,7 @@ html[data-shows='none'] .quote-live { display: none; }
 .empty-actions { display: flex; flex-wrap: wrap; gap: var(--space-s); margin-top: var(--space-m); }
 .empty-actions .btn { flex: 1 1 auto; padding-inline: 0.8rem; white-space: nowrap; }
 .played { margin-top: var(--space-l); }
-.played h2, .video-block h2, .played h3, .video-block h3 { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; margin-bottom: var(--space-xs); }
+.played h2, .played h3 { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; margin-bottom: var(--space-xs); }
 
 .yt {
   position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; text-decoration: none;
@@ -893,11 +893,11 @@ html[data-motion='off']::view-transition-group(*),
 html[data-motion='off']::view-transition-old(*),
 html[data-motion='off']::view-transition-new(*) { animation: none !important; }
 
-/* ---------- Records cover flow + open (Videos page). Coupled to the user's scroll / click only; nothing runs on its own. ---------- */
+/* ---------- Records cover flow + open (Videos page; the static /shows/ row does not tilt). Coupled to the user's scroll / click only; nothing runs on its own. ---------- */
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
-    html[data-motion='on'] .rec { view-timeline: --rec inline; animation-name: rec-flow; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: --rec; }
-    html[data-motion='on'] .rec-disc { animation-name: rec-out; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: --rec; }
+    html[data-motion='on'] .records:not(.records-static) .rec { view-timeline: --rec inline; animation-name: rec-flow; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: --rec; }
+    html[data-motion='on'] .records:not(.records-static) .rec-disc { animation-name: rec-out; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: --rec; }
   }
   @keyframes rec-flow {
     0%, 30% { transform: perspective(50rem) rotateY(-62deg) scale(0.68); z-index: 0; }
@@ -1092,11 +1092,6 @@ html[data-header='solid'] .site-header { background: var(--bg) var(--texture) !i
 @container (min-width: 37rem) { .v2-main .poster:not(.is-plain) { grid-template-areas: 'date' 'cal' 'place' 'meta' 'btn'; } }
 .v2-main .played { display: none; } /* the server prints Played on every page but '/'; Home never shows it */
 
-/* (2) Video row: latest + 2 featured, real thumbnails, click-to-load facade (app.js). Phones: a still swipe row (scroll-snap,
-   nothing moves by itself, the next card peeks), so no extra height. From 700px: three across. position: relative on the
-   row keeps the new-tab hint (.vh, absolute) inside the scroller. */
-.v2-videos { margin-top: var(--space-l); }
-.v2-vrow { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 82%; gap: clamp(2.5rem, 8cqi, 8rem); overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; padding-bottom: var(--space-xs); }
 .v2-vid { min-width: 0; scroll-snap-align: start; }
 .v2-vid a { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.4rem; text-decoration: none; }
 .v2-vid iframe.yt { display: block; }
@@ -1106,8 +1101,6 @@ html[data-header='solid'] .site-header { background: var(--bg) var(--texture) !i
 @media (hover: hover) { .v2-vid a:hover .v2-vtitle { text-decoration: underline; text-underline-offset: 3px; } }
 .v2-vid a:active .v2-thumb { border-color: var(--text); }
 .v2-vid a:active .v2-vtitle { background: var(--text); color: var(--bg); }
-.v2-videos h3, .v2-videos h2 { margin-bottom: var(--space-xs); }
-@media (min-width: 700px) { .v2-vrow { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; } }
 
 /* (3) Push Past Fear: a live still beside the bio (phones), then the actions full width. */
 .v2-push-body { display: grid; grid-template-columns: 30% minmax(0, 1fr); grid-template-areas: 'p1 bio' 'act act'; gap: var(--space-m); align-items: start; }
@@ -1152,11 +1145,6 @@ html[data-header='solid'] .site-header { background: var(--bg) var(--texture) !i
 @media (max-width: 699px) { @container (width < 16rem) { .hero-actions { display: none; } } }
 
 /* ---------- v2 port deltas D1, D2, D4, D7 (DESIGN 18h; word for word from prototype block 18) ---------- */
-/* D1: from 900px the latest big and two stacked; 700-899px keeps three across. */
-@media (min-width: 900px) {
-  .v2-vrow { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
-  .v2-vid:first-child { grid-row: 1 / span 2; }
-}
 /* D2 + D4, the Push Past Fear band: the body's children join the band grid. */
 .v2-push .v2-push-body { display: contents; }
 .band-push.v2-push > .wrap.v2-split { grid-template-columns: minmax(0, 1fr) 30%; grid-template-areas: 'side p1' 'bio bio' 'act act'; }
@@ -1170,13 +1158,7 @@ html[data-header='solid'] .site-header { background: var(--bg) var(--texture) !i
 .v2-card > .quote { margin-top: 0; }
 @media (max-width: 899px) {
   .v2-card { padding-bottom: var(--space-xs); }
-  .v2-videos { margin-top: var(--space-m); }
   .band-push.v2-push > .wrap.v2-split { row-gap: var(--space-s); }
-}
-/* DR1 27e (30z-10: from 700px): /shows/, Watch in the 5fr column is a lead plus two, not a clipped sideways row. */
-@media (min-width: 700px) {
-  .shows-grid .v2-vrow { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; }
-  .shows-grid .v2-vid:first-child { grid-column: 1 / -1; grid-row: auto; }
 }
 /* Closed Menu sheet: not laid out at all (Chrome lays out closed <details> content unpainted; testing tools then report
    phantom overlaps with the hero). From the Laptop's 18h review. */
@@ -1552,7 +1534,6 @@ html[data-home] .band-live :is(.v2-thumb, .nocover) { background: var(--bg); } /
 @media (min-width: 900px) {
   html[data-home] .band-live .v2-main { display: contents; } /* Watch leaves the 7 columns */
   html[data-home] #shows-mount { grid-column: 1 / span 7; grid-row: 2; }
-  html[data-home] .band-live .v2-videos { grid-column: 1 / -1; grid-row: 3; }
 }
 
 /* About: the paper sheet. Taped, flush left on phones, overlapping Shows by 2rem from 700px; the tab hangs off its top. Home only. */
@@ -1782,3 +1763,10 @@ html[data-palette='poster'] .rec { --ink-dark: color-mix(in srgb, var(--text) 80
   .ro-disc { display: block; position: absolute; top: 0; right: 0; height: 100%; aspect-ratio: 1; border-radius: 50%; translate: 45% 0;
     background: radial-gradient(circle, var(--accent) 0 16%, var(--vinyl-edge) 16.5% 18%, transparent 18.5%), repeating-radial-gradient(circle, var(--vinyl) 0 1.5px, var(--vinyl-groove) 1.5px 3px); box-shadow: 0 0 0 2px color-mix(in srgb, var(--text) 18%, transparent); }
 }
+
+/* Shows (owner 2026-11-18): Watch as a still row of records, no pin and no tilt; a swipe row on phones, three across from 700px, the vinyl peeking. */
+.records-watch { margin-top: var(--space-l); container-type: inline-size; }
+.records-watch h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--step-2); line-height: 1; text-transform: uppercase; margin-bottom: var(--space-xs); }
+.records-static { --rec-w: 62%; margin: 0; padding: var(--space-s) 0 var(--space-xs); gap: var(--space-s); scroll-snap-type: x mandatory; }
+.records-static .rec { scroll-snap-align: start; min-width: 0; }
+@media (min-width: 700px) { .records-static { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; } }

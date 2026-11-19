@@ -49,7 +49,7 @@ test('phrase beside its content: 5 : 7 grid from 900px, phones stacked', () => {
   assert.match(css, /\.v2-split \{ display: grid; grid-template-columns: minmax\(0, 1fr\)/);
 });
 
-test('credits match the images each page shows; clamp gone; focusin handler; 200% Now-line rule', () => {
+test('credits match the images each page shows; clamp gone; 200% Now-line rule', () => {
   const content = readFileSync(join(ROOT, 'src/components/content.js'), 'utf8');
   const CREDIT_FOR = [[/\/media\/v2\/(belt|stage)-|poster-print-|photo-crooked-eye-|videos\/aZNW63M_C2E-/, 'Video still: Vladd (Vladdtime).'], [/videos\/OOGT3GxlQJk-/, 'Video stills: GLucak on YouTube.'],[/covers\/identity/, 'IDENTITY cover: GLucak.'], [/\/media\/cd-/, 'Photos: Gabriel Lucak.'], [/\/media\/v2\/garage-|videos\/K-OZiNvQB14-/, 'Video still: Joseph Lucak.'], [/a-print-|b-print-/, 'Photo: Alexander Kealey.']];
   assert.ok(content.includes('CREDIT_FOR'));
@@ -65,12 +65,11 @@ test('credits match the images each page shows; clamp gone; focusin handler; 200
   }
   assert.ok(readFileSync(join(ROOT, 'dist/shows/index.html'), 'utf8').includes('class="credits">Credits: Alexander Kealey,'));
   assert.ok(!/line-clamp/.test(css.match(/\.v2-vtitle \{[^}]*\}/)[0]));
-  assert.match(readFileSync(join(ROOT, 'public/js/app.js'), 'utf8'), /focusin[^]*scrollIntoView\(\{ block: 'nearest', inline: 'nearest' \}\)/);
   assert.match(css, /@media \(max-width: 699px\) \{ @container \(width < 16rem\) \{ \.hero-actions \{ display: none; \} \} \}/);
 });
 
 test('18h: D1 video grid from 900px, lock-push on FEAR, no-break kicker date, dead 16f rules gone', () => {
-  assert.match(css, /@media \(min-width: 900px\) \{\s*\.v2-vrow \{ grid-template-columns: minmax\(0, 2fr\) minmax\(0, 1fr\); \}\s*\.v2-vid:first-child \{ grid-row: 1 \/ span 2; \}/);
+  assert.ok(!css.includes('.v2-vrow'), 'the Watch row CSS went with VideoBlock');
   const h = home();
   assert.match(h, /<span class="phrase fit lock-push"><span class="ln ln-push1">Push Past/);
   assert.match(h, /sizes="\(min-width: 900px\) 40vw, 30vw"/);

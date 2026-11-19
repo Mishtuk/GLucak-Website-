@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import VideoBlock from '../../components/VideoBlock.astro';
+import Records from '../../components/Records.astro';
 import ForVenues from '../../components/ForVenues.astro';
 import { BANDSINTOWN, PHOTO_CREDITS as C } from '../../components/content.js';
 ---
@@ -15,7 +15,7 @@ import { BANDSINTOWN, PHOTO_CREDITS as C } from '../../components/content.js';
           <p><a class="text-link" href={BANDSINTOWN} rel="noopener">Follow on Bandsintown</a></p>
           <div id="shows-mount"><Fragment set:html="<!--gl:shows-->" /></div>
         </div>
-        <div class="shows-side"><VideoBlock h1 /><ForVenues /></div>
+        <div class="shows-side"><Records compact /><ForVenues /></div>
       </div>
     </div>
   </section>
