@@ -30,7 +30,7 @@ const post = (path, body, headers = {}) => fetch(`${base}${path}`, { method: 'PO
 const get = async (p) => (await fetch(`${base}${p}`)).text();
 const list = async () => (await (await fetch(`${base}/edit/api/releases`, { headers: { cookie } })).json());
 const save = async (rows, v) => post('/edit/api/releases', { version: v === undefined ? (await list()).version : v, releases: rows }, { cookie });
-const day = (n) => new Date(Date.now() + n * 864e5).toISOString().slice(0, 10);
+const day = (n) => new Date(Date.now() + n * 864e5).toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); // New York's day, as the server counts it
 const rel = (o = {}) => ({ title: 'New Song', type: 'single', date: day(-3), link: 'https://example.com/new', artists: '', cover: null, ...o });
 const tiles = (h) => [...h.matchAll(/<li class="tile"[^>]*>[\s\S]*?<\/li>/g)].map((m) => m[0]);
 const live = () => JSON.parse(readFileSync(join(data, 'releases.json'), 'utf8'));

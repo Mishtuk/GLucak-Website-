@@ -30,7 +30,7 @@ const post = (path, body, headers = {}) => fetch(`${base}${path}`, { method: 'PO
 const get = async (p) => (await fetch(`${base}${p}`)).text();
 const site = async () => (await (await fetch(`${base}/edit/api/site`, { headers: { cookie } })).json());
 const save = async (part, v) => post('/edit/api/site', { version: v === undefined ? (await site()).version : v, site: part }, { cookie });
-const future = (n) => new Date(Date.now() + n * 864e5).toISOString().slice(0, 10);
+const future = (n) => new Date(Date.now() + n * 864e5).toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); // New York's day, as the server counts it
 
 test('fallback: no site.json -> the shipped seed is what is served and what the editor loads', async () => {
   assert.ok(!existsSync(join(data, 'site.json')));
