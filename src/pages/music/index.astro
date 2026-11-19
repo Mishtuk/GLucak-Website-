@@ -31,10 +31,13 @@ const fav = favorite();
       </div>
         <blockquote class="scenic-quote"><p>It’s a long road ahead, hills and valleys<br />but I’ll just enjoy the view and enjoy the journey</p><footer>Scenic Route</footer></blockquote>
       <div class="releases-head">
-        <h2 id="h-releases" class="prose-h">Releases</h2>
         <p class="start-line">New here? <a class="go" href={START.link} rel="noopener" aria-label={`Start with ${START.title}, on all platforms`}>Start with {START.title}</a></p>
       </div>
-      <Fragment set:html={crateHtml(rows)} />
+    </div>
+  </section>
+  <Fragment set:html={crateHtml(rows)} />
+  <section class="band releases-band" aria-label="More from GLucak">
+    <div class="wrap">
       <Quote band="who" class="quote-who" />
       <p class="under-player"><a class="text-link" href={SOUNDCLOUD} rel="noopener">Hear more on SoundCloud</a></p>
     </div>

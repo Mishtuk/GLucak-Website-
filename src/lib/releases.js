@@ -76,15 +76,21 @@ export function noCoverHtml({ title, type, when, label, cls }) {
 }
 const cover = (r, title, o) => (r.cover && COVER.test(r.cover) ? o.img : noCoverHtml({ title, type: r.type, ...o.no }));
 
-/** Every release for the Music crate (DESIGN 16a), newest first; `coming` = after the New York day. */
+/** Every release for the Music page as records (the Videos cover flow, owner 2026-11-18), newest first; `coming` = after the New York day.
+ * A plain link to the release until app.js turns it into a button that opens #rec-open (data-rel; the Spotify player only after a press). */
 export function crateHtml(rows, today = etDay()) {
-  const tiles = newest(shown(rows)).map((r) => {
-    const coming = Boolean(r.date) && validDate(r.date) && r.date > today, title = curly(r.title), tag = typeTag(r);
-    const art = cover(r, title, { img: `<img class="tile-art" src="${esc(r.cover)}" alt="" width="300" height="300" loading="lazy">`, no: { cls: 'tile-art', when: coming ? shortDate(r.date) : undefined } });
-    const meta = `${tag && r.type !== 'single' ? `<span class="tile-type">${esc(tag)}</span>` : ''}${coming ? `Out ${esc(dateLine(r.date))}` : esc(dateLine(validDate(r.date ?? '') ? r.date : ''))}`;
-    return `<li class="tile"${coming ? ' data-state="coming"' : ''}><a class="tile-link" href="${esc(r.link)}" rel="noopener">${art}<span class="tile-text"><h3 class="tile-title">${esc(title)}</h3>${credit(r) ? `<span class="tile-artists">${esc(credit(r))}</span>` : ''}<span class="tile-meta">${meta}</span><span class="tile-go">${esc(tileAction({ ...r, coming }))}</span></span></a></li>`;
+  const pad = (n) => String(n).padStart(2, '0');
+  const recs = newest(shown(rows)).map((r, i) => {
+    const ok = validDate(r.date ?? ''), coming = ok && r.date > today, title = curly(r.title), tag = typeTag(r), c = credit(r);
+    const meta = coming ? `Out ${dateLine(r.date)}` : [tag, ok ? r.date.slice(0, 4) : ''].filter(Boolean).join(', ');
+    const long = coming ? `Out ${dateLine(r.date)}` : [tag, dateLine(ok ? r.date : '')].filter(Boolean).join(', ');
+    const art = cover(r, title, { img: `<img class="rec-img" src="${esc(r.cover)}" alt="" width="640" height="640" loading="lazy" decoding="async">`, no: { cls: 'rec-nc', when: coming ? shortDate(r.date) : undefined } });
+    const act = tileAction({ ...r, coming }), go = act === 'Listen' ? 'Listen everywhere' : act;
+    const data = `data-rel data-title="${esc(title)}" data-meta="${esc(long)}" data-go="${esc(go)}"${r.cover && COVER.test(r.cover) ? ` data-cover="${esc(r.cover)}"` : ''}`;
+    return `<li class="rec"><a class="rec-link" href="${esc(r.link)}" rel="noopener" ${data}><span class="rec-disc" aria-hidden="true"><span class="rec-label">${pad(i + 1)}</span></span><span class="rec-sleeve rec-art" aria-hidden="true">${art}</span><span class="rec-cap"><span class="v2-vtitle">${esc(title)}</span><span class="vid-meta">${esc(meta)}</span>${c ? `<span class="rec-credit">${esc(c)}</span>` : ''}</span></a></li>`;
   });
-  return `<!--gl:crate-->${tiles.length ? `<ul class="crate">${tiles.join('')}</ul>` : ''}<!--/gl:crate-->`;
+  const dialog = '<dialog class="rec-open rel-open" id="rec-open" aria-labelledby="ro-title"><div class="ro-in"><div class="ro-head"><div><h2 id="ro-title"></h2><p class="vid-meta ro-meta"></p></div><button type="button" class="ro-close">Close</button></div><div class="ro-body"><div class="ro-stage"><div class="ro-screen"></div></div><div class="ro-extra"></div></div></div></dialog>';
+  return `<!--gl:crate-->${recs.length ? `<section class="band band-crate" data-hs="row" aria-labelledby="h-releases"><div class="wrap"><h2 class="crate-h" id="h-releases">Releases</h2><p class="crate-sub">Every album and single. Scroll to flip through, then press one to listen.</p><ul class="records">${recs.join('')}</ul></div></section>${dialog}` : ''}<!--/gl:crate-->`;
 }
 
 /** Home: the newest released release (cover, title, Listen) and the "Next:" line for the soonest coming one. */

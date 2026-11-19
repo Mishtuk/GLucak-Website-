@@ -36,7 +36,7 @@ globalThis.Date = class extends R { constructor(...a) { if (a.length) super(...a
 const row = (title, date, cover = null, type = 'single') => ({ title, date, type, link: 'https://example.com/' + date, cover });
 const real = row('Duck, Dodge, Jump, Fight', '2026-09-04', '/media/covers/duck-dodge-jump-fight.webp');
 const rel = (h) => h.match(/<article class="v2-rel">[\s\S]*?<\/article>/)[0];
-const tiles = (h) => [...h.matchAll(/<li class="tile"[^>]*>[\s\S]*?<\/li>/g)].map((m) => m[0]);
+const tiles = (h) => [...h.matchAll(/<li class="rec"[^>]*>[\s\S]*?<\/li>/g)].map((m) => m[0]);
 
 test('22: a cover:null latest release is the sleeve card on Home (role=img, no-art label, no chip, no placeholder SVG)', () => {
   const { home } = build([row(SHORT, '2026-11-13'), real]);
@@ -55,7 +55,7 @@ test('22: a 40-character title with two 12-letter words renders on Home and Musi
   assert.ok(rel(home).includes(`role="img" aria-label="${LONG}: no cover art yet"`));
   assert.ok(rel(home).includes(`<span class="nocover-title" aria-hidden="true">${LONG}</span>`));
   const t = tiles(music).find((x) => x.includes(LONG));
-  assert.match(t, /<span class="nocover tile-art" style="--nc-fs: [\d.]+cqi" aria-hidden="true">/);
+  assert.match(t, /<span class="nocover rec-nc" style="--nc-fs: [\d.]+cqi" aria-hidden="true">/);
   assert.ok(t.includes(`<span class="nocover-title" aria-hidden="true">${LONG}</span>`));
   const fs = (h) => Number(h.match(/--nc-fs: ([\d.]+)cqi/)[1]);
   assert.ok(fs(rel(home)) > 5 && fs(rel(home)) < 20, 'long title is set small, short ones up to 40');
@@ -64,16 +64,16 @@ test('22: a 40-character title with two 12-letter words renders on Home and Musi
 test('22: Music tiles for cover:null releases are aria-hidden like real covers, carry the type word and the coming date, no <img>', () => {
   const { music } = build([row(SHORT, '2026-11-13'), row(LONG, '2027-01-15'), real]);
   const ts = tiles(music);
-  const short = ts.find((x) => x.includes('tile-title">Hi<'));
+  const short = ts.find((x) => x.includes('v2-vtitle">Hi<'));
   const long = ts.find((x) => x.includes(LONG));
   for (const t of [short, long]) {
     assert.ok(t, 'tile present');
     assert.ok(!t.includes('<img') && !t.includes('role="img"') && !t.includes('placeholder-cover'), 'decorative card, no image');
-    assert.match(t, /<span class="nocover tile-art" style="--nc-fs: [\d.]+cqi" aria-hidden="true">/);
+    assert.match(t, /<span class="nocover rec-nc" style="--nc-fs: [\d.]+cqi" aria-hidden="true">/);
   }
   assert.match(short, /<span class="nocover-type" aria-hidden="true"><span>Single<\/span><\/span>/, 'released: type word only');
   assert.match(long, /<span class="nocover-type" aria-hidden="true"><span>Single<\/span><span>Jan 15<\/span><\/span>/, 'coming: type word and date');
-  assert.match(ts.find((x) => x.includes('duck-dodge')), /<img class="tile-art" src="\/media\/covers\/duck-dodge-jump-fight\.webp" alt=""/, 'real covers unchanged');
+  assert.match(ts.find((x) => x.includes('duck-dodge')), /<img class="rec-img" src="\/media\/covers\/duck-dodge-jump-fight\.webp" alt=""/, 'real covers unchanged');
   assert.ok(!music.includes('tile-art-none') && !music.includes('tile-when'));
 });
 

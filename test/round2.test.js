@@ -62,23 +62,23 @@ test('unknown path: 404 with the Wrong turn page (title, line, Listen / Shows / 
 
 test('Music: single-link tiles with distinct names, newest first, hatched slot for coming singles, Pre-save', async () => {
   const h = await (await fetch(`${base}/music/`)).text();
-  const tiles = [...h.matchAll(/<li class="tile"[^>]*>([\s\S]*?)<\/li>/g)].map((m) => m[0]);
+  const tiles = [...h.matchAll(/<li class="rec"[^>]*>([\s\S]*?)<\/li>/g)].map((m) => m[0]);
   assert.ok(tiles.length >= 10);
   const names = [];
   for (const t of tiles) {
     assert.equal((t.match(/<a /g) ?? []).length, 1, 'one link per tile');
     assert.ok(!t.includes('aria-label'), 'name comes from the visible words (2.5.3)');
-    names.push(t.match(/<h3 class="tile-title">([^<]*)</)[1]);
+    names.push(t.match(/<span class="v2-vtitle">([^<]*)</)[1]);
   }
   assert.equal(new Set(names).size, names.length, 'distinct names');
   assert.deepEqual(names.slice(0, 3), ['Scenic Route', 'Welcome Home', 'Who I Am']);
   const scenicOut = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date()) >= '2027-01-15';
-  if (scenicOut) assert.doesNotMatch(tiles[0], /data-state="coming"/);
-  else assert.match(tiles[0], /data-state="coming"[\s\S]*nocover tile-art[\s\S]*<span>Jan 15<\/span>[\s\S]*Out Jan 15, 2027[\s\S]*tile-go">Pre-save</);
-  assert.match(tiles[3], /<img class="tile-art" src="\/media\/covers\/duck-dodge-jump-fight\.webp" alt=""[\s\S]*tile-go">Listen</);
+  if (scenicOut) assert.doesNotMatch(tiles[0], />Out /);
+  else assert.match(tiles[0], /data-go="Pre-save"[\s\S]*nocover rec-nc[\s\S]*<span>Jan 15<\/span>[\s\S]*Out Jan 15, 2027/);
+  assert.match(tiles[3], /data-go="Listen everywhere"[\s\S]*<img class="rec-img" src="\/media\/covers\/duck-dodge-jump-fight\.webp" alt=""/);
   assert.ok(!h.includes('IDENTITY</h3>'), 'IDENTITY has its own block');
   assert.ok(!h.includes('class="release"') && !h.includes('Latest release. Listen on:'), 'RiseBand without its release block on Music');
-  assert.match(h, /<span class="tile-type">Album<\/span>Dec 19, 2025/);
+  assert.match(h, /Album, 2025</);
 });
 
 test('footer and About: link grid with inline icons, Patreon wide, no loose socials list', async () => {

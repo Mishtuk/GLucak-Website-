@@ -3,7 +3,7 @@ import { era } from './content.js';
 interface Props { home?: boolean; current?: string }
 const { home = false, current } = Astro.props;
 // Shop joins the nav only with SHOP_ENABLED=1: server.js fills the gl:nav-shop marker (src/lib/products.js shopLinks).
-const nav = [['music', 'Music', '/music/'], ['shows', 'Shows', '/shows/'], ['videos', 'Videos', '/videos/'], ['about', 'About', '/about/']];
+const nav = [['shows', 'Shows', '/shows/'], ['videos', 'Videos', '/videos/'], ['about', 'About', '/about/']];
 ---
 <div class="sentinel" aria-hidden="true"></div>
 <header class:list={['site-header', { 'is-solid': !home }]} data-overlay={home ? '' : undefined}>
@@ -12,7 +12,7 @@ const nav = [['music', 'Music', '/music/'], ['shows', 'Shows', '/shows/'], ['vid
     <nav class="nav-desktop" aria-label="Main">
       {nav.map(([k, label, href]) => <a href={href} aria-current={current === k ? 'page' : undefined}>{label}</a>)}<Fragment set:html="<!--gl:nav-shop-->" />
     </nav>
-    <a class="btn btn-solid btn-small header-listen" href={home ? '#music' : '/music/'}><svg class="btn-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>Listen</a>
+    <a class="btn btn-solid btn-small header-listen" href={home ? '#music' : '/music/'} aria-current={current === 'music' ? 'page' : undefined}><svg class="btn-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>Listen</a>
     <details class="nav-mobile">
       <summary><span class="m-word">Menu</span><span class="m-word m-close">Close</span></summary>
       <nav class="sheet" aria-label="Main menu">

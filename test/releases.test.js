@@ -32,7 +32,7 @@ const list = async () => (await (await fetch(`${base}/edit/api/releases`, { head
 const save = async (rows, v) => post('/edit/api/releases', { version: v === undefined ? (await list()).version : v, releases: rows }, { cookie });
 const day = (n) => new Date(Date.now() + n * 864e5).toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); // New York's day, as the server counts it
 const rel = (o = {}) => ({ title: 'New Song', type: 'single', date: day(-3), link: 'https://example.com/new', artists: '', cover: null, ...o });
-const tiles = (h) => [...h.matchAll(/<li class="tile"[^>]*>[\s\S]*?<\/li>/g)].map((m) => m[0]);
+const tiles = (h) => [...h.matchAll(/<li class="rec"[^>]*>[\s\S]*?<\/li>/g)].map((m) => m[0]);
 const live = () => JSON.parse(readFileSync(join(data, 'releases.json'), 'utf8'));
 
 test('fallback: no saved file -> the shipped list fills the crate and the editor loads it, IDENTITY included in the file', async () => {
@@ -107,12 +107,12 @@ test('a save is live: the crate, the sleeve, Coming, the Next line and the Now l
   assert.equal(t.length, 3);
   assert.ok(!t.join('').includes('Scenic Route') && !m.includes('IDENTITY'), 'removed releases are gone, IDENTITY is not a tile');
   const soon = t.find((x) => x.includes('Soon Song'));
-  assert.ok(soon.includes('data-state="coming"') && soon.includes('class="nocover tile-art"') && soon.includes('tile-go">Pre-save<') && !soon.includes('<img'), 'coming, plain sleeve, Pre-save');
+  assert.ok(soon.includes('>Out ') && soon.includes('class="nocover rec-nc"') && soon.includes('data-go="Pre-save"') && !soon.includes('<img'), 'coming, plain sleeve, Pre-save');
   const brand = t.find((x) => x.includes('Brand New'));
-  assert.ok(brand.includes('tile-artists">GLucak, J-BOY<') && brand.includes('nocover') && brand.includes('Single</span>'), 'artists, honest sleeve, type');
+  assert.ok(brand.includes('rec-credit">GLucak, J-BOY<') && brand.includes('nocover') && brand.includes('Single</span>'), 'artists, honest sleeve, type');
   const old = t.find((x) => x.includes('Old Remix'));
-  assert.ok(old.includes('tile-type">Remix album<') && old.includes(`src="/media/uploads/${'b'.repeat(32)}.webp"`) && !old.includes('nocover'));
-  assert.ok(m.includes('aria-label="Listen everywhere: Brand New'), 'the external-link pass adds its own words after the name');
+  assert.ok(old.includes('vid-meta">Remix album, 2024<') && old.includes(`src="/media/uploads/${'b'.repeat(32)}.webp"`) && !old.includes('nocover'));
+  assert.ok(brand.includes('data-title="Brand New"') && brand.includes('data-go="Listen everywhere"'), 'the dialog names the release');
   const home = await get('/');
   assert.ok(home.includes('<h3>Brand New</h3>') && home.includes('Latest single') && home.includes('class="nocover v2-cover"') && home.includes('role="img" aria-label="Brand New: no cover art yet"'));
   assert.ok(home.includes('Next: Soon Song,') && home.includes('aria-label="Pre-save Soon Song'));
@@ -129,9 +129,9 @@ test('the Now line: a release out today says so', async () => {
 
 test('with no cover the plain sleeve names the title and type; a hand-edited bad cover never becomes an img src', () => {
   const h = crateHtml([{ title: 'Hi', type: 'ep', date: '2026-01-01', link: 'https://x.example/', cover: null }], '2026-06-01');
-  assert.match(h, /<span class="nocover tile-art" style="--nc-fs: [\d.]+cqi" aria-hidden="true"><span class="nocover-title" aria-hidden="true">Hi<\/span><span class="nocover-type" aria-hidden="true"><span>EP<\/span><\/span><\/span>/);
+  assert.match(h, /<span class="nocover rec-nc" style="--nc-fs: [\d.]+cqi" aria-hidden="true"><span class="nocover-title" aria-hidden="true">Hi<\/span><span class="nocover-type" aria-hidden="true"><span>EP<\/span><\/span><\/span>/);
   const evil = crateHtml([{ title: 'Hi', type: 'single', date: '2026-01-01', link: 'https://x.example/', cover: '" onerror="alert(1)' }], '2026-06-01');
-  assert.ok(!evil.includes('<img') && !evil.includes('onerror'));
+  assert.ok(!evil.includes('<img') && !evil.includes('onerror') && !evil.includes('data-cover'));
   assert.ok(!latestHtml([{ title: 'Hi', type: 'single', date: '2026-01-01', link: 'https://x.example/', cover: 'javascript:alert(1)' }], '2026-06-01').includes('javascript'));
   assert.equal(crateHtml([], '2026-06-01'), '<!--gl:crate--><!--/gl:crate-->');
   assert.equal(fillReleases('<p>x</p>', seed), '<p>x</p>', 'no marker, no change');
@@ -182,4 +182,17 @@ test('the edit screen loads Releases without IDENTITY and keeps the five tabs in
   assert.ok(js.includes("r.title !== 'IDENTITY'"), 'the tab never lists IDENTITY');
   assert.ok(js.includes("const tabs = ['shows', 'releases', 'identity', 'bio', 'products']"));
   assert.ok(js.includes("uploader('releases'") && js.includes("uploader('products'") && (js.match(/async function upload\(/g) ?? []).length === 1, 'one uploader for both');
+});
+
+test('Music releases are records: the pinned cover flow, unfiltered art, Spotify only from a validated id', () => {
+  const h = crateHtml([{ title: 'Hi', type: 'album', date: '2026-01-01', link: 'https://open.spotify.com/album/0123456789abcdefghijAB', cover: '/media/covers/x.webp' }], '2026-06-01');
+  assert.match(h, /<ul class="records">/);
+  assert.match(h, /data-hs="row"/);
+  assert.match(h, /class="rec-sleeve rec-art"/);
+  assert.match(h, /<dialog class="rec-open rel-open" id="rec-open"/);
+  assert.ok(!h.includes('<iframe'), 'no player in the HTML, only after a press');
+  const css = readFileSync(join(import.meta.dirname, '../src/styles/global.css'), 'utf8');
+  assert.match(css, /\.rec-art::before, \.rec-art \.rec-type \{ display: none; \}[^\n]*\n\.rec-art \.rec-img \{ mix-blend-mode: normal; \}/);
+  const js = readFileSync(join(import.meta.dirname, '../public/js/app.js'), 'utf8');
+  assert.ok(js.includes('[A-Za-z0-9]{22}') && js.includes('https://open.spotify.com/embed/${m[1]}/${m[2]}'), 'embed from a 22-character id only');
 });

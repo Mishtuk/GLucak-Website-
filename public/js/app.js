@@ -127,7 +127,7 @@
     const b = document.createElement('button');
     b.type = 'button';
     b.setAttribute('aria-label', `${link.closest('.rec') ? 'Open' : 'Play'} ${link.dataset.title || 'video'}`);
-    b.dataset.yt = link.dataset.yt;
+    if (link.dataset.yt != null) b.dataset.yt = link.dataset.yt;
     b.dataset.title = link.dataset.title || '';
     if (link.dataset.meta != null) { b.dataset.meta = link.dataset.meta; b.className = link.className; } // a record
     for (const n of link.childNodes) {
@@ -163,7 +163,36 @@
     buttons.set(f, b);
     f.focus();
   }
+  // A release on Music (data-rel): the dialog shows its cover; Spotify's player is built only from a validated 22-character id.
+  const SPOTIFY = /^\/(?:intl-[a-z]+\/)?(album|track|playlist)\/([A-Za-z0-9]{22})\/?$/;
+  const spotifyFrame = (b) => {
+    let u; try { u = new URL(b.dataset.href); } catch { return null; }
+    const m = u.hostname === 'open.spotify.com' && SPOTIFY.exec(u.pathname);
+    if (!m) return null;
+    const f = document.createElement('iframe');
+    f.src = `https://open.spotify.com/embed/${m[1]}/${m[2]}`;
+    f.title = `${b.dataset.title}: Spotify player`;
+    f.allow = 'encrypted-media; fullscreen; picture-in-picture';
+    f.height = m[1] === 'track' ? '152' : '352';
+    return f;
+  };
+  const extras = (b) => { // the Listen everywhere / Pre-save button (the player comes after the open)
+    const a = document.createElement('a'), vh = document.createElement('span');
+    a.className = 'btn btn-solid'; a.href = b.dataset.href; a.target = '_blank'; a.rel = 'noopener';
+    vh.className = 'vh'; vh.textContent = ' (opens in a new tab)';
+    a.append(b.dataset.go, vh);
+    dlg.querySelector('.ro-extra').replaceChildren(a);
+  };
   const stillOf = (b) => { // the dialog screen: the video's still and the play icon
+    if (b.dataset.href != null) { // a release: its cover, or its plain no-cover sleeve
+      const nc = b.querySelector('.nocover');
+      dlg.querySelectorAll('.ro-extra iframe').forEach((f) => f.remove()); // the player goes, the button stays
+      const img = new Image();
+      img.alt = '';
+      if (nc) { screen.replaceChildren(nc.cloneNode(true)); return null; }
+      img.src = b.dataset.cover; screen.replaceChildren(img);
+      return img;
+    }
     const img = new Image(), icon = document.createElement('span');
     img.className = 'yt-img'; img.alt = '';
     img.srcset = `/media/videos/${b.dataset.yt}-640.webp 640w, /media/videos/${b.dataset.yt}-1280.webp 1280w`;
@@ -179,13 +208,19 @@
     opener = b;
     dlg.querySelector('#ro-title').textContent = b.dataset.title;
     dlg.querySelector('.ro-meta').textContent = b.dataset.meta;
-    const img = stillOf(b), sleeve = b.querySelector('.rec-sleeve');
-    const embed = () => { if (dlg.open) { const f = frame(b); screen.replaceChildren(f); f.focus(); } };
+    const rel = b.dataset.href != null, img = stillOf(b), sleeve = b.querySelector('.rec-sleeve');
+    if (rel) extras(b);
+    const embed = () => {
+      if (!dlg.open) return;
+      if (!rel) { const f = frame(b); screen.replaceChildren(f); f.focus(); return; }
+      const f = spotifyFrame(b);
+      if (f) dlg.querySelector('.ro-extra').prepend(f);
+    };
     if (document.startViewTransition && motionOn() && sleeve) {
       named(sleeve, true);
       const vt = document.startViewTransition(async () => {
         named(sleeve, false); dlg.showModal(); named(screen, true);
-        await Promise.race([img.decode().catch(() => {}), new Promise((r) => setTimeout(r, 500))]);
+        await Promise.race([img ? img.decode().catch(() => {}) : 0, new Promise((r) => setTimeout(r, 500))]);
       });
       vt.finished.finally(() => { named(screen, false); embed(); });
       return;
@@ -207,8 +242,14 @@
     dlg.querySelector('.ro-close').addEventListener('click', closeRec);
     dlg.addEventListener('click', (e) => { if (e.target === dlg) closeRec(); });
     dlg.addEventListener('cancel', (e) => { e.preventDefault(); closeRec(); }); // Esc takes the same way out
-    dlg.addEventListener('close', () => { screen.replaceChildren(); opener?.focus(); });
+    dlg.addEventListener('close', () => { screen.replaceChildren(); dlg.querySelector('.ro-extra')?.replaceChildren(); opener?.focus(); });
   }
+  document.querySelectorAll('a[data-rel]').forEach((a) => { // each release becomes a button that opens the dialog
+    const b = makeButton(a);
+    b.dataset.href = a.href; b.dataset.go = a.dataset.go; b.dataset.cover = a.dataset.cover ?? ''; b.dataset.meta = a.dataset.meta;
+    b.setAttribute('aria-label', `Open ${a.dataset.title}`);
+    a.replaceWith(b);
+  });
   document.querySelectorAll('a[data-yt]').forEach((a) => {
     if (videoOk(a.dataset.yt)) a.replaceWith(makeButton(a));
   });

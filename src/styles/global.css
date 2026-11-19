@@ -205,7 +205,8 @@ p { text-wrap: pretty; }
 .nav-desktop a::after { content: ''; position: absolute; left: 0.5rem; right: 0.5rem; bottom: -2px; height: 6px; clip-path: polygon(0 100%, 0.3rem 0, calc(100% - 0.3rem) 0, 100% 100%); }
 .nav-desktop a[aria-current='page']::after { background: var(--text); }
 @media (hover: hover) and (pointer: fine) { .nav-desktop a:hover::after { background: var(--line); } .nav-desktop a[aria-current='page']:hover::after { background: var(--text); } }
-.header-listen { display: none; gap: 0.45rem; }
+.header-listen { display: none; gap: 0.45rem; position: relative; }
+.header-listen[aria-current='page']::after { content: ''; position: absolute; left: 0.5rem; right: 0.5rem; bottom: -2px; height: 6px; background: var(--text); clip-path: polygon(0 100%, 0.3rem 0, calc(100% - 0.3rem) 0, 100% 100%); } /* the nav's ledge, on Listen when this is the Music page */
 .btn-ico { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.25; stroke-linejoin: round; stroke-linecap: round; }
 .nav-mobile summary {
   display: inline-flex; align-items: center; min-height: 48px; padding-inline: 0.85rem; margin-right: -0.85rem;
@@ -1717,6 +1718,10 @@ html[data-palette='poster'] .hero-film::before { background: var(--film-ink); }
 .rec-cap .vid-meta { margin: 0; }
 .rec :is(a, button):active .rec-sleeve { outline: 3px solid var(--text); outline-offset: 3px; }
 @media (hover: hover) and (pointer: fine) { .rec :is(a, button):hover .rec-disc { translate: 10% 0; } .rec :is(a, button):hover .rec-cap .v2-vtitle { text-decoration: underline; text-underline-offset: 3px; } }
+.rec-art::before, .rec-art .rec-type { display: none; } /* a release: the real cover, no two-ink blend, no type overlay */
+.rec-art .rec-img { mix-blend-mode: normal; }
+.rec-art .nocover { position: absolute; inset: 0; width: 100%; height: 100%; }
+.rec-credit { color: var(--muted); font-size: var(--step--1); }
 /* B: an accent band across the foot. */
 .rec-b { --ink-light: color-mix(in srgb, var(--accent) 55%, var(--text)); }
 .rec-b .rec-name > span { background: var(--accent); color: var(--accent-text); }
@@ -1753,6 +1758,12 @@ html[data-palette='poster'] .rec { --ink-dark: color-mix(in srgb, var(--text) 80
 .ro-screen iframe.yt { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .ro-screen .yt-play { top: 50%; width: 56px; height: 56px; }
 .ro-disc { display: none; }
+/* A release opened (Music): the cover, never filtered or rotated (D51), beside Spotify's player and the Listen button. */
+.rel-open .ro-screen { aspect-ratio: 1; }
+.rel-open .ro-screen :is(img, .nocover) { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ro-extra { display: grid; align-content: start; gap: var(--space-m); margin-top: var(--space-m); }
+.ro-extra iframe { width: 100%; border: 0; background: var(--bg-2); }
+@media (min-width: 900px) { .rel-open .ro-body { display: grid; grid-template-columns: minmax(0, 26rem) minmax(0, 1fr); gap: var(--space-l); } .rel-open .ro-stage { width: auto; } .ro-extra { margin-top: 0; } }
 @media (min-width: 900px) {
   .ro-stage { width: 80%; }
   .ro-disc { display: block; position: absolute; top: 0; right: 0; height: 100%; aspect-ratio: 1; border-radius: 50%; translate: 45% 0;

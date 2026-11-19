@@ -36,7 +36,8 @@ test('every page has header nav, mobile bar, footer Motion switch', () => {
   for (const p of Object.keys(pages)) {
     const h = html(p);
     const nav = h.match(/<nav class="nav-desktop"[\s\S]*?<\/nav>/)?.[0] ?? '';
-    for (const w of ['Music', 'Shows', 'About']) assert.match(nav, new RegExp(`>${w}</a>`), `${p}: nav ${w}`);
+    for (const w of ['Shows', 'Videos', 'About']) assert.match(nav, new RegExp(`>${w}</a>`), `${p}: nav ${w}`);
+    assert.doesNotMatch(nav, />Music</, `${p}: Listen replaces the Music tab`);
     const bar = h.match(/<nav class="phone-bar"[\s\S]*?<\/nav>/)?.[0] ?? '';
     for (const w of ['Listen', 'Shows', 'Watch', 'Join']) assert.match(bar, new RegExp(`<span>${w}</span>`), `${p}: bar ${w}`);
     assert.match(h, /<button class="motion-btn" id="motion"/, `${p}: motion switch`);
@@ -134,21 +135,21 @@ test('approved copy is on each page verbatim; no ASK GABE; no quote ships', () =
 
 test('Music: artists credit shown on the tile; upcoming releases are tiles in the crate (Pre-save), never listed as released', () => {
   const m = html('/music/');
-  assert.match(m, /class="tile-artists">GLucak, J-BOY</);
+  assert.match(m, /class="rec-credit">GLucak, J-BOY</);
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date()); // same New York day as src/lib/shows.js
-  const tiles = [...m.matchAll(/<li class="tile"([^>]*)>[\s\S]*?<\/li>/g)].map((x) => x[0]);
-  const tileOf = (title) => tiles.find((t) => t.includes(`<h3 class="tile-title">${title}</h3>`));
+  const tiles = [...m.matchAll(/<li class="rec"([^>]*)>[\s\S]*?<\/li>/g)].map((x) => x[0]);
+  const tileOf = (title) => tiles.find((t) => t.includes(`<span class="v2-vtitle">${title}</span>`));
   for (const r of JSON.parse(readFileSync(join(import.meta.dirname, '../src/data/releases.json'), 'utf8'))) {
     if (r.title === 'IDENTITY') continue;
     const t = tileOf(r.title);
     assert.ok(t, `${r.title}: tile exists`);
     if (r.date > today) {
-      assert.ok(t.includes('data-state="coming"'), `${r.title}: coming`);
-      if (/\/\/[^/]*lnk\.to\//.test(r.link)) assert.ok(t.includes('tile-go">Pre-save<'), `${r.title}: Pre-save`);
-    } else assert.ok(!t.includes('data-state="coming"'), `${r.title}: released, not coming`);
+      assert.ok(t.includes('Out '), `${r.title}: coming`);
+      if (/\/\/[^/]*lnk\.to\//.test(r.link)) assert.ok(t.includes('data-go="Pre-save"'), `${r.title}: Pre-save`);
+    } else assert.ok(!t.includes('>Out '), `${r.title}: released, not coming`);
   }
-  assert.ok(!m.includes('<h3 class="tile-title">IDENTITY</h3>'));
-  assert.match(m, /<h3 class="tile-title">Duck, Dodge, Jump, Fight<\/h3>/);
+  assert.ok(!m.includes('<span class="v2-vtitle">IDENTITY</span>'));
+  assert.match(m, /<span class="v2-vtitle">Duck, Dodge, Jump, Fight<\/span>/);
 });
 
 test('Spotify box keeps the loading / blocked note under the iframe; no era-word placeholder line on Music', () => {

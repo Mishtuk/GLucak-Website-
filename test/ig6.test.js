@@ -80,14 +80,14 @@ test('copy ig6: sign-up now wording, About lines, Patreon line, credits heading'
 
 test('copy ig6: the remix album is labelled; every coming lnk.to tile reads Pre-save; no smart link never says Pre-save', () => {
   const m = page('music/index.html');
-  assert.match(m, /<h3 class="tile-title">Fall Down 7, Stand Up 8<\/h3>[\s\S]*?<span class="tile-type">Remix album<\/span>/);
-  const tile = (title) => [...m.matchAll(/<li class="tile"[^>]*>[\s\S]*?<\/li>/g)].map((x) => x[0]).find((t) => t.includes(`<h3 class="tile-title">${title}</h3>`));
+  assert.match(m, /<span class="v2-vtitle">Fall Down 7, Stand Up 8<\/span><span class="vid-meta">Remix album, \d{4}</);
+  const tile = (title) => [...m.matchAll(/<li class="rec"[^>]*>[\s\S]*?<\/li>/g)].map((x) => x[0]).find((t) => t.includes(`<span class="v2-vtitle">${title}</span>`));
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
   const rel = JSON.parse(src('src/data/releases.json'));
   const smart = rel.filter((r) => r.type !== 'album' && r.date > today && /(^|\.)lnk\.to$/.test(new URL(r.link).hostname));
   // none left once every smart-link single is out; the tileAction cases below still cover the rule
-  if (smart.length === 0) assert.ok(!tile("Scenic Route")?.includes("tile-go\">Pre-save<"), "nothing coming, so no Pre-save");
-  for (const r of smart) assert.ok(tile(r.title).includes('tile-go">Pre-save<'), `${r.title} reads Pre-save`);
+  if (smart.length === 0) assert.ok(!tile("Scenic Route")?.includes('data-go="Pre-save"'), "nothing coming, so no Pre-save");
+  for (const r of smart) assert.ok(tile(r.title).includes('data-go="Pre-save"'), `${r.title} reads Pre-save`);
   assert.equal(tileAction({ coming: true, link: 'https://open.spotify.com/artist/x' }), 'Follow on Spotify');
   assert.equal(tileAction({ coming: true, link: 'https://wingsmusic.lnk.to/x' }), 'Pre-save');
 });
