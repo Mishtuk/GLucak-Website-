@@ -1,0 +1,7 @@
+/* TEAM */
+Design and build: Mishtuk Web Design
+Music, words and photos: GLucak and the photographers named on the site
+
+/* SITE */
+Standards: HTML, CSS, JavaScript
+Built with: Astro
