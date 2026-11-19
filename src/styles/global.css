@@ -480,9 +480,7 @@ html[data-shows='none'] .quote-live { display: none; }
 .push-body { display: grid; gap: var(--space-m); margin-top: var(--space-m); }
 .bio { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xs); overflow-wrap: anywhere; }
 .bio-lead { font-size: var(--step-0); line-height: 1.4; font-weight: 500; overflow-wrap: anywhere; }
-/* About (owner 2026-11-18): no tab strip, the photo sits right under the header; the bio quote is poster type like the title */
-.sub:has(> .band-push:first-child) { padding-top: var(--header-h); }
-.sub > .band-push:first-child { border-top: 0; }
+/* About (owner 2026-11-18): the bio quote is poster type like the title */
 .about-body .bio-lead { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.75rem, 1.1rem + 2.4vw, 3rem); line-height: 0.98; text-transform: uppercase; letter-spacing: 0.01em; overflow-wrap: normal; }
 .push-actions { display: flex; flex-wrap: wrap; gap: var(--space-s) var(--space-l); align-items: center; }
 /* About from 900px (DESIGN 20c): the right column opens with a setlist of actions, no fill (the header's LISTEN is the
@@ -588,7 +586,11 @@ html[data-shows='none'] .quote-live { display: none; }
 /* ---------- Added in the port ---------- */
 .yt-title { position: absolute; inset: auto 0.75rem 0.6rem; font-weight: 700; font-size: var(--step--1); line-height: 1.25; }
 iframe.yt { width: 100%; border: 0; }
-.sub { padding-top: calc(var(--header-h) + var(--tab-h) + 4px); }
+/* Owner 2026-11-18: no page tab on inner pages (Home keeps its band tabs); the first band meets the header with no strip or rule */
+.sub { padding-top: var(--header-h); }
+.sub .tab { display: none; }
+.sub > .band:first-child { border-top: 0; }
+.sub > .band:first-child:not(.band-push) { padding-top: var(--space-l); } /* About keeps its photo flush */
 .releases { display: grid; gap: var(--space-m); margin-top: var(--space-l); }
 .releases .release { margin-top: 0; }
 .prose { display: grid; gap: var(--space-s); margin-top: var(--space-l); }
