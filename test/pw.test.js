@@ -162,7 +162,7 @@ const page = (n) => read(`dist/${n}/index.html`);
 
 test('30f: page classes (Music sheet, Videos torn band, About credits sheet, Book GLucak sheet) and the deleted 72rem Shows rule', () => {
   assert.match(page('music'), /<div class="idn is-paper" id="identity">/);
-  assert.match(page('videos'), /<section class="band band-crate" aria-labelledby="h-crate">/); // owner 2026-11-18: Now showing + the records
+  assert.match(page('videos'), /<section class="band band-crate" data-hs="row" aria-labelledby="h-crate">/); // owner 2026-11-18: Now showing + the records
   assert.match(page('about'), /<div class="wrap prose is-paper">/);
   assert.ok(!/class="venues[^"]*is-paper/.test(page('about')), 'About: the credits sheet is the one sheet (no paper inside paper)');
   assert.match(page('shows'), /class="venues is-paper taped"/);

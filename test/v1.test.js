@@ -18,9 +18,9 @@ const PAGES = ['index.html', 'music/index.html', 'shows/index.html', 'about/inde
 test('26g-1: /videos/ has no player, no autoplay and no YouTube image before a press; autoplay=1 is set only when a card is pressed', () => {
   assert.ok(!/<iframe/i.test(vids) && !/autoplay/i.test(vids) && !vids.includes('youtube.com/embed') && !vids.includes('i.ytimg.com'));
   assert.equal(js.split('autoplay=1').length - 1, 1, 'autoplay=1 appears once');
-  assert.ok(js.indexOf('autoplay=1') > js.indexOf('function play('), 'inside play()');
-  assert.match(js, /addEventListener\('click', \(\) => \{ if \(!centre\(b\)\) play\(b\); \}\)/, 'play() runs only from the click handler');
-  assert.equal(js.split(/(?<![.\w])play\(/).length - 1, 2, 'play( is defined once and called once'); // film.play() (the Home film) is a method, not this
+  assert.ok(js.indexOf('autoplay=1') > js.indexOf('const frame = '), 'inside frame()');
+  assert.match(js, /addEventListener\('click', \(\) => \{ if \(b\.dataset\.meta != null\) openRec\(b\); else load\(b\); \}\)/, 'the player loads only from the click handler');
+  assert.equal(js.split(/(?<![.\w])frame\(/).length - 1, 2, 'frame( is called from load() and the dialog only'); // film.play() (the Home film) is a method, not this
   for (const f of ['index.html', 'shows/index.html']) assert.ok(!/<iframe[^>]*youtube/i.test(page(f)), `${f}: no YouTube iframe`);
 });
 
@@ -98,7 +98,7 @@ test('26g-5: credits on /videos/: the Vladd still, Joseph Lucak, GLucak on YouTu
 });
 
 test('26g-6: every card has a name, every poster is alt="" with size and a file, only the lead is eager, one h1; the button is real and labelled', () => {
-  // owner 2026-11-18: the stage (16:9 poster, eager) and the records (a square sleeve each, lazy, data-now plays on the stage)
+  // owner 2026-11-18: the stage (16:9 poster, eager) and the records (a square sleeve each, lazy, a press opens the dialog)
   const stage = vids.match(/<div class="v2-vid now-showing"[\s\S]*?<\/div>/)[0];
   const sImg = stage.match(/<img[^>]*>/)[0];
   assert.ok(sImg.includes('alt=""') && sImg.includes('width="1280"') && sImg.includes('height="720"') && sImg.includes('loading="eager"'));
@@ -107,26 +107,33 @@ test('26g-6: every card has a name, every poster is alt="" with size and a file,
   assert.equal(recs.length, ids.length - 1);
   for (const c of recs) {
     assert.match(c, /<span class="v2-vtitle">[^<]+<\/span>/, 'name');
-    assert.match(c, / data-now /);
+    assert.match(c, / data-meta=/);
+    assert.doesNotMatch(c, / data-now/);
     const img = c.match(/<img[^>]*>/)?.[0];
     assert.ok(img && img.includes('alt=""') && img.includes('width="640"') && img.includes('height="640"') && img.includes('loading="lazy"'), 'sleeve');
     assert.ok(existsSync(join(ROOT, 'public', img.match(/src="([^"]+)"/)[1])));
   }
   assert.equal(vids.split('<h1').length - 1, 1);
   assert.match(js, /b\.type = 'button'/);
-  assert.match(js, /setAttribute\('aria-label', `Play /);
+  assert.match(js, /setAttribute\('aria-label', `\$\{link\.closest\('\.rec'\) \? 'Open' : 'Play'\} /);
   assert.match(js, /f\.title = `\$\{b\.dataset\.title \|\| 'Video'\}: video`/);
   assert.match(js, /f\.focus\(\)/);
   assert.match(js, /for \(const \[f, old\] of buttons\)/, 'one player at a time');
 });
 
-test('26g-6b: records are a scroll-snap cover flow; its motion sits after D64, gated, before the poster wall; opening uses a view transition', () => {
+test('26g-6b: records are a scroll-snap cover flow; its motion sits after D64, gated, before the poster wall; opening uses a view transition; the dialog and the pinned row', () => {
   const css = src('src/styles/global.css');
   assert.match(css, /\.records \{[^}]*scroll-snap-type: x mandatory/);
   const i = css.indexOf('@keyframes rec-flow');
   assert.ok(i > 0 && i < css.indexOf('30. Poster wall'));
   assert.ok(css.lastIndexOf('@media (prefers-reduced-motion: no-preference)', i) > css.indexOf('D64'));
-  assert.ok(js.includes('startViewTransition') && js.includes('vt-rec'));
+  assert.ok(js.includes('startViewTransition') && !js.includes('vt-rec') && !css.includes('vt-rec'));
+  assert.match(vids, /<dialog class="rec-open" id="rec-open" aria-labelledby="ro-title">/);
+  assert.match(vids, /<button type="button" class="ro-close">Close<\/button>/);
+  const d = css.indexOf(".rec-open[open] .ro-disc { transition");
+  assert.ok(d > 0 && d < css.indexOf('30. Poster wall') && css.slice(css.lastIndexOf('\n', d), d).includes("html[data-motion='on']"));
+  assert.ok(css.lastIndexOf('@media (prefers-reduced-motion: no-preference)', d) > css.indexOf('D64'));
+  assert.ok(js.includes('showModal') && /\.scrollLeft = p \* dist/.test(js));
 });
 
 test("26g-7: Videos is in every page's nav and menu; the phone bar Watch goes to /videos/; Home and Shows headings link to it; sitemap lists it", () => {

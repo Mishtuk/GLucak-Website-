@@ -892,7 +892,8 @@ html[data-motion='off']::view-transition-new(*) { animation: none !important; }
   @keyframes rec-out { 0%, 35%, 65%, 100% { translate: 0 0; } 50% { translate: 30% 0; } } /* one slot off centre is fully turned (about 23% of the timeline at 1280) */
   ::view-transition-group(rec-open) { animation-duration: 0.5s; animation-timing-function: var(--ease); }
   ::view-transition-old(rec-open), ::view-transition-new(rec-open) { height: 100%; object-fit: cover; }
-  html.vt-rec::view-transition-old(root), html.vt-rec::view-transition-new(root) { animation: none; }
+  html[data-motion='on'] .rec-open[open] .ro-disc { transition: translate 0.4s var(--ease) 0.3s; } /* the cover opens to the vinyl */
+  @starting-style { html[data-motion='on'] .rec-open[open] .ro-disc { translate: 0 0; } }
 }
 
 /* =====================================================================================================================
@@ -1730,3 +1731,27 @@ html[data-palette='poster'] .hero-film::before { background: var(--film-ink); }
 .rec-d .rec-no { position: absolute; top: -4cqi; right: 2cqi; margin: 0; font-size: 62cqi; line-height: 1; color: transparent; -webkit-text-stroke: 0.5cqi var(--text); }
 /* The light palette: inks flip (dark ink = text, light = paper). */
 html[data-palette='poster'] .rec { --ink-dark: color-mix(in srgb, var(--text) 80%, var(--bg)); --ink-light: var(--bg); }
+/* Records, Motion on (app.js layoutHs, data-hs='row'): the band's wrap sticks under the header and the page scroll sets the row's scrollLeft. */
+.band-crate.is-pinned { padding-block: 0; }
+.band-crate.is-pinned > .wrap { position: sticky; top: var(--header-h); height: calc(100svh - var(--header-h) - var(--bar-h)); display: flex; flex-direction: column; justify-content: center; }
+.band-crate.is-pinned .records { overflow-x: hidden; scroll-snap-type: none; scrollbar-width: none; margin-top: var(--space-m); padding-block: var(--space-m); }
+.band-crate.is-pinned .vid-more { margin-top: var(--space-s); }
+/* A record opened over the page. */
+.rec-open { width: 100%; max-width: min(72rem, calc(100% - 2rem)); max-height: calc(100dvh - 2rem); margin: auto; padding: 0; border: 0; overflow: auto; background: var(--bg); color: var(--text); box-shadow: 0 0 0 2px var(--line), 0.45rem 0.45rem 0 var(--bg-2); }
+.rec-open::backdrop { background: color-mix(in srgb, var(--bg) 88%, transparent); }
+.ro-in { padding: var(--space-m); }
+.ro-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-m); margin-bottom: var(--space-m); }
+#ro-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(2rem, 1rem + 5vw, 4.5rem); line-height: 0.9; text-transform: uppercase; overflow-wrap: anywhere; }
+.ro-meta { margin: var(--space-xs) 0 0; }
+.ro-close { flex: none; min-width: 48px; min-height: 48px; padding: 0 var(--space-m); border: 2px solid var(--text); background: var(--bg); color: var(--text); font: inherit; font-weight: 700; }
+.ro-close:focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
+.ro-stage { position: relative; }
+.ro-screen { position: relative; z-index: 1; aspect-ratio: 16 / 9; overflow: hidden; background: var(--bg-2); border: 2px solid var(--line); }
+.ro-screen iframe.yt { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.ro-screen .yt-play { top: 50%; width: 56px; height: 56px; }
+.ro-disc { display: none; }
+@media (min-width: 900px) {
+  .ro-stage { width: 80%; }
+  .ro-disc { display: block; position: absolute; top: 0; right: 0; height: 100%; aspect-ratio: 1; border-radius: 50%; translate: 45% 0;
+    background: radial-gradient(circle, var(--accent) 0 16%, var(--vinyl-edge) 16.5% 18%, transparent 18.5%), repeating-radial-gradient(circle, var(--vinyl) 0 1.5px, var(--vinyl-groove) 1.5px 3px); box-shadow: 0 0 0 2px color-mix(in srgb, var(--text) 18%, transparent); }
+}

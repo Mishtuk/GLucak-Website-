@@ -110,8 +110,9 @@
   }
 
   /* ---------- Videos (DESIGN 26f): a link to YouTube until JS runs; then a Play button; the privacy-enhanced player loads only after a press ---------- */
+  const pinned = (el) => el.closest('.band-crate')?.classList.contains('is-pinned'); // Motion on: the records row is driven by the page scroll
   const centre = (b) => { // a record off-centre is brought forward first
-    const row = b.closest('.records'); if (!row) return false;
+    const row = b.closest('.records'); if (!row || pinned(row)) return false;
     const r = row.getBoundingClientRect(), c = b.getBoundingClientRect();
     const off = c.left + c.width / 2 - (r.left + r.width / 2);
     if (Math.abs(off) <= c.width / 3) return false;
@@ -119,22 +120,24 @@
     return true;
   };
   const videoOk = (id) => /^[\w-]{11}$/.test(id ?? '');
-  const buttons = new Map(); // open iframe -> the button it replaced (one player at a time)
+  const buttons = new Map(); // open stage iframe -> the button it replaced (one player at a time)
+  const dlg = $('#rec-open'), screen = dlg?.querySelector('.ro-screen');
+  let opener = null; // the record that opened the dialog
   function makeButton(link) {
     const b = document.createElement('button');
     b.type = 'button';
-    b.setAttribute('aria-label', `Play ${link.dataset.title || 'video'}`);
+    b.setAttribute('aria-label', `${link.closest('.rec') ? 'Open' : 'Play'} ${link.dataset.title || 'video'}`);
     b.dataset.yt = link.dataset.yt;
     b.dataset.title = link.dataset.title || '';
-    if ('now' in link.dataset) { b.dataset.now = ''; b.dataset.meta = link.dataset.meta || ''; b.className = link.className; } // a record: plays on the stage
+    if (link.dataset.meta != null) { b.dataset.meta = link.dataset.meta; b.className = link.className; } // a record
     for (const n of link.childNodes) {
       if (n.nodeType === 1 && n.classList.contains('vh')) continue; // the new-tab hint does not apply to a button
       b.append(n.cloneNode(true));
     }
-    b.addEventListener('click', () => { if (!centre(b)) play(b); });
+    b.addEventListener('click', () => { if (b.dataset.meta != null) openRec(b); else load(b); });
     return b;
   }
-  function stopVideos() { // stops the video that is playing
+  function stopVideos() { // stops the video that is playing on the stage
     for (const [f, old] of buttons) {
       const name = f.nextElementSibling;
       if (name && name.classList.contains('v2-vtitle')) name.remove();
@@ -142,65 +145,95 @@
       buttons.delete(f);
     }
   }
-  function play(b) {
+  const frame = (b) => { // the privacy-enhanced player; autoplay is set only here, after a press
+    const f = document.createElement('iframe');
+    f.className = 'yt';
+    f.src = `https://www.youtube-nocookie.com/embed/${b.dataset.yt}?autoplay=1&rel=0`;
+    f.title = `${b.dataset.title || 'Video'}: video`;
+    f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    f.allowFullscreen = true;
+    f.style.aspectRatio = '16 / 9';
+    return f;
+  };
+  function load(b) { // the Now showing stage plays in place
     stopVideos();
-    const stage = 'now' in b.dataset && document.querySelector('#now-showing button[data-yt]');
-    const load = (b) => {
-      const f = document.createElement('iframe');
-      f.className = 'yt';
-      f.src = `https://www.youtube-nocookie.com/embed/${b.dataset.yt}?autoplay=1&rel=0`; // autoplay is set only here, after the press
-      f.title = `${b.dataset.title || 'Video'}: video`;
-      f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
-      f.allowFullscreen = true;
-      f.style.aspectRatio = '16 / 9';
-      const name = b.querySelector('.v2-vtitle');
-      b.replaceWith(f);
-      if (name) f.after(name.cloneNode(true));
-      buttons.set(f, b);
-      f.focus();
-    };
-    if (!stage) { load(b); return; }
-    const swap = () => { // Videos page: a record loads onto the Now showing screen, then plays there
-      const id = b.dataset.yt;
-      stage.dataset.yt = id; stage.dataset.title = b.dataset.title;
-      stage.setAttribute('aria-label', `Play ${b.dataset.title || 'video'}`);
-      const img = stage.querySelector('.yt-img');
-      if (img) { img.srcset = `/media/videos/${id}-640.webp 640w, /media/videos/${id}-1280.webp 1280w`; img.src = `/media/videos/${id}-640.webp`; }
-      stage.querySelector('.v2-vtitle').textContent = b.dataset.title;
-      document.querySelector('#now-showing .vid-meta span').textContent = b.dataset.meta;
-      document.getElementById('now-showing').scrollIntoView({ block: 'start' });
-    };
-    const sleeve = b.querySelector('.rec-sleeve'), screen = stage.querySelector('.v2-thumb');
-    if (document.startViewTransition && motionOn() && sleeve && screen) { // the sleeve turns into the screen
-      sleeve.style.viewTransitionName = 'rec-open';
-      root.classList.add('vt-rec');
+    const f = frame(b), name = b.querySelector('.v2-vtitle');
+    b.replaceWith(f);
+    if (name) f.after(name.cloneNode(true));
+    buttons.set(f, b);
+    f.focus();
+  }
+  const stillOf = (b) => { // the dialog screen: the video's still and the play icon
+    const img = new Image(), icon = document.createElement('span');
+    img.className = 'yt-img'; img.alt = '';
+    img.srcset = `/media/videos/${b.dataset.yt}-640.webp 640w, /media/videos/${b.dataset.yt}-1280.webp 1280w`;
+    img.sizes = '(min-width: 1200px) 1100px, 92vw';
+    img.src = `/media/videos/${b.dataset.yt}-640.webp`;
+    icon.className = 'yt-play'; icon.setAttribute('aria-hidden', 'true');
+    screen.replaceChildren(img, icon);
+    return img;
+  };
+  const named = (el, on) => { el.style.viewTransitionName = on ? 'rec-open' : ''; };
+  function openRec(b) { // a record opens over the page: its sleeve turns into the screen
+    stopVideos();
+    opener = b;
+    dlg.querySelector('#ro-title').textContent = b.dataset.title;
+    dlg.querySelector('.ro-meta').textContent = b.dataset.meta;
+    const img = stillOf(b), sleeve = b.querySelector('.rec-sleeve');
+    const embed = () => { if (dlg.open) { const f = frame(b); screen.replaceChildren(f); f.focus(); } };
+    if (document.startViewTransition && motionOn() && sleeve) {
+      named(sleeve, true);
       const vt = document.startViewTransition(async () => {
-        sleeve.style.viewTransitionName = ''; screen.style.viewTransitionName = 'rec-open';
-        swap();
-        const img = stage.querySelector('.yt-img');
-        await Promise.race([img ? img.decode().catch(() => {}) : null, new Promise((r) => setTimeout(r, 500))]);
+        named(sleeve, false); dlg.showModal(); named(screen, true);
+        await Promise.race([img.decode().catch(() => {}), new Promise((r) => setTimeout(r, 500))]);
       });
-      vt.finished.finally(() => { screen.style.viewTransitionName = ''; root.classList.remove('vt-rec'); load(stage); });
+      vt.finished.finally(() => { named(screen, false); embed(); });
       return;
     }
-    swap(); load(stage);
+    dlg.showModal(); embed();
+  }
+  function closeRec() {
+    if (!dlg.open) return;
+    const sleeve = opener?.querySelector('.rec-sleeve');
+    stillOf(opener); // takes the iframe away (the sound stops) and shows the still again
+    if (document.startViewTransition && motionOn() && sleeve) {
+      named(screen, true);
+      document.startViewTransition(() => { named(screen, false); dlg.close(); named(sleeve, true); }).finished.finally(() => named(sleeve, false));
+      return;
+    }
+    dlg.close();
+  }
+  if (dlg) {
+    dlg.querySelector('.ro-close').addEventListener('click', closeRec);
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) closeRec(); });
+    dlg.addEventListener('cancel', (e) => { e.preventDefault(); closeRec(); }); // Esc takes the same way out
+    dlg.addEventListener('close', () => { screen.replaceChildren(); opener?.focus(); });
   }
   document.querySelectorAll('a[data-yt]').forEach((a) => {
     if (videoOk(a.dataset.yt)) a.replaceWith(makeButton(a));
   });
-  document.querySelectorAll('.records').forEach((row) => { row.scrollLeft = (row.scrollWidth - row.clientWidth) / 2; }); // open on the middle record, neighbours on both sides
-  document.querySelectorAll('.records').forEach((row) => row.addEventListener('focusin', (e) => centre(e.target.closest('.rec :is(a, button)') || e.target)));
+  document.querySelectorAll('.band-crate:not(.is-pinned) .records').forEach((row) => { row.scrollLeft = (row.scrollWidth - row.clientWidth) / 2; }); // open on the middle record, neighbours on both sides
+  document.querySelectorAll('.records').forEach((row) => row.addEventListener('focusin', (e) => {
+    const li = e.target.closest('.rec');
+    if (!li) return;
+    const s = row.closest('[data-hs]');
+    if (!pinned(row)) { centre(e.target); return; }
+    const dist = Number(s.dataset.dist) || 0, r = row.getBoundingClientRect(), c = li.getBoundingClientRect();
+    const p = dist ? Math.min(1, Math.max(0, (c.left - r.left + row.scrollLeft + c.width / 2 - row.clientWidth / 2) / dist)) : 0;
+    scrollTo({ top: s.getBoundingClientRect().top + scrollY - (parseFloat(getComputedStyle(s.firstElementChild).top) || 0) + p * dist, behavior: 'instant' });
+  }));
 
   /* Pinned galleries (owner 2026-11-18, HScroll.astro). Motion on: the strip sticks and scrolling down slides it sideways, coupled to
      the scroll (nothing moves on its own). Motion off / reduced / unsupported: a plain swipe row. Run by showMotion() and on resize. */
   function layoutHs() {
     const on = motionOn();
     document.querySelectorAll('[data-hs]').forEach((s) => {
-      const pin = s.querySelector('.hs-pin'), track = s.querySelector('.hs-track');
+      const row = s.dataset.hs === 'row'; // the Videos records: the pin is the band's wrap, and the row scrolls itself
+      const pin = row ? s.firstElementChild : s.querySelector('.hs-pin'), track = row ? s.querySelector('.records') : s.querySelector('.hs-track');
       track.style.translate = '';
       s.classList.toggle('is-pinned', on);
       if (!on) { s.style.height = ''; return; }
-      const dist = Math.max(0, track.scrollWidth - pin.clientWidth);
+      const dist = Math.max(0, track.scrollWidth - (row ? track.clientWidth : pin.clientWidth));
       s.dataset.dist = String(dist);
       s.style.height = `${pin.offsetHeight + dist}px`;
     });
@@ -209,9 +242,10 @@
   function moveHs() {
     document.querySelectorAll('[data-hs].is-pinned').forEach((s) => {
       const dist = Number(s.dataset.dist) || 0;
-      const top = parseFloat(getComputedStyle(s.querySelector('.hs-pin')).top) || 0;
+      const top = parseFloat(getComputedStyle(s.querySelector('.hs-pin') || s.firstElementChild).top) || 0;
       const p = dist ? Math.min(1, Math.max(0, (top - s.getBoundingClientRect().top) / dist)) : 0;
-      s.querySelector('.hs-track').style.translate = `${(-p * dist).toFixed(1)}px 0`;
+      if (s.dataset.hs === 'row') s.querySelector('.records').scrollLeft = p * dist;
+      else s.querySelector('.hs-track').style.translate = `${(-p * dist).toFixed(1)}px 0`;
     });
   }
   if (document.querySelector('[data-hs]')) {
