@@ -508,3 +508,12 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   doubles as the audit trail. Backups and restore-from-file stay as they are (`tools/backup.mjs` for us); history is not in backups.
 - **Why:** a backup file he cannot restore is no safety net; per-tab restore matches how he saves and keeps one bad tab from
   rolling back the others.
+
+## D127 (Laptop, 2026-11-23, reversible): Sleeves for videos Gabe adds; History location
+- **Ruling:** each video row stores its own sleeve `layout` (a-d) and print `style` (toner / print / mono). The seven shipped
+  videos are seeded with what they show today (layout from today's position, style from `tools/film/build.mjs` SLEEVES), so
+  Put first / Hide never reshuffles the owner-tuned look. A new video gets layout and style from a fixed hash of its id; its
+  still is the i.ytimg.com thumbnail (owner OK 2026-11-23), centre-cropped and given the same grey print look with sharp
+  (approximating build.mjs's ffmpeg filters), written to `public/media/sleeves`-equivalent under DATA_DIR. History lives in
+  `DATA_DIR/history/<kind>/` (built in A2; D125's path wording superseded).
+- **Why:** keeps the Nov 18 Records look exactly while letting Gabe add videos without a designer.
