@@ -124,6 +124,14 @@ there with `Laptop:`. The client's own email is in `README.md`; this file adds t
 - Gabe's email of 2026-11-13 (via the owner): Welcome Home smart link https://wingsmusic.lnk.to/383142-WelcomeHome; he posted a
   new Spotify bio (held until he answers the owner's follow-up: "Reforaged" spelling, keep "Epilepsy survivor" on About?).
 
+## Owner's instructions (2026-11-23, Laptop)
+- **Admin first, then proposal:** make the edit screen one Gabe can use to add things and be self-sufficient; refine it in
+  loops (as many as the boss sees it needs); then a couple of website refinement loops (what's necessary, not overdoing it);
+  then a proposal for Gabe. Follow the Base kit's subagent guidelines (pairing rule, model sized to the job) and reuse it.
+- **Videos (A3):** Gabe may add his own YouTube videos; each needs his ticked "No fast flashing lights" box (owner accepts
+  this trust call for hard rule 1). The server may fetch thumbnails from `i.ytimg.com` only (fixed host, checked id).
+- **Proposal** (has pricing) lives in the owner's private repo `Mishtuk/Personal-Job-`, never in this repo.
+
 ## Working together (Desktop and Laptop)
 - **Board:** issue #1 "Coordination board: Desktop and Laptop". Every comment starts with `Desktop:` or `Laptop:`
   (both machines post as Mishtuk; the prefix tells them apart).

@@ -4047,3 +4047,136 @@ Gallery (Collage; fixes loop5 P1): `.gallery { grid-column: 1 / -1; } .gallery-g
 Not overridden: D51 (the IDENTITY cover moves over the sheet edge but is never rotated, framed, filtered or overlaid), D8 (phone bar).
 **Not done here:** shots of the new layout (no `src/` edit in a design pass; the gates take them, with design-review). Gig Poster's
 hero A name zone must be measured on the built page (estimated 11.2:1 with 15% ink).
+
+
+## 31. Edit screen: self-sufficiency (A1-A3; Laptop designer, 2026-11-23)
+**Source:** `docs/review/admin/plan.md` (rounds, done-whens), `docs/research/admin-panel-research-2026-11-23.md` (gap ids), shots `before/edit-390-*`. Copy: `docs/copy/admin.md`, block "2026-11-23 A1-A3", word for word. **Language:** section 15 and 28i only: no new colour, font, shadow or motion; everything appears and goes instantly; every state has a word and a glyph; targets 48px+ (buttons 56px for the one `.ed-main`); data via `textContent` only. New classes are named `ed-*`; every one reuses an existing look as stated. **Round map:** A1 = 31a, b, c, d, e, i (photo, empty, sign-out, stamp); A2 = 31f, g; A3 = 31h, j.
+
+### 31a. Tabs: six (A3), 3 + 3 at 390, one row at 1280
+A1 and A2 ship five tabs (the build as is); the markup is written for six so A3 only adds one button.
+- `.ed-tabs` keeps its grid; **the span rule narrows**: `.ed-tab:last-child:nth-child(5) { grid-column: span 2 }` (phones, five tabs only: Bio | Products wide, as now). With six, no span: `Shows | Releases | IDENTITY` / `Bio | Products | Videos`, three equal cells.
+- `@container (min-width: 36rem)`: `.ed-tabs { grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); grid-template-columns: none }` (one row of however many tabs: five or six). Under `17rem` one column, as now.
+- Cell widths, six tabs: **320** 93px ("Products" 17px 800 about 75px: fits), **390** 116px, **768 / 1280** 122px in the 736px card, one row. Tab order: Shows, Releases, IDENTITY, Bio, Products, Videos (Videos last: newest, least used). `tabs` array, Arrow / Home / End as in 28i.
+- Videos tab button: `<button id="tab-videos" class="ed-tab" role="tab" aria-selected="false" aria-controls="panel-videos" tabindex="-1">Videos</button>`.
+- The intro line `p.ed-help` under Sign out ("Change your shows, releases, IDENTITY and bio here...") **goes**: Today replaces it, and it cost 70px of the first screen. Each tab's own help line stays.
+- **390 x 660 first screen** (the A1 done-when), top to bottom: padding 48 + title 40 + who row 64 + Today about 230 + gap 16 + tabs 106 = **about 504px**, so the active tab's help line and Add button sit above the fold. If View site and Sign out wrap onto a second row (31b) the total is 560: still fits.
+
+### 31b. Header: View site next to Sign out
+```html
+<div class="ed-who"><span id="who"></span>
+  <span class="ed-who-btns"><a class="ed-btn ed-plain" href="/" target="_blank" rel="noopener">View site</a>
+  <button id="logout" class="ed-btn ed-plain" type="button">Sign out</button></span></div>
+```
+`.ed-who-btns { display: flex; gap: var(--space-xs) }`; both 48px, `ed-plain` (muted border). The existing `.ed-who` flex-wrap puts the name over the buttons when they do not fit (320: yes; 390: name 150px + 2 buttons 210px = 360, fits one row at 358 only if the name is short, else wraps: allowed). Opens a new tab so the editor and its unsaved work stay open. Hover / active as `.ed-btn`. Home `/` always: the `See it on the site` links per tab stay.
+
+### 31c. Today card (A1, P1-1; A2 adds "Last saved" and the draft note)
+Between `.ed-who` (and the sign-out ask) and `.ed-tabs`. Looks like the sign-in card: `bg-2`, 2px `--line` border, **4px `text` top edge**, padding `--space-s`, `margin-top: --space-m`, radius 2px.
+```html
+<section class="ed-now" aria-labelledby="now-h">
+  <h2 id="now-h" class="ed-now-h">Today</h2>                         <!-- display 900 var(--step-1) uppercase, line-height 1 -->
+  <div class="ed-now-grid">                                            <!-- 1 col; 2 cols from 600px, gap --space-s -->
+    <div class="ed-now-item"><p class="ed-now-k">Next show</p><p class="ed-now-v" id="now-show">Sat, Nov 29, 7:30 PM, Mike's York Road</p></div>
+    <div class="ed-now-item"><p class="ed-now-k">IDENTITY</p><p class="ed-now-v" id="now-id">Out Aug 13, 2027 (268 days to go)</p></div>
+  </div>
+  <p class="ed-now-note" id="now-note" hidden></p>                     <!-- A2: "Last saved: ..." and the drafts line -->
+  <p class="ed-now-btns"><button class="ed-btn" data-go="add-show">Add show</button><button class="ed-btn" data-go="fix-release">Fix a release</button><button class="ed-btn" data-go="add-video" hidden>Add video</button></p>
+</section>
+```
+- `.ed-now-k`: 16px 700 `muted`, line-height 1.3. `.ed-now-v`: 800 `--step-0`, line-height 1.25, **wraps** (`overflow-wrap: anywhere`; never ellipsis), `text`. `.ed-now-note`: 16px 700 `text`, `margin-top: --space-xs`.
+- `.ed-now-btns`: `display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: .5rem; margin-top: --space-s`. Buttons plain `.ed-btn`, 48px, `padding-inline: .5rem`, may wrap to two lines at 320 (about 88px cells); **3 across at 390** (about 103px) and 1280. **Add video is `hidden` in A1 and A2** (the grid then has 2 cells); A3 removes `hidden`. No accent button: Save stays the view's one.
+- Behaviour: **Add show** switches to Shows and does what Add show does (new open row, focus on Date). **Fix a release** switches to Releases, focus on the first row's Edit (empty list: focus on Add release). **Add video** (A3) likewise on Videos. Tab switch is instant.
+- Data: from what the screen already loaded (last loaded or saved state, not unsaved typing). **Next show** = first show dated today or later (New York day), shown as "{Day}, {Mon} {d}[, {time}], {venue}"; today: "Today[, {time}], {venue}". **IDENTITY** from `site.json`: before the date "Out {Mon d, yyyy} ({n} days to go)", on it "Out today", after "Out now ({Mon d, yyyy})".
+- Empty / odd: no upcoming show: "No shows booked. Press Add show." (no date: "No release date set." for IDENTITY). Loading: both values "Loading..." (`textContent`, nothing else). If a list failed to load: "Couldn't load. Reload the page." in that item.
+- A2: `#now-note` shows "Last saved: {Today|Yesterday|Mon Nov 17}, 4:12 PM" (server time of the last save of any tab) and, when drafts exist (31g), a second line "Unsaved changes waiting in Shows and Bio." (tab names as in 31i). Hidden when empty.
+- Untrusted text (a `<script>` venue) goes in via `textContent`; the test renders it inert.
+
+### 31d. Undo bar (A1, P0-3): `confirm()` goes
+Delete (the form's last button, label as 28i: "Delete this show / release / product / video") **removes the row at once**, no question. One bar per tab, **the first child of `.ed-bar`** so it is always in thumb reach above Save and above the sticky edge.
+```html
+<div class="ed-undo" role="status" hidden><p class="ed-undo-t">Show removed: Mike's York Road.</p><button class="ed-btn ed-undo-b" type="button">Undo</button></div>
+```
+- Look: the paper box as `.ed-ask` / error (`text` ground, `bg` ink, 700, padding `.6rem .75rem`), flex, gap `--space-s`, align centre; text `flex: 1 1 10rem`, wraps (long venue: up to 4 lines at 390); **Undo** is a plain `.ed-btn` (`bg` ground, so it reads on the paper), min 6rem x 48px, `flex: none`, wraps under the text below 360px (`flex-wrap: wrap`). No glyph: the word "removed" and the button carry it.
+- **Appears and goes instantly** (hidden attribute only). Shown on removal; focus moves to Undo. The removed row's data is kept in memory in a stack: **Undo puts the latest removal back in its old place** (Played fold included), closed, focus on its Edit, the bar text changes to the next removal or hides when the stack is empty. Several removals: text "Show removed: {name}. 2 removed so far." (n >= 2).
+- The bar stays **until Save succeeds, the tab is left, or the page reloads**: no timer (a thumb is slow, and a timer is motion by stealth). A tab switch hides it with the panel; switching back shows it again if the stack is not empty. After Save the stack clears (A2: History is the net after that).
+- Removal marks the tab dirty (`Not saved yet.`). Name falls back to "this show" / "this release" / "this product" / "this video": "Show removed." Row numbers ("Show 3") renumber as built.
+- Messages: removing the last row shows the empty state (31i) under the bar. A removed row that had a save error clears its `.bad`.
+
+### 31e. Row subtitles wrap; year and type never truncate (A1)
+Today's `.ed-row-title, .ed-row-meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis }` **goes**: `.ed-row-title { overflow-wrap: anywhere }`, `.ed-row-meta { flex-wrap: wrap }` and rows grow to fit (a 60-character venue is 3-4 lines at 390: fine; the head grid is `align-items: start`, Edit stays top right, 48px). Rows are no longer a fixed 60px; 28i's heights (about 68) hold for short names.
+- **Shows**: the date cell is two lines: `<p class="ed-row-date">Nov 29</p><p class="ed-row-year">2026</p>` (year 16px 700 `muted`, line-height 1.2, under the date; the date cell 4.25rem fits "2026"). Meta: "{City}, {Show|Open mic}" (as built; wraps instead of cutting "Open mic"), plus the **Played** `.ed-tag` for past rows.
+- **Releases**: meta "{Type}, {Mon d, yyyy}" + `.ed-tag` **Coming**; Type first so the cut can never hide it.
+- **Products / Videos**: same wrap; status or type first, then price / tags.
+- The same for the Today values (31c). At 320 the container-query rule (`@container (width < 17rem)`) still stacks the head.
+
+### 31f. History: a way back (A2, P0-1)
+Per tab, a fold after the list and before the save bar, **the Played fold's look**: `<details class="ed-played ed-history"><summary class="ed-btn ed-plain">History</summary><div class="ed-hist"></div></details>`. Opening it loads `GET /edit/api/history/<kind>` (kind: shows, releases, site for IDENTITY, bio, products, videos; IDENTITY and Bio each have History too).
+```html
+<ol class="ed-list ed-hist-list"><li class="ed-row ed-hist-item">
+  <div class="ed-hist-text"><p class="ed-row-title">Today, 4:12 PM</p><p class="ed-row-meta">14 shows</p></div>
+  <button class="ed-btn ed-hist-go" type="button">Go back to this</button></li> ...</ol>
+<p class="ed-upmsg" role="status"></p>
+```
+- Newest first, up to 10. `.ed-hist-item` = `.ed-row` (no `ed-edit`): grid `minmax(0, 1fr) auto`, centred from 600px; **under 600px the button is full width under the text** (48px). Title: "Today, 4:12 PM", "Yesterday, 9:05 AM", "Tue, Nov 17, 4:12 PM" (browser local time). Meta: "{n} shows / 1 show" (releases, products, videos alike); IDENTITY and Bio rows have **no meta line**.
+- States: opening shows "Loading..." (`.ed-upmsg` busy). **Empty**: `.ed-help.ed-empty` "Nothing to go back to yet. Each time you save, the old version is kept here." **Error**: error box "Couldn't load the history. Try again." + code (31g). Focus ring as buttons.
+- **Go back** (no `confirm()`): the item grows an inline `.ed-ask` (paper box) under its text: "Go back to {when}? What is on the site now stays in History, so you can undo this." (if the tab has unsaved changes, add " Your unsaved changes here will be lost.") with the 2-column buttons **Go back** and **Stay** (plain `.ed-btn`). Taps: History, Go back to this, Go back = **3** (budget 4).
+- On Go back: `POST /edit/api/history/<kind>/<id>`; busy "Going back..."; success: the tab reloads its list from the reply, dirty clears, the fold closes, the tab's `.ed-msg` ok "Done. The site is back to how it was on {when}." and the See link shows. A restore is itself saved, so it appears at the top of History next time. Stale (409): the 409 line of 31g. Gone (404): "That version isn't there any more. Pick another." The Undo stack clears.
+- Sizes: item at 390 about 130px (text 48 + button 48 + padding); 10 items 1300px inside a closed fold; 1280 one row, 70px, text left, button right (`max-width: 12rem`).
+
+### 31g. Draft offer, 409 and error code (A2: P1-2, P1-4, P1-6, P2-5)
+- **Draft offer**: a dirty tab is saved to `localStorage` every few seconds (try/catch; if it throws, nothing shows). On load, for each tab with a draft newer than the loaded data, the tab's panel **starts with `.ed-ask` (paper box, as 15e)**: "You have changes from {Today, 4:12 PM} that were never saved. Keep them, or throw them away?" with **Keep them** and **Throw away** (2-column plain `.ed-btn`). Keep: puts the draft in the list, tab dirty, `Not saved yet.`; Throw away: deletes the draft; the box goes. 1 tap. The tab gets **no ring** until Keep (the ring means "typed here now"); Today's note (31c) says where drafts wait. A successful Save deletes that tab's draft.
+- **409**: error box in the bar: "Someone else saved the {shows} just now, so yours didn't save. Your changes are kept: reload, then press Keep them." Rows stay; the draft is saved at once; a plain `.ed-btn` **Reload** in the box (reloads the page).
+- **Error code**: for every server-side failure (HTTP 5xx, garbled, history or upload that failed on the server) the error box gets a second paragraph `.ed-code`: **"Send this code to the person who runs the site: K7P4Q2"** (6 characters, A-Z 2-9, no 0 O 1 I; the code in 800, `user-select: all`) and a plain `.ed-btn` **Copy code**; pressed: label stays, the `.ed-upmsg` line reads ok "Copied." (clipboard refused: "Hold the code to copy it."). The server logs the same code. No code for 401, 403, 409, 429, 413 or lost connection.
+- **Error summary takes focus**: when Save fails on rows, `.ed-msg` gets `tabindex="-1"` and takes focus; under its line `<ul class="ed-fix"><li><a class="text-link" href="#form-7">Show 3: Add the venue.</a></li></ul>`; links 48px high, on the paper box use `bg` ink + underline; activating one opens that row and focuses the first bad field. The `!` on rows stays.
+
+### 31h. Videos tab (A3, D123)
+Panel `panel-videos`, same skeleton as Releases: help, **Add video** (`.ed-add`), `ol#v-list.ed-list`, History fold, `.ed-bar` with **Save videos**, See link to `/videos/`. Newest first, **Put first** moves a row to the top (the site's Now showing).
+- **Row**: head grid `4.5rem minmax(0, 1fr) auto`; `.ed-thumb.ed-thumb-wide` 72 x 48px (16:9 crop, `object-fit: cover`, hatch until a picture exists); title (the video's title, wraps), meta "{Music video|Live}" + `.ed-tag` **Now showing** on the first row + `.ed-tag` **Hidden** when hidden. **Hidden rows**: dashed border, title and thumb grey as the Played rows (no opacity). Edit opens the form.
+- **Form order** (the add form is the same, open on a new row, focus on the link): **YouTube link** (`type=url`, required, `maxlength 200`; hint "Paste the link from YouTube. Watch, Share and Shorts links all work."; after a save the link is read-only text, "Change the link by adding a new video"); **Title** (required, 120); **Type** (`.ed-choices` radios: **Music video**, **Live**); **the flash box**; then `.ed-vis` row (two `.ed-btn`, 2 columns): **Hide** / **Show** (the label is the state it will do) and **Put first** (disabled and dashed on the first row); then the dashed rule and **Delete this video** (Undo bar, as 31d).
+- **The flash box** (`label.ed-choice.ed-check`: the `.ed-choice` row, 52px, checkbox 1.5rem `accent-color: var(--text)`, checked row 3px `text`): **"No fast flashing lights in this video"**; under it `.ed-hint`: "Watch it first. If anything flashes quickly, leave it off the site." **Required**: unchecked at Save marks the row: "Video 2: Tick the box once you've watched it. Leave out anything that flashes quickly." The box is never pre-ticked on a new row. Shipped videos arrive ticked.
+- Picture: new row meta "Picture comes after you save." After Save, the server's thumbnail; if it fails: row saved, the `.ed-msg` ok "Saved. We couldn't get YouTube's picture, so it shows with a plain card for now."
+- **Link errors** (row): "That isn't a YouTube link. Paste the link from YouTube's Share button." and "Add the title." / "Add the YouTube link." / "Pick Music video or Live."
+- Empty (31i): "No videos yet. Press Add video." 320: form fields stack; the two `.ed-vis` buttons about 122px each. 1280: `.ed-vis` buttons `max-width: 12rem`.
+
+### 31i. Empty states, sign-out guard, "Saved at 4:12", photo notice (A1)
+- **Empty** (`.ed-help.ed-empty`, 15e): Shows "No shows yet. Press Add show." (built); Releases "No releases yet. Press Add release."; Products (built); Videos "No videos yet. Press Add video." Shown under the Add button when the list is empty, gone on the first row. Played fold stays hidden when empty. IDENTITY and Bio have none.
+- **Sign-out guard** (`#out-ask`, 15e): the question now names the tabs: "Not saved yet in {Shows and Bio}. Sign out anyway?" (one: "Shows"; two: "Shows and Bio"; more: "Shows, Bio and Products"; the tab names as on the buttons). Buttons Sign out | Stay, as built. Leaving the page: the browser's own text.
+- **Saved at 4:12**: the ok `.ed-msg` text is "Saved at 4:12 PM. It's on the site now." (the shop-off line: "Saved at 4:12 PM. The shop isn't open to fans yet, so they won't see it until it's switched on."). Time is the browser's local time, `toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })`; the client puts it in front of the server's text (server says "Saved." as built). The See link stays beside it.
+- **Photo resize** (replaces "over 5 MB"): on picking a file the client reads it with `createImageBitmap(file, { imageOrientation: 'from-image' })`, draws the long edge at **2000px** and encodes WebP (JPEG where WebP is unsupported), stepping quality down until it is **under 5 MB**, then uploads. No size message, no progress bar (15g), no crop. The one message line: busy "Getting your photo ready..." until the upload ends, then ok "Uploaded. Press Save to keep it." The ready preview is the resized picture. Errors (error state): not an image or not JPG, PNG, WebP "Pick a JPG, PNG or WebP photo."; the browser could not open it, and the original is over 5 MB "That photo is too big and this phone wouldn't shrink it. Try another one."; the original under 5 MB goes up as is. Server errors as built. The server cap stays.
+
+### 31j. Duplicate show and "Fans will tap" (A3)
+- **Copy this show** (P2-3): the first thing inside an open show form, full-width plain `.ed-btn` 48px (`.ed-copy`). It inserts **a new open row at the top** with everything copied **except Date, which is empty**, focus on Date, message (`.ed-upmsg`) ok "Copied. Pick the new date." Taps: Edit, Copy this show, pick the date, Save = 4 (budget 5, typing excluded). The old row is untouched.
+- **Fans will tap** (P1-3): under every link field (Show link, Release link, Pre-save link, Product link, Video link) after the hint: `<p class="ed-fans ed-hint" id="...-fans" aria-live="off" hidden></p>`, 16px `text` (not muted), 700, `overflow-wrap: anywhere`, wraps fully (no cutting a link he must check). Text: **"Fans will tap: https://example.com/tickets"**. Shown only when the field holds a valid https/http link, updated on `input` (no validation on keystroke, only the echo); hidden for empty or invalid (Save says what is wrong). Plain text, not a link; `textContent` only. The field's `aria-describedby` lists hint then this id.
+
+### Open for coder
+1. Tab strip for 5 and 6 tabs with `grid-auto-flow: column` in a container query and `:nth-child(5)` on the span: is this enough, or add `data-count` on `.ed-tabs`?
+2. Today uses only loaded or saved data; confirm lists are all loaded at sign-in so Next show works before opening Shows.
+3. "Last saved" (A2) needs a server time per file: the history list's newest entry, or the data file mtime? Coder picks; the wording stays.
+4. Undo stack is in memory per tab; a removal of a Played-fold row restores into the fold. Confirm renumbering ("Show 3") with removal plus restore is simple.
+5. History: does the list mark the entry equal to the live file? If cheap, add a muted `.ed-tag` "On the site now" and no button; else leave it out (nothing breaks).
+6. "Saved at 4:12 PM" is built by the client replacing the server's leading "Saved." Fine, or have the server send the time? Client is preferred.
+7. Photo: WebP encode via `canvas.toBlob('image/webp')` needs a fallback in Safari (JPEG); `imageOrientation: 'from-image'` support; a 4000x3000 canvas on a low-memory phone (fall back to the original if it throws).
+8. The flash box state for shipped videos ("arrive ticked"): stored as `noFlash: true` by the server in A3; confirm the field name.
+9. Delete on Videos is offered (Undo + History are the net). If A3 prefers Hide only, drop it and 31h shrinks; say so in the round.
+10. `scroll-padding` bottom 10rem may not clear a tall bar (Undo + message + Save at 320 about 300px). Raise it to 16rem when `.ed-undo` is shown, or accept.
+
+#### Rulings (mediator, 2026-11-23)
+1. Enough; no `data-count`. The phone span becomes `.ed-tab:nth-child(5):last-child { grid-column: span 2 }`, so it only fires with five tabs and six get three equal cells. Container rule as 31a.
+2. Yes. `load()` (public/js/edit.js 382-394) fetches shows, products, site and releases together at sign-in, so Today has its data before any tab opens. A list that failed shows "Couldn't load. Reload the page." in its Today item (31c).
+3. Neither new route nor file: the server keeps no per-save time (`saveList` in src/lib/store.js keeps only `*.prev.json`). Add `savedAt` (newest mtime of the four data files, ISO) to the existing GET replies; the client shows "Last saved: ..." with the 31c wording.
+4. Yes, cheap: the stack keeps each removed row and its next sibling; Undo reinserts before that sibling (Played fold included), then calls `number(kind)` as the add buttons already do.
+5. Drop it. Only one previous file is kept, so there is no list to compare against; History (31f) shows times only. Nothing breaks.
+6. Client, as written: `toLocaleTimeString('en-US', ...)` in front of the server's "Saved." text. Server unchanged.
+7. Client: `createImageBitmap(file, { imageOrientation: 'from-image' })`, draw the long edge at 2000px, `canvas.toBlob('image/webp', q)` and check `blob.type === 'image/webp'` (else `image/jpeg`), stepping q down until under 5 MB. Any throw or null blob (decode, canvas, encode) uploads the original; if the original is over 5 MB, show the 31i "wouldn't shrink it" message and do not upload. Server keeps the 5 MB cap and `toWebp` (its MAX_SIDE 1200 still applies). The edit.js:219 pre-check runs only on the original.
+8. Field name `noFlash: true`: a boolean on each video row in `videos.json`, default false, shipped videos seeded true. The server refuses a video save unless `noFlash === true`, so the client box cannot be bypassed.
+9. Keep Delete on Videos: it is the shows row pattern again, and Undo covers it in-session. After Save the only way back is History (A2), so A2 must ship before A3's Delete.
+10. Pick 16rem, always, on the edit page (the `html:has(.ed-body)` rule in src/pages/edit/index.astro). No state to track; one number.
+
+#### Amendments (advisor review + boss ruling, 2026-11-23): these win over 31a-j and the rulings above
+1. 31h / ruling 9 overruled: **no Delete on Videos**. Hide / Show and Put first only (brief; Hide is the safe way back, no orphaned thumbnails). Remove "Delete this video" and its Undo words from 31h, 31d and docs/copy/admin.md.
+2. 31g draft offer: never compare phone and server clocks. The draft stores the `savedAt` it started from (ruling 3); offer it when that differs from nothing newer, i.e. offer whenever a draft exists whose base `savedAt` equals the loaded one; if the loaded `savedAt` is newer, offer it with "This was saved again since. Keep yours or throw it away?".
+3. 31j duplicate show (budget <= 5 from Today): Today's "Add a show" stays; "Copy this show" leaves focus on Date (one picker + OK). From Today: Shows tab, Edit, Copy this show, Date (picker + OK) = 5. Count the picker OK in the Gabe test.
+4. 31c/31d add show (budget <= 8): after Add show, focus goes to Date; Kind defaults to "Open mic" (most of his shows), time stays optional and empty.
+5. 31g 409 words: "This was saved from another screen or tab, so yours didn't save. Your changes are kept." (also in docs/copy/admin.md).
+6. 31h `noFlash`: shipped videos are seeded `noFlash: true` because the team already checked them (tools/film/analyze.mjs, owner 2026-11-11 / 11-18; Running The Gauntlet lyric video and Earned Your Stripes Visualizer never shown). The server refuses any save, History restore or Show that would put a row with `noFlash !== true` on the site (hard rule 1).
+7. 31f History on IDENTITY / Bio: restoring kind "site" restores only that tab's fields and keeps the site.json merge rule.
+8. Error code (31g): show the code as text; no Copy button (he reads it out or screenshots it).

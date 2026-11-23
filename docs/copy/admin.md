@@ -201,3 +201,50 @@ None for Gabe about the admin text itself.
 For the owner (not Gabe):
 - Do you want the admin sign-in help (where to reset a password, who to call) on the sign-in card? We don't know who that person is, so I didn't write one.
 - Is the edit page's address given to Gabe by you directly? (We keep the page unlinked; no copy is needed for that.)
+
+
+---
+
+## 2026-11-23 A1-A3 (Designer, DESIGN.md section 31; words for the self-sufficiency rounds)
+
+Style as above: plain, phone first, no codes in the sentence except the one he can send, no "JSON", "server", "version", "409". {braces} are filled in by the page. Times are the browser's local time, like "4:12 PM". "A1" ships first, "A2" and "A3" later.
+
+| Round | Where | String |
+|---|---|---|
+| A1 | Header link | **View site** |
+| A1 | Today heading | **Today** |
+| A1 | Today label / value | **Next show** / **{Sat, Nov 29, 7:30 PM, Venue}** ("Today, 7:30 PM, Venue" on the day) |
+| A1 | Today, no show | **No shows booked. Press Add show.** |
+| A1 | Today label / value | **IDENTITY** / **Out {Aug 13, 2027} ({268} days to go)** / **Out today** / **Out now ({Aug 13, 2027})** / **No release date set.** |
+| A1 | Today, loading / failed | **Loading...** / **Couldn't load. Reload the page.** |
+| A1 | Today buttons | **Add show** / **Fix a release** / **Add video** (A3) |
+| A1 | Undo bar | **{Show/Release/Product/Video} removed: {name}.** (no name: **Show removed.**) More than one: **... {2} removed so far.** Button: **Undo** |
+| A1 | Delete button (no question now) | **Delete this show / release / product / video** (built) |
+| A1 | Releases empty | **No releases yet. Press Add release.** |
+| A1 | Sign-out guard (replaces "You have changes that aren't saved. Sign out anyway?") | **Not saved yet in {Shows and Bio}. Sign out anyway?** (buttons Sign out / Stay) |
+| A1 | Saved with time | **Saved at {4:12 PM}. It's on the site now.** / **Saved at {4:12 PM}. The shop isn't open to fans yet, so they won't see it until it's switched on.** |
+| A1 | Photo, working | **Getting your photo ready...** |
+| A1 | Photo, done | **Uploaded. Press Save to keep it.** (keep) |
+| A1 | Photo, can't shrink | **That photo is too big and this phone wouldn't shrink it. Try another one.** (the old "over 5 MB. Pick a smaller one." goes, except from the server) |
+| A2 | History button | **History** |
+| A2 | History loading / empty / error | **Loading...** / **Nothing to go back to yet. Each time you save, the old version is kept here.** / **Couldn't load the history. Try again.** |
+| A2 | History row | **{Today, 4:12 PM}** + **{14} shows** (1 show; releases, products, videos alike) + button **Go back to this** |
+| A2 | Go back ask | **Go back to {when}? What is on the site now stays in History, so you can undo this.** + (unsaved) **Your unsaved changes here will be lost.** Buttons **Go back** / **Stay** |
+| A2 | Go back, working / done / gone | **Going back...** / **Done. The site is back to how it was on {when}.** / **That version isn't there any more. Pick another.** |
+| A2 | Draft offer | **You have changes from {Today, 4:12 PM} that were never saved. Keep them, or throw them away?** Buttons **Keep them** / **Throw away** |
+| A2 | Today note | **Last saved: {Today, 4:12 PM}** / **Unsaved changes waiting in {Shows and Bio}.** |
+| A2 | Conflict (replaces the 409 line above, when drafts exist) | **Someone else saved the {shows} just now, so yours didn't save. Your changes are kept: reload, then press Keep them.** Button **Reload** |
+| A2 | Error code | **Send this code to the person who runs the site: {K7P4Q2}** + button **Copy code**; done **Copied.**; refused **Hold the code to copy it.** |
+| A2 | Error summary link | **{Show 3}: {the row's message}** (each opens that row) |
+| A3 | Tab / help | **Videos** / **Your videos, newest first. Fans see them on Home and the Videos page. Hide one to take it off the site without losing it. Change anything, then press Save.** |
+| A3 | Add / empty / save / See | **Add video** / **No videos yet. Press Add video.** / **Save videos** / **See it on the site** |
+| A3 | Row | **{Music video / Live}** + tags **Now showing**, **Hidden** |
+| A3 | Fields | **YouTube link** (hint **Paste the link from YouTube. Watch, Share and Shorts links all work.**), **Title**, **Type** (**Music video** / **Live**) |
+| A3 | Flash box | **No fast flashing lights in this video** (hint **Watch it first. If anything flashes quickly, leave it off the site.**) |
+| A3 | Link locked hint | **Change the link by adding a new video.** |
+| A3 | Buttons | **Hide** / **Show** / **Put first** / **Delete this video** |
+| A3 | New row meta | **Picture comes after you save.** |
+| A3 | Picture failed | **Saved. We couldn't get YouTube's picture, so it shows with a plain card for now.** |
+| A3 | Row errors (start "Video N:") | **That isn't a YouTube link. Paste the link from YouTube's Share button.** / **Add the YouTube link.** / **Add the title.** / **Pick Music video or Live.** / **Tick the box once you've watched it. Leave out anything that flashes quickly.** |
+| A3 | Duplicate | **Copy this show** / **Copied. Pick the new date.** |
+| A3 | Link check | **Fans will tap: {https://...}** (under every link field; shown only for a good link) |
