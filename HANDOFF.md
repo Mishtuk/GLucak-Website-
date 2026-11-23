@@ -24,6 +24,7 @@
   giveaway / Kit, host purchase + `RENDER_DEPLOY_HOOK`, glucak.com booking address). Decisions taken without you: D98-D116 (reversible).
 
 ## Now working on
+- Laptop 2026-11-23: admin self-sufficiency rounds A1-A3 (plan docs/review/admin/plan.md); claims src/pages/edit/, public/js/edit.js, server.js edit routes, src/lib/store.js, backup.js, upload.js, test/edit*.test.js
 - **OVERNIGHT 2026-11-18 (owner asleep, no questions, 5 loops): follow `docs/review/overhaul/overnight-plan.md`.** Wake-up
   scheduled ~03:47 ET (done); paused at ~80% usage after OV4a; owner resumed it 09:03 ET (13:43 one-shot cancelled); hourly heartbeat 14:30-20:30 stays as fallback (session-only cron). Progress log: append one line per finished step below.
   - 03:50 boss plan `docs/review/overhaul/plan.md` (OV1-OV6, D98-D110) pushed; repo loop 1 research running; OV1 started.

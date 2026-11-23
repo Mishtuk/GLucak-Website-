@@ -480,3 +480,31 @@ Desktop uses even numbers, Laptop odd. Format: number, date, question, ruling, w
   Logo D plate; header display-face nav + instant condense; two new colour roles; folder-tab section word; Print re-inked by filter
   under a preview palette; shop touches; Shows two columns from 700px). 30g entrance motion waits for the owner's yes.
 - **Why:** the owner found the site "straight ... just a pattern" and asked for staggered panels, a better top bar and colours to try.
+
+## D119 (Laptop boss, 2026-11-23, owner's request "admin panel for Gabe ... self-sufficient", reversible): Admin self-sufficiency rounds A1-A3
+- **Ruling:** `docs/review/admin/plan.md` is the plan. A1 no-fear basics (phone tab layout for 6, View site, Today card, Undo bar
+  instead of `confirm()`, browser photo resize under the 5 MB cap, empty states, "Saved at"), A2 a way back (history + local draft +
+  error code), A3 Videos tab + Duplicate show + "Fans will tap" + guide. The research's do-not-build list is accepted in full, plus no
+  About-album editing. P2-1 folds into history, P2-2 / P2-4 / P2-6 skipped, P1-4 becomes "your edits stay as a draft". DESIGN 31 is
+  written once for all three rounds before A1 is built.
+- **Why:** each round closes a reason Gabe would message us today, smallest and safest first (A1 touches no server code).
+
+## D121 (Laptop boss, 2026-11-23, reversible): No era / "Album look" picker in the edit screen (research P0-4)
+- **Ruling:** out of this effort. A new album look stays a "send it to us" job; it goes into the proposal as a paid option.
+- **Why:** one person, a new era every year or two, real designer work per era, and the owner has not picked a palette yet.
+  CONTEXT "Practical": big changes go to us.
+
+## D123 (Laptop boss, 2026-11-23, reversible): Gabe controls videos from the edit screen; no automatic YouTube feed yet
+- **Ruling:** A3 adds a Videos tab: add by YouTube link (11-character id, YouTube hosts only) with a required "No fast flashing
+  lights" box, Hide / Show, Put first. The thumbnail is fetched only from i.ytimg.com and re-encoded as the sleeve still. Records
+  render live through a `<!--gl:records-->` marker whose output for the shipped list must equal today's HTML byte for byte. Sleeve
+  layouts, cover flow, dialog and Records CSS are not touched. An automatic feed goes into the proposal.
+- **Why:** CONTEXT lists videos among Gabe's own small changes and hard rule 3 wants them current; `videos.json` is hand-fed today.
+  An unchecked auto-add could put a flashing video on the site (hard rule 1), so Gabe confirms each one.
+
+## D125 (Laptop boss, 2026-11-23, reversible): Edit history model
+- **Ruling:** every save keeps the last 10 versions of that tab's file in `DATA_DIR/<name>.history/` (server-made names only);
+  "Go back" is per tab and restores through the normal save (version check, `.prev`), so a restore can itself be undone. The list
+  doubles as the audit trail. Backups and restore-from-file stay as they are (`tools/backup.mjs` for us); history is not in backups.
+- **Why:** a backup file he cannot restore is no safety net; per-tab restore matches how he saves and keeps one bad tab from
+  rolling back the others.
