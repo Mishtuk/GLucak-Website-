@@ -80,7 +80,8 @@ test('valid save: on the public page at the next request, old list kept as .prev
   assert.ok(JSON.parse(readFileSync(join(data, 'shows.prev.json'), 'utf8'))[0].venue === 'Shipped Venue', 'prev = the shipped list');
   assert.equal((await save([row({ venue: 'Second Save' })])).status, 200);
   assert.equal(JSON.parse(readFileSync(join(data, 'shows.prev.json'), 'utf8'))[0].venue, 'Brand New Venue', 'prev = the last saved list');
-  assert.deepEqual(readdirSync(data).sort(), ['shows.json', 'shows.prev.json']);
+  assert.deepEqual(readdirSync(data).sort(), ['history', 'shows.json', 'shows.prev.json']); // history/ = the last 10 saves per tab (A2)
+  assert.ok(!readdirSync(join(data, 'history', 'shows')).some((f) => f.endsWith('.tmp')), 'no temp files in history');
   const stored = JSON.parse(readFileSync(join(data, 'shows.json'), 'utf8'));
   assert.deepEqual(Object.keys(stored[0]), ['date', 'type', 'venue', 'city'], 'empty optional fields dropped');
 });
@@ -146,7 +147,7 @@ test('save conflict: a save based on an older list is 409, nothing written, the 
   assert.notEqual(v2, v1);
   const stale = await save([row({ venue: 'Tab Two' })], {}, v1);
   assert.equal(stale.status, 409);
-  assert.equal((await stale.json()).message, "Someone else saved the shows just now, so yours didn’t save. Reloading shows their changes but clears yours, so write down what you changed first.");
+  assert.equal((await stale.json()).message, "This was saved from another screen or tab, so yours didn’t save. Your changes are kept.");
   assert.equal((await save([row({ venue: 'Tab Two' })], {}, null)).status, 409, 'no version sent');
   assert.equal(JSON.parse(readFileSync(join(data, 'shows.json'), 'utf8'))[0].venue, 'Tab One');
   assert.equal((await save([row({ venue: 'Tab Two' })], {}, v2)).status, 200, 'with the new version it saves');

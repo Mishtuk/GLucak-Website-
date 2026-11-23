@@ -60,6 +60,7 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
           <button id="add" class="ed-btn ed-add" type="button">Add show</button>
           <ol id="list" class="ed-list"></ol>
           <details id="played" class="ed-played" hidden><summary class="ed-btn ed-plain">Played</summary><ol id="played-list" class="ed-list"></ol></details>
+          <details id="hist-shows" class="ed-played ed-history"><summary class="ed-btn ed-plain">History</summary><div class="ed-hist"></div></details>
           <div class="ed-bar">
             <div id="undo-shows" class="ed-undo" role="status" hidden><p class="ed-undo-t"></p><button class="ed-btn ed-undo-b" type="button">Undo</button></div>
             <button id="save" class="ed-btn ed-main" type="button">Save shows</button>
@@ -70,6 +71,7 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
           <p class="ed-help">Your releases, newest first. They show on the Music page; the newest one is also on Home. Change anything, then press Save.</p>
           <button id="r-add" class="ed-btn ed-add" type="button">Add release</button>
           <ol id="r-list" class="ed-list"></ol>
+          <details id="hist-releases" class="ed-played ed-history"><summary class="ed-btn ed-plain">History</summary><div class="ed-hist"></div></details>
           <div class="ed-bar">
             <div id="undo-releases" class="ed-undo" role="status" hidden><p class="ed-undo-t"></p><button class="ed-btn ed-undo-b" type="button">Undo</button></div>
             <button id="r-save" class="ed-btn ed-main" type="button">Save releases</button>
@@ -83,6 +85,7 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
             <span id="i-link-hint" class="ed-hint">Where Pre-save goes. From release day the same button says Listen.</span></div>
           <p id="i-today" class="ed-today"></p>
           <p class="ed-help">The ticket under your name on Home picks itself every day: a show today or tomorrow first, then a release coming or just out, then your next show. To change it, change Shows or Releases.</p>
+          <details id="hist-identity" class="ed-played ed-history"><summary class="ed-btn ed-plain">History</summary><div class="ed-hist"></div></details>
           <div class="ed-bar">
             <button id="i-save" class="ed-btn ed-main" type="button">Save IDENTITY</button>
             <div class="ed-say"><p id="i-msg" class="ed-msg" role="status"></p><a class="ed-see text-link" href="/music/" target="_blank" rel="noopener" hidden>See it on the site</a></div>
@@ -94,6 +97,7 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
             <span id="b-home-hint" class="ed-hint">Shows on Home under PUSH PAST FEAR. One or two sentences.</span></div>
           <div class="ed-field"><label for="b-bio">About bio</label><textarea id="b-bio" class="ed-bio" rows="14" maxlength="4000" aria-describedby="b-bio-hint"></textarea>
             <span id="b-bio-hint" class="ed-hint">Shows on the About page. Leave an empty line between paragraphs. Plain text: links and bold don’t work here.</span></div>
+          <details id="hist-bio" class="ed-played ed-history"><summary class="ed-btn ed-plain">History</summary><div class="ed-hist"></div></details>
           <div class="ed-bar">
             <button id="b-save" class="ed-btn ed-main" type="button">Save bio</button>
             <div class="ed-say"><p id="b-msg" class="ed-msg" role="status"></p><a class="ed-see text-link" href="/about/" target="_blank" rel="noopener" hidden>See it on the site</a></div>
@@ -104,6 +108,7 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
             Fans buy on the store’s own page (the Link). This site never takes card details.</p>
           <button id="p-add" class="ed-btn ed-add" type="button">Add product</button>
           <ol id="p-list" class="ed-list"></ol>
+          <details id="hist-products" class="ed-played ed-history"><summary class="ed-btn ed-plain">History</summary><div class="ed-hist"></div></details>
           <div class="ed-bar">
             <div id="undo-products" class="ed-undo" role="status" hidden><p class="ed-undo-t"></p><button class="ed-btn ed-undo-b" type="button">Undo</button></div>
             <button id="p-save" class="ed-btn ed-main" type="button">Save products</button>
@@ -343,6 +348,27 @@ html:has(.ed-body) { scroll-padding: 1rem 0 16rem; } /* a focused field never hi
 .ed-two { grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 480px) { .ed-two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .ed-field { min-width: 0; }
+/* A2 (DESIGN 31f, 31g): History folds (the Played fold's look), the draft offer (the paper box), the error code and the error summary. */
+.ed-history { margin-bottom: var(--space-l); }
+.ed-hist { margin-top: var(--space-xs); }
+.ed-hist-list { margin-block: var(--space-xs) 0; }
+.ed-hist-item { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xs); padding: 0.5rem 0.75rem; }
+.ed-hist-text { min-width: 0; }
+.ed-hist-go { width: 100%; }
+.ed-hist-item .ed-ask { grid-column: 1 / -1; margin-top: 0; }
+.ed-hist-item .ed-ask .ed-btn { padding-inline: 0.5rem; }
+@media (min-width: 600px) { .ed-hist-item { grid-template-columns: minmax(0, 1fr) auto; align-items: center; } .ed-hist-go { width: auto; min-width: 9rem; max-width: 12rem; } }
+.ed-draft .ed-ask-btns .ed-btn { padding-inline: 0.5rem; }
+.ed-say .ed-msg[data-state='error'] { flex: 1 1 100%; }
+.ed-code, .ed-fix { flex: 1 1 100%; margin: 0; padding: 0.6rem 0.75rem; background: var(--text); color: var(--bg); font-weight: 700; line-height: 1.35; }
+.ed-code:empty, .ed-fix:empty { display: none; }
+.ed-code strong { font-weight: 800; font-size: var(--step-1); letter-spacing: 0.08em; user-select: all; overflow-wrap: anywhere; }
+.ed-fix { list-style: none; padding-block: 0.25rem; }
+.ed-fix a { display: flex; align-items: center; min-height: 48px; color: var(--bg); text-decoration: underline; text-underline-offset: 0.2em; overflow-wrap: anywhere; }
+.ed-fix a:focus-visible { outline: 3px solid var(--bg); outline-offset: 2px; }
+.ed-reload { flex: none; }
+.ed-reload[hidden] { display: none; }
+.ed-say .ed-msg:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
         </style>
   </body>
 </html>

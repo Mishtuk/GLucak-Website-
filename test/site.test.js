@@ -103,7 +103,7 @@ test('stale save is 409 and changes nothing', async () => {
   assert.equal((await save({ homeBio: 'Newer.' }, v)).status, 200);
   const stale = await save({ homeBio: 'Older, from another tab.' }, v);
   assert.equal(stale.status, 409);
-  assert.match((await stale.json()).message, /^Someone else saved the site just now/);
+  assert.match((await stale.json()).message, /^This was saved from another screen or tab/);
   assert.equal((await site()).site.homeBio, 'Newer.');
   assert.equal((await save({ homeBio: 'No version.' }, null)).status, 409, 'a missing version is stale too');
 });

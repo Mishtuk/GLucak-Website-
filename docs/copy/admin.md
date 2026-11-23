@@ -185,10 +185,9 @@ Row errors (Server, "Product N:" in front):
 
 | Built (Server `STALE`, 103) | Draft | Chars |
 |---|---|---|
-| Someone else saved the {shows/products} a moment ago. Reload to see their changes; yours are still on this page. | **Someone else saved the {shows/products} just now, so yours didn't save. Reloading shows their changes but clears yours, so write down what you changed first.** | 158 |
+| Someone else saved the {shows/products} a moment ago. Reload to see their changes; yours are still on this page. | **This was saved from another screen or tab, so yours didn't save. Your changes are kept.** | 87 |
 
-Why it changes: the built text is wrong in one way. It says "yours are still on this page" right after telling the reader to reload, and
-a reload clears what they typed. The new text says what happened, what reload does, and what to do first. No code, no "409".
+Why it changes (advisor Amendment 5): the built text says "yours are still on this page" right after telling the reader to reload. The new line says what happened and that his changes are kept (as a draft, offered back with Keep them after Reload). No code, no "409".
 
 Both the page text and the server's `STALE` string should use the same new line.
 
@@ -233,7 +232,7 @@ Style as above: plain, phone first, no codes in the sentence except the one he c
 | A2 | Go back, working / done / gone | **Going back...** / **Done. The site is back to how it was on {when}.** / **That version isn't there any more. Pick another.** |
 | A2 | Draft offer | **You have changes from {Today, 4:12 PM} that were never saved. Keep them, or throw them away?** Buttons **Keep them** / **Throw away** |
 | A2 | Today note | **Last saved: {Today, 4:12 PM}** / **Unsaved changes waiting in {Shows and Bio}.** |
-| A2 | Conflict (replaces the 409 line above, when drafts exist) | **Someone else saved the {shows} just now, so yours didn't save. Your changes are kept: reload, then press Keep them.** Button **Reload** |
+| A2 | Conflict (the server and the page use the same line; Amendment 5) | **This was saved from another screen or tab, so yours didn't save. Your changes are kept.** Button **Reload** |
 | A2 | Error code | **Send this code to the person who runs the site: {K7P4Q2}** + button **Copy code**; done **Copied.**; refused **Hold the code to copy it.** |
 | A2 | Error summary link | **{Show 3}: {the row's message}** (each opens that row) |
 | A3 | Tab / help | **Videos** / **Your videos, newest first. Fans see them on Home and the Videos page. Hide one to take it off the site without losing it. Change anything, then press Save.** |

@@ -1,6 +1,7 @@
 // Gabe's edit screen: Shows | Releases | IDENTITY | Bio | Products tabs. Builds every row with createElement and sets data only through
-// textContent / value. Talks to /edit/login, /edit/logout, /edit/api/shows, /edit/api/releases, /edit/api/site, /edit/api/products and /edit/api/upload
-// (same origin, session cookie on Path=/edit).
+// textContent / value. Talks to /edit/login, /edit/logout, /edit/api/shows, /edit/api/releases, /edit/api/site, /edit/api/products,
+// /edit/api/history/<tab>[/<id>] and /edit/api/upload (same origin, session cookie on Path=/edit).
+// A2: History (go back to one of the last 10 saves), drafts kept in this browser (localStorage), a code for server failures, an error summary.
 (() => {
   const $ = (id) => document.getElementById(id);
   const login = $('login'), editor = $('editor'), loginMsg = $('login-msg');
@@ -9,20 +10,21 @@
   // A save bar's "See it on the site" link shows only while its message says Saved.
   const say = (el, text, state = '') => {
     el.textContent = text; if (state) el.dataset.state = state; else delete el.dataset.state;
-    const see = el.closest('.ed-say')?.querySelector('.ed-see'); if (see) see.hidden = state !== 'ok';
+    const box = el.closest('.ed-say'), see = box?.querySelector('.ed-see'); if (see) see.hidden = state !== 'ok';
+    if (box && el.classList.contains('ed-msg')) { box.querySelector('.ed-code')?.replaceChildren(); box.querySelector('.ed-fix')?.replaceChildren(); const re = box.querySelector('.ed-reload'); if (re) re.hidden = true; } // a new message ends the old code, summary and Reload
   };
   let loaded = false, uid = 0;
   // Per tab: its list, message line, unsaved flag and the version it loaded (sent back on save -> 409 if stale).
   const T = {
-    shows: { list: $('list'), msg: $('msg'), dirty: false, version: null, undo: [], noun: ['show', 'shows'], label: 'Show' },
-    releases: { list: $('r-list'), msg: $('r-msg'), dirty: false, version: null, undo: [], noun: ['release', 'releases'], label: 'Release' },
-    products: { list: $('p-list'), msg: $('p-msg'), dirty: false, version: null, undo: [], noun: ['product', 'products'], label: 'Product' },
+    shows: { list: $('list'), msg: $('msg'), dirty: false, version: null, base: null, undo: [], noun: ['show', 'shows'], label: 'Show' },
+    releases: { list: $('r-list'), msg: $('r-msg'), dirty: false, version: null, base: null, undo: [], noun: ['release', 'releases'], label: 'Release' },
+    products: { list: $('p-list'), msg: $('p-msg'), dirty: false, version: null, base: null, undo: [], noun: ['product', 'products'], label: 'Product' },
     // IDENTITY and Bio are fields, not rows. Both save into site.json: one shared version (siteVersion), kept from every reply.
     identity: { msg: $('i-msg'), dirty: false },
     bio: { msg: $('b-msg'), dirty: false },
   };
   T.shows.played = $('played-list');
-  let siteVersion = null;
+  let siteVersion = null, siteBase = null; // siteBase: when site.json was last saved, as this screen loaded it (a draft's starting point)
   const anyDirty = () => Object.values(T).some((t) => t.dirty);
   // The tab wears a ring and a hidden " (not saved)" while its tab has unsaved changes.
   function setDirty(kind, on) {
@@ -67,7 +69,7 @@
 
   // "Saved at 4:12 PM. ...": the browser's clock goes in front of the server's "Saved."
   const savedText = (m) => (m || 'Saved. It’s on the site now.').replace(/^Saved\./, `Saved at ${new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}.`);
-  function changed(kind) { setDirty(kind, true); say(T[kind].msg, 'Not saved yet.', 'dirty'); }
+  function changed(kind) { setDirty(kind, true); say(T[kind].msg, 'Not saved yet.', 'dirty'); queueDraft(kind); }
   const lists = (kind) => (kind === 'shows' ? [T.shows.list, T.shows.played] : [T[kind].list]);
   const rows = (kind) => lists(kind).flatMap((l) => [...l.children]); // shows: upcoming, then Played (one array, so error row numbers match)
   // Delete removes the row at once; Undo (one bar per tab, in the save bar) puts the latest removal back where it was.
@@ -178,13 +180,13 @@
     return box;
   }
 
-  T.shows.render = (shows) => {
+  T.shows.render = (shows, draft = false) => {
     const t = today();
     const up = shows.filter((s) => s.date >= t).sort((a, b) => `${a.date} ${a.time ?? ''}`.localeCompare(`${b.date} ${b.time ?? ''}`));
     const past = shows.filter((s) => s.date < t).sort((a, b) => b.date.localeCompare(a.date));
     T.shows.list.replaceChildren(...up.map(showRow));
     T.shows.played.replaceChildren(...past.map(showRow));
-    T.shows.saved = shows;
+    if (!draft) T.shows.saved = shows; // Today shows what was saved, never unsaved typing
     clearUndo('shows');
     number('shows');
     setDirty('shows', false);
@@ -283,7 +285,7 @@
     try { r = await fetch('/edit/api/upload', { method: 'POST', credentials: 'same-origin', headers: { Accept: 'application/json', 'Content-Type': body.type }, body }); } catch { return { message: "That didn’t upload. Check your connection and try again." }; }
     const b = await reply(r);
     if (r.status === 401) { login.hidden = false; return { message: 'You were signed out. Sign in above, then upload again.' }; }
-    return r.ok ? { path: b.path } : { message: b.message || "That didn’t upload. Try again." };
+    return r.ok ? { path: b.path } : { message: b.message || "That didn’t upload. Try again.", code: b.code };
   }
 
   // The photo block Products and Releases share: the path field, a preview (and the row's thumb), the upload button and its messages.
@@ -302,11 +304,12 @@
       const f = file.files[0];
       if (!f) return;
       say(upMsg, 'Getting your photo ready...', 'busy');
+      clearCode(upMsg.parentElement);
       uploads[kind]++;
       let r;
       try { r = await upload(f, upMsg); } finally { uploads[kind]--; if (!uploads[kind] && waitFor === kind) { say(T[waitFor].msg, ''); waitFor = null; } }
       file.value = '';
-      if (!r.path) return say(upMsg, r.message, 'error');
+      if (!r.path) { say(upMsg, r.message, 'error'); return showCode(upMsg.parentElement, r.code); }
       image.value = r.path;
       showPic();
       changed(kind);
@@ -444,6 +447,249 @@
     });
   }
 
+  // ---------- A2: when, the code for a server failure, the 409 line ----------
+  // "Today, 4:12 PM" / "Yesterday, 9:05 AM" / "Tue, Nov 17, 4:12 PM", in the browser's own time.
+  function when(x) {
+    const d = new Date(x);
+    if (Number.isNaN(d.getTime())) return '';
+    const day = (v) => new Date(v.getFullYear(), v.getMonth(), v.getDate()).getTime();
+    const ago = Math.round((day(new Date()) - day(d)) / 864e5), time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    return ago === 0 ? `Today, ${time}` : ago === 1 ? `Yesterday, ${time}` : `${d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}, ${time}`;
+  }
+  const nameList = (names) => (names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0]); // "Shows and Bio"
+  const CODE = /^[A-HJ-NP-Z2-9]{6}$/; // what the server makes: A-Z and 2-9 without O, I, 0, 1
+  const slot = (box, tag, cls) => { let x = box.querySelector(`.${cls.split(' ').at(-1)}`); if (!x) { x = el(tag, { class: cls }); box.append(x); } return x; };
+  // "Send this code to the person who runs the site: K7P4Q2": text only, no button (he reads it out or screenshots it).
+  function showCode(box, code) {
+    if (!CODE.test(String(code ?? ''))) return;
+    slot(box, 'p', 'ed-code').replaceChildren('Send this code to the person who runs the site: ', el('strong', { textContent: code }));
+  }
+  const clearCode = (box) => box.querySelector('.ed-code')?.replaceChildren();
+  const bar = (kind) => T[kind].msg.closest('.ed-say');
+  const focusMsg = (kind) => { T[kind].msg.tabIndex = -1; T[kind].msg.focus({ preventScroll: true }); }; // a failed Save is read out first (P2-5)
+  let leaving = false; // Reload keeps the changes as a draft, so the browser's own "leave?" question is skipped
+  const STALE_LINE = 'This was saved from another screen or tab, so yours didn’t save. Your changes are kept.';
+  // 409: nothing was overwritten. His edits stay on screen and in a draft; Reload brings the other save in, then Keep them puts his back.
+  function stale(kind) {
+    writeDraft(kind);
+    say(T[kind].msg, STALE_LINE, 'error');
+    const re = slot(bar(kind), 'button', 'ed-btn ed-reload');
+    re.type = 'button'; re.textContent = 'Reload'; re.hidden = false;
+    re.onclick = () => { flush(); leaving = true; location.reload(); };
+    focusMsg(kind);
+  }
+  const versionOf = (kind) => (kind === 'identity' || kind === 'bio' ? siteVersion : T[kind].version);
+
+  // ---------- Today's note: "Last saved" and the drafts waiting ----------
+  let lastSaved = null;
+  function seen(iso) { // the server's newest save time, from any reply
+    if (typeof iso === 'string' && Number.isFinite(Date.parse(iso)) && (!lastSaved || iso > lastSaved)) lastSaved = iso;
+    renderNote();
+  }
+  function renderNote() {
+    const note = $('now-note'), lines = [];
+    if (lastSaved) lines.push(`Last saved: ${when(lastSaved)}`);
+    const waiting = tabs.filter((k) => T[k].offer).map((k) => TAB_NAME[k]);
+    if (waiting.length) lines.push(`Unsaved changes waiting in ${nameList(waiting)}.`);
+    note.replaceChildren(...lines.flatMap((l, i) => [...(i ? [el('br')] : []), document.createTextNode(l)]));
+    note.hidden = !lines.length;
+  }
+
+  // ---------- Drafts: a tab with unsaved changes is kept in this browser; offered back after a reload (DESIGN 31g) ----------
+  // Never trusted: the text is parsed in a try, cut down to the fields we know, and goes into the screen only as values.
+  // <drafts>
+  const DRAFT = (kind) => `gl-edit-draft-${kind}`;
+  const LIST_KEYS = {
+    shows: ['date', 'time', 'type', 'venue', 'city', 'address', 'with', 'link', 'cost'],
+    releases: ['title', 'type', 'remix', 'date', 'link', 'artists', 'cover'],
+    products: ['id', 'name', 'type', 'price', 'image', 'description', 'link', 'status', 'sizes', 'order'],
+  };
+  const SITE_KEYS = { identity: ['date', 'link'], bio: ['homeBio', 'bio'] };
+  const MAX_DRAFT = 400000;
+  function cleanDraft(kind, d) {
+    if (!d || typeof d !== 'object' || d.v !== 1 || !Number.isFinite(d.at)) return null;
+    const base = typeof d.base === 'string' ? d.base : null, str = (v) => (typeof v === 'string' ? v.slice(0, 5000) : undefined);
+    if (LIST_KEYS[kind]) {
+      if (!Array.isArray(d.data) || d.data.length > 300) return null;
+      const out = [];
+      for (const r of d.data) {
+        if (!r || typeof r !== 'object' || Array.isArray(r)) return null;
+        const o = {};
+        for (const k of LIST_KEYS[kind]) {
+          const v = r[k];
+          const ok = k === 'sizes' ? (Array.isArray(v) ? v.filter((x) => typeof x === 'string').slice(0, 30).map((x) => x.slice(0, 60)) : undefined)
+            : k === 'price' ? (v === null || Number.isFinite(v) ? v : undefined)
+              : k === 'order' ? (Number.isFinite(v) ? v : undefined)
+                : k === 'remix' ? (typeof v === 'boolean' ? v : undefined) : str(v);
+          if (ok !== undefined) o[k] = ok;
+        }
+        out.push(o);
+      }
+      return { base, at: d.at, data: out };
+    }
+    if (!d.data || typeof d.data !== 'object' || Array.isArray(d.data)) return null;
+    const o = {};
+    for (const k of SITE_KEYS[kind]) if (str(d.data[k]) !== undefined) o[k] = str(d.data[k]);
+    return { base, at: d.at, data: o };
+  }
+  const timers = {};
+  function dropDraft(kind) { clearTimeout(timers[kind]); try { localStorage.removeItem(DRAFT(kind)); } catch { /* nothing to remove */ } }
+  function readDraft(kind) { // null when none; a draft that is not ours or is broken is ignored and removed
+    let raw;
+    try { raw = localStorage.getItem(DRAFT(kind)); } catch { return null; }
+    if (raw == null) return null;
+    let d = null;
+    try { if (raw.length <= MAX_DRAFT * 2) d = cleanDraft(kind, JSON.parse(raw)); } catch { d = null; }
+    if (!d) dropDraft(kind);
+    return d;
+  }
+  // </drafts>
+  const baseOf = (kind) => (kind === 'identity' || kind === 'bio' ? siteBase : T[kind].base);
+  const snapshot = (kind) => (LIST_KEYS[kind] ? rows(kind).map((r, i) => r.read(i)) : kind === 'identity' ? SITE_PART.identity().identity : SITE_PART.bio());
+  const loadedAt = Date.now(), wrote = {}; // a draft written by another browser tab after this one loaded (or after its own last write) is not overwritten
+  function writeDraft(kind) {
+    clearTimeout(timers[kind]);
+    if (!T[kind].dirty || T[kind].offer) return; // saved since; or an older draft still waits for his answer (that tab is locked, so this is only a guard)
+    try {
+      let stored = null;
+      try { stored = JSON.parse(localStorage.getItem(DRAFT(kind)) ?? 'null'); } catch { /* a broken old draft is simply replaced */ }
+      if (stored && Number.isFinite(stored.at) && stored.at > (wrote[kind] ?? loadedAt)) return;
+      const at = Date.now(), raw = JSON.stringify({ v: 1, base: baseOf(kind), at, data: snapshot(kind) });
+      if (raw.length <= MAX_DRAFT) { localStorage.setItem(DRAFT(kind), raw); wrote[kind] = at; }
+    } catch { /* storage off or full: no draft, nothing shows */ }
+  }
+  function queueDraft(kind) { clearTimeout(timers[kind]); timers[kind] = setTimeout(() => writeDraft(kind), 2000); }
+  function flush() { for (const k of tabs) if (T[k].dirty) writeDraft(k); }
+  function lock(kind, on) { // while the offer waits for his answer the rest of the tab is still (so nothing he types can overwrite the waiting draft)
+    for (const c of $(`panel-${kind}`).children) if (c !== T[kind].box) c.inert = on;
+  }
+  function offerBox(kind) {
+    const t = T[kind];
+    if (t.box) return t.box;
+    const q = el('p'), keep = el('button', { type: 'button', class: 'ed-btn', textContent: 'Keep them' }), toss = el('button', { type: 'button', class: 'ed-btn', textContent: 'Throw away' });
+    const box = el('div', { class: 'ed-ask ed-draft', role: 'group', hidden: true }, q, el('p', { class: 'ed-ask-btns' }, keep, toss));
+    box.setAttribute('aria-label', 'Changes that were never saved');
+    $(`panel-${kind}`).prepend(box);
+    keep.addEventListener('click', () => keepDraft(kind));
+    toss.addEventListener('click', () => throwDraft(kind));
+    return Object.assign(t, { box, boxText: q }).box;
+  }
+  function offerDrafts() { // after load: a tab with a draft starts with the question
+    for (const kind of tabs) {
+      const t = T[kind];
+      if (t.dirty || t.offer) continue;
+      const d = readDraft(kind);
+      if (!d) continue;
+      const now = cleanDraft(kind, { v: 1, at: 1, base: null, data: snapshot(kind) });
+      if (now && JSON.stringify(now.data) === JSON.stringify(d.data)) { dropDraft(kind); continue; } // the same as what is saved: nothing to offer
+      t.offer = d;
+      const box = offerBox(kind), same = d.base === baseOf(kind);
+      t.boxText.textContent = `You have changes from ${when(d.at)} that were never saved. ${same ? 'Keep them, or throw them away?' : 'This was saved again since. Keep yours or throw it away?'}`;
+      box.hidden = false;
+      lock(kind, true);
+    }
+    renderNote();
+  }
+  function keepDraft(kind) {
+    const t = T[kind], d = t.offer;
+    if (!d) return;
+    t.offer = null; t.box.hidden = true; lock(kind, false);
+    if (kind === 'identity') { F.date.value = d.data.date ?? ''; F.link.value = d.data.link ?? ''; idToday(); }
+    else if (kind === 'bio') { F.home.value = d.data.homeBio ?? ''; F.bio.value = d.data.bio ?? ''; }
+    else t.render(d.data, true);
+    changed(kind);
+    renderNote();
+    focusMsg(kind);
+  }
+  function throwDraft(kind) {
+    const t = T[kind];
+    t.offer = null; t.box.hidden = true; lock(kind, false); dropDraft(kind);
+    renderNote();
+    (IDS[kind] ? $(IDS[kind][1]) : kind === 'identity' ? F.date : F.home).focus();
+  }
+
+  // ---------- History: go back to one of the last 10 saves of a tab (DESIGN 31f) ----------
+  const HIST_ID = /^\d{8}T\d{9}Z-[0-9a-f]{8}$/; // what the server makes; anything else is never put in a URL
+  const H = {};
+  function initHistory(kind) {
+    const fold = $(`hist-${kind}`), body = fold.querySelector('.ed-hist');
+    const h = H[kind] = { fold, body, seq: 0, busy: false, ol: el('ol', { class: 'ed-list ed-hist-list' }), msg: el('p', { class: 'ed-upmsg', role: 'status' }),
+      empty: el('p', { class: 'ed-help ed-empty', hidden: true, textContent: 'Nothing to go back to yet. Each time you save, the old version is kept here.' }) };
+    body.append(h.empty, h.ol, h.msg);
+    fold.addEventListener('toggle', () => { if (fold.open) loadHistory(kind); });
+  }
+  async function loadHistory(kind) {
+    const h = H[kind], seq = ++h.seq;
+    clearCode(h.body);
+    h.ol.replaceChildren(); h.empty.hidden = true;
+    say(h.msg, 'Loading...', 'busy');
+    const failed = (b = {}) => { say(h.msg, 'Couldn’t load the history. Try again.', 'error'); showCode(h.body, b.code); };
+    let r;
+    try { r = await api(`/edit/api/history/${kind}`); } catch { return seq === h.seq && failed(); }
+    if (seq !== h.seq) return;
+    if (r.status === 401) { login.hidden = false; return say(h.msg, 'You were signed out. Sign in above, then open History again.', 'error'); }
+    const b = await reply(r);
+    if (seq !== h.seq) return;
+    if (!r.ok || !Array.isArray(b.entries)) return failed(b);
+    say(h.msg, '');
+    h.empty.hidden = b.entries.length > 0;
+    for (const e of b.entries) if (e && HIST_ID.test(e.id) && when(e.at)) h.ol.append(historyItem(kind, e));
+  }
+  function historyItem(kind, e) {
+    const noun = T[kind].noun, n = Number.isInteger(e.count) && e.count >= 0 ? e.count : null;
+    const meta = el('p', { class: 'ed-row-meta' });
+    if (noun && n !== null) meta.append(el('span', { textContent: `${n} ${n === 1 ? noun[0] : noun[1]}` }));
+    if (e.live === true) meta.append(el('span', { class: 'ed-tag', textContent: 'On the site now' }));
+    const li = el('li', { class: 'ed-row ed-hist-item' }, el('div', { class: 'ed-hist-text' }, el('p', { class: 'ed-row-title', textContent: when(e.at) }), ...(meta.childNodes.length ? [meta] : [])));
+    if (e.live !== true) {
+      const go = el('button', { type: 'button', class: 'ed-btn ed-hist-go', textContent: 'Go back to this' });
+      go.addEventListener('click', () => askBack(kind, e, li, go));
+      li.append(go);
+    }
+    return li;
+  }
+  function askBack(kind, e, li, go) { // an inline question, no window.confirm
+    for (const old of H[kind].ol.querySelectorAll('.ed-ask')) old.remove();
+    const yes = el('button', { type: 'button', class: 'ed-btn', textContent: 'Go back' }), no = el('button', { type: 'button', class: 'ed-btn', textContent: 'Stay' });
+    const ask = el('div', { class: 'ed-ask', role: 'alert' },
+      el('p', { textContent: `Go back to ${when(e.at)}? What is on the site now stays in History, so you can undo this.${T[kind].dirty ? ' Your unsaved changes here will be lost.' : ''}` }),
+      el('p', { class: 'ed-ask-btns' }, yes, no));
+    li.append(ask);
+    no.addEventListener('click', () => { ask.remove(); go.focus(); });
+    yes.addEventListener('click', () => goBack(kind, e, ask));
+    no.focus();
+  }
+  async function goBack(kind, e, ask) {
+    const h = H[kind], t = T[kind];
+    if (h.busy) return;
+    if (uploads[kind]) return say(h.msg, 'Wait for the photo to finish uploading, then try again.', 'error');
+    if (saving[kind] || siteSaving[kind]) return say(h.msg, 'Wait for the save to finish, then try again.', 'error');
+    h.busy = true;
+    const still = [...$(`panel-${kind}`).children].filter((c) => c !== h.fold && !c.inert); // nothing else in the tab can change or save while we go back
+    for (const c of still) c.inert = true;
+    const buttons = h.body.querySelectorAll('button'); for (const b of buttons) b.disabled = true;
+    clearCode(h.body);
+    say(h.msg, 'Going back...', 'busy');
+    try {
+      let r;
+      try { r = await api(`/edit/api/history/${kind}/${e.id}`, { version: versionOf(kind) }); } catch { return say(h.msg, 'That didn’t work. Check your connection and try again.', 'error'); }
+      const b = await reply(r);
+      if (r.ok) {
+        if (kind === 'identity' || kind === 'bio') { siteVersion = b.version; siteBase = b.fileSavedAt ?? null; fillSite(b.site, kind); } // only this tab's fields are filled; the other tab's typing stays
+        else { t.version = b.version; t.base = b.fileSavedAt ?? null; t.render(b[kind]); }
+        seen(b.savedAt); dropDraft(kind); h.fold.open = false; say(h.msg, '');
+        say(t.msg, `Done. The site is back to how it was on ${when(e.at)}.`, 'ok');
+        return focusMsg(kind);
+      }
+      ask.remove();
+      if (r.status === 401) { login.hidden = false; $('username').focus(); return say(h.msg, 'You were signed out. Sign in above, then try again.', 'error'); }
+      if (r.status === 404) { await loadHistory(kind); return say(h.msg, 'That version isn’t there any more. Pick another.', 'error'); }
+      if (r.status === 409) { say(h.msg, ''); return stale(kind); }
+      say(h.msg, r.status >= 500 ? 'That didn’t work. Try again.' : b.message || 'That didn’t work. Try again.', 'error');
+      if (r.status >= 500) showCode(h.body, b.code);
+    } finally { h.busy = false; for (const x of buttons) x.disabled = false; for (const c of still) c.inert = false; }
+  }
+
   // ---------- Sign-in, load, save ----------
   function signedIn(name, data) {
     login.hidden = true;
@@ -453,6 +699,7 @@
       for (const k of ['shows', 'releases', 'products']) if (data[k]) T[k].render(data[k]);
       if (data.site) { fillSite(data.site, 'identity'); fillSite(data.site, 'bio'); } else { idFailed = true; renderToday(); }
       loaded = true;
+      offerDrafts();
     }
   }
 
@@ -462,12 +709,12 @@
     const b = await reply(r);
     if (r.ok) {
       const pb = await reply(p);
-      T.shows.version = b.version;
-      if (p.ok) T.products.version = pb.version; else say(T.products.msg, "Couldn’t load the products. Reload the page.", 'error');
+      T.shows.version = b.version; T.shows.base = b.fileSavedAt ?? null; seen(b.savedAt);
+      if (p.ok) { T.products.version = pb.version; T.products.base = pb.fileSavedAt ?? null; } else say(T.products.msg, "Couldn’t load the products. Reload the page.", 'error');
       const rb = rl.ok ? await reply(rl) : {};
-      if (rl.ok) T.releases.version = rb.version; else say(T.releases.msg, "Couldn’t load the releases. Reload the page.", 'error');
+      if (rl.ok) { T.releases.version = rb.version; T.releases.base = rb.fileSavedAt ?? null; } else say(T.releases.msg, "Couldn’t load the releases. Reload the page.", 'error');
       const qb = q.ok ? await reply(q) : {};
-      if (q.ok) siteVersion = qb.version; else for (const k of ['identity', 'bio']) say(T[k].msg, "Couldn’t load this. Reload the page.", 'error');
+      if (q.ok) { siteVersion = qb.version; siteBase = qb.fileSavedAt ?? null; } else for (const k of ['identity', 'bio']) say(T[k].msg, "Couldn’t load this. Reload the page.", 'error');
       return signedIn(b.editor, { shows: b.shows, releases: rl.ok ? rb.releases : null, products: p.ok ? pb.products : null, site: q.ok ? qb.site : null });
     }
     login.hidden = false;
@@ -490,7 +737,7 @@
   $('logout').addEventListener('click', async () => {
     if (anyDirty()) { // small inline ask, no window.confirm; it names the tabs: "Shows and Bio"
       const names = tabs.filter((k) => T[k].dirty).map((k) => TAB_NAME[k]);
-      $('out-q').textContent = `Not saved yet in ${names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0]}. Sign out anyway?`;
+      $('out-q').textContent = `Not saved yet in ${nameList(names)}. Sign out anyway?`;
       $('out-ask').hidden = false; $('out-no').focus(); return;
     }
     signOut();
@@ -499,6 +746,7 @@
   $('out-yes').addEventListener('click', () => signOut());
   async function signOut() {
     try { await api('/edit/logout', {}); } catch { /* the cookie ends anyway after 7 days */ }
+    for (const k of tabs) if (T[k].dirty) dropDraft(k); // he chose to sign out without saving these
     for (const t of Object.values(T)) t.dirty = false;
     location.reload();
   }
@@ -514,8 +762,10 @@
   }
   $('add').addEventListener('click', addShow);
   for (const b of document.querySelectorAll('.ed-now-btns [data-go]')) b.addEventListener('click', () => {
-    if (b.dataset.go === 'add-show') { if ($('add').disabled) return; pick('shows'); addShow(); }
-    if (b.dataset.go === 'fix-release') { pick('releases'); (T.releases.list.firstElementChild?.edit ?? $('r-add')).focus(); }
+    const go = b.dataset.go, kind = go === 'add-show' ? 'shows' : 'releases';
+    if (T[kind].offer) { pick(kind); T[kind].box.querySelector('button').focus(); return; } // answer the draft question first
+    if (go === 'add-show') { if ($('add').disabled) return; pick('shows'); addShow(); }
+    if (go === 'fix-release') { pick('releases'); (T.releases.list.firstElementChild?.edit ?? $('r-add')).focus(); }
   });
   for (const k of ['shows', 'releases', 'products']) $(`undo-${k}`).querySelector('button').addEventListener('click', () => undoRow(k));
   $('r-add').addEventListener('click', () => {
@@ -542,6 +792,7 @@
   const IDS = { shows: ['save', 'add'], releases: ['r-save', 'r-add'], products: ['p-save', 'p-add'] }; // Save and Add button per list tab
   async function save(kind) {
     if (saving[kind]) return; // no second save while one is on its way
+    if (H[kind]?.busy) return; // nor while a go-back is on its way
     const t = T[kind], list = rows(kind), [btn, add] = IDS[kind].map($);
     if (uploads[kind]) { waitFor = kind; return say(t.msg, 'Wait for the photo to finish uploading, then press Save.', 'busy'); } // an upload would land in a row the reply rebuilds
     for (const r of list) { say(r.err, ''); r.classList.remove('bad'); }
@@ -556,9 +807,10 @@
     let r;
     try { r = await api(`/edit/api/${kind}`, { version: t.version, [kind]: list.map((x, i) => x.read(i)) }); } catch { return say(t.msg, "That didn’t save. Check your connection and try again.", 'error'); }
     const b = await reply(r);
-    if (r.ok) { t.version = b.version; t.render(b[kind]); return say(t.msg, savedText(b.message), 'ok'); }
+    if (r.ok) { t.version = b.version; t.base = b.fileSavedAt ?? null; seen(b.savedAt); dropDraft(kind); t.render(b[kind]); return say(t.msg, savedText(b.message), 'ok'); }
     if (r.status === 401) { login.hidden = false; $('username').focus(); return say(t.msg, 'You were signed out. Sign in above, then press Save again. Your changes are still here.', 'error'); }
-    if (r.status === 409) return say(t.msg, b.message || `Someone else saved the ${kind} just now, so yours didn’t save. Reloading shows their changes but clears yours, so write down what you changed first.`, 'error'); // rows untouched
+    if (r.status === 409) return stale(kind); // rows untouched, kept as a draft
+    if (r.status >= 500) { say(t.msg, 'That didn’t save. Try again.', 'error'); showCode(bar(kind), b.code); writeDraft(kind); return focusMsg(kind); }
     const errs = b.errors ?? [];
     for (const x of errs) {
       const row = list[x.row];
@@ -566,12 +818,18 @@
     }
     const general = errs.filter((x) => !list[x.row]).map((x) => x.message).join(' ');
     say(t.msg, general || (errs.length ? `Not saved. Fix the ${errs.length === 1 ? t.noun[0] : `${errs.length} ${t.noun[1]}`} marked with !, then press Save.` : "That didn’t save. Try again."), 'error');
-    list[errs[0]?.row]?.form.querySelector('input')?.focus();
+    const marked = errs.filter((x) => list[x.row]); // under the line: one link per bad row; it opens the row and lands on the first bad field
+    if (marked.length) slot(bar(kind), 'ul', 'ed-fix').replaceChildren(...marked.map((x) => {
+      const row = list[x.row], a = el('a', { class: 'text-link', href: `#${row.form.id}`, textContent: x.message });
+      a.addEventListener('click', (ev) => { ev.preventDefault(); row.closest('details')?.setAttribute('open', ''); row.open(true); (row.form.querySelector(':invalid') ?? row.form.querySelector('input'))?.focus(); });
+      return el('li', {}, a);
+    }));
+    focusMsg(kind);
   }
   // One save for IDENTITY and Bio: sends only that tab's fields on the shared version; the reply's version feeds the other tab.
   const siteSaving = { identity: false, bio: false };
   async function saveSite(kind) {
-    if (siteSaving[kind]) return;
+    if (siteSaving[kind] || H[kind]?.busy) return;
     const t = T[kind], btn = $(kind === 'identity' ? 'i-save' : 'b-save'), panel = $(`panel-${kind}`);
     siteSaving[kind] = true;
     btn.setAttribute('aria-disabled', 'true');
@@ -581,10 +839,12 @@
       let r;
       try { r = await api('/edit/api/site', { version: siteVersion, site: SITE_PART[kind]() }); } catch { return say(t.msg, "That didn’t save. Check your connection and try again.", 'error'); }
       const b = await reply(r);
-      if (r.ok) { siteVersion = b.version; fillSite(b.site, kind); return say(t.msg, savedText(b.message), 'ok'); }
+      if (r.ok) { siteVersion = b.version; siteBase = b.fileSavedAt ?? null; seen(b.savedAt); dropDraft(kind); fillSite(b.site, kind); return say(t.msg, savedText(b.message), 'ok'); }
       if (r.status === 401) { login.hidden = false; $('username').focus(); return say(t.msg, 'You were signed out. Sign in above, then press Save again. Your changes are still here.', 'error'); }
-      if (r.status === 409) return say(t.msg, b.message || 'Someone else saved just now, so yours didn’t save. Reload the page to see their changes, but write down what you changed first.', 'error');
+      if (r.status === 409) return stale(kind);
+      if (r.status >= 500) { say(t.msg, 'That didn’t save. Try again.', 'error'); showCode(bar(kind), b.code); writeDraft(kind); return focusMsg(kind); }
       say(t.msg, (b.errors ?? []).map((x) => x.message).join(' ') || "That didn’t save. Try again.", 'error');
+      focusMsg(kind);
     } finally { siteSaving[kind] = false; btn.removeAttribute('aria-disabled'); panel.inert = false; }
   }
   $('save').addEventListener('click', () => save('shows'));
@@ -619,7 +879,11 @@
     } catch { say(bkMsg, "That didn’t download. Try again.", 'error'); } finally { bk.removeAttribute('aria-disabled'); }
   });
 
-  addEventListener('beforeunload', (e) => { if (anyDirty()) e.preventDefault(); });
+  addEventListener('beforeunload', (e) => { if (anyDirty() && !leaving) e.preventDefault(); });
+  // A tab killed or switched away from keeps its typing as a draft (the timer alone may not have fired yet).
+  addEventListener('pagehide', flush);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
+  for (const k of tabs) initHistory(k);
 
   login.hidden = true; // until we know whether this browser is signed in
   const err = new URLSearchParams(location.search).get('login'); // set by the no-JS form fallback

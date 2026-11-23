@@ -2,7 +2,8 @@
 // shows list into the HTML at the <!--gl:shows--> marker on every request (so past shows drop off by themselves), and
 // the shop at <!--gl:shop--> the same way. SHOP_ENABLED=1 adds Shop to the nav, phone bar and footer (D8, D36).
 // Gabe's edit screen lives under /edit/: sign-in, then GET/POST /edit/api/shows and /edit/api/products, and
-// POST /edit/api/upload for product and release images (served back from /media/uploads/), GET /edit/api/backup for a backup file. Node 22+ built-ins, plus sharp for uploads.
+// POST /edit/api/upload for product and release images (served back from /media/uploads/), GET /edit/api/backup for a backup file,
+// GET /edit/api/history/<kind> and POST /edit/api/history/<kind>/<id> for the last 10 saves of a tab (src/lib/history.js). Node 22+ built-ins, plus sharp for uploads.
 import { createServer } from 'node:http';
 import { randomBytes } from 'node:crypto';
 import { createReadStream, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
@@ -14,7 +15,8 @@ import { signup } from './src/lib/signup.js';
 import { allow, checkLogin, clearFailures, cookieHeader, locked, parseEditors, readCookie, recordFailure, sameOrigin, signSession, verifySession, SESSION_DAYS, USER_LOCK } from './src/lib/auth.js';
 import { checkSite, fillSite } from './src/lib/site.js';
 import { checkReleases, fillReleases } from './src/lib/releases.js';
-import { checkShows, listVersion, readList, readShows, readSignouts, saveList, saveSignouts } from './src/lib/store.js';
+import { checkShows, fileSavedAt, listVersion, liveFile, readList, readShows, readSignouts, saveList, saveSignouts, savedAt } from './src/lib/store.js';
+import { ID as HISTORY_ID, KINDS as HISTORY_KINDS, contentOf, errorCode, listHistory, readEntry, recordHistory } from './src/lib/history.js';
 import { checkProducts, productsHtml, shopLinks } from './src/lib/products.js';
 import { externalize } from './src/lib/ext.js';
 import { MAX_BYTES, TYPES as IMAGE_TYPES, UPLOAD_NAME, toWebp } from './src/lib/upload.js';
@@ -200,8 +202,47 @@ function redirect(req, res, location, extra = {}) {
 const warnLogin = (why, ip, username) => console.warn(new Date().toISOString(), `sign-in ${why}:`, ip, JSON.stringify(username));
 const WRONG = "That name and password don’t match. Check them and try again.";
 const LOCKED = 'Too many tries. Wait 15 minutes, then try again.';
-const STALE = (kind) => `Someone else saved the ${kind} just now, so yours didn’t save. Reloading shows their changes but clears yours, so write down what you changed first.`;
+const STALE = () => 'This was saved from another screen or tab, so yours didn’t save. Your changes are kept.'; // Amendment 5: the same sentence the page shows
 const NOT_IMAGE = "That file isn’t a photo we can use. Try a JPG, PNG or WebP.";
+
+// The tabs with a History: shows, releases, products, and IDENTITY and Bio (two halves of site.json).
+const listOf = (h) => LISTS[h === 'identity' || h === 'bio' ? 'site' : h];
+const siteParts = (input) => (input && typeof input === 'object' ? [...('identity' in input ? ['identity'] : []), ...('homeBio' in input || 'bio' in input ? ['bio'] : [])] : []);
+const GONE = "That version isn’t there any more. Pick another.";
+const BAD_VERSION = "That version can’t be used. Pick another.";
+const SLOW = 'Too many tries. Wait a few minutes, then try again.';
+
+/** The first save of a tab keeps what it replaces, so even that first save can be undone. Best effort: a failure here never blocks the save. */
+function seedHistory(hist, list) {
+  for (const h of hist) {
+    try {
+      if (listHistory(DATA, h).length) continue;
+      const cur = readList(DATA, list.fallback, list.file);
+      const r = list.check(h === 'releases' ? contentOf(h, cur) : cur);
+      if (!r.errors) recordHistory(DATA, h, contentOf(h, r.rows), statSync(liveFile(DATA, list.fallback, list.file)).mtime);
+    } catch (e) { console.error(new Date().toISOString(), `history not seeded for ${h}:`, e.code ?? e.name); }
+  }
+}
+
+/** The one save path: Save and Go back both end here. `input` is what the tab's check takes (rows, or one tab's site fields).
+ *  Validate, then the version check (409), then write, then keep the new version in History. Returns [status, body]. */
+function commit(kind, input, sent, who) {
+  const list = LISTS[kind];
+  const r = list.check(input);
+  if (r.errors) return [400, { error: 'invalid', errors: r.errors }];
+  // Two tabs or two editors: refuse a save based on an older list instead of silently dropping the other's changes.
+  const version = () => listVersion(DATA, list.fallback, list.file);
+  if (sent !== version()) return [409, { error: 'stale', message: STALE(kind), errors: [{ row: null, message: STALE(kind) }] }];
+  const hist = kind === 'site' ? siteParts(input) : [kind];
+  seedHistory(hist, list);
+  saveList(DATA, r.rows, list.fallback, list.file);
+  for (const h of hist) {
+    try { recordHistory(DATA, h, contentOf(h, r.rows)); } catch (e) { console.error(new Date().toISOString(), `history not kept for ${h}:`, e.code ?? e.name); }
+  }
+  console.log(new Date().toISOString(), `${kind} saved by ${who}: ${Array.isArray(r.rows) ? `${r.rows.length} rows` : 'saved'}`);
+  return [200, { ok: true, [kind]: r.rows, version: version(), savedAt: savedAt(DATA), fileSavedAt: fileSavedAt(DATA, list.file),
+    message: kind === 'products' && !shopOn() ? "Saved. The shop isn’t open to fans yet, so they won’t see it until it’s switched on." : "Saved. It’s on the site now." }];
+}
 
 async function handleEdit(req, res, url) {
   const p = url.pathname;
@@ -217,7 +258,21 @@ async function handleEdit(req, res, url) {
   if (req.method === 'GET' && list) {
     const who = editor(req, url);
     if (!who) return json(401, { error: 'signed_out' });
-    return json(200, { editor: who, [kind]: kind === 'releases' ? releasesNow() : readList(DATA, list.fallback, list.file), version: listVersion(DATA, list.fallback, list.file) });
+    return json(200, { editor: who, [kind]: kind === 'releases' ? releasesNow() : readList(DATA, list.fallback, list.file), version: listVersion(DATA, list.fallback, list.file), savedAt: savedAt(DATA), fileSavedAt: fileSavedAt(DATA, list.file) });
+  }
+  // History: GET /edit/api/history/<kind> lists the last saves (times and counts only); POST .../<kind>/<id> goes back to one.
+  // The kind must be one of ours and the id one of our own server-made names; anything else is a 404, never a path.
+  const hp = p === '/edit/api/history' || p.startsWith('/edit/api/history/') ? p.slice('/edit/api/history'.length).split('/').slice(1) : null; // ['shows'] or ['shows', '<id>']; /edit/api/historyFOO is not ours
+  if (hp && req.method === 'GET') {
+    const who = editor(req, url);
+    if (!who) return json(401, { error: 'signed_out' });
+    if (hp.length !== 1 || !HISTORY_KINDS.includes(hp[0])) return json(404, { error: 'not_found' });
+    if (!allow(`history:${who}`, 120, 60e3)) return json(429, { error: 'slow_down', message: SLOW });
+    const h = hp[0], list = listOf(h);
+    let now; // the entry that is what the site shows now gets a tag instead of a button
+    try { now = JSON.stringify(contentOf(h, readList(DATA, list.fallback, list.file))); } catch { now = undefined; }
+    const entries = listHistory(DATA, h).map((e) => ({ id: e.id, at: e.at, ...(Array.isArray(e.data) ? { count: e.data.length } : {}), live: now !== undefined && JSON.stringify(e.data) === now }));
+    return json(200, { kind: h, entries });
   }
   if (req.method === 'GET' && p === '/edit/api/backup') { // one JSON file of the live data (src/lib/backup.js), for Gabe to keep
     const who = editor(req, url);
@@ -265,6 +320,23 @@ async function handleEdit(req, res, url) {
     try { saveSignouts(DATA, SIGNOUTS); } catch (e) { console.error('could not save signouts.json:', e.message); } // still signed out until restart
     return json(200, { ok: true }, { 'Set-Cookie': cookieHeader('', { secure: PROD || isHttps(req), maxAge: 0 }) });
   }
+  if (hp) { // Go back to one of the last saves: the stored data is checked like a normal save (a damaged file is refused), then saved the normal way
+    if (hp.length !== 2 || !HISTORY_KINDS.includes(hp[0]) || !HISTORY_ID.test(hp[1])) return json(404, { error: 'not_found' });
+    if (!allow(`history-go:${who}`, 20, 10 * 60e3) || !allow(`history-go-ip:${clientIp(req)}`, 60, 10 * 60e3)) return json(429, { error: 'slow_down', message: SLOW });
+    if (!/^application\/json\b/.test(req.headers['content-type'] ?? '')) return json(415, { error: 'json_only' });
+    const raw = (await readBody(req, 4096))?.toString('utf8');
+    if (raw == null) return json(413, { error: 'too_big' });
+    let b;
+    try { b = JSON.parse(raw); } catch { return json(400, { error: 'bad_body' }); }
+    const [h, id] = hp, e = readEntry(DATA, h, id);
+    if (e.gone) return json(404, { error: 'gone', message: GONE });
+    if (e.bad) return json(422, { error: 'bad_version', message: BAD_VERSION });
+    const site = h === 'identity' || h === 'bio';
+    const [status, body] = commit(site ? 'site' : h, contentOf(h, e.data), b?.version, who); // only this tab's fields go back; the merge rule keeps the rest
+    if (status === 400) return json(422, { error: 'bad_version', message: BAD_VERSION });
+    if (status === 200) console.log(new Date().toISOString(), `${h} restored by ${who} from ${id}`);
+    return json(status, body);
+  }
   if (list) {
     // JSON only: a cross-site HTML form can't send this content type (one more wall on top of SameSite and Origin).
     if (!/^application\/json\b/.test(req.headers['content-type'] ?? '')) return json(415, { error: 'json_only' });
@@ -272,14 +344,8 @@ async function handleEdit(req, res, url) {
     if (raw == null) return json(413, { error: 'too_big', errors: [{ row: null, message: list.big }] });
     let b;
     try { b = JSON.parse(raw); } catch { return json(400, { error: 'bad_body', errors: [{ row: null, message: "That didn’t save. Try again." }] }); }
-    const r = list.check(Array.isArray(b) ? b : b?.[kind]);
-    if (r.errors) return json(400, { error: 'invalid', errors: r.errors });
-    // Two tabs or two editors: refuse a save based on an older list instead of silently dropping the other's changes.
-    const version = () => listVersion(DATA, list.fallback, list.file);
-    if (b?.version !== version()) return json(409, { error: 'stale', message: STALE(kind), errors: [{ row: null, message: STALE(kind) }] });
-    saveList(DATA, r.rows, list.fallback, list.file);
-    console.log(new Date().toISOString(), `${kind} saved by ${who}: ${Array.isArray(r.rows) ? `${r.rows.length} rows` : 'saved'}`);
-    return json(200, { ok: true, [kind]: r.rows, version: version(), message: kind === 'products' && !shopOn() ? "Saved. The shop isn’t open to fans yet, so they won’t see it until it’s switched on." : "Saved. It’s on the site now." });
+    const [status, body] = commit(kind, Array.isArray(b) ? b : b?.[kind], b?.version, who);
+    return json(status, body);
   }
   if (p === '/edit/api/upload') {
     // The raw image is the body. The declared type only gates the door; sharp decides what the bytes really are.
@@ -322,8 +388,9 @@ function handle(req, res) {
   if (req.method === 'POST' && url.pathname === '/api/signup') return handleSignup(req, res);
   if (['/edit/login', '/edit/logout'].includes(url.pathname) || url.pathname.startsWith('/edit/api/')) {
     return handleEdit(req, res, url).catch((e) => {
-      console.error('edit failed:', e.message);
-      if (!res.headersSent) { res.writeHead(500, { ...baseHeaders(req), 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end('{"error":"server"}'); }
+      const code = errorCode(); // the same 6 characters go to the reply (he sends them to us) and to the log line, so we can find the failure
+      console.error(new Date().toISOString(), `edit failed [${code}]:`, req.method, e?.name, e?.code ?? '', String(e?.message ?? '').slice(0, 160));
+      if (!res.headersSent) { res.writeHead(500, { ...baseHeaders(req), 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end(JSON.stringify({ error: 'server', code })); }
     });
   }
   if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405, { ...baseHeaders(req), Allow: 'GET, HEAD' }); return res.end(); }

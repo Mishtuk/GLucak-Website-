@@ -108,7 +108,7 @@ test('products: stale version is 409 and nothing written; over 256 KB is 413', a
   assert.equal((await save([product({ name: 'Tab one' })], v1)).status, 200);
   const stale = await save([product({ name: 'Tab two' })], v1);
   assert.equal(stale.status, 409);
-  assert.match((await stale.json()).message, /^Someone else saved the products just now, so yours didn’t save. Reloading shows their changes but clears yours/);
+  assert.match((await stale.json()).message, /^This was saved from another screen or tab, so yours didn’t save\. Your changes are kept\.$/);
   assert.equal(JSON.parse(readFileSync(join(data, 'products.json'), 'utf8'))[0].name, 'Tab one');
   assert.equal((await save([product({ description: 'x'.repeat(300 * 1024) })])).status, 413);
 });

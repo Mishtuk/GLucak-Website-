@@ -143,7 +143,7 @@ test('stale save is 409 and changes nothing; a missing version is stale too', as
   assert.equal((await save([rel({ title: 'Newer' })], v)).status, 200);
   const stale = await save([rel({ title: 'Older, from another tab' })], v);
   assert.equal(stale.status, 409);
-  assert.match((await stale.json()).message, /^Someone else saved the releases just now/);
+  assert.match((await stale.json()).message, /^This was saved from another screen or tab/);
   assert.equal(live().find((x) => x.title !== 'IDENTITY').title, 'Newer');
   assert.equal((await save([rel()], null)).status, 409);
 });
