@@ -14,9 +14,9 @@
   let loaded = false, uid = 0;
   // Per tab: its list, message line, unsaved flag and the version it loaded (sent back on save -> 409 if stale).
   const T = {
-    shows: { list: $('list'), msg: $('msg'), dirty: false, version: null, noun: ['show', 'shows'], label: 'Show' },
-    releases: { list: $('r-list'), msg: $('r-msg'), dirty: false, version: null, noun: ['release', 'releases'], label: 'Release' },
-    products: { list: $('p-list'), msg: $('p-msg'), dirty: false, version: null, noun: ['product', 'products'], label: 'Product' },
+    shows: { list: $('list'), msg: $('msg'), dirty: false, version: null, undo: [], noun: ['show', 'shows'], label: 'Show' },
+    releases: { list: $('r-list'), msg: $('r-msg'), dirty: false, version: null, undo: [], noun: ['release', 'releases'], label: 'Release' },
+    products: { list: $('p-list'), msg: $('p-msg'), dirty: false, version: null, undo: [], noun: ['product', 'products'], label: 'Product' },
     // IDENTITY and Bio are fields, not rows. Both save into site.json: one shared version (siteVersion), kept from every reply.
     identity: { msg: $('i-msg'), dirty: false },
     bio: { msg: $('b-msg'), dirty: false },
@@ -65,9 +65,41 @@
     return s;
   };
 
+  // "Saved at 4:12 PM. ...": the browser's clock goes in front of the server's "Saved."
+  const savedText = (m) => (m || 'Saved. It’s on the site now.').replace(/^Saved\./, `Saved at ${new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}.`);
   function changed(kind) { setDirty(kind, true); say(T[kind].msg, 'Not saved yet.', 'dirty'); }
   const lists = (kind) => (kind === 'shows' ? [T.shows.list, T.shows.played] : [T[kind].list]);
   const rows = (kind) => lists(kind).flatMap((l) => [...l.children]); // shows: upcoming, then Played (one array, so error row numbers match)
+  // Delete removes the row at once; Undo (one bar per tab, in the save bar) puts the latest removal back where it was.
+  function showUndo(kind) {
+    const t = T[kind], bar = $(`undo-${kind}`), last = t.undo[t.undo.length - 1];
+    if (!last) { bar.hidden = true; return; }
+    const base = last.name ? `${t.label} removed: ${last.name}.` : `${t.label} removed.`;
+    bar.querySelector('.ed-undo-t').textContent = t.undo.length > 1 ? `${base} ${t.undo.length} removed so far.` : base;
+    bar.hidden = false;
+  }
+  function clearUndo(kind) { T[kind].undo.length = 0; showUndo(kind); }
+  function removeRow(kind, box, name) {
+    T[kind].undo.push({ row: box, list: box.parentElement, next: box.nextElementSibling, name });
+    say(box.err, ''); box.classList.remove('bad'); // a removed row's save error goes with it
+    box.remove();
+    changed(kind);
+    number(kind);
+    showUndo(kind);
+    $(`undo-${kind}`).querySelector('button').focus();
+  }
+  function undoRow(kind) {
+    const item = T[kind].undo.pop();
+    if (!item) return;
+    item.list.insertBefore(item.row, item.next?.parentNode === item.list ? item.next : null);
+    item.row.open(false);
+    changed(kind);
+    number(kind);
+    showUndo(kind);
+    const fold = item.row.closest?.('details') ?? item.row.edit.closest('details');
+    if (fold) fold.open = true; // a Played row comes back inside its fold: open it so the focus lands
+    if (T[kind].undo.length) $(`undo-${kind}`).querySelector('button').focus(); else item.row.edit.focus();
+  }
   const EMPTY = { shows: 'No shows yet. Press Add show.', releases: 'No releases yet. Press Add release.', products: 'No products yet. Press Add product.' };
   function number(kind) {
     const list = rows(kind), t = T[kind];
@@ -91,7 +123,7 @@
     const li = el('li', { class: 'ed-row' });
     const num = el('p', { class: 'ed-row-num vh' }), ttl = el('p', { class: 'ed-row-title' }), mt = el('p', { class: 'ed-row-meta' });
     const err = el('p', { class: 'ed-err', role: 'alert' });
-    const lead = thumb ?? el('p', { class: 'ed-row-date' });
+    const lead = thumb ?? el('div', { class: 'ed-row-lead' }, el('p', { class: 'ed-row-date' }), el('p', { class: 'ed-row-year' }));
     const legend = el('legend', { class: 'vh' });
     const form = el('fieldset', { class: 'ed-form', hidden: true, id: `form-${++uid}` }, legend);
     const edit = el('button', { type: 'button', class: 'ed-btn ed-edit', textContent: 'Edit' });
@@ -131,7 +163,8 @@
     box.form.append(box.delBar);
     box.read = () => ({ date: date.value, time: time.value, type: type.value, venue: venue.value, city: city.value, address: address.value, with: withIn.value, link: link.value, cost: cost.value });
     const mark = () => {
-      say(box.lead, shortDate(date.value));
+      say(box.lead.firstChild, shortDate(date.value));
+      say(box.lead.lastChild, /^\d{4}-/.test(date.value) ? date.value.slice(0, 4) : '');
       box.setTitle(venue.value.trim()); // empty until typed: the row number names it
       const past = Boolean(date.value) && date.value < today();
       box.classList.toggle('past', past); // a dashed border in CSS, not opacity
@@ -140,13 +173,7 @@
     };
     box.form.addEventListener('input', mark);
     box.form.addEventListener('change', mark);
-    box.del.addEventListener('click', () => {
-      const name = venue.value.trim() || 'this show';
-      if (!confirm(`Delete ${name}? It goes away when you press Save.`)) return;
-      box.remove();
-      changed('shows');
-      number('shows');
-    });
+    box.del.addEventListener('click', () => removeRow('shows', box, venue.value.trim()));
     mark();
     return box;
   }
@@ -157,8 +184,11 @@
     const past = shows.filter((s) => s.date < t).sort((a, b) => b.date.localeCompare(a.date));
     T.shows.list.replaceChildren(...up.map(showRow));
     T.shows.played.replaceChildren(...past.map(showRow));
+    T.shows.saved = shows;
+    clearUndo('shows');
     number('shows');
     setDirty('shows', false);
+    renderToday();
   };
 
   // ---------- Releases ----------
@@ -172,7 +202,7 @@
     const date = el('input', { type: 'date', required: true, value: r.date ?? '' });
     const link = el('input', { type: 'url', inputMode: 'url', required: true, maxLength: 300, value: r.link ?? '', placeholder: 'https://', spellcheck: false });
     const artists = el('input', { maxLength: 120, value: r.artists ?? '' });
-    const { image, block } = uploader('releases', { value: r.cover, thumb, button: 'Upload a cover', hint: 'Square JPG, PNG or WebP, up to 5 MB. No art yet? Leave it empty: the site shows the title on a plain sleeve.' });
+    const { image, block } = uploader('releases', { value: r.cover, thumb, button: 'Upload a cover', hint: 'Square JPG, PNG or WebP. Straight from your phone is fine. No art yet? Leave it empty: the site shows the title on a plain sleeve.' });
     box.form.append(field('Title', title), field('Type', type),
       field('Date', date, 'The day it comes out. Until then a smart link shows Pre-save.'),
       field('Link', link, 'Your smart link (like wingsmusic.lnk.to/…) or the Spotify link.'),
@@ -182,16 +212,11 @@
     const mark = () => {
       box.setTitle(title.value.trim());
       const label = REL_TYPES.find(([v]) => v === type.value)[1], when = dayText(date.value);
-      box.setMeta(...(date.value > today() ? [el('span', { class: 'ed-tag', textContent: 'Coming' })] : []), el('span', { textContent: [label, when].filter(Boolean).join(', ') })); // the tag first: a narrow row clips the text, never the tag
+      box.setMeta(el('span', { textContent: [label, when].filter(Boolean).join(', ') }), ...(date.value > today() ? [el('span', { class: 'ed-tag', textContent: 'Coming' })] : [])); // the type first, then Coming; the meta wraps, nothing is cut
     };
     box.form.addEventListener('input', mark);
     box.form.addEventListener('change', mark);
-    box.del.addEventListener('click', () => {
-      if (!confirm(`Delete ${title.value.trim() || 'this release'}? It goes away when you press Save.`)) return;
-      box.remove();
-      changed('releases');
-      number('releases');
-    });
+    box.del.addEventListener('click', () => removeRow('releases', box, title.value.trim()));
     mark();
     return box;
   }
@@ -199,6 +224,7 @@
   // IDENTITY is not here: it has its own tab (the server keeps its row).
   T.releases.render = (releases) => {
     T.releases.list.replaceChildren(...releases.filter((r) => r.title !== 'IDENTITY').sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '')).map(releaseRow));
+    clearUndo('releases');
     number('releases');
     setDirty('releases', false);
   };
@@ -214,11 +240,47 @@
   const slug = (s) => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60).replace(/-+$/, '');
   const cents = (v) => { const t = v.trim(); if (!t) return null; const n = Math.round(Number(t) * 100); return Number.isFinite(n) ? n : null; };
 
-  async function upload(file) {
+  // <shrink>
+  const MAX_UPLOAD = 5 * 1024 * 1024, LONG_EDGE = 2000, QUALITY = [0.85, 0.75, 0.65, 0.5, 0.4];
+  function fitSize(w, h, edge = LONG_EDGE) { // the picture's size with its long edge at 2000px (never enlarged)
+    const long = Math.max(w, h);
+    if (!(long > 0) || !Number.isFinite(long)) return null;
+    const k = Math.min(1, edge / long);
+    return { w: Math.max(1, Math.round(w * k)), h: Math.max(1, Math.round(h * k)) };
+  }
+  // A smaller, upright copy of the photo (a Blob under 5 MB), or null when this browser can't make one. Never throws.
+  async function shrink(file) {
+    let bmp;
+    try {
+      bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+      const size = fitSize(bmp.width, bmp.height);
+      if (!size) return null;
+      const canvas = document.createElement('canvas');
+      canvas.width = size.w; canvas.height = size.h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      ctx.drawImage(bmp, 0, 0, size.w, size.h);
+      const encode = (type, q) => new Promise((done) => canvas.toBlob(done, type, q));
+      let type = 'image/webp';
+      for (const q of QUALITY) {
+        let blob = await encode(type, q);
+        if (blob && type === 'image/webp' && blob.type !== 'image/webp') { type = 'image/jpeg'; blob = await encode(type, q); } // Safari: no WebP, JPEG instead
+        if (!blob) return null;
+        if (blob.size < MAX_UPLOAD) return blob;
+      }
+      return null;
+    } catch { return null; } finally { bmp?.close?.(); }
+  }
+  // </shrink>
+
+  async function upload(file, upMsg) {
     if (!UPLOADABLE.includes(file.type)) return { message: 'Pick a JPG, PNG or WebP photo.' };
-    if (file.size > 5 * 1024 * 1024) return { message: 'That photo is over 5 MB. Pick a smaller one.' };
+    const small = await shrink(file); // any failure: the original goes up as is, unless it is over the server's 5 MB
+    if (!small && file.size > MAX_UPLOAD) return { message: 'That photo is too big and this phone wouldn’t shrink it. Try another one.' };
+    const body = small ?? file;
+    say(upMsg, 'Uploading…', 'busy');
     let r;
-    try { r = await fetch('/edit/api/upload', { method: 'POST', credentials: 'same-origin', headers: { Accept: 'application/json', 'Content-Type': file.type }, body: file }); } catch { return { message: "That didn’t upload. Check your connection and try again." }; }
+    try { r = await fetch('/edit/api/upload', { method: 'POST', credentials: 'same-origin', headers: { Accept: 'application/json', 'Content-Type': body.type }, body }); } catch { return { message: "That didn’t upload. Check your connection and try again." }; }
     const b = await reply(r);
     if (r.status === 401) { login.hidden = false; return { message: 'You were signed out. Sign in above, then upload again.' }; }
     return r.ok ? { path: b.path } : { message: b.message || "That didn’t upload. Try again." };
@@ -239,10 +301,10 @@
     file.addEventListener('change', async () => {
       const f = file.files[0];
       if (!f) return;
-      say(upMsg, 'Uploading…', 'busy');
+      say(upMsg, 'Getting your photo ready...', 'busy');
       uploads[kind]++;
       let r;
-      try { r = await upload(f); } finally { uploads[kind]--; if (!uploads[kind] && waitFor === kind) { say(T[waitFor].msg, ''); waitFor = null; } }
+      try { r = await upload(f, upMsg); } finally { uploads[kind]--; if (!uploads[kind] && waitFor === kind) { say(T[waitFor].msg, ''); waitFor = null; } }
       file.value = '';
       if (!r.path) return say(upMsg, r.message, 'error');
       image.value = r.path;
@@ -271,7 +333,7 @@
       ...STATUSES.map(([v, text]) => el('label', { class: 'ed-choice' }, el('input', { type: 'radio', name: group, value: v, checked: v === start }), el('span', { textContent: text }))));
     const status = () => statusBox.querySelector('input:checked')?.value ?? STATUSES[0][0];
     const price = el('input', { type: 'number', min: 0, max: 1000, step: '0.01', inputMode: 'decimal', required: true, value: Number.isInteger(p.price) ? (p.price / 100).toFixed(2) : '' });
-    const { image, block: photo } = uploader('products', { value: p.image, thumb, button: 'Upload a photo', hint: 'JPG, PNG or WebP, up to 5 MB.' });
+    const { image, block: photo } = uploader('products', { value: p.image, thumb, button: 'Upload a photo', hint: 'JPG, PNG or WebP. Straight from your phone is fine.' });
     const desc = el('textarea', { maxLength: 600, value: p.description ?? '', rows: 4 });
     const link = el('input', { type: 'url', inputMode: 'url', maxLength: 500, value: p.link ?? '', placeholder: 'https://' });
     const sizes = el('input', { maxLength: 200, value: (p.sizes ?? []).join(', '), placeholder: 'S, M, L, XL' });
@@ -301,12 +363,7 @@
     };
     up.addEventListener('click', () => move(-1));
     down.addEventListener('click', () => move(1));
-    box.del.addEventListener('click', () => {
-      if (!confirm(`Delete ${name.value.trim() || 'this product'}? It goes away when you press Save.`)) return;
-      box.remove();
-      changed('products');
-      number('products');
-    });
+    box.del.addEventListener('click', () => removeRow('products', box, name.value.trim()));
     const sync = () => {
       box.setTitle(name.value.trim());
       box.dataset.status = status();
@@ -322,9 +379,28 @@
 
   T.products.render = (products) => {
     T.products.list.replaceChildren(...[...products].sort((a, b) => a.order - b.order).map(productRow));
+    clearUndo('products');
     number('products');
     setDirty('products', false);
   };
+
+  // ---------- Today (what the screen last loaded or saved, never unsaved typing) ----------
+  let savedId = null, idFailed = false; // null = still loading
+  const clock = (t) => { const m = /^(\d{2}):(\d{2})$/.exec(t || ''); return m ? `${Number(m[1]) % 12 || 12}:${m[2]} ${Number(m[1]) < 12 ? 'AM' : 'PM'}` : ''; };
+  function renderToday() {
+    const t = today(), shows = T.shows.saved;
+    const next = shows && [...shows].filter((s) => s.date >= t).sort((a, b) => `${a.date} ${a.time ?? ''}`.localeCompare(`${b.date} ${b.time ?? ''}`))[0];
+    const day = next && (next.date === t ? 'Today' : new Date(`${next.date}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }));
+    say($('now-show'), !shows ? 'Loading...' : next ? [day, clock(next.time), next.venue].filter(Boolean).join(', ') : 'No shows booked. Press Add show.');
+    let id = 'Loading...';
+    if (idFailed) id = 'Couldn’t load. Reload the page.';
+    else if (savedId === '') id = 'No release date set.';
+    else if (savedId) {
+      const days = Math.round((Date.parse(savedId) - Date.parse(t)) / 864e5);
+      id = days > 0 ? `Out ${dayText(savedId)} (${days} ${days === 1 ? 'day' : 'days'} to go)` : days === 0 ? 'Out today' : `Out now (${dayText(savedId)})`;
+    }
+    say($('now-id'), id);
+  }
 
   // ---------- IDENTITY and Bio (site.json) ----------
   const F = { date: $('i-date'), link: $('i-link'), home: $('b-home'), bio: $('b-bio') };
@@ -338,7 +414,7 @@
   F.date.addEventListener('input', idToday);
   // Fill one tab's fields from the saved site; the other tab's unsaved edits are never touched.
   function fillSite(site, kind) {
-    if (kind === 'identity') { F.date.value = site.identity?.date ?? ''; F.link.value = site.identity?.link ?? ''; idToday(); }
+    if (kind === 'identity') { F.date.value = site.identity?.date ?? ''; F.link.value = site.identity?.link ?? ''; idToday(); savedId = F.date.value; renderToday(); }
     else { F.home.value = site.homeBio ?? ''; F.bio.value = site.bio ?? ''; }
     setDirty(kind, false);
   }
@@ -347,6 +423,7 @@
 
   // ---------- Tabs ----------
   const tabs = ['shows', 'releases', 'identity', 'bio', 'products'];
+  const TAB_NAME = { shows: 'Shows', releases: 'Releases', identity: 'IDENTITY', bio: 'Bio', products: 'Products' };
   function pick(kind, focus = false) {
     for (const k of tabs) {
       const tab = $(`tab-${k}`), on = k === kind;
@@ -374,7 +451,7 @@
     say($('who'), `Signed in as ${name}`);
     if (data) {
       for (const k of ['shows', 'releases', 'products']) if (data[k]) T[k].render(data[k]);
-      if (data.site) { fillSite(data.site, 'identity'); fillSite(data.site, 'bio'); }
+      if (data.site) { fillSite(data.site, 'identity'); fillSite(data.site, 'bio'); } else { idFailed = true; renderToday(); }
       loaded = true;
     }
   }
@@ -411,7 +488,11 @@
   });
 
   $('logout').addEventListener('click', async () => {
-    if (anyDirty()) { $('out-ask').hidden = false; $('out-no').focus(); return; } // small inline confirm, no window.confirm
+    if (anyDirty()) { // small inline ask, no window.confirm; it names the tabs: "Shows and Bio"
+      const names = tabs.filter((k) => T[k].dirty).map((k) => TAB_NAME[k]);
+      $('out-q').textContent = `Not saved yet in ${names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0]}. Sign out anyway?`;
+      $('out-ask').hidden = false; $('out-no').focus(); return;
+    }
     signOut();
   });
   $('out-no').addEventListener('click', () => { $('out-ask').hidden = true; $('logout').focus(); });
@@ -423,14 +504,20 @@
   }
 
   // New rows open at once, focus on the first field.
-  $('add').addEventListener('click', () => {
-    const row = showRow({ type: 'show' });
+  function addShow() { // most of his shows are open mics: the Type starts there; Date gets the focus
+    const row = showRow({ type: 'open-mic' });
     T.shows.list.prepend(row);
     number('shows');
     changed('shows');
     row.open(true);
     row.form.querySelector('input').focus();
+  }
+  $('add').addEventListener('click', addShow);
+  for (const b of document.querySelectorAll('.ed-now-btns [data-go]')) b.addEventListener('click', () => {
+    if (b.dataset.go === 'add-show') { if ($('add').disabled) return; pick('shows'); addShow(); }
+    if (b.dataset.go === 'fix-release') { pick('releases'); (T.releases.list.firstElementChild?.edit ?? $('r-add')).focus(); }
   });
+  for (const k of ['shows', 'releases', 'products']) $(`undo-${k}`).querySelector('button').addEventListener('click', () => undoRow(k));
   $('r-add').addEventListener('click', () => {
     const row = releaseRow({ type: 'single' });
     T.releases.list.prepend(row);
@@ -461,14 +548,15 @@
     saving[kind] = true;
     btn.setAttribute('aria-disabled', 'true');
     for (const l of lists(kind)) l.inert = true; add.disabled = true; // edits made now would be replaced by the reply
+    const undoBtn = $(`undo-${kind}`).querySelector('button'); undoBtn.disabled = true;
     say(t.msg, 'Saving…', 'busy');
-    try { await send(kind, t, list); } finally { saving[kind] = false; btn.removeAttribute('aria-disabled'); for (const l of lists(kind)) l.inert = false; add.disabled = false; }
+    try { await send(kind, t, list); } finally { saving[kind] = false; btn.removeAttribute('aria-disabled'); for (const l of lists(kind)) l.inert = false; add.disabled = false; undoBtn.disabled = false; }
   }
   async function send(kind, t, list) {
     let r;
     try { r = await api(`/edit/api/${kind}`, { version: t.version, [kind]: list.map((x, i) => x.read(i)) }); } catch { return say(t.msg, "That didn’t save. Check your connection and try again.", 'error'); }
     const b = await reply(r);
-    if (r.ok) { t.version = b.version; t.render(b[kind]); return say(t.msg, b.message || "Saved. It’s on the site now.", 'ok'); }
+    if (r.ok) { t.version = b.version; t.render(b[kind]); return say(t.msg, savedText(b.message), 'ok'); }
     if (r.status === 401) { login.hidden = false; $('username').focus(); return say(t.msg, 'You were signed out. Sign in above, then press Save again. Your changes are still here.', 'error'); }
     if (r.status === 409) return say(t.msg, b.message || `Someone else saved the ${kind} just now, so yours didn’t save. Reloading shows their changes but clears yours, so write down what you changed first.`, 'error'); // rows untouched
     const errs = b.errors ?? [];
@@ -493,7 +581,7 @@
       let r;
       try { r = await api('/edit/api/site', { version: siteVersion, site: SITE_PART[kind]() }); } catch { return say(t.msg, "That didn’t save. Check your connection and try again.", 'error'); }
       const b = await reply(r);
-      if (r.ok) { siteVersion = b.version; fillSite(b.site, kind); return say(t.msg, b.message || "Saved. It’s on the site now.", 'ok'); }
+      if (r.ok) { siteVersion = b.version; fillSite(b.site, kind); return say(t.msg, savedText(b.message), 'ok'); }
       if (r.status === 401) { login.hidden = false; $('username').focus(); return say(t.msg, 'You were signed out. Sign in above, then press Save again. Your changes are still here.', 'error'); }
       if (r.status === 409) return say(t.msg, b.message || 'Someone else saved just now, so yours didn’t save. Reload the page to see their changes, but write down what you changed first.', 'error');
       say(t.msg, (b.errors ?? []).map((x) => x.message).join(' ') || "That didn’t save. Try again.", 'error');
