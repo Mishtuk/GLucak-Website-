@@ -1,10 +1,17 @@
 // Gabe's edit screen: Shows | Releases | IDENTITY | Bio | Products | Videos tabs. Builds every row with createElement and sets data only through
-// textContent / value. Talks to /edit/login, /GLucak-Website-/edit/logout, /GLucak-Website-/edit/api/shows, /GLucak-Website-/edit/api/releases, /GLucak-Website-/edit/api/site, /GLucak-Website-/edit/api/products,
-// /edit/api/videos, /GLucak-Website-/edit/api/history/<tab>[/<id>] and /edit/api/upload (same origin, session cookie on Path=/edit).
+// textContent / value. Talks to /edit/login, /edit/logout, /edit/api/shows, /edit/api/releases, /edit/api/site, /edit/api/products,
+// /edit/api/videos, /edit/api/history/<tab>[/<id>] and /edit/api/upload (same origin, session cookie on Path=/edit).
 // A3: Videos (add by YouTube link, Hide, Put first), Copy this show, "Fans will tap" under link fields, what each save changed.
 // A2: History (go back to one of the last 10 saves), drafts kept in this browser (localStorage), a code for server failures, an error summary.
 (() => {
   const $ = (id) => document.getElementById(id);
+  // Look-around copy (GitHub Pages preview): only a marker the preview build writes into this page switches it on. Reads come from snapshot
+  // files under the site's base path; nothing is ever sent (writeBlocked answers every write itself); sign-in is one button.
+  const PREVIEW = document.querySelector('meta[name="gl-preview"]')?.content === 'readonly';
+  const BASE = PREVIEW ? (document.querySelector('meta[name="gl-preview"]').dataset.base || '/') : '/';
+  const LOOK = 'Look-around mode: nothing is saved right now.';
+  const asset = (p) => (PREVIEW ? BASE + p.slice(1) : p); // a /media/... picture, under the base on the preview
+  const writeBlocked = () => new Response(JSON.stringify({ error: 'readonly', message: LOOK, errors: [{ message: LOOK }] }), { status: 403, headers: { 'Content-Type': 'application/json' } });
   const login = $('login'), editor = $('editor'), loginMsg = $('login-msg');
   const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
   // state: dirty | busy | ok | error. CSS draws a glyph for each, never colour alone.
@@ -37,7 +44,7 @@
     if (on) tab.append(el('span', { class: 'vh', textContent: ' (not saved)' }));
   }
 
-  const api = (path, body) => fetch(path, {
+  const api = (path, body) => PREVIEW ? (body !== undefined ? Promise.resolve(writeBlocked()) : fetch(`${BASE}${path.slice(1)}.json`, { headers: { Accept: 'application/json' } })) : fetch(path, {
     method: body === undefined ? 'GET' : 'POST', credentials: 'same-origin',
     headers: { Accept: 'application/json', ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
     body: body === undefined ? undefined : JSON.stringify(body),
@@ -312,13 +319,14 @@
   // </shrink>
 
   async function upload(file, upMsg) {
+    if (PREVIEW) return { message: LOOK };
     if (!UPLOADABLE.includes(file.type)) return { message: 'Pick a JPG, PNG or WebP photo.' };
     const small = await shrink(file); // any failure: the original goes up as is, unless it is over the server's 5 MB
     if (!small && file.size > MAX_UPLOAD) return { message: 'That photo is too big and this phone wouldn’t shrink it. Try another one.' };
     const body = small ?? file;
     say(upMsg, 'Uploading…', 'busy');
     let r;
-    try { r = await fetch('/GLucak-Website-/edit/api/upload', { method: 'POST', credentials: 'same-origin', headers: { Accept: 'application/json', 'Content-Type': body.type }, body }); } catch { return { message: "That didn’t upload. Check your connection and try again." }; }
+    try { r = await fetch('/edit/api/upload', { method: 'POST', credentials: 'same-origin', headers: { Accept: 'application/json', 'Content-Type': body.type }, body }); } catch { return { message: "That didn’t upload. Check your connection and try again." }; }
     const b = await reply(r);
     if (r.status === 401) { login.hidden = false; return { message: 'You were signed out. Sign in above, then upload again.' }; }
     return r.ok ? { path: b.path } : { message: b.message || "That didn’t upload. Try again.", code: b.code };
@@ -326,9 +334,9 @@
 
   // The photo block Products and Releases share: the path field, a preview (and the row's thumb), the upload button and its messages.
   function uploader(kind, { value, thumb, button, hint }) {
-    const image = el('input', { maxLength: 200, value: value ?? '', spellcheck: false, placeholder: '/GLucak-Website-/media/uploads/...' });
+    const image = el('input', { maxLength: 200, value: value ?? '', spellcheck: false, placeholder: '/media/uploads/...' });
     const pic = el('img', { class: 'ed-pic', alt: '', width: 120, height: 120 });
-    const showPic = () => { const v = image.value.trim(); for (const i of [pic, thumb]) if (IMAGE.test(v)) i.src = v; else i.removeAttribute('src'); };
+    const showPic = () => { const v = image.value.trim(); for (const i of [pic, thumb]) if (IMAGE.test(v)) i.src = asset(v); else i.removeAttribute('src'); };
     image.addEventListener('input', showPic);
     // The upload is a big button (the label) with the real file input over it at opacity 0. Busy line only: no progress bar (D41).
     const file = el('input', { type: 'file', class: 'ed-file-input', accept: UPLOADABLE.join(',') });
@@ -448,7 +456,7 @@
     const saved = typeof v.id === 'string' && YT_ID.test(v.id); // a saved video's link is fixed; a new one is typed
     const keep = { ...v }; // what the form does not edit (date, name, sleeve layout...) goes back as it came
     const state = box.state = { hidden: v.hidden === true, first: v.first === true };
-    if (saved) { thumb.src = `/GLucak-Website-/media/sleeves/${v.id}-320.webp`; thumb.addEventListener('error', () => thumb.removeAttribute('src')); } // no picture yet: the hatch shows
+    if (saved) { thumb.src = asset(`/media/sleeves/${v.id}-320.webp`); thumb.addEventListener('error', () => thumb.removeAttribute('src')); } // no picture yet: the hatch shows
     const link = el('input', { type: 'url', inputMode: 'url', required: true, maxLength: 200, value: v.link ?? '', placeholder: 'https://', spellcheck: false });
     const title = el('input', { required: true, maxLength: 120, value: v.name ?? v.title ?? '' });
     const group = `vk${++uid}`, kinds = v.kind === 'lyric-video' ? [VIDEO_KINDS[0], ['lyric-video', 'Lyric video'], VIDEO_KINDS[1]] : VIDEO_KINDS;
@@ -681,7 +689,7 @@
   const loadedAt = Date.now(), wrote = {}; // a draft written by another browser tab after this one loaded (or after its own last write) is not overwritten
   function writeDraft(kind) {
     clearTimeout(timers[kind]);
-    if (!T[kind].dirty || T[kind].offer) return; // saved since; or an older draft still waits for his answer (that tab is locked, so this is only a guard)
+    if (PREVIEW || !T[kind].dirty || T[kind].offer) return; // saved since; or an older draft still waits for his answer (that tab is locked, so this is only a guard)
     try {
       let stored = null;
       try { stored = JSON.parse(localStorage.getItem(DRAFT(kind)) ?? 'null'); } catch { /* a broken old draft is simply replaced */ }
@@ -757,7 +765,7 @@
     say(h.msg, 'Loading...', 'busy');
     const failed = (b = {}) => { say(h.msg, 'Couldn’t load the history. Try again.', 'error'); showCode(h.body, b.code); };
     let r;
-    try { r = await api(`/GLucak-Website-/edit/api/history/${kind}`); } catch { return seq === h.seq && failed(); }
+    try { r = await api(`/edit/api/history/${kind}`); } catch { return seq === h.seq && failed(); }
     if (seq !== h.seq) return;
     if (r.status === 401) { login.hidden = false; return say(h.msg, 'You were signed out. Sign in above, then open History again.', 'error'); }
     const b = await reply(r);
@@ -805,7 +813,7 @@
     say(h.msg, 'Going back...', 'busy');
     try {
       let r;
-      try { r = await api(`/GLucak-Website-/edit/api/history/${kind}/${e.id}`, { version: versionOf(kind) }); } catch { return say(h.msg, 'That didn’t work. Check your connection and try again.', 'error'); }
+      try { r = await api(`/edit/api/history/${kind}/${e.id}`, { version: versionOf(kind) }); } catch { return say(h.msg, 'That didn’t work. Check your connection and try again.', 'error'); }
       const b = await reply(r);
       if (r.ok) {
         if (kind === 'identity' || kind === 'bio') { siteVersion = b.version; siteBase = b.fileSavedAt ?? null; fillSite(b.site, kind); } // only this tab's fields are filled; the other tab's typing stays
@@ -827,7 +835,7 @@
   function signedIn(name, data) {
     login.hidden = true;
     editor.hidden = false;
-    say($('who'), `Signed in as ${name}`);
+    say($('who'), PREVIEW ? 'Looking around' : `Signed in as ${name}`);
     if (data) {
       for (const k of ['shows', 'releases', 'products', 'videos']) if (data[k]) T[k].render(data[k]);
       if (data.site) { fillSite(data.site, 'identity'); fillSite(data.site, 'bio'); } else { idFailed = true; renderToday(); }
@@ -838,7 +846,7 @@
 
   async function load() {
     let r, p, q, rl, vd;
-    try { [r, p, q, rl, vd] = await Promise.all([api('/GLucak-Website-/edit/api/shows'), api('/GLucak-Website-/edit/api/products'), api('/GLucak-Website-/edit/api/site'), api('/GLucak-Website-/edit/api/releases'), api('/GLucak-Website-/edit/api/videos')]); } catch { login.hidden = false; return say(loginMsg, "Can’t reach the site. Check your connection and reload.", 'error'); }
+    try { [r, p, q, rl, vd] = await Promise.all([api('/edit/api/shows'), api('/edit/api/products'), api('/edit/api/site'), api('/edit/api/releases'), api('/edit/api/videos')]); } catch { login.hidden = false; return say(loginMsg, "Can’t reach the site. Check your connection and reload.", 'error'); }
     const b = await reply(r);
     if (r.ok) {
       const pb = await reply(p);
@@ -858,9 +866,10 @@
 
   login.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (PREVIEW) { say(loginMsg, ''); return load(); } // one button, no name or password: it opens the panel
     say(loginMsg, 'Signing in…', 'busy');
     let r;
-    try { r = await api('/GLucak-Website-/edit/login', { username: $('username').value, password: $('password').value }); } catch { return say(loginMsg, "That didn’t go through. Try again.", 'error'); }
+    try { r = await api('/edit/login', { username: $('username').value, password: $('password').value }); } catch { return say(loginMsg, "That didn’t go through. Try again.", 'error'); }
     const b = await reply(r);
     if (!r.ok) return say(loginMsg, b.message || "That didn’t go through. Try again.", 'error');
     $('password').value = '';
@@ -880,7 +889,8 @@
   $('out-no').addEventListener('click', () => { $('out-ask').hidden = true; $('logout').focus(); });
   $('out-yes').addEventListener('click', () => signOut());
   async function signOut() {
-    try { await api('/GLucak-Website-/edit/logout', {}); } catch { /* the cookie ends anyway after 7 days */ }
+    if (PREVIEW) return location.reload(); // nothing to end: back to the one-button card
+    try { await api('/edit/logout', {}); } catch { /* the cookie ends anyway after 7 days */ }
     for (const k of tabs) if (T[k].dirty) dropDraft(k); // he chose to sign out without saving these
     for (const t of Object.values(T)) t.dirty = false;
     location.reload();
@@ -950,7 +960,7 @@
   }
   async function send(kind, t, list) {
     let r;
-    try { r = await api(`/GLucak-Website-/edit/api/${kind}`, { version: t.version, [kind]: list.map((x, i) => x.read(i)) }); } catch { return say(t.msg, "That didn’t save. Check your connection and try again.", 'error'); }
+    try { r = await api(`/edit/api/${kind}`, { version: t.version, [kind]: list.map((x, i) => x.read(i)) }); } catch { return say(t.msg, "That didn’t save. Check your connection and try again.", 'error'); }
     const b = await reply(r);
     if (r.ok) { t.version = b.version; t.base = b.fileSavedAt ?? null; seen(b.savedAt); dropDraft(kind); t.render(b[kind]); return say(t.msg, savedText(b.message, b.changes), 'ok'); }
     if (r.status === 401) { login.hidden = false; $('username').focus(); return say(t.msg, 'You were signed out. Sign in above, then press Save again. Your changes are still here.', 'error'); }
@@ -982,7 +992,7 @@
     say(t.msg, 'Saving…', 'busy');
     try {
       let r;
-      try { r = await api('/GLucak-Website-/edit/api/site', { version: siteVersion, site: SITE_PART[kind]() }); } catch { return say(t.msg, "That didn’t save. Check your connection and try again.", 'error'); }
+      try { r = await api('/edit/api/site', { version: siteVersion, site: SITE_PART[kind]() }); } catch { return say(t.msg, "That didn’t save. Check your connection and try again.", 'error'); }
       const b = await reply(r);
       if (r.ok) { siteVersion = b.version; siteBase = b.fileSavedAt ?? null; seen(b.savedAt); dropDraft(kind); fillSite(b.site, kind); return say(t.msg, savedText(b.message, b.changes), 'ok'); }
       if (r.status === 401) { login.hidden = false; $('username').focus(); return say(t.msg, 'You were signed out. Sign in above, then press Save again. Your changes are still here.', 'error'); }
@@ -1004,11 +1014,12 @@
   bk.addEventListener('click', async (e) => {
     e.preventDefault();
     if (bk.getAttribute('aria-disabled') === 'true') return;
+    if (PREVIEW) return say(bkMsg, LOOK, 'error');
     bk.setAttribute('aria-disabled', 'true');
     say(bkMsg, 'Making your backup…', 'busy');
     try {
       let r;
-      try { r = await fetch('/GLucak-Website-/edit/api/backup', { credentials: 'same-origin' }); } catch { return say(bkMsg, "That didn’t download. Check your connection and try again.", 'error'); }
+      try { r = await fetch('/edit/api/backup', { credentials: 'same-origin' }); } catch { return say(bkMsg, "That didn’t download. Check your connection and try again.", 'error'); }
       if (r.status === 401) { login.hidden = false; $('username').focus(); return say(bkMsg, 'You were signed out. Sign in above, then download again.', 'error'); }
       if (!r.ok) {
         const b = await r.json().catch(() => ({}));
@@ -1031,6 +1042,13 @@
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
   for (const k of tabs) initHistory(k);
 
+  if (PREVIEW) { // the sign-in card is one button; one line at the top says what this copy is
+    for (const c of login.querySelectorAll('label, input')) { c.hidden = true; c.required = false; }
+    login.querySelector('button').textContent = 'Sign in';
+    document.querySelector('.ed-title').after(el('p', { class: 'ed-help', textContent: 'This is a look-around copy of the edit screen. Nothing you do here is saved.' }));
+    login.hidden = false;
+    return;
+  }
   login.hidden = true; // until we know whether this browser is signed in
   const err = new URLSearchParams(location.search).get('login'); // set by the no-JS form fallback
   if (err) say(loginMsg, err === 'locked' ? 'Too many tries. Wait 15 minutes, then try again.' : "That name and password don’t match. Check them and try again.", 'error');
