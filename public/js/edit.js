@@ -5,6 +5,13 @@
 // A2: History (go back to one of the last 10 saves), drafts kept in this browser (localStorage), a code for server failures, an error summary.
 (() => {
   const $ = (id) => document.getElementById(id);
+  // Look-around copy (GitHub Pages preview): only a marker the preview build writes into this page switches it on. Reads come from snapshot
+  // files under the site's base path; nothing is ever sent (writeBlocked answers every write itself); sign-in is one button.
+  const PREVIEW = document.querySelector('meta[name="gl-preview"]')?.content === 'readonly';
+  const BASE = PREVIEW ? (document.querySelector('meta[name="gl-preview"]').dataset.base || '/') : '/';
+  const LOOK = 'Look-around mode: nothing is saved right now.';
+  const asset = (p) => (PREVIEW ? BASE + p.slice(1) : p); // a /media/... picture, under the base on the preview
+  const writeBlocked = () => new Response(JSON.stringify({ error: 'readonly', message: LOOK, errors: [{ message: LOOK }] }), { status: 403, headers: { 'Content-Type': 'application/json' } });
   const login = $('login'), editor = $('editor'), loginMsg = $('login-msg');
   const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
   // state: dirty | busy | ok | error. CSS draws a glyph for each, never colour alone.
@@ -37,7 +44,7 @@
     if (on) tab.append(el('span', { class: 'vh', textContent: ' (not saved)' }));
   }
 
-  const api = (path, body) => fetch(path, {
+  const api = (path, body) => PREVIEW ? (body !== undefined ? Promise.resolve(writeBlocked()) : fetch(`${BASE}${path.slice(1)}.json`, { headers: { Accept: 'application/json' } })) : fetch(path, {
     method: body === undefined ? 'GET' : 'POST', credentials: 'same-origin',
     headers: { Accept: 'application/json', ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
     body: body === undefined ? undefined : JSON.stringify(body),
@@ -312,6 +319,7 @@
   // </shrink>
 
   async function upload(file, upMsg) {
+    if (PREVIEW) return { message: LOOK };
     if (!UPLOADABLE.includes(file.type)) return { message: 'Pick a JPG, PNG or WebP photo.' };
     const small = await shrink(file); // any failure: the original goes up as is, unless it is over the server's 5 MB
     if (!small && file.size > MAX_UPLOAD) return { message: 'That photo is too big and this phone wouldn’t shrink it. Try another one.' };
@@ -328,7 +336,7 @@
   function uploader(kind, { value, thumb, button, hint }) {
     const image = el('input', { maxLength: 200, value: value ?? '', spellcheck: false, placeholder: '/media/uploads/...' });
     const pic = el('img', { class: 'ed-pic', alt: '', width: 120, height: 120 });
-    const showPic = () => { const v = image.value.trim(); for (const i of [pic, thumb]) if (IMAGE.test(v)) i.src = v; else i.removeAttribute('src'); };
+    const showPic = () => { const v = image.value.trim(); for (const i of [pic, thumb]) if (IMAGE.test(v)) i.src = asset(v); else i.removeAttribute('src'); };
     image.addEventListener('input', showPic);
     // The upload is a big button (the label) with the real file input over it at opacity 0. Busy line only: no progress bar (D41).
     const file = el('input', { type: 'file', class: 'ed-file-input', accept: UPLOADABLE.join(',') });
@@ -448,7 +456,7 @@
     const saved = typeof v.id === 'string' && YT_ID.test(v.id); // a saved video's link is fixed; a new one is typed
     const keep = { ...v }; // what the form does not edit (date, name, sleeve layout...) goes back as it came
     const state = box.state = { hidden: v.hidden === true, first: v.first === true };
-    if (saved) { thumb.src = `/media/sleeves/${v.id}-320.webp`; thumb.addEventListener('error', () => thumb.removeAttribute('src')); } // no picture yet: the hatch shows
+    if (saved) { thumb.src = asset(`/media/sleeves/${v.id}-320.webp`); thumb.addEventListener('error', () => thumb.removeAttribute('src')); } // no picture yet: the hatch shows
     const link = el('input', { type: 'url', inputMode: 'url', required: true, maxLength: 200, value: v.link ?? '', placeholder: 'https://', spellcheck: false });
     const title = el('input', { required: true, maxLength: 120, value: v.name ?? v.title ?? '' });
     const group = `vk${++uid}`, kinds = v.kind === 'lyric-video' ? [VIDEO_KINDS[0], ['lyric-video', 'Lyric video'], VIDEO_KINDS[1]] : VIDEO_KINDS;
@@ -681,7 +689,7 @@
   const loadedAt = Date.now(), wrote = {}; // a draft written by another browser tab after this one loaded (or after its own last write) is not overwritten
   function writeDraft(kind) {
     clearTimeout(timers[kind]);
-    if (!T[kind].dirty || T[kind].offer) return; // saved since; or an older draft still waits for his answer (that tab is locked, so this is only a guard)
+    if (PREVIEW || !T[kind].dirty || T[kind].offer) return; // saved since; or an older draft still waits for his answer (that tab is locked, so this is only a guard)
     try {
       let stored = null;
       try { stored = JSON.parse(localStorage.getItem(DRAFT(kind)) ?? 'null'); } catch { /* a broken old draft is simply replaced */ }
@@ -827,7 +835,7 @@
   function signedIn(name, data) {
     login.hidden = true;
     editor.hidden = false;
-    say($('who'), `Signed in as ${name}`);
+    say($('who'), PREVIEW ? 'Looking around' : `Signed in as ${name}`);
     if (data) {
       for (const k of ['shows', 'releases', 'products', 'videos']) if (data[k]) T[k].render(data[k]);
       if (data.site) { fillSite(data.site, 'identity'); fillSite(data.site, 'bio'); } else { idFailed = true; renderToday(); }
@@ -858,6 +866,7 @@
 
   login.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (PREVIEW) { say(loginMsg, ''); return load(); } // one button, no name or password: it opens the panel
     say(loginMsg, 'Signing in…', 'busy');
     let r;
     try { r = await api('/edit/login', { username: $('username').value, password: $('password').value }); } catch { return say(loginMsg, "That didn’t go through. Try again.", 'error'); }
@@ -880,6 +889,7 @@
   $('out-no').addEventListener('click', () => { $('out-ask').hidden = true; $('logout').focus(); });
   $('out-yes').addEventListener('click', () => signOut());
   async function signOut() {
+    if (PREVIEW) return location.reload(); // nothing to end: back to the one-button card
     try { await api('/edit/logout', {}); } catch { /* the cookie ends anyway after 7 days */ }
     for (const k of tabs) if (T[k].dirty) dropDraft(k); // he chose to sign out without saving these
     for (const t of Object.values(T)) t.dirty = false;
@@ -1004,6 +1014,7 @@
   bk.addEventListener('click', async (e) => {
     e.preventDefault();
     if (bk.getAttribute('aria-disabled') === 'true') return;
+    if (PREVIEW) return say(bkMsg, LOOK, 'error');
     bk.setAttribute('aria-disabled', 'true');
     say(bkMsg, 'Making your backup…', 'busy');
     try {
@@ -1031,6 +1042,13 @@
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
   for (const k of tabs) initHistory(k);
 
+  if (PREVIEW) { // the sign-in card is one button; one line at the top says what this copy is
+    for (const c of login.querySelectorAll('label, input')) { c.hidden = true; c.required = false; }
+    login.querySelector('button').textContent = 'Sign in';
+    document.querySelector('.ed-title').after(el('p', { class: 'ed-help', textContent: 'This is a look-around copy of the edit screen. Nothing you do here is saved.' }));
+    login.hidden = false;
+    return;
+  }
   login.hidden = true; // until we know whether this browser is signed in
   const err = new URLSearchParams(location.search).get('login'); // set by the no-JS form fallback
   if (err) say(loginMsg, err === 'locked' ? 'Too many tries. Wait 15 minutes, then try again.' : "That name and password don’t match. Check them and try again.", 'error');
