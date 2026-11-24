@@ -69,7 +69,7 @@ test('11 saves keep 10: newest first, the oldest pruned, each entry is times and
   assert.deepEqual(e.map((x) => x.count), [11, 10, 9, 8, 7, 6, 5, 4, 3, 2], 'S1 and the older ones are gone');
   assert.equal(readdirSync(histDir('shows')).length, KEEP, 'the folder holds exactly 10 files');
   assert.ok(e.every((x) => ID.test(x.id) && Number.isFinite(Date.parse(x.at))));
-  assert.deepEqual(Object.keys(e[0]).sort(), ['at', 'count', 'id', 'live'], 'no row data in the list');
+  assert.deepEqual(Object.keys(e[0]).sort(), ['at', 'count', 'id', 'live', 'what'], 'no row data in the list (what: counts only)');
   assert.equal(e[0].live, true, 'the newest is what the site shows now');
   assert.ok(e.slice(1).every((x) => x.live === false));
   assert.ok([...e.map((x) => x.id)].every((id, i, a) => !i || id < a[i - 1]), 'ids sort newest first');

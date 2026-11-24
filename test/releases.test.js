@@ -177,10 +177,10 @@ test('injection renders inert on the public pages, field by field', async () => 
   assert.ok(m.includes('q=&quot;onmouseover=&quot;alert(1)'), 'a quote inside a valid https link cannot break out of href');
 });
 
-test('the edit screen loads Releases without IDENTITY and keeps the five tabs in order (static check)', () => {
+test('the edit screen loads Releases without IDENTITY and keeps the six tabs in order (static check)', () => {
   const js = readFileSync(new URL('../public/js/edit.js', import.meta.url), 'utf8');
   assert.ok(js.includes("r.title !== 'IDENTITY'"), 'the tab never lists IDENTITY');
-  assert.ok(js.includes("const tabs = ['shows', 'releases', 'identity', 'bio', 'products']"));
+  assert.ok(js.includes("const tabs = ['shows', 'releases', 'identity', 'bio', 'products', 'videos']"));
   assert.ok(js.includes("uploader('releases'") && js.includes("uploader('products'") && (js.match(/async function upload\(/g) ?? []).length === 1, 'one uploader for both');
 });
 

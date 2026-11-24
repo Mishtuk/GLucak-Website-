@@ -19,7 +19,7 @@ const thumb = lead && existsSync(`public/media/videos/${lead.id}-640.webp`) ? `/
   <section class="band band-vids" aria-labelledby="h-vids">
     <div class="wrap vids">
       <h1 class="spine" id="h-vids"><span class="tab">Videos</span> <span class="phrase phrase-watch">Watch</span></h1>
-      {lead ? (
+      <Fragment set:html="<!--gl:vnow-->" />{lead ? (
         <div class="v2-vid now-showing" id="now-showing">
           <p class="now-label">Now showing</p>
           <a href={`https://www.youtube.com/watch?v=${lead.id}`} rel="noopener" data-yt={lead.id} data-title={name(lead)}>
@@ -28,7 +28,7 @@ const thumb = lead && existsSync(`public/media/videos/${lead.id}-640.webp`) ? `/
           </a>
           <p class="vid-meta"><span>{meta(lead)}</span></p>
         </div>
-      ) : <p class="vid-lead"><a class="go" href={YOUTUBE} rel="noopener">GLucak on YouTube</a></p>}
+      ) : <p class="vid-lead"><a class="go" href={YOUTUBE} rel="noopener">GLucak on YouTube</a></p>}<Fragment set:html="<!--/gl:vnow-->" />
     </div>
   </section>
   <Records />

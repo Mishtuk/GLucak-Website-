@@ -1,6 +1,7 @@
-// Gabe's edit screen: Shows | Releases | IDENTITY | Bio | Products tabs. Builds every row with createElement and sets data only through
+// Gabe's edit screen: Shows | Releases | IDENTITY | Bio | Products | Videos tabs. Builds every row with createElement and sets data only through
 // textContent / value. Talks to /edit/login, /edit/logout, /edit/api/shows, /edit/api/releases, /edit/api/site, /edit/api/products,
-// /edit/api/history/<tab>[/<id>] and /edit/api/upload (same origin, session cookie on Path=/edit).
+// /edit/api/videos, /edit/api/history/<tab>[/<id>] and /edit/api/upload (same origin, session cookie on Path=/edit).
+// A3: Videos (add by YouTube link, Hide, Put first), Copy this show, "Fans will tap" under link fields, what each save changed.
 // A2: History (go back to one of the last 10 saves), drafts kept in this browser (localStorage), a code for server failures, an error summary.
 (() => {
   const $ = (id) => document.getElementById(id);
@@ -19,6 +20,7 @@
     shows: { list: $('list'), msg: $('msg'), dirty: false, version: null, base: null, undo: [], noun: ['show', 'shows'], label: 'Show' },
     releases: { list: $('r-list'), msg: $('r-msg'), dirty: false, version: null, base: null, undo: [], noun: ['release', 'releases'], label: 'Release' },
     products: { list: $('p-list'), msg: $('p-msg'), dirty: false, version: null, base: null, undo: [], noun: ['product', 'products'], label: 'Product' },
+    videos: { list: $('v-list'), msg: $('v-msg'), dirty: false, version: null, base: null, undo: [], noun: ['video', 'videos'], label: 'Video' }, // no Delete: Hide is the way back
     // IDENTITY and Bio are fields, not rows. Both save into site.json: one shared version (siteVersion), kept from every reply.
     identity: { msg: $('i-msg'), dirty: false },
     bio: { msg: $('b-msg'), dirty: false },
@@ -49,15 +51,32 @@
     return e;
   }
 
-  function field(label, input, hint) {
+  // "Fans will tap: https://...": plain text under a link field, only while the field holds a link that works (a check on typing only echoes it).
+  const linkOf = (v) => { const t = String(v ?? '').trim(); if (!t || /\s/.test(t)) return null; try { return ['http:', 'https:'].includes(new URL(t).protocol) ? t : null; } catch { return null; } };
+  function fansFor(input, p, pick = linkOf) {
+    const show = () => { const t = pick(input.value); p.hidden = !t; p.textContent = t ? `Fans will tap: ${t}` : ''; };
+    input.addEventListener('input', show);
+    show();
+    return show;
+  }
+  function field(label, input, hint, fans) {
     input.id = `f${++uid}`;
     const l = el('label', { htmlFor: input.id, textContent: label });
     const wrap = el('div', { class: 'ed-field' }, l, input);
+    const ids = [];
     if (hint) {
       const h = el('span', { class: 'ed-hint', id: `${input.id}-hint`, textContent: hint });
-      input.setAttribute('aria-describedby', h.id);
+      ids.push(h.id);
       wrap.append(h);
     }
+    if (fans) {
+      const p = el('p', { class: 'ed-fans ed-hint', id: `${input.id}-fans`, hidden: true });
+      p.setAttribute('aria-live', 'off');
+      ids.push(p.id);
+      wrap.append(p);
+      fansFor(input, p, typeof fans === 'function' ? fans : linkOf);
+    }
+    if (ids.length) input.setAttribute('aria-describedby', ids.join(' '));
     return wrap;
   }
 
@@ -68,13 +87,15 @@
   };
 
   // "Saved at 4:12 PM. ...": the browser's clock goes in front of the server's "Saved."
-  const savedText = (m) => (m || 'Saved. It’s on the site now.').replace(/^Saved\./, `Saved at ${new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}.`);
+  // A3: and what the save changed, when the server says it: Saved at 4:12 PM. Added 1 show, changed 2. It’s on the site now.
+  const savedText = (m, changes) => (m || 'Saved. It’s on the site now.').replace(/^Saved\./, `Saved at ${new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}.${typeof changes === 'string' && changes ? ` ${changes}` : ''}`);
   function changed(kind) { setDirty(kind, true); say(T[kind].msg, 'Not saved yet.', 'dirty'); queueDraft(kind); }
   const lists = (kind) => (kind === 'shows' ? [T.shows.list, T.shows.played] : [T[kind].list]);
   const rows = (kind) => lists(kind).flatMap((l) => [...l.children]); // shows: upcoming, then Played (one array, so error row numbers match)
   // Delete removes the row at once; Undo (one bar per tab, in the save bar) puts the latest removal back where it was.
   function showUndo(kind) {
     const t = T[kind], bar = $(`undo-${kind}`), last = t.undo[t.undo.length - 1];
+    if (!bar) return; // Videos have no Delete, so no Undo bar
     if (!last) { bar.hidden = true; return; }
     const base = last.name ? `${t.label} removed: ${last.name}.` : `${t.label} removed.`;
     bar.querySelector('.ed-undo-t').textContent = t.undo.length > 1 ? `${base} ${t.undo.length} removed so far.` : base;
@@ -102,14 +123,16 @@
     if (fold) fold.open = true; // a Played row comes back inside its fold: open it so the focus lands
     if (T[kind].undo.length) $(`undo-${kind}`).querySelector('button').focus(); else item.row.edit.focus();
   }
-  const EMPTY = { shows: 'No shows yet. Press Add show.', releases: 'No releases yet. Press Add release.', products: 'No products yet. Press Add product.' };
+  const EMPTY = { shows: 'No shows yet. Press Add show.', releases: 'No releases yet. Press Add release.', products: 'No products yet. Press Add product.', videos: 'No videos yet. Press Add video.' };
   function number(kind) {
     const list = rows(kind), t = T[kind];
     list.forEach((r, i) => {
       say(r.num, `${t.label} ${i + 1}`);
       say(r.legend, `${t.label} ${i + 1}`);
       if (r.up) { r.up.disabled = i === 0; r.down.disabled = i === list.length - 1; } // no button that does nothing
+      if (r.putFirst) r.putFirst.disabled = i === 0 || r.state.hidden; // nor Put first on the first row, or on a hidden one
     });
+    if (kind === 'videos') markVideos();
     if (kind === 'shows') { // the Played fold: shown only when there are past rows
       const n = T.shows.played.children.length;
       $('played').hidden = !n;
@@ -159,9 +182,22 @@
     const cost = el('input', { maxLength: 40, value: s.cost ?? '', placeholder: 'Free' });
     const withIn = el('input', { maxLength: 300, value: s.with ?? '' });
     const link = el('input', { type: 'url', inputMode: 'url', maxLength: 300, value: s.link ?? '', placeholder: 'https://' });
+    // Copy this show: a new open row at the top with everything but the Date; the old row stays as it is (DESIGN 31j)
+    const copy = el('button', { type: 'button', class: 'ed-btn ed-plain ed-copy', textContent: 'Copy this show' }), copyMsg = el('p', { class: 'ed-upmsg', role: 'status' });
+    box.legend.after(copy, copyMsg);
+    box.copyMsg = copyMsg;
+    copy.addEventListener('click', () => {
+      const row = showRow({ ...box.read(), date: '' });
+      T.shows.list.prepend(row);
+      number('shows');
+      changed('shows');
+      row.open(true);
+      say(row.copyMsg, 'Copied. Pick the new date.', 'ok');
+      row.form.querySelector('input').focus(); // the Date
+    });
     box.form.append(el('div', { class: 'ed-two' }, field('Date', date), field('Time (optional)', time)),
       field('Type', type), field('Venue', venue), field('City (optional)', city), field('Street address (optional)', address, 'Shown on the show as a map link, and goes in the calendar file.'),
-      field('With (optional)', withIn, 'Another act on the bill'), field('Link (optional)', link, 'Tickets or details page'), field('Cost (optional)', cost, 'Shown after the time, like "Free" or "$10"'));
+      field('With (optional)', withIn, 'Another act on the bill'), field('Link (optional)', link, 'Tickets or details page', true), field('Cost (optional)', cost, 'Shown after the time, like "Free" or "$10"'));
     box.form.append(box.delBar);
     box.read = () => ({ date: date.value, time: time.value, type: type.value, venue: venue.value, city: city.value, address: address.value, with: withIn.value, link: link.value, cost: cost.value });
     const mark = () => {
@@ -207,7 +243,7 @@
     const { image, block } = uploader('releases', { value: r.cover, thumb, button: 'Upload a cover', hint: 'Square JPG, PNG or WebP. Straight from your phone is fine. No art yet? Leave it empty: the site shows the title on a plain sleeve.' });
     box.form.append(field('Title', title), field('Type', type),
       field('Date', date, 'The day it comes out. Until then a smart link shows Pre-save.'),
-      field('Link', link, 'Your smart link (like wingsmusic.lnk.to/…) or the Spotify link.'),
+      field('Link', link, 'Your smart link (like wingsmusic.lnk.to/…) or the Spotify link.', true),
       field('Artists (optional)', artists, 'Only if someone joins you, like: GLucak, J-BOY'),
       field('Cover', image, 'Filled in when you upload a cover below. Empty it to remove the cover.'), block, box.delBar);
     box.read = () => ({ title: title.value, type: type.value === 'remix-album' ? 'album' : type.value, remix: type.value === 'remix-album', date: date.value, link: link.value, artists: artists.value, cover: image.value });
@@ -344,7 +380,7 @@
       el('div', { class: 'ed-two' }, field('Type', type), field('Price (US dollars)', price, 'Like 25 or 25.00')),
       statusBox, field('Photo', image, 'Filled in when you upload a photo below. Leave it as it is.'), photo,
       field('Description (optional)', desc, 'Up to 600 characters'),
-      field('Link (optional)', link, 'Where fans buy it: the product page on your store. Needed for the Buy button.'),
+      field('Link (optional)', link, 'Where fans buy it: the product page on your store. Needed for the Buy button.', true),
       field('Sizes (optional)', sizes, 'Separate with commas, like S, M, L, XL.'));
     const up = el('button', { type: 'button', class: 'ed-btn', textContent: 'Move up' });
     const down = el('button', { type: 'button', class: 'ed-btn', textContent: 'Move down' });
@@ -387,6 +423,97 @@
     setDirty('products', false);
   };
 
+  // ---------- Videos ----------
+  // The same link rule as the server (src/lib/videos.js parseYouTubeLink): watch, youtu.be and Shorts links; the server checks again.
+  const YT_ID = /^[\w-]{11}$/;
+  function ytId(text) {
+    const s = String(text ?? '').trim();
+    if (!s || s.length > 200 || /[\x00-\x20\x7f]/.test(s)) return null;
+    let u;
+    try { u = new URL(s); } catch { return null; }
+    if (!['https:', 'http:'].includes(u.protocol) || u.username || u.password || u.port) return null;
+    const host = u.hostname.toLowerCase();
+    let id = null;
+    if (host === 'youtu.be') id = /^\/([^/]+)\/?$/.exec(u.pathname)?.[1];
+    else if (['youtube.com', 'www.youtube.com', 'm.youtube.com'].includes(host)) id = u.pathname === '/watch' ? u.searchParams.get('v') : /^\/shorts\/([^/]+)\/?$/.exec(u.pathname)?.[1];
+    return typeof id === 'string' && YT_ID.test(id) ? id : null;
+  }
+  const watchUrl = (id) => `https://www.youtube.com/watch?v=${id}`;
+  const VIDEO_KINDS = [['music-video', 'Music video'], ['live', 'Live']], KIND_LABEL = { 'music-video': 'Music video', 'lyric-video': 'Lyric video', live: 'Live' };
+  const FLASH_LINE = 'Tick the box once you’ve watched it. Leave out anything that flashes quickly.';
+  function videoRow(v = {}) {
+    const thumb = el('img', { class: 'ed-thumb ed-thumb-wide', alt: '', width: 72, height: 48 });
+    const box = shell(thumb, 'video');
+    box.classList.add('ed-row-vid');
+    const saved = typeof v.id === 'string' && YT_ID.test(v.id); // a saved video's link is fixed; a new one is typed
+    const keep = { ...v }; // what the form does not edit (date, name, sleeve layout...) goes back as it came
+    const state = box.state = { hidden: v.hidden === true, first: v.first === true };
+    if (saved) { thumb.src = `/media/sleeves/${v.id}-320.webp`; thumb.addEventListener('error', () => thumb.removeAttribute('src')); } // no picture yet: the hatch shows
+    const link = el('input', { type: 'url', inputMode: 'url', required: true, maxLength: 200, value: v.link ?? '', placeholder: 'https://', spellcheck: false });
+    const title = el('input', { required: true, maxLength: 120, value: v.name ?? v.title ?? '' });
+    const group = `vk${++uid}`, kinds = v.kind === 'lyric-video' ? [VIDEO_KINDS[0], ['lyric-video', 'Lyric video'], VIDEO_KINDS[1]] : VIDEO_KINDS;
+    const kindBox = el('fieldset', { class: 'ed-choices' }, el('legend', { textContent: 'Type' }),
+      ...kinds.map(([val, text]) => el('label', { class: 'ed-choice' }, el('input', { type: 'radio', name: group, value: val, checked: val === v.kind }), el('span', { textContent: text }))));
+    const kind = () => kindBox.querySelector('input:checked')?.value;
+    const flash = el('input', { type: 'checkbox', checked: v.noFlash === true });
+    flash.id = `f${++uid}`;
+    const flashHint = el('span', { class: 'ed-hint', id: `${flash.id}-hint`, textContent: 'Watch it first. If anything flashes quickly, leave it off the site.' });
+    flash.setAttribute('aria-describedby', flashHint.id);
+    const hide = el('button', { type: 'button', class: 'ed-btn', textContent: 'Hide from site' }), putFirst = el('button', { type: 'button', class: 'ed-btn', textContent: 'Put first' });
+    const linkField = saved
+      ? el('div', { class: 'ed-field' }, el('p', { class: 'ed-lab', textContent: 'YouTube link' }), el('p', { class: 'ed-linked', textContent: watchUrl(v.id) }), el('span', { class: 'ed-hint', textContent: 'Change the link by adding a new video.' }))
+      : field('YouTube link', link, 'Paste the link from YouTube. Watch, Share and Shorts links all work.', (val) => { const id = ytId(val); return id ? watchUrl(id) : null; });
+    box.form.append(linkField, field('Title', title), kindBox,
+      el('div', { class: 'ed-flash' }, el('label', { class: 'ed-choice ed-check' }, flash, el('span', { textContent: 'No fast flashing lights in this video' })), flashHint),
+      el('div', { class: 'ed-vis' }, hide, putFirst));
+    Object.assign(box, { putFirst, kindNow: kind });
+    box.read = () => {
+      const o = { ...keep };
+      if (saved) o.id = v.id; else { delete o.id; o.link = link.value; }
+      if (keep.name) { o.name = title.value; o.title = title.value.trim() ? keep.title : ''; } else o.title = title.value; // a shipped video shows its short name: that is what the Title field edits
+      return Object.assign(o, { kind: kind(), noFlash: flash.checked, hidden: state.hidden, first: state.first && !state.hidden });
+    };
+    box.mark = () => {
+      box.setTitle(title.value.trim());
+      const label = KIND_LABEL[kind()];
+      box.setMeta(...[label && el('span', { textContent: label }), box.showing && el('span', { class: 'ed-tag', textContent: 'Now showing' }), state.hidden && el('span', { class: 'ed-tag', textContent: 'Hidden' }),
+        !saved && el('span', { textContent: 'Picture comes after you save.' })].filter(Boolean));
+      box.classList.toggle('past', state.hidden); // hidden: a dashed border and grey title, as the Played rows
+      hide.textContent = state.hidden ? 'Put back on site' : 'Hide from site';
+    };
+    box.form.addEventListener('input', () => markVideos());
+    box.form.addEventListener('change', () => markVideos());
+    hide.addEventListener('click', () => {
+      if (state.hidden && !flash.checked) { say(box.err, `${T.videos.label} ${rows('videos').indexOf(box) + 1}: ${FLASH_LINE}`); box.classList.add('bad'); return flash.focus(); } // never back on the site without the ticked box
+      state.hidden = !state.hidden;
+      if (state.hidden) state.first = false;
+      say(box.err, ''); box.classList.remove('bad');
+      number('videos');
+      changed('videos');
+      hide.focus();
+    });
+    putFirst.addEventListener('click', () => {
+      for (const r of rows('videos')) r.state.first = false;
+      state.first = true;
+      T.videos.list.prepend(box);
+      number('videos');
+      changed('videos');
+      hide.focus();
+    });
+    return box;
+  }
+  // "Now showing" is the first video the site shows: the one put first, else the first music video, else the first live clip.
+  function markVideos() {
+    const list = rows('videos'), on = list.filter((b) => !b.state.hidden);
+    const now = on.find((b) => b.state.first) ?? on.find((b) => b.kindNow() !== 'live') ?? on[0];
+    for (const b of list) { b.showing = b === now; b.mark(); }
+  }
+  T.videos.render = (videos) => {
+    T.videos.list.replaceChildren(...videos.map(videoRow));
+    number('videos');
+    setDirty('videos', false);
+  };
+
   // ---------- Today (what the screen last loaded or saved, never unsaved typing) ----------
   let savedId = null, idFailed = false; // null = still loading
   const clock = (t) => { const m = /^(\d{2}):(\d{2})$/.exec(t || ''); return m ? `${Number(m[1]) % 12 || 12}:${m[2]} ${Number(m[1]) < 12 ? 'AM' : 'PM'}` : ''; };
@@ -415,9 +542,10 @@
     say($('i-today'), `On the site today: ${longDate(d)}, ${days <= 0 ? 'Out now' : `${days} ${days === 1 ? 'day' : 'days'} to go`}`);
   }
   F.date.addEventListener('input', idToday);
+  const idFans = fansFor(F.link, $('i-link-fans')); // the Pre-save link: what fans will tap
   // Fill one tab's fields from the saved site; the other tab's unsaved edits are never touched.
   function fillSite(site, kind) {
-    if (kind === 'identity') { F.date.value = site.identity?.date ?? ''; F.link.value = site.identity?.link ?? ''; idToday(); savedId = F.date.value; renderToday(); }
+    if (kind === 'identity') { F.date.value = site.identity?.date ?? ''; F.link.value = site.identity?.link ?? ''; idToday(); idFans(); savedId = F.date.value; renderToday(); }
     else { F.home.value = site.homeBio ?? ''; F.bio.value = site.bio ?? ''; }
     setDirty(kind, false);
   }
@@ -425,8 +553,8 @@
   for (const k of ['identity', 'bio']) $(`panel-${k}`).addEventListener('input', () => changed(k));
 
   // ---------- Tabs ----------
-  const tabs = ['shows', 'releases', 'identity', 'bio', 'products'];
-  const TAB_NAME = { shows: 'Shows', releases: 'Releases', identity: 'IDENTITY', bio: 'Bio', products: 'Products' };
+  const tabs = ['shows', 'releases', 'identity', 'bio', 'products', 'videos'];
+  const TAB_NAME = { shows: 'Shows', releases: 'Releases', identity: 'IDENTITY', bio: 'Bio', products: 'Products', videos: 'Videos' };
   function pick(kind, focus = false) {
     for (const k of tabs) {
       const tab = $(`tab-${k}`), on = k === kind;
@@ -503,7 +631,9 @@
     shows: ['date', 'time', 'type', 'venue', 'city', 'address', 'with', 'link', 'cost'],
     releases: ['title', 'type', 'remix', 'date', 'link', 'artists', 'cover'],
     products: ['id', 'name', 'type', 'price', 'image', 'description', 'link', 'status', 'sizes', 'order'],
+    videos: ['id', 'link', 'title', 'name', 'with', 'place', 'kind', 'date', 'lead', 'featured', 'noFlash', 'hidden', 'first', 'layout', 'style', 'crop'],
   };
+  const BOOLS = new Set(['remix', 'noFlash', 'hidden', 'first', 'lead', 'featured']);
   const SITE_KEYS = { identity: ['date', 'link'], bio: ['homeBio', 'bio'] };
   const MAX_DRAFT = 400000;
   function cleanDraft(kind, d) {
@@ -520,7 +650,9 @@
           const ok = k === 'sizes' ? (Array.isArray(v) ? v.filter((x) => typeof x === 'string').slice(0, 30).map((x) => x.slice(0, 60)) : undefined)
             : k === 'price' ? (v === null || Number.isFinite(v) ? v : undefined)
               : k === 'order' ? (Number.isFinite(v) ? v : undefined)
-                : k === 'remix' ? (typeof v === 'boolean' ? v : undefined) : str(v);
+                : k === 'crop' ? (Array.isArray(v) && v.length === 4 && v.every((n) => Number.isFinite(n)) ? v : undefined)
+                  : k === 'date' && v === null ? null
+                    : BOOLS.has(k) ? (typeof v === 'boolean' ? v : undefined) : str(v);
           if (ok !== undefined) o[k] = ok;
         }
         out.push(o);
@@ -594,7 +726,7 @@
     const t = T[kind], d = t.offer;
     if (!d) return;
     t.offer = null; t.box.hidden = true; lock(kind, false);
-    if (kind === 'identity') { F.date.value = d.data.date ?? ''; F.link.value = d.data.link ?? ''; idToday(); }
+    if (kind === 'identity') { F.date.value = d.data.date ?? ''; F.link.value = d.data.link ?? ''; idToday(); idFans(); }
     else if (kind === 'bio') { F.home.value = d.data.homeBio ?? ''; F.bio.value = d.data.bio ?? ''; }
     else t.render(d.data, true);
     changed(kind);
@@ -640,7 +772,8 @@
     const meta = el('p', { class: 'ed-row-meta' });
     if (noun && n !== null) meta.append(el('span', { textContent: `${n} ${n === 1 ? noun[0] : noun[1]}` }));
     if (e.live === true) meta.append(el('span', { class: 'ed-tag', textContent: 'On the site now' }));
-    const li = el('li', { class: 'ed-row ed-hist-item' }, el('div', { class: 'ed-hist-text' }, el('p', { class: 'ed-row-title', textContent: when(e.at) }), ...(meta.childNodes.length ? [meta] : [])));
+    const li = el('li', { class: 'ed-row ed-hist-item' }, el('div', { class: 'ed-hist-text' }, el('p', { class: 'ed-row-title', textContent: when(e.at) }), ...(meta.childNodes.length ? [meta] : []),
+      ...(typeof e.what === 'string' && e.what ? [el('p', { class: 'ed-row-meta ed-hist-what', textContent: e.what })] : []))); // what that save changed, counts only
     if (e.live !== true) {
       const go = el('button', { type: 'button', class: 'ed-btn ed-hist-go', textContent: 'Go back to this' });
       go.addEventListener('click', () => askBack(kind, e, li, go));
@@ -696,7 +829,7 @@
     editor.hidden = false;
     say($('who'), `Signed in as ${name}`);
     if (data) {
-      for (const k of ['shows', 'releases', 'products']) if (data[k]) T[k].render(data[k]);
+      for (const k of ['shows', 'releases', 'products', 'videos']) if (data[k]) T[k].render(data[k]);
       if (data.site) { fillSite(data.site, 'identity'); fillSite(data.site, 'bio'); } else { idFailed = true; renderToday(); }
       loaded = true;
       offerDrafts();
@@ -704,8 +837,8 @@
   }
 
   async function load() {
-    let r, p, q, rl;
-    try { [r, p, q, rl] = await Promise.all([api('/edit/api/shows'), api('/edit/api/products'), api('/edit/api/site'), api('/edit/api/releases')]); } catch { login.hidden = false; return say(loginMsg, "Can’t reach the site. Check your connection and reload.", 'error'); }
+    let r, p, q, rl, vd;
+    try { [r, p, q, rl, vd] = await Promise.all([api('/edit/api/shows'), api('/edit/api/products'), api('/edit/api/site'), api('/edit/api/releases'), api('/edit/api/videos')]); } catch { login.hidden = false; return say(loginMsg, "Can’t reach the site. Check your connection and reload.", 'error'); }
     const b = await reply(r);
     if (r.ok) {
       const pb = await reply(p);
@@ -713,9 +846,11 @@
       if (p.ok) { T.products.version = pb.version; T.products.base = pb.fileSavedAt ?? null; } else say(T.products.msg, "Couldn’t load the products. Reload the page.", 'error');
       const rb = rl.ok ? await reply(rl) : {};
       if (rl.ok) { T.releases.version = rb.version; T.releases.base = rb.fileSavedAt ?? null; } else say(T.releases.msg, "Couldn’t load the releases. Reload the page.", 'error');
+      const vb = vd.ok ? await reply(vd) : {};
+      if (vd.ok) { T.videos.version = vb.version; T.videos.base = vb.fileSavedAt ?? null; } else say(T.videos.msg, "Couldn’t load the videos. Reload the page.", 'error');
       const qb = q.ok ? await reply(q) : {};
       if (q.ok) { siteVersion = qb.version; siteBase = qb.fileSavedAt ?? null; } else for (const k of ['identity', 'bio']) say(T[k].msg, "Couldn’t load this. Reload the page.", 'error');
-      return signedIn(b.editor, { shows: b.shows, releases: rl.ok ? rb.releases : null, products: p.ok ? pb.products : null, site: q.ok ? qb.site : null });
+      return signedIn(b.editor, { shows: b.shows, releases: rl.ok ? rb.releases : null, products: p.ok ? pb.products : null, videos: vd.ok ? vb.videos : null, site: q.ok ? qb.site : null });
     }
     login.hidden = false;
     if (r.status === 503) say(loginMsg, b.message || "The edit screen isn’t switched on yet. Tell the person who runs the site.", 'error');
@@ -762,9 +897,10 @@
   }
   $('add').addEventListener('click', addShow);
   for (const b of document.querySelectorAll('.ed-now-btns [data-go]')) b.addEventListener('click', () => {
-    const go = b.dataset.go, kind = go === 'add-show' ? 'shows' : 'releases';
+    const go = b.dataset.go, kind = go === 'add-show' ? 'shows' : go === 'add-video' ? 'videos' : 'releases';
     if (T[kind].offer) { pick(kind); T[kind].box.querySelector('button').focus(); return; } // answer the draft question first
     if (go === 'add-show') { if ($('add').disabled) return; pick('shows'); addShow(); }
+    if (go === 'add-video') { if ($('v-add').disabled) return; pick('videos'); addVideo(); }
     if (go === 'fix-release') { pick('releases'); (T.releases.list.firstElementChild?.edit ?? $('r-add')).focus(); }
   });
   for (const k of ['shows', 'releases', 'products']) $(`undo-${k}`).querySelector('button').addEventListener('click', () => undoRow(k));
@@ -784,12 +920,21 @@
     row.open(true);
     row.form.querySelector('input').focus();
   });
+  function addVideo() { // a new open row at the top; the link comes first
+    const row = videoRow({});
+    T.videos.list.prepend(row);
+    number('videos');
+    changed('videos');
+    row.open(true);
+    row.form.querySelector('input').focus();
+  }
+  $('v-add').addEventListener('click', addVideo);
 
-  for (const k of ['shows', 'releases', 'products']) T[k].list.addEventListener('input', (e) => { if (e.target.type !== 'file') changed(k); }); // uploads mark it on success
+  for (const k of ['shows', 'releases', 'products', 'videos']) T[k].list.addEventListener('input', (e) => { if (e.target.type !== 'file') changed(k); }); // uploads mark it on success
   T.shows.played.addEventListener('input', () => changed('shows'));
 
-  const saving = { shows: false, releases: false, products: false };
-  const IDS = { shows: ['save', 'add'], releases: ['r-save', 'r-add'], products: ['p-save', 'p-add'] }; // Save and Add button per list tab
+  const saving = { shows: false, releases: false, products: false, videos: false };
+  const IDS = { shows: ['save', 'add'], releases: ['r-save', 'r-add'], products: ['p-save', 'p-add'], videos: ['v-save', 'v-add'] }; // Save and Add button per list tab
   async function save(kind) {
     if (saving[kind]) return; // no second save while one is on its way
     if (H[kind]?.busy) return; // nor while a go-back is on its way
@@ -799,15 +944,15 @@
     saving[kind] = true;
     btn.setAttribute('aria-disabled', 'true');
     for (const l of lists(kind)) l.inert = true; add.disabled = true; // edits made now would be replaced by the reply
-    const undoBtn = $(`undo-${kind}`).querySelector('button'); undoBtn.disabled = true;
+    const undoBtn = $(`undo-${kind}`)?.querySelector('button'); if (undoBtn) undoBtn.disabled = true;
     say(t.msg, 'Saving…', 'busy');
-    try { await send(kind, t, list); } finally { saving[kind] = false; btn.removeAttribute('aria-disabled'); for (const l of lists(kind)) l.inert = false; add.disabled = false; undoBtn.disabled = false; }
+    try { await send(kind, t, list); } finally { saving[kind] = false; btn.removeAttribute('aria-disabled'); for (const l of lists(kind)) l.inert = false; add.disabled = false; if (undoBtn) undoBtn.disabled = false; }
   }
   async function send(kind, t, list) {
     let r;
     try { r = await api(`/edit/api/${kind}`, { version: t.version, [kind]: list.map((x, i) => x.read(i)) }); } catch { return say(t.msg, "That didn’t save. Check your connection and try again.", 'error'); }
     const b = await reply(r);
-    if (r.ok) { t.version = b.version; t.base = b.fileSavedAt ?? null; seen(b.savedAt); dropDraft(kind); t.render(b[kind]); return say(t.msg, savedText(b.message), 'ok'); }
+    if (r.ok) { t.version = b.version; t.base = b.fileSavedAt ?? null; seen(b.savedAt); dropDraft(kind); t.render(b[kind]); return say(t.msg, savedText(b.message, b.changes), 'ok'); }
     if (r.status === 401) { login.hidden = false; $('username').focus(); return say(t.msg, 'You were signed out. Sign in above, then press Save again. Your changes are still here.', 'error'); }
     if (r.status === 409) return stale(kind); // rows untouched, kept as a draft
     if (r.status >= 500) { say(t.msg, 'That didn’t save. Try again.', 'error'); showCode(bar(kind), b.code); writeDraft(kind); return focusMsg(kind); }
@@ -839,7 +984,7 @@
       let r;
       try { r = await api('/edit/api/site', { version: siteVersion, site: SITE_PART[kind]() }); } catch { return say(t.msg, "That didn’t save. Check your connection and try again.", 'error'); }
       const b = await reply(r);
-      if (r.ok) { siteVersion = b.version; siteBase = b.fileSavedAt ?? null; seen(b.savedAt); dropDraft(kind); fillSite(b.site, kind); return say(t.msg, savedText(b.message), 'ok'); }
+      if (r.ok) { siteVersion = b.version; siteBase = b.fileSavedAt ?? null; seen(b.savedAt); dropDraft(kind); fillSite(b.site, kind); return say(t.msg, savedText(b.message, b.changes), 'ok'); }
       if (r.status === 401) { login.hidden = false; $('username').focus(); return say(t.msg, 'You were signed out. Sign in above, then press Save again. Your changes are still here.', 'error'); }
       if (r.status === 409) return stale(kind);
       if (r.status >= 500) { say(t.msg, 'That didn’t save. Try again.', 'error'); showCode(bar(kind), b.code); writeDraft(kind); return focusMsg(kind); }
@@ -852,6 +997,7 @@
   $('i-save').addEventListener('click', () => saveSite('identity'));
   $('b-save').addEventListener('click', () => saveSite('bio'));
   $('p-save').addEventListener('click', () => save('products'));
+  $('v-save').addEventListener('click', () => save('videos'));
 
   // Backup: the plain <a download> still works without JS; with JS we fetch it so a 401 / 413 / 429 gets a message, not a saved error file.
   const bk = $('backup-link'), bkMsg = $('backup-msg');

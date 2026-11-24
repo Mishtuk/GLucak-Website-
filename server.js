@@ -4,6 +4,8 @@
 // Gabe's edit screen lives under /edit/: sign-in, then GET/POST /edit/api/shows and /edit/api/products, and
 // POST /edit/api/upload for product and release images (served back from /media/uploads/), GET /edit/api/backup for a backup file,
 // GET /edit/api/history/<kind> and POST /edit/api/history/<kind>/<id> for the last 10 saves of a tab (src/lib/history.js). Node 22+ built-ins, plus sharp for uploads.
+// A3: /edit/api/videos (src/lib/videos.js); the Records block and Now showing are filled per visit at the <!--gl:records--> markers, and a new video's
+// sleeve is made from YouTube's thumbnail (fixed host i.ytimg.com, src/lib/sleeve.js) into DATA_DIR/sleeves, served at /media/sleeves/.
 import { createServer } from 'node:http';
 import { randomBytes } from 'node:crypto';
 import { createReadStream, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
@@ -18,6 +20,9 @@ import { checkReleases, fillReleases } from './src/lib/releases.js';
 import { checkShows, fileSavedAt, listVersion, liveFile, readList, readShows, readSignouts, saveList, saveSignouts, savedAt } from './src/lib/store.js';
 import { ID as HISTORY_ID, KINDS as HISTORY_KINDS, contentOf, errorCode, listHistory, readEntry, recordHistory } from './src/lib/history.js';
 import { checkProducts, productsHtml, shopLinks } from './src/lib/products.js';
+import { ID as VIDEO_ID, SITE_KINDS, VIDEO_MARKER, checkVideos, fillVideos } from './src/lib/videos.js';
+import { saveStill } from './src/lib/sleeve.js';
+import { describeChange } from './src/lib/changes.js';
 import { externalize } from './src/lib/ext.js';
 import { MAX_BYTES, TYPES as IMAGE_TYPES, UPLOAD_NAME, toWebp } from './src/lib/upload.js';
 
@@ -28,12 +33,15 @@ const SHOWS = env.SHOWS_FILE || join(ROOT, 'src/data/shows.json'); // the shippe
 const RELEASES = env.RELEASES_FILE || join(ROOT, 'src/data/releases.json');
 const SITE = env.SITE_FILE || join(ROOT, 'src/data/site.json'); // the shipped bio + IDENTITY text
 const PRODUCTS = env.PRODUCTS_FILE || join(ROOT, 'src/data/products.json'); // the shipped SAMPLE products
+const VIDEOS = env.VIDEOS_FILE || join(ROOT, 'src/data/videos.json'); // the shipped videos (each ticked noFlash, with its sleeve layout and print look)
 const PORT = Number(env.PORT) || 8080;
 const PROD = env.NODE_ENV === 'production' || Boolean(env.WEBSITE_SITE_NAME); // App Service sets WEBSITE_SITE_NAME
 // Gabe's saved shows live here, outside the build; DATA/shows.json wins over the shipped SHOWS file. Same for
 // products.json; uploaded product images live in DATA/uploads.
 const DATA = env.DATA_DIR || join(ROOT, '.data');
 const UPLOADS = join(DATA, 'uploads');
+const SLEEVES = join(DATA, 'sleeves'); // record sleeves made for the videos Gabe adds; the shipped ones are in dist/media/sleeves
+export const hooks = { fetch: (...a) => fetch(...a) }; // the thumbnail fetch; tests swap it so nothing leaves the machine
 const shopOn = () => env.SHOP_ENABLED === '1'; // read per request; the owner flips it with a restart, no rebuild
 const EDITORS = parseEditors(env.EDITOR_USERS);
 const SIGNOUTS = readSignouts(DATA); // name -> last sign-out ms; ends that editor's older cookies on every device
@@ -72,6 +80,8 @@ function compress(req, buf, type, headers) {
 }
 
 const statSafe = (f) => { try { return statSync(f); } catch { return null; } };
+/** Both sleeve files for a video id are there (the shipped ones in dist, or the ones made for Gabe's videos). */
+const stillExists = (id) => VIDEO_ID.test(id) && [join(DIST, 'media', 'sleeves'), SLEEVES].some((d) => [320, 640].every((w) => existsSync(join(d, `${id}-${w}.webp`))));
 
 /** Fill the shop links, the shop, the shows and the Now line. Fails open (caller catches): an unreadable file leaves the static page. */
 function inject(html, path) {
@@ -92,6 +102,9 @@ function inject(html, path) {
     if (!Array.isArray(rel)) rel = [];
   }
   if (/<!--gl:(crate|latest|listen)-->/.test(html) && rel.length) html = fillReleases(html, rel, etDay());
+  if (VIDEO_MARKER.test(html)) { // Gabe's videos: the Records block and Now showing, in the saved order, without the hidden ones
+    try { html = fillVideos(html, videosNow(), { sleeve: stillExists, wide: (id) => VIDEO_ID.test(id) && existsSync(join(DIST, 'media', 'videos', `${id}-640.webp`)) }); } catch (e) { console.error('videos.json unreadable, using the built page', e.message); }
+  }
   const shows = html.includes('<!--gl:shows-->'), ld = html.includes('<!--gl:shows-ld-->'), now = html.includes('<!--gl:now-->');
   if (!shows && !now && !ld) return externalize(html);
   const rows = readShows(DATA, SHOWS);
@@ -160,6 +173,8 @@ const BODY_MAX = 32 * 1024;
 // Each list the edit screen saves, same model for both: validate all, version check -> 409, atomic write + .prev.
 // releases.json damaged or empty: the shipped list stands in (like the public pages), so Gabe can still save and repair it.
 const releasesNow = () => { try { return readList(DATA, RELEASES, 'releases.json'); } catch { return JSON.parse(readFileSync(RELEASES, 'utf8')); } };
+// videos.json damaged: the shipped list stands in. The Shorts (kind other) are never shown in the tab; the check puts them back.
+const videosNow = () => { try { return readList(DATA, VIDEOS, 'videos.json'); } catch { return JSON.parse(readFileSync(VIDEOS, 'utf8')); } };
 const LISTS = {
   shows: { file: 'shows.json', fallback: SHOWS, check: checkShows, max: BODY_MAX, big: 'That list is too big to save. Delete some old shows.' },
   // The Bio and IDENTITY tabs: one object, one version. A tab sends only its own fields; the server merges them onto the saved site.
@@ -167,7 +182,10 @@ const LISTS = {
   // The Releases tab: IDENTITY stays in the file (the IDENTITY tab owns it); the tab never sends it, so the check adds the saved row back.
   releases: { file: 'releases.json', fallback: RELEASES, check: (x) => checkReleases(x, releasesNow().filter((r) => r?.title === 'IDENTITY')), max: 128 * 1024, big: 'That list is too big to save. Delete some old releases.' },
   products: { file: 'products.json', fallback: PRODUCTS, check: checkProducts, max: 256 * 1024, big: 'That list is too big to save. Delete some products or shorten descriptions.' },
+  videos: { file: 'videos.json', fallback: VIDEOS, check: (x) => checkVideos(x, videosNow().filter((v) => !SITE_KINDS.includes(v?.kind))), max: 64 * 1024, big: 'That list is too big to save. Hide the videos you don’t need.' },
 };
+/** What a tab's GET returns: releases without a broken file stopping it, videos without the Shorts, in the site's order. */
+const rowsOf = (kind, list) => (kind === 'releases' ? releasesNow() : kind === 'videos' ? contentOf('videos', videosNow()) : readList(DATA, list.fallback, list.file));
 
 /** The signed-in editor, or null. DEV_EDITOR=1 works only off production, on a localhost URL, from this machine. */
 function editor(req, url) {
@@ -218,7 +236,7 @@ function seedHistory(hist, list) {
     try {
       if (listHistory(DATA, h).length) continue;
       const cur = readList(DATA, list.fallback, list.file);
-      const r = list.check(h === 'releases' ? contentOf(h, cur) : cur);
+      const r = list.check(h === 'releases' || h === 'videos' ? contentOf(h, cur) : cur);
       if (!r.errors) recordHistory(DATA, h, contentOf(h, r.rows), statSync(liveFile(DATA, list.fallback, list.file)).mtime);
     } catch (e) { console.error(new Date().toISOString(), `history not seeded for ${h}:`, e.code ?? e.name); }
   }
@@ -235,13 +253,30 @@ function commit(kind, input, sent, who) {
   if (sent !== version()) return [409, { error: 'stale', message: STALE(kind), errors: [{ row: null, message: STALE(kind) }] }];
   const hist = kind === 'site' ? siteParts(input) : [kind];
   seedHistory(hist, list);
+  let before = null; // what this replaces, for the "what changed" line
+  try { before = readList(DATA, list.fallback, list.file); } catch { /* a damaged file: no comparison */ }
   saveList(DATA, r.rows, list.fallback, list.file);
   for (const h of hist) {
     try { recordHistory(DATA, h, contentOf(h, r.rows)); } catch (e) { console.error(new Date().toISOString(), `history not kept for ${h}:`, e.code ?? e.name); }
   }
   console.log(new Date().toISOString(), `${kind} saved by ${who}: ${Array.isArray(r.rows) ? `${r.rows.length} rows` : 'saved'}`);
-  return [200, { ok: true, [kind]: r.rows, version: version(), savedAt: savedAt(DATA), fileSavedAt: fileSavedAt(DATA, list.file),
+  const changes = before == null ? '' : hist.map((h) => describeChange(h, contentOf(h, before), contentOf(h, r.rows))).filter(Boolean).join(' ');
+  return [200, { ok: true, [kind]: kind === 'videos' ? contentOf('videos', r.rows) : r.rows, version: version(), savedAt: savedAt(DATA), fileSavedAt: fileSavedAt(DATA, list.file), changes,
     message: kind === 'products' && !shopOn() ? "Saved. The shop isn’t open to fans yet, so they won’t see it until it’s switched on." : "Saved. It’s on the site now." }];
+}
+
+const MAX_STILLS = 3; // pictures fetched per save
+/** Make the sleeve for each listed video that has none (a new one, or one whose picture failed before). Only i.ytimg.com, only checked ids, rate-limited like uploads.
+ *  The row is already saved: when a picture is still missing the reply says so in plain words. */
+async function addStills(body, who, ip) {
+  const missing = () => body.videos.filter((v) => !stillExists(v.id));
+  const todo = missing().slice(0, MAX_STILLS);
+  if (todo.length && allow(`thumb:${who}`, 30, 10 * 60e3) && allow(`thumb-ip:${ip}`, 30, 10 * 60e3)) {
+    for (const v of todo) {
+      if (await saveStill({ id: v.id, style: v.style, dir: SLEEVES, fetchImpl: hooks.fetch })) console.log(new Date().toISOString(), `sleeve made for ${v.id} by ${who}`);
+    }
+  }
+  if (missing().length) body.message = 'Saved. We couldn’t get YouTube’s picture, so it shows with a plain card for now.';
 }
 
 async function handleEdit(req, res, url) {
@@ -254,11 +289,11 @@ async function handleEdit(req, res, url) {
   if (!SECRET) return json(503, { error: 'off', message: "The edit screen isn’t switched on yet. Tell the person who runs the site." });
   // belt and braces over SameSite=Strict: a browser that says the GET came from another site gets nothing
   if (req.method === 'GET' && p.startsWith('/edit/api/') && req.headers['sec-fetch-site'] === 'cross-site') return json(403, { error: 'origin', message: "That didn’t go through. Try again." });
-  const kind = p.match(/^\/edit\/api\/(shows|site|products|releases)$/)?.[1], list = LISTS[kind];
+  const kind = p.match(/^\/edit\/api\/(shows|site|products|releases|videos)$/)?.[1], list = LISTS[kind];
   if (req.method === 'GET' && list) {
     const who = editor(req, url);
     if (!who) return json(401, { error: 'signed_out' });
-    return json(200, { editor: who, [kind]: kind === 'releases' ? releasesNow() : readList(DATA, list.fallback, list.file), version: listVersion(DATA, list.fallback, list.file), savedAt: savedAt(DATA), fileSavedAt: fileSavedAt(DATA, list.file) });
+    return json(200, { editor: who, [kind]: rowsOf(kind, list), version: listVersion(DATA, list.fallback, list.file), savedAt: savedAt(DATA), fileSavedAt: fileSavedAt(DATA, list.file) });
   }
   // History: GET /edit/api/history/<kind> lists the last saves (times and counts only); POST .../<kind>/<id> goes back to one.
   // The kind must be one of ours and the id one of our own server-made names; anything else is a 404, never a path.
@@ -271,14 +306,15 @@ async function handleEdit(req, res, url) {
     const h = hp[0], list = listOf(h);
     let now; // the entry that is what the site shows now gets a tag instead of a button
     try { now = JSON.stringify(contentOf(h, readList(DATA, list.fallback, list.file))); } catch { now = undefined; }
-    const entries = listHistory(DATA, h).map((e) => ({ id: e.id, at: e.at, ...(Array.isArray(e.data) ? { count: e.data.length } : {}), live: now !== undefined && JSON.stringify(e.data) === now }));
+    const all = listHistory(DATA, h), liveAt = now === undefined ? -1 : all.findIndex((e) => JSON.stringify(e.data) === now); // newest first: only the newest entry equal to the live file is "on the site now"
+    const entries = all.map((e, i) => ({ id: e.id, at: e.at, ...(Array.isArray(e.data) ? { count: e.data.length } : {}), live: i === liveAt, what: i + 1 < all.length ? describeChange(h, all[i + 1].data, e.data, { names: false }) : '' }));
     return json(200, { kind: h, entries });
   }
   if (req.method === 'GET' && p === '/edit/api/backup') { // one JSON file of the live data (src/lib/backup.js), for Gabe to keep
     const who = editor(req, url);
     if (!who) return json(401, { error: 'signed_out' });
     if (!allow(`backup:${who}`, 10, 60 * 60e3)) return json(429, { error: 'slow_down', message: 'Too many backups. Wait an hour, then try again.' });
-    const body = backupBytes(DATA, { shows: SHOWS, products: PRODUCTS, site: SITE, releases: RELEASES }); // ponytail: built in memory, fine under the 50 MB restore cap
+    const body = backupBytes(DATA, { shows: SHOWS, products: PRODUCTS, site: SITE, releases: RELEASES, videos: VIDEOS }); // ponytail: built in memory, fine under the 50 MB restore cap
     if (body.length > MAX_FILE) { // restore would refuse it: say so now, not on the day it’s needed
       console.error(new Date().toISOString(), `backup refused for ${who}: ${body.length} bytes is over the ${MAX_FILE}-byte restore cap`);
       return json(413, { error: 'too_big', message: TOO_BIG });
@@ -289,7 +325,9 @@ async function handleEdit(req, res, url) {
     return res.end(body);
   }
   if (req.method !== 'POST') return json(405, { error: 'method' }, { Allow: 'POST' });
-  if (!sameOrigin(req.headers)) return json(403, { error: 'origin', message: "That didn’t go through. Try again." });
+  // Origin must name this host, and a browser that says the request came from another site (or a sibling one) is refused too: same-origin, none (typed or tapped) or no header at all
+  const fetchSite = req.headers['sec-fetch-site'];
+  if (!sameOrigin(req.headers) || (fetchSite && fetchSite !== 'same-origin' && fetchSite !== 'none')) return json(403, { error: 'origin', message: "That didn’t go through. Try again." });
 
   if (p === '/edit/login') {
     const isJson = /json/.test(req.headers['content-type'] ?? '');
@@ -345,6 +383,7 @@ async function handleEdit(req, res, url) {
     let b;
     try { b = JSON.parse(raw); } catch { return json(400, { error: 'bad_body', errors: [{ row: null, message: "That didn’t save. Try again." }] }); }
     const [status, body] = commit(kind, Array.isArray(b) ? b : b?.[kind], b?.version, who);
+    if (status === 200 && kind === 'videos') await addStills(body, who, clientIp(req)); // after the save: a failed picture never loses the row
     return json(status, body);
   }
   if (p === '/edit/api/upload') {
@@ -401,6 +440,8 @@ function handle(req, res) {
     if (!text) return notFound(req, res);
     return send(req, res, 200, 'text/calendar; charset=utf-8', Buffer.from(text), { 'Content-Disposition': `attachment; filename="glucak-${ics[1]}.ics"`, 'Cache-Control': 'no-cache' });
   }
+  const sleeve = url.pathname.match(/^\/media\/sleeves\/([\w-]{11})-(320|640)\.webp$/); // a video Gabe added: its sleeve is under DATA_DIR; the shipped ones fall through to dist
+  if (sleeve && statSafe(join(SLEEVES, `${sleeve[1]}-${sleeve[2]}.webp`))?.isFile()) return send(req, res, 200, 'image/webp', readFileSync(join(SLEEVES, `${sleeve[1]}-${sleeve[2]}.webp`)), { 'Cache-Control': 'public, max-age=86400' });
   if (url.pathname.startsWith('/media/uploads/')) { // only server-made names (32 hex + .webp), so nothing can climb out
     const name = url.pathname.slice('/media/uploads/'.length);
     const st = UPLOAD_NAME.test(name) ? statSafe(join(UPLOADS, name)) : null;

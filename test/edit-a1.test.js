@@ -8,10 +8,10 @@ import { join } from 'node:path';
 const src = (f) => readFileSync(join(import.meta.dirname, '..', f), 'utf8');
 const page = src('src/pages/edit/index.astro'), js = src('public/js/edit.js');
 
-test('31a: five tab buttons (role tab, one per panel), the span rule only fires on a fifth last tab, no intro line', () => {
+test('31a: six tab buttons (role tab, one per panel; Videos last), the span rule only fires on a fifth last tab, no intro line', () => {
   const tabs = [...page.matchAll(/<button id="tab-(\w+)" class="ed-tab" type="button" role="tab" aria-selected="(true|false)" aria-controls="panel-\1"/g)];
-  assert.deepEqual(tabs.map((t) => t[1]), ['shows', 'releases', 'identity', 'bio', 'products']);
-  assert.deepEqual(tabs.map((t) => t[2]), ['true', 'false', 'false', 'false', 'false']);
+  assert.deepEqual(tabs.map((t) => t[1]), ['shows', 'releases', 'identity', 'bio', 'products', 'videos']);
+  assert.deepEqual(tabs.map((t) => t[2]), ['true', 'false', 'false', 'false', 'false', 'false']);
   assert.match(page, /\.ed-tab:nth-child\(5\):last-child \{ grid-column: span 2; \}/);
   assert.match(page, /grid-auto-flow: column; grid-auto-columns: minmax\(0, 1fr\); grid-template-columns: none;/);
   assert.ok(!page.includes('Change your shows, releases, IDENTITY and bio here'), 'Today replaces the intro line');
@@ -21,11 +21,11 @@ test('31b: View site opens the home page in a new tab, next to Sign out', () => 
   assert.match(page, /<a class="ed-btn ed-plain" href="\/" target="_blank" rel="noopener">View site<\/a>\s*<button id="logout"/);
 });
 
-test('31c: Today card markup (heading, two items, note, three buttons with Add video hidden)', () => {
+test('31c: Today card markup (heading, two items, note, three buttons; A3 shows and wires Add video)', () => {
   assert.match(page, /<section class="ed-now" aria-labelledby="now-h">\s*<h2 id="now-h" class="ed-now-h">Today<\/h2>/);
   for (const t of ['Next show', 'IDENTITY', 'id="now-show"', 'id="now-id"', 'id="now-note" hidden', 'data-go="add-show">Add show', 'data-go="fix-release">Fix a release']) assert.ok(page.includes(t), t);
-  assert.match(page, /data-go="add-video" hidden>Add video</);
-  assert.ok(!js.includes("data-go='add-video'") && !/dataset\.go === 'add-video'/.test(js), 'A3 wires Add video');
+  assert.match(page, /data-go="add-video">Add video</);
+  assert.ok(!/data-go="add-video" hidden/.test(page) && /go === 'add-video'/.test(js), 'A3 wires Add video');
 });
 
 test('31c: Today values go in through textContent (a <script> venue stays text)', () => {

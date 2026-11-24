@@ -15,7 +15,9 @@ const name = (v: Record<string, any>) => curly(v.name ?? v.title);
 const pad = (n: number) => String(n).padStart(2, '0');
 const W = compact ? 'div' : 'section';
 const Wrap = compact ? Fragment : 'div';
+const mark = compact ? 'records-compact' : more ? 'records-more' : 'records'; // A3: the server refills everything between the markers from Gabe's saved videos (src/lib/videos.js)
 ---
+<Fragment set:html={`<!--gl:${mark}-->`} />
 {all.length > 0 && (
   <W class={compact ? 'records-watch' : 'band band-crate'} id={compact ? 'shows-video' : undefined} data-hs={compact ? undefined : 'row'} aria-labelledby={compact ? undefined : 'h-crate'}>
     <Wrap {...(compact ? {} : { class: 'wrap' })}>
@@ -53,3 +55,4 @@ const Wrap = compact ? Fragment : 'div';
     <div class="ro-stage"><span class="ro-disc" aria-hidden="true"></span><div class="ro-screen"></div></div>
   </div>
 </dialog>
+<Fragment set:html={`<!--/gl:${mark}-->`} />

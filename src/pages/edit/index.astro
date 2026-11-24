@@ -1,6 +1,6 @@
 ---
-// Gabe's edit screen (Shows | Releases | IDENTITY | Bio | Products tabs). A static shell: public/js/edit.js signs in and builds the lists from
-// /edit/api/shows, /edit/api/releases and /edit/api/products with createElement + textContent/value only. Not linked from the site; noindex.
+// Gabe's edit screen (Shows | Releases | IDENTITY | Bio | Products | Videos tabs). A static shell: public/js/edit.js signs in and builds the lists from
+// /edit/api/shows, /edit/api/releases, /edit/api/products and /edit/api/videos with createElement + textContent/value only. Not linked from the site; noindex.
 import '../../styles/global.css';
 import { era } from '../../components/content.js';
 
@@ -46,7 +46,7 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
             <div class="ed-now-item"><p class="ed-now-k">IDENTITY</p><p class="ed-now-v" id="now-id">Loading...</p></div>
           </div>
           <p class="ed-now-note" id="now-note" hidden></p>
-          <p class="ed-now-btns"><button class="ed-btn" type="button" data-go="add-show">Add show</button><button class="ed-btn" type="button" data-go="fix-release">Fix a release</button><button class="ed-btn" type="button" data-go="add-video" hidden>Add video</button></p>
+          <p class="ed-now-btns"><button class="ed-btn" type="button" data-go="add-show">Add show</button><button class="ed-btn" type="button" data-go="fix-release">Fix a release</button><button class="ed-btn" type="button" data-go="add-video">Add video</button></p>
         </section>
         <div class="ed-tabs" role="tablist" aria-label="What to edit">
           <button id="tab-shows" class="ed-tab" type="button" role="tab" aria-selected="true" aria-controls="panel-shows">Shows</button>
@@ -54,6 +54,7 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
           <button id="tab-identity" class="ed-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-identity" tabindex="-1">IDENTITY</button>
           <button id="tab-bio" class="ed-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-bio" tabindex="-1">Bio</button>
           <button id="tab-products" class="ed-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-products" tabindex="-1">Products</button>
+          <button id="tab-videos" class="ed-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-videos" tabindex="-1">Videos</button>
         </div>
         <div id="panel-shows" class="ed-panel" role="tabpanel" aria-labelledby="tab-shows">
           <p class="ed-help">Change anything, then press Save. Past shows are grey: they stay on the Shows page under Played.</p>
@@ -81,8 +82,9 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
         <div id="panel-identity" class="ed-panel" role="tabpanel" aria-labelledby="tab-identity" hidden>
           <p class="ed-help">IDENTITY’s countdown and Pre-save button, on Home and the Music page.</p>
           <div class="ed-field"><label for="i-date">Release date</label><input id="i-date" type="date" required /></div>
-          <div class="ed-field"><label for="i-link">Pre-save link</label><input id="i-link" type="url" inputmode="url" maxlength="300" placeholder="https://" spellcheck="false" aria-describedby="i-link-hint" />
-            <span id="i-link-hint" class="ed-hint">Where Pre-save goes. From release day the same button says Listen.</span></div>
+          <div class="ed-field"><label for="i-link">Pre-save link</label><input id="i-link" type="url" inputmode="url" maxlength="300" placeholder="https://" spellcheck="false" aria-describedby="i-link-hint i-link-fans" />
+            <span id="i-link-hint" class="ed-hint">Where Pre-save goes. From release day the same button says Listen.</span>
+            <p id="i-link-fans" class="ed-fans ed-hint" aria-live="off" hidden></p></div>
           <p id="i-today" class="ed-today"></p>
           <p class="ed-help">The ticket under your name on Home picks itself every day: a show today or tomorrow first, then a release coming or just out, then your next show. To change it, change Shows or Releases.</p>
           <details id="hist-identity" class="ed-played ed-history"><summary class="ed-btn ed-plain">History</summary><div class="ed-hist"></div></details>
@@ -113,6 +115,16 @@ const eraCss = Object.entries(era.colors).filter(([, v]) => HEX.test(v)).map(([k
             <div id="undo-products" class="ed-undo" role="status" hidden><p class="ed-undo-t"></p><button class="ed-btn ed-undo-b" type="button">Undo</button></div>
             <button id="p-save" class="ed-btn ed-main" type="button">Save products</button>
             <div class="ed-say"><p id="p-msg" class="ed-msg" role="status"></p><a class="ed-see text-link" href="/shop/" target="_blank" rel="noopener" hidden>See it on the site</a></div>
+          </div>
+        </div>
+        <div id="panel-videos" class="ed-panel" role="tabpanel" aria-labelledby="tab-videos" hidden>
+          <p class="ed-help">Your videos, newest first. Fans see them on Home and the Videos page. Hide one to take it off the site without losing it. Change anything, then press Save.</p>
+          <button id="v-add" class="ed-btn ed-add" type="button">Add video</button>
+          <ol id="v-list" class="ed-list"></ol>
+          <details id="hist-videos" class="ed-played ed-history"><summary class="ed-btn ed-plain">History</summary><div class="ed-hist"></div></details>
+          <div class="ed-bar">
+            <button id="v-save" class="ed-btn ed-main" type="button">Save videos</button>
+            <div class="ed-say"><p id="v-msg" class="ed-msg" role="status"></p><a class="ed-see text-link" href="/videos/" target="_blank" rel="noopener" hidden>See it on the site</a></div>
           </div>
         </div>
         <div class="ed-backup">
@@ -213,7 +225,7 @@ html:has(.ed-body) { scroll-padding: 1rem 0 16rem; } /* a focused field never hi
 .ed-undo[hidden] { display: none; }
 .ed-undo-t { flex: 1 1 10rem; min-width: 0; overflow-wrap: anywhere; }
 .ed-undo-b { flex: none; min-width: 6rem; }
-/* Tabs: five now, six when Videos comes (A3). Phones: three then two (the fifth spans two, only when it is the last); six get three equal cells. One row from 36rem. */
+/* Tabs: five or six (Videos, A3). Phones: three then two (the fifth spans two, only when it is the last); six get three equal cells. One row from 36rem. */
 /* The open one is inverted (text ground, bg letters), like the site's crate tabs. */
 .ed-tab:nth-child(5):last-child { grid-column: span 2; } /* phones, five tabs only: Shows Releases IDENTITY / Bio Products */
 .ed-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; margin-top: var(--space-m); background: var(--text); border: 2px solid var(--text); border-radius: var(--radius-s); } /* the 2px gap draws the rules between cells */
@@ -240,6 +252,7 @@ html:has(.ed-body) { scroll-padding: 1rem 0 16rem; } /* a focused field never hi
 }
 .ed-row-head { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 0.25rem 0.75rem; align-items: start; }
 .ed-row-head:has(.ed-row-date) { grid-template-columns: 4.25rem minmax(0, 1fr) auto; }
+.ed-row-head:has(.ed-thumb-wide) { grid-template-columns: 4.5rem minmax(0, 1fr) auto; }
 .ed-edit { min-width: 4.5rem; }
 .ed-row-head .ed-err { grid-column: 1 / -1; }
 .ed-row-head > .ed-edit { grid-column: 3; grid-row: 1; }
@@ -339,7 +352,7 @@ html:has(.ed-body) { scroll-padding: 1rem 0 16rem; } /* a focused field never hi
 .ed { container-type: inline-size; }
 @container (width < 17rem) {
   .ed-row { padding: var(--space-s) var(--space-xs); }
-  .ed-row-head, .ed-row-head:has(.ed-row-date) { grid-template-columns: minmax(0, 1fr); }
+  .ed-row-head, .ed-row-head:has(.ed-row-date), .ed-row-head:has(.ed-thumb-wide) { grid-template-columns: minmax(0, 1fr); }
   .ed-choice { padding-inline: var(--space-xs); gap: var(--space-xs); }
   .ed-choice span { min-width: 0; overflow-wrap: anywhere; }
 }
@@ -369,6 +382,22 @@ html:has(.ed-body) { scroll-padding: 1rem 0 16rem; } /* a focused field never hi
 .ed-reload { flex: none; }
 .ed-reload[hidden] { display: none; }
 .ed-say .ed-msg:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+/* A3 (DESIGN 31h, 31j): Videos rows, the flash box, Hide / Put first, Copy this show, "Fans will tap". No new colour, font or motion. */
+.ed-thumb-wide { width: 72px; height: 48px; }
+.ed-row-vid .ed-row-head { align-items: center; }
+.ed-lab { margin-top: var(--space-m); font-weight: 700; font-size: 1.0625rem; line-height: 1.3; }
+.ed-linked { margin-top: 0.3rem; font-weight: 700; overflow-wrap: anywhere; }
+.ed .ed-choice input[type='checkbox'] { display: inline-block; flex: none; width: 1.5rem; height: 1.5rem; min-height: 0; margin: 0; padding: 0; accent-color: var(--text); }
+.ed-flash { min-width: 0; }
+.ed-check { margin-top: var(--space-m); }
+.ed-check + .ed-hint { margin-top: 0.3rem; }
+.ed-vis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-xs); margin-top: var(--space-m); }
+.ed-vis .ed-btn { padding-inline: 0.5rem; }
+@media (min-width: 600px) { .ed-vis { grid-template-columns: repeat(2, minmax(0, 12rem)); } }
+.ed-copy { width: 100%; margin-top: var(--space-s); }
+.ed-fans { color: var(--text); font-weight: 700; overflow-wrap: anywhere; }
+.ed-fans[hidden] { display: none; }
+.ed-hist-what { margin-top: 0.15rem; }
         </style>
   </body>
 </html>

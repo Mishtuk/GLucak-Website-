@@ -9,6 +9,7 @@ import { checkShows, readList, saveList } from './store.js';
 import { checkSite } from './site.js';
 import { checkProducts } from './products.js';
 import { checkReleases } from './releases.js';
+import { SITE_KINDS, checkVideos, tabRows } from './videos.js';
 import { MAX_BYTES, UPLOAD_NAME, toWebp } from './upload.js';
 
 export const FORMAT = 'glucak-backup', VERSION = 1;
@@ -31,8 +32,10 @@ export function makeBackup(data, fallback) {
     const f = join(uploadsDir(data), name);
     if (lstatSync(f, { throwIfNoEntry: false })?.isFile()) uploads[name] = readFileSync(f).toString('base64'); // not a symlink or folder
   }
+  let videos = null; // the Videos tab's rows (the Shorts stay in the file); the sleeve pictures are made again from YouTube, not kept here
+  try { videos = tabRows(readList(data, fallback.videos, 'videos.json')); } catch { /* an older setup without a videos list */ }
   return { format: FORMAT, version: VERSION, created: new Date().toISOString(),
-    shows: readList(data, fallback.shows, 'shows.json'), products, site: readList(data, fallback.site, 'site.json'), releases, uploads };
+    shows: readList(data, fallback.shows, 'shows.json'), products, site: readList(data, fallback.site, 'site.json'), releases, ...(videos ? { videos } : {}), uploads };
 }
 /** makeBackup as the bytes of one file. Callers refuse it over MAX_FILE (restore would): TOO_BIG. */
 export const backupBytes = (data, fallback) => Buffer.from(JSON.stringify(makeBackup(data, fallback)));
@@ -54,7 +57,9 @@ export async function checkBackup(text, data) {
   const st = b.site === undefined ? null : checkSite(b.site); // an older backup has no site: the saved bio stays. A site must be complete.
   // an older backup has no releases: the saved ones stay. IDENTITY is never taken from a file (it has its own tab): writeBackup keeps the site's own row.
   const rl = !Array.isArray(b.releases) ? null : checkReleases(b.releases.filter((r) => r?.title !== 'IDENTITY'));
-  const errors = [...(s.errors ?? []), ...(p.errors ?? []), ...(st?.errors ?? []), ...(rl?.errors ?? [])], uploads = new Map();
+  // an older backup has no videos: the saved ones stay. Every visible row must still carry its ticked "No fast flashing lights" box (hard rule 1).
+  const vd = !Array.isArray(b.videos) ? null : checkVideos(b.videos.filter((v) => SITE_KINDS.includes(v?.kind)));
+  const errors = [...(s.errors ?? []), ...(p.errors ?? []), ...(st?.errors ?? []), ...(rl?.errors ?? []), ...(vd?.errors ?? [])], uploads = new Map();
   for (const name of names) {
     const v = b.uploads[name];
     const bad = (why) => errors.push({ row: null, message: `Photo ${label(name)}: ${why}` });
@@ -75,7 +80,7 @@ export async function checkBackup(text, data) {
     if (up && !uploads.has(up) && !onDisk(up)) warnings.push(`Release ${label(r.title)}: its cover ${label(up)} is not in the backup, so the site shows a plain sleeve.`);
   });
   if (!rl) warnings.push('This backup has no releases, so the saved releases stay as they are.');
-  return errors.length ? { errors } : { shows: s.rows, products: p.rows, site: st?.rows, releases: rl?.rows, uploads, warnings };
+  return errors.length ? { errors } : { shows: s.rows, products: p.rows, site: st?.rows, releases: rl?.rows, videos: vd?.rows, uploads, warnings };
 }
 
 /** Write a checked backup: photos first (temp + rename), then shows.json and products.json (atomic, old one kept as .prev). */
@@ -91,5 +96,10 @@ export function writeBackup(data, r, fallback) {
   if (r.releases) {
     const now = readList(data, fallback.releases, 'releases.json');
     saveList(data, [...r.releases, ...(Array.isArray(now) ? now : []).filter((x) => x?.title === 'IDENTITY')], fallback.releases, 'releases.json');
+  }
+  if (r.videos) {
+    let now = [];
+    try { now = readList(data, fallback.videos, 'videos.json'); } catch { /* none yet */ }
+    saveList(data, [...r.videos, ...(Array.isArray(now) ? now : []).filter((x) => !SITE_KINDS.includes(x?.kind) && !r.videos.some((v) => v.id === x?.id))], fallback.videos, 'videos.json');
   }
 }

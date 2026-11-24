@@ -5,9 +5,10 @@
 import { mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { randomBytes, randomInt } from 'node:crypto';
 import { join } from 'node:path';
+import { tabRows } from './videos.js';
 
 /** The tabs that have a History. identity and bio are the two halves of site.json; the rest are one file each. */
-export const KINDS = ['shows', 'releases', 'products', 'identity', 'bio'];
+export const KINDS = ['shows', 'releases', 'products', 'videos', 'identity', 'bio'];
 export const KEEP = 10;
 export const ID = /^\d{8}T\d{9}Z-[0-9a-f]{8}$/; // 20261123T161200123Z-1a2b3c4d: sortable, never a path
 const FILE = /^(\d{8}T\d{9}Z-[0-9a-f]{8})\.json$/;
@@ -20,10 +21,11 @@ const stamp = (d) => d.toISOString().replace(/[-:.]/g, '');
 const msOf = (id) => Date.parse(`${id.slice(0, 4)}-${id.slice(4, 6)}-${id.slice(6, 8)}T${id.slice(9, 11)}:${id.slice(11, 13)}:${id.slice(13, 15)}.${id.slice(15, 18)}Z`);
 const isTime = (s) => typeof s === 'string' && !Number.isNaN(Date.parse(s));
 
-/** What a history entry keeps of a saved list: Releases without IDENTITY (its own tab owns that row), IDENTITY and Bio only their own fields. */
+/** What a history entry keeps of a saved list: Releases without IDENTITY (its own tab owns that row), Videos without the Shorts, IDENTITY and Bio only their own fields. */
 export function contentOf(kind, x) {
   if (kind === 'shows' || kind === 'products') return Array.isArray(x) ? x : null;
   if (kind === 'releases') return Array.isArray(x) ? x.filter((r) => r?.title !== 'IDENTITY') : null;
+  if (kind === 'videos') return Array.isArray(x) ? tabRows(x) : null; // the listed kinds in the site's order; Shorts stay in the file
   if (kind === 'identity') return { identity: x?.identity && typeof x.identity === 'object' ? { date: x.identity.date, link: x.identity.link } : undefined };
   if (kind === 'bio') return { homeBio: x?.homeBio, bio: x?.bio };
   return null;

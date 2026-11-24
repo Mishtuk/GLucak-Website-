@@ -27,8 +27,8 @@ export const readShows = (dataDir, fallback) => readList(dataDir, fallback, 'sho
 export const showsVersion = (dataDir, fallback) => listVersion(dataDir, fallback, 'shows.json');
 /** When `name` in DATA_DIR was last saved (ISO), or null when only the shipped file exists. The edit screen's "Last saved" and a draft's base. */
 export const fileSavedAt = (dataDir, name) => { try { return statSync(join(dataDir, name)).mtime.toISOString(); } catch { return null; } };
-/** The newest save of any of the four data files (ISO), or null. */
-export const savedAt = (dataDir, names = ['shows.json', 'products.json', 'site.json', 'releases.json']) => names.map((n) => fileSavedAt(dataDir, n)).filter(Boolean).sort().at(-1) ?? null;
+/** The newest save of any of the data files (ISO), or null. */
+export const savedAt = (dataDir, names = ['shows.json', 'products.json', 'site.json', 'releases.json', 'videos.json']) => names.map((n) => fileSavedAt(dataDir, n)).filter(Boolean).sort().at(-1) ?? null;
 
 /** Keep only the known fields; empty optional fields are dropped. Returns { rows } or { errors: [{ row, message }] }. */
 export function checkShows(list) {
