@@ -217,7 +217,7 @@ Style as above: plain, phone first, no codes in the sentence except the one he c
 | A1 | Today label / value | **IDENTITY** / **Out {Aug 13, 2027} ({268} days to go)** / **Out today** / **Out now ({Aug 13, 2027})** / **No release date set.** |
 | A1 | Today, loading / failed | **Loading...** / **Couldn't load. Reload the page.** |
 | A1 | Today buttons | **Add show** / **Fix a release** / **Add video** (A3) |
-| A1 | Undo bar | **{Show/Release/Product/Video} removed: {name}.** (no name: **Show removed.**) More than one: **... {2} removed so far.** Button: **Undo** |
+| A1 | Undo bar | **{Show/Release/Product} removed: {name}.** (Videos have no Delete, so no Undo line for them.) (no name: **Show removed.**) More than one: **... {2} removed so far.** Button: **Undo** |
 | A1 | Delete button (no question now) | **Delete this show / release / product / video** (built) |
 | A1 | Releases empty | **No releases yet. Press Add release.** |
 | A1 | Sign-out guard (replaces "You have changes that aren't saved. Sign out anyway?") | **Not saved yet in {Shows and Bio}. Sign out anyway?** (buttons Sign out / Stay) |
@@ -241,7 +241,7 @@ Style as above: plain, phone first, no codes in the sentence except the one he c
 | A3 | Fields | **YouTube link** (hint **Paste the link from YouTube. Watch, Share and Shorts links all work.**), **Title**, **Type** (**Music video** / **Live**) |
 | A3 | Flash box | **No fast flashing lights in this video** (hint **Watch it first. If anything flashes quickly, leave it off the site.**) |
 | A3 | Link locked hint | **Change the link by adding a new video.** |
-| A3 | Buttons | **Hide** / **Show** / **Put first** / **Delete this video** |
+| A3 | Buttons | **Hide from site** / **Put back on site** / **Put first**. No Delete on Videos (built: no Delete, so no Undo line either). |
 | A3 | New row meta | **Picture comes after you save.** |
 | A3 | Picture failed | **Saved. We couldn't get YouTube's picture, so it shows with a plain card for now.** |
 | A3 | Row errors (start "Video N:") | **That isn't a YouTube link. Paste the link from YouTube's Share button.** / **Add the YouTube link.** / **Add the title.** / **Pick Music video or Live.** / **Tick the box once you've watched it. Leave out anything that flashes quickly.** |

@@ -13,9 +13,17 @@ The screenshots use made-up sample shows and products. Your page will show your 
 
 You stay signed in for 7 days on that phone or computer. Press **Sign out** at the top when you use someone else's device. Signing out ends your sign-in on every phone and computer you used, so you sign in again wherever you want to edit.
 
+**Put the edit page on your home screen.** Then you can open it in one tap. On iPhone, press **Share**, then **Add to Home Screen**. On Android, open the menu, then **Add to Home screen**.
+
 **If it says "That name and password don't match. Check them and try again."** Look at the spelling and capital letters and try again.
 
 **If it says "Too many tries. Wait 15 minutes, then try again."** The page locked itself after a few wrong tries. That keeps strangers out. Wait 15 minutes and try once, carefully. Still locked out or forgot the password? Message me (see the end) and I will send a new one. Don't keep trying.
+
+## 1a. Today card
+
+The top of the page shows **Today**, with the next show (like "Sat, Nov 29, 7:30 PM, Venue") and how long until the release. It shows what is saved, not what you are typing.
+
+Under it are three buttons: **Add show**, **Fix a release** and **Add video**.
 
 ## 2. Add a show
 
@@ -31,6 +39,14 @@ You stay signed in for 7 days on that phone or computer. Press **Sign out** at t
 
 ![A new show, filled in, not saved yet](shots/04-show-filled-not-saved-390.webp)
 
+## 2a. Copy a show for a repeat venue
+
+1. Press **Copy this show** on the show. A copy opens at the top with the same details.
+2. Pick the new **Date**.
+3. Press **Save shows**.
+
+The old show stays where it is.
+
 ## 3. Change or delete a show
 
 1. Find the show in the list and press **Edit**. The form opens.
@@ -42,6 +58,10 @@ To delete: press **Delete** on that show, then OK. It is only gone for good when
 ![The list, after saving](shots/05-shows-saved-390.webp)
 
 Past shows look grey with a **Played** tag. You don't have to remove them: they leave the upcoming list by themselves and move down to Played on the Shows page.
+
+## 3a. Undo a delete
+
+A bar shows up with the name and an **Undo** button. Press **Undo** and it comes back. The bar stays until you press **Save**. After that, get it back from **History** (see 4a).
 
 ## 4. What "Saved" means
 
@@ -56,6 +76,30 @@ Nothing goes on the site until you press Save. If you leave with unsaved changes
 If it says **Not saved. Fix the show marked with !, then press Save.** open the row marked with ! and read the red line: it says what to fix, for example a missing date.
 
 **If it says "You were signed out. Sign in above, then press Save again. Your changes are still here."** Sign in at the top and press Save again. Your changes are kept.
+
+## 4a. Go back to an earlier save
+
+Each time you press Save, the old version is kept.
+
+1. Press **History** on the tab you want.
+2. Find the time you want. Press **Go back to this**, then **Go back**.
+
+What is on the site now goes into History too. So you can undo the go-back.
+
+## 4b. Unsaved changes after the page closed
+
+If the page closes before you press Save, your typing is kept as a draft. Next time, it asks:
+
+**You have changes from Today, 4:12 PM that were never saved. Keep them, or throw them away?**
+
+- **Keep them** puts your changes back. Check them, then press **Save**.
+- **Throw away** clears them.
+
+Drafts stay on this phone only. They clear when you press Save.
+
+## 4c. Something went wrong
+
+The page shows a short code, 6 letters, like **K7P4Q2**. Text that code to me. Nothing you typed is lost.
 
 ## 5. Products and photos
 
@@ -80,7 +124,7 @@ Leave **Short name** alone; it fills itself in.
 2. Wait. It says **Uploading…**, then **Uploaded. Press Save to keep it.** and shows a small preview.
 3. Press **Save products**.
 
-Leave the **Photo** box as it is; the upload fills it in.
+Leave the **Photo** box as it is; the upload fills it in. A photo straight from your phone is fine.
 
 ![Photo uploaded](shots/09-photo-uploaded-390.webp)
 
@@ -102,6 +146,20 @@ Two more tabs sit next to Shows: **IDENTITY** and **Bio**. Each one saves on its
 After a save, **See it on the site** opens the page so you can check it. The change is live at once.
 
 Shows with a past date sit in a folded **Played** list under your upcoming shows. Press **Edit** on any row to open it; **Delete** is at the bottom of the open row.
+
+## 5c. Videos
+
+Open the **Videos** tab. Your videos show on Home and the Videos page.
+
+1. Press **Add video**.
+2. Paste the **YouTube link**. Watch, Share and Shorts links all work. To change the link, add a new video.
+3. Type the **Title**, then pick **Music video** or **Live**.
+4. Tick **No fast flashing lights in this video** only if it is true. Watch it first. Flashing lights can set off seizures. If you are not sure, don't add the video. Ask us.
+5. Press **Save videos**. The picture is made for you.
+
+- **Hide from site** takes a video off the site and keeps it. **Put back on site** brings it back.
+- **Put first** makes it the first one fans see.
+- Videos have no Delete. Hide one instead. Ask us if one has to go for good.
 
 ## 6. Download a backup
 
