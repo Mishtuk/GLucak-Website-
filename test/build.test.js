@@ -90,13 +90,17 @@ test('IDENTITY block: real date from releases.json, pre-save before the day, Out
   }
 });
 
-test('edit page: noindex, external script only, not linked from the site', () => {
+test('edit page: noindex, external script only, linked only by the discreet footer Sign in (owner 2026-11-24)', () => {
   const h = readFileSync(join(DIST, 'edit/index.html'), 'utf8');
   assert.match(h, /<meta name="robots" content="noindex/);
   assert.match(h, /<script src="\/js\/edit\.js" defer><\/script>/);
   for (const m of h.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) assert.equal(m[2].trim(), '', 'inline script body');
   assert.match(h, /<form id="login"[^>]*method="post" action="\/edit\/login"/);
-  for (const p of Object.keys(pages)) assert.ok(!html(p).includes('/edit/'), `${p} links to /edit/`);
+  for (const p of Object.keys(pages)) {
+    const links = html(p).match(/<a\b[^>]*href="\/edit\/[^>]*>/g) ?? [];
+    assert.ok(links.length <= 1 && links.every((a) => /class="signin"/.test(a) && /rel="nofollow"/.test(a)), `${p}: only the footer Sign in links to /edit/`);
+    assert.ok(!html(p).replace(/<a class="signin"[^>]*>Sign in<\/a>/, '').includes('/edit/'), `${p}: /edit/ appears outside the footer Sign in`);
+  }
 });
 
 test('port notes: no quote text, mark in header, one hero image, credits, no EXIF-bearing originals', () => {
