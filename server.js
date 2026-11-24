@@ -287,6 +287,12 @@ async function handleEdit(req, res, url) {
     send(req, res, status, 'application/json', Buffer.from(JSON.stringify(body)), { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex', ...extra });
   };
   if (!SECRET) return json(503, { error: 'off', message: "The edit screen isn’t switched on yet. Tell the person who runs the site." });
+  // Look-around mode (owner 2026-11-24): EDIT_READONLY=1 lets an editor sign in and open every tab, but no save, upload or
+  // go-back writes anything. Read per request, so a restart without it turns saving back on.
+  if (env.EDIT_READONLY === '1' && req.method !== 'GET' && req.method !== 'HEAD' && p !== '/edit/login' && p !== '/edit/logout') {
+    const message = 'Look-around mode: nothing is saved right now.';
+    return json(403, { error: 'readonly', message, errors: [{ message }] });
+  }
   // belt and braces over SameSite=Strict: a browser that says the GET came from another site gets nothing
   if (req.method === 'GET' && p.startsWith('/edit/api/') && req.headers['sec-fetch-site'] === 'cross-site') return json(403, { error: 'origin', message: "That didn’t go through. Try again." });
   const kind = p.match(/^\/edit\/api\/(shows|site|products|releases|videos)$/)?.[1], list = LISTS[kind];
