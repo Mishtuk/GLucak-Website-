@@ -444,7 +444,7 @@ html[data-shows='none'] .quote-live { display: none; }
 .row-place { font-weight: 700; overflow-wrap: anywhere; }
 .row-kind { color: var(--muted); font-size: var(--step--1); overflow-wrap: anywhere; }
 .addr-line { display: block; font-weight: 400; font-size: var(--step--1); }
-.map-link { display: inline-flex; align-items: center; min-height: 44px; color: inherit; text-underline-offset: 3px; }
+.map-link { display: inline-flex; align-items: center; min-height: 44px; color: inherit; text-underline-offset: 3px; overflow-wrap: anywhere; }
 .row-soon { color: var(--text); font-weight: 700; }
 .poster .row-soon { color: inherit; }
 .row-date { white-space: nowrap; }
@@ -1770,3 +1770,6 @@ html[data-palette='poster'] .rec { --ink-dark: color-mix(in srgb, var(--text) 80
 .records-static { --rec-w: 62%; margin: 0; padding: var(--space-s) 0 var(--space-xs); gap: var(--space-s); scroll-snap-type: x mandatory; }
 .records-static .rec { scroll-snap-align: start; min-width: 0; }
 @media (min-width: 700px) { .records-static { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; } }
+/* W1: a full show with no art (every full show after the first) takes the whole card, not the 45% left over for a photo it does not have. */
+.poster:not(.is-plain):not(:has(> picture)) { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: 'date' 'place' 'meta' 'btn'; }
+@container (min-width: 37rem) { .poster:not(.is-plain):not(:has(> picture)) { grid-template-areas: 'date' 'cal' 'place' 'meta' 'btn'; } }

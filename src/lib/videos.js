@@ -125,7 +125,7 @@ export function recordsHtml(rows, { more = false, compact = false } = {}, hasSti
 /** /videos/'s "Now showing": the first video the site shows (the Records' No. 01). `still(id)`: { wide: bool, sleeve: bool }. */
 export function nowShowingHtml(rows, still = () => ({})) {
   const lead = shownRows(rows)[0];
-  if (!lead) return '<p class="vid-lead"><a class="go" href="https://www.youtube.com/channel/UCha7GtkOI9A0dzbTG3igbLg" rel="noopener">GLucak on YouTube</a></p>';
+  if (!lead) return '<p class="vid-lead">No videos here right now. <a class="go" href="https://www.youtube.com/channel/UCha7GtkOI9A0dzbTG3igbLg" rel="noopener">GLucak on YouTube</a></p>';
   const s = still(lead.id), t = esc(nameOf(lead));
   const img = s.wide ? `<img class="yt-img" src="/media/videos/${lead.id}-640.webp" srcset="/media/videos/${lead.id}-640.webp 640w, /media/videos/${lead.id}-1280.webp 1280w" sizes="(min-width: 1200px) 1100px, 92vw" width="1280" height="720" alt="" loading="eager" fetchpriority="high" decoding="async">`
     : s.sleeve ? `<img class="yt-img" src="/media/sleeves/${lead.id}-640.webp" width="1280" height="720" alt="" loading="eager" decoding="async">` : ''; // a video Gabe added has only the square sleeve
