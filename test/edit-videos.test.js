@@ -503,3 +503,15 @@ test('backups carry the videos (not the Shorts); a restore refuses a visible vid
   const old = structuredClone(b); delete old.videos;
   assert.equal((await checkBackup(JSON.stringify(old), data)).videos, undefined, 'an older backup leaves the saved videos alone');
 });
+
+test('hand-edited videos.json: a bad id or a flashing name never reaches a public page (advisor A3)', () => {
+  const ok = { id: 'ZGlnFchIVVY', title: 'Safe', kind: 'music-video', date: '2026-01-01', noFlash: true, layout: 'a', style: 'mono' };
+  const badId = { ...ok, id: 'x" onmouseover="alert(1)', title: 'Bad id' };
+  const flashName = { ...ok, id: 'K-OZiNvQB14', title: 'Fine title', name: 'Running The Gauntlet (Lyric Video)' };
+  const odd = { ...ok, id: 'jL3OKWeRFwg', title: 12345 };
+  const rows = shownRows([ok, badId, flashName, odd]);
+  assert.deepEqual(rows.map((r) => r.id).sort(), ['ZGlnFchIVVY', 'jL3OKWeRFwg'].sort());
+  assert.equal(rows.find((r) => r.id === 'jL3OKWeRFwg').title, '12345');
+  const html = recordsHtml([ok, badId, flashName], {}, () => false);
+  assert.ok(!html.includes('onmouseover') && !html.includes('Gauntlet'));
+});

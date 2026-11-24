@@ -44,7 +44,12 @@ export function displayOrder(rows) {
 /** What the tab edits and History keeps: the listed kinds, in the site's order (Shorts stay in the file, out of sight). */
 export const tabRows = (rows) => displayOrder(rows);
 /** What the public pages show: not hidden, ticked "No fast flashing lights", a real id. */
-export const shownRows = (rows) => displayOrder((Array.isArray(rows) ? rows : []).filter((v) => v?.hidden !== true && v?.noFlash === true));
+// Public pages only: a damaged or hand-edited file can never put a bad id (it goes into href/src unescaped) or a flashing video on the site.
+const TEXT = ['title', 'name', 'with', 'place'];
+export const shownRows = (rows) => displayOrder((Array.isArray(rows) ? rows : [])
+  .filter((v) => v?.hidden !== true && v?.noFlash === true && typeof v.id === 'string' && ID.test(v.id)
+    && !FLASHING.test(`${v.title ?? ''} ${v.name ?? ''}`))
+  .map((v) => { const o = { ...v }; for (const k of TEXT) if (o[k] != null && typeof o[k] !== 'string') o[k] = String(o[k]); return o; }));
 
 const MSG = {
   link: 'That isn’t a YouTube link. Paste the link from YouTube’s Share button.', noLink: 'Add the YouTube link.', title: 'Add the title.',
