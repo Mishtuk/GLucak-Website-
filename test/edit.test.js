@@ -223,7 +223,7 @@ test('28i: Delete is appended to the form (not the row head); Played fold; ed-se
   assert.ok(js.includes('box.form.append(box.delBar)') && js.includes("`Delete this ${noun}`") && !/ed-row-head'[^;]*\bdel\b/.test(js));
   assert.match(page, /<details id="played" class="ed-played"/);
   const see = [...page.matchAll(/<a class="ed-see text-link" href="([^"]+)" target="_blank" rel="noopener" hidden>See it on the site<\/a>/g)].map((m) => m[1]);
-  assert.deepEqual(see, ['/shows/', '/music/', '/music/', '/about/', '/shop/', '/videos/']);
+  assert.deepEqual(see, ['/shows/', '/music/', '/music/#identity', '/about/', '/shop/', '/videos/']);
   assert.ok(js.includes("see.hidden = state !== 'ok'"));
 });
 test('28i: IDENTITY and Bio fields have the caps the server enforces, Save buttons named, one shared site version', () => {
