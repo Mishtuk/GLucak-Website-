@@ -776,7 +776,7 @@ do not build from it. **Basis:** Base kit `research/admin-panels.md` "Recommenda
 ### 15a. Principles
 - **A tool, not the fan site.** Neutral chrome in the system UI font; the brand shows in three places only: the GLUCAK name (display
   face), the active tab's accent bar, and the accent on the one primary button and the focus ring.
-- **Left-aligned, width by job.** Phone: one column, edge to edge with 16px gutters. Desktop: a fixed left sidebar, content
+- **Left-aligned, width by job.** Phone: one column, edge to edge with 16px gutters.  Bio tab: the Save bar is capped at the 40rem form column so Save lines up with the textarea edge; the History fold and the backup block sit `--s6` apart; a phone bar hairline is inset by the 16px gutter. Desktop: a fixed left sidebar, content
   left-aligned beside it (lists up to 60rem, forms up to 40rem), never centred in a bare window.
 - **One primary per screen:** the tab's Save (Sign in on the sign-in card). Everything else is secondary (1px outline) or quiet (no outline).
 - **Dense, calm lists:** rows on one surface with hairlines, one meta line, one status chip, a quiet Edit.
@@ -900,10 +900,10 @@ The panel is a flex column (`.ed-panel:not([hidden]) { display: flex; flex-direc
 - **Phone:** as built: sticky at the bottom, full-bleed (`margin-inline: calc(-1 * var(--s4)); padding: var(--s2) var(--s4)
   calc(var(--s2) + env(safe-area-inset-bottom))`), `--n1` ground, 1px `--n5` top border. Undo first, then the message with See it on
   the site, then **Save** full width, 48px. Empty bar 64px.
-- **Desktop:** the same element docks at the top: `order: -1; position: sticky; top: 0; z-index: 5; min-height: 4rem; padding:
+- **Desktop:** the same element docks at the top: `order: -1; position: sticky; top: 0; z-index: 5; min-height: 4rem; background: var(--n1); padding:
   var(--s2) 0; border-bottom: 1px solid var(--n5); border-top: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto;
-  column-gap: var(--s4); align-items: center`. Left: `.ed-say` (message, See link, code, fix list, Reload); right: Save, `min-width:
-  10rem`. The Undo snackbar takes a full row above them (as built: `grid-column: 1 / -1`). The fix list caps at `max-height: 12rem;
+  column-gap: var(--s4); align-items: center`. Left: on Products a `.ed-bar-t` title ("Products", 1.25rem 600), then `.ed-say` (message, See link, code, fix list, Reload); right: Save, `min-width:
+  8rem`, `height: 2.75rem`, radius `--r2`, fill the accent mixed 18% toward grey (`color-mix(in srgb, var(--accent) 82%, #888)`), `--accent-text` label. Panel gap `--s3`; Bio History sits in a hairline-topped block, `margin-top: var(--s4)`. On desktop `.ed-now` has `margin-top: 0; padding-top: var(--s2)` to share the bar's top line. The Undo snackbar takes a full row above them (as built: `grid-column: 1 / -1`). The fix list caps at `max-height: 12rem;
   overflow-y: auto` so a long error list cannot cover the page. The draft offer (`.ed-draft`, prepended by edit.js) gets `order: -2`
   and sits above the bar.
 - Keyboard users reach Save after the list (DOM order) while sighted users see it docked on top: the help line already says "Change
@@ -921,16 +921,16 @@ Surface card: `--n2`, 1px `--n5`, radius `--r3`, padding `var(--s4)`, `display: 
   font-weight: 600; overflow-wrap: anywhere }`. `.ed-now-grid`: one column, `gap: var(--s2)`; two columns 600-1199px.
 - `.ed-now-note` (Last saved, drafts waiting): 1rem `--n7`.
 - `.ed-now-btns`: grid `repeat(auto-fit, minmax(0, 1fr))`, gap `var(--s2)`, secondary buttons (15k), "Add show" and "Add video" with
-  the "+" glyph; in the 18rem aside one column (three stacked, 48px each).
+  the "+" glyph; in the 18rem aside one column (three stacked, 48px each); at max-width 600px one full-width column, and the Today card is hidden while the Videos tab is open so the list is first.
 
 ### 15h. Lists, rows and status chips
 - **List** `.ed-list`: `display: grid; gap: 0; margin: 0; background: var(--n2); border: 1px solid var(--n5); border-radius:
-  var(--r3)`. Rows have no box of their own: `.ed-row { position: relative; padding: var(--s1) var(--s1) var(--s1) var(--s4);
+  var(--r3)`. Rows have no box of their own: `.ed-row { position: relative; padding: var(--s3) var(--s4);
   background: transparent; border: 0; border-top: 1px solid var(--n5) }`, first row no top border; first and last rows take the
   list's corner radius so the hover tint fits. Hover (hover devices) and `.is-open`: `--n3`.
 - **Head** grid as built (`lead | text | Edit`), `align-items: center`, `gap: var(--s1) var(--s3)`, **min-height 48px**, so a row is
-  56px with two text lines. Lead: Shows `4.5rem` date cell ("Nov 29" 1rem 600 tabular `--n8` over "2026" 1rem `--n7`; **no display
-  face**); Releases and Products thumb 40 x 40, radius `--r1`, 1px `--n5`, the hatch until a picture; Videos 64 x 36.
+  56px with two text lines. Lead: Shows a fixed `9rem` date column, one line ("Nov 29," 1rem 600 tabular `--n8` then "2026" 1rem `--n7`; `nowrap`; **no display
+  face**); title and meta stack as a flex column, `gap: 2px`, line-height 1.4; Releases thumb 40 x 40, Products thumb 3rem x 3rem (title and chip on one line from 40rem up), radius `--r1`, 1px `--n5`, the hatch until a picture; Videos 64 x 36.
 - Text: `.ed-row-title` 1rem 600 `--n8`, wraps; `.ed-row-meta` one line of 1rem `--n7` that may wrap, `gap: var(--s1) var(--s2)`,
   holding the meta words and **one chip**. The row number stays `.vh`.
 - **Past and hidden rows** (`.past`): title and date `--n7`; no dashed border; the chip says it.
@@ -949,15 +949,17 @@ Surface card: `--n2`, 1px `--n5`, radius `--r3`, padding `var(--s4)`, `display: 
 
   The site's own `.product-status` glyph is replaced inside `.ed`. "Pinned" stays the screen's existing words ("Put first" /
   "Now showing"): Gabe never sees the word Pinned.
-- **Edit** (`.ed-edit`): quiet (15k), `min-width: 4.5rem`, `--n7` text, a chevron `::after` (0.45rem, 2px `currentColor` right and
+- **Edit** (`.ed-edit`): quiet (15k), `min-width: 4.5rem`, `min-height: 48px`, `--n8` text, 1px `--n6` border on hover, a chevron `::after` (0.45rem, 2px `currentColor` right and
   bottom borders, `rotate: 45deg`, pointing down); open: label "Close" (as built), `--n8` text, `--n4` ground, chevron `rotate:
   -135deg` (up).
-- **Played and History folds** (`details.ed-played > summary`): quiet full-width rows, 48px, left-aligned, 600 `--n8`, the chevron
-  as built; History items (`.ed-hist-item`) sit in the same list surface as rows.
+- **Played and History folds** (`details.ed-played > summary`): quiet full-width rows, 48px, left-aligned with `padding-inline: 0` (chevrons and labels share one left edge), 600 `--n8`, the chevron
+  as built; `margin-block: var(--s2) 0`, History box `width: 100%`; on phones (30rem) show rows use a 3.5rem date column and one-line title and meta with ellipsis, the chip stays beside the meta; History items (`.ed-hist-item`) sit in the same list surface as rows.
+- **Products tab (loop 9):** `#panel-products .ed-list` and its History fold cap at 40rem so Edit sits near the name; the fold is a bordered `--n2` box (`--r3`, min 48px); product rows are one line (title ellipsised, chip beside it, ~57px on a phone); the sidebar hairline runs behind the title too; History to backup is `--s6`.
+- **History empty note** (`.ed-hist .ed-empty`): solid 1px `--n5`, `--n2`, `--n7` text weight 400, full width of the fold, padding `--s4`; Played and History folds are `--s6` apart; on phones `--s6` above the bar, bar `padding-bottom: --s4`, backup `margin-top: --s6`, its heading flush with the gutter.
 - **Empty** (`.ed-empty`, under the Add button): `--n2`, 1px dashed `--n6`, radius `--r3`, padding `var(--s6) var(--s4)`, 1rem 600
   `--n8` (words as built: "No shows yet. Press Add show."). Lists render only after load, so it never shows while loading; Today and
   History say "Loading..." meanwhile (as built).
-- **Add** (`.ed-add`): secondary, `align-self: flex-start` (left, natural width, not a dashed full-width slot), "+" glyph before the label.
+- **Add** (`.ed-add`): secondary, `align-self: flex-start` (left, natural width, not a dashed full-width slot), "+" glyph before the label; at 40rem and below it is full width, min-height 3rem, and on Products the Today card moves after the list (`order: 2`).
 
 ### 15i. Editing a row: inline expand, kept (decision)
 Edit opens the form **under its row, in place**, at every width. Not a side sheet, because the built script relies on the form living
@@ -976,12 +978,12 @@ found no evidence that a sheet beats inline expand on phones (admin-panels.md, g
   `max-width: 40rem`; `.ed-two` two columns from 480px (as built).
 - Inputs, selects, textareas: `min-height: 48px; padding: var(--s2) var(--s3); background: var(--n1); color: var(--n8); border:
   1px solid var(--n6); border-radius: var(--r2)`; placeholder `--n7`; focus: the ring plus `border-color: var(--n8)`. Textarea
-  min 7.5rem, Bio 20rem (as built). Native date and time icons follow `color-scheme`.
-- `.ed-choice` rows (status, video type, the flash box): 48px, `--n1` ground, 1px `--n6`, radius `--r2`; checked: 2px `--n8` border
+  min 7.5rem; on the Bio tab `field-sizing: content`, `max-height: 60vh`, `resize: vertical`, min 6rem on desktop (fallback 9rem Home sentence, 16rem About bio), and `.ed-panel` has `padding-bottom: 5rem` on phones so the last field clears the sticky bar. Native date and time icons follow `color-scheme`.
+- `.ed-choice` rows (status, video type, the flash box): 48px, `--n1` ground, 1px `--n6`, radius `--r2`; checked: 1px `--n8` border, `--n3` ground, no shadow (never 2px, the flash box too)
   and 600; radio and checkbox 1.25rem, `accent-color: var(--n8)` (not the accent); focus ring on the row via `:has(input:focus-visible)`.
 - Upload: preview `.ed-pic` 96 x 96, radius `--r2`, 1px `--n5`, hatch; `.ed-file` a full-width secondary button with the real input
   over it (as built); hint and `.ed-upmsg` under it.
-- `.ed-today` ("On the site today: ...") and `.ed-fans` ("Fans will tap: ...") 1rem 600 `--n8`, wrap anywhere; `.ed-linked` same.
+- `.ed-today` ("On the site today: ...") and `.ed-fans` ("Fans will tap: ...") 1rem 600 `--n8`, wrap anywhere; `.ed-linked` (the saved video link) is the quiet exception: 1rem 400 `--n7`, tabular figures, break anywhere, so it never reads as a title. Videos: `.ed-vis` is a 2-column grid, `max-width: 24rem` from 600px, full width below; its disabled Put first keeps a solid 1px `--n5` border and `--n7` text at full opacity, and "Already first" sits 8px under the pair (line-height 1.4). From 60rem the in-page `#v-add` is hidden (the Today card has the one Add video); the Videos help line is `max-width: 42rem`.
 
 ### 15k. Buttons (all 48px tall, `min-width: 48px`, radius `--r2`, 1rem 600, `padding: 0 var(--s4)`, the system font, no uppercase)
 | Kind | Class | Look | Hover / pressed |
@@ -4295,7 +4297,7 @@ Delete (the form's last button, label as 28i: "Delete this show / release / prod
 
 ### 31e. Row subtitles wrap; year and type never truncate (A1)
 Today's `.ed-row-title, .ed-row-meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis }` **goes**: `.ed-row-title { overflow-wrap: anywhere }`, `.ed-row-meta { flex-wrap: wrap }` and rows grow to fit (a 60-character venue is 3-4 lines at 390: fine; the head grid is `align-items: start`, Edit stays top right, 48px). Rows are no longer a fixed 60px; 28i's heights (about 68) hold for short names.
-- **Shows**: the date cell is two lines: `<p class="ed-row-date">Nov 29</p><p class="ed-row-year">2026</p>` (year 16px 700 `muted`, line-height 1.2, under the date; the date cell 4.25rem fits "2026"). Meta: "{City}, {Show|Open mic}" (as built; wraps instead of cutting "Open mic"), plus the **Played** `.ed-tag` for past rows.
+- **Shows**: the date cell is two lines on a phone and one line from 1200px (`Nov 29, 2026`, year muted inline, cell 7rem); `<p class="ed-row-date">Nov 29</p><p class="ed-row-year">2026</p>` (year 16px 700 `muted`). At 1200px the list is capped at 44rem with the Today card 1.5rem (s6) beside it. On a phone the meta wraps (location on its own line, chip under it) and the open form is full width with Date and Time side by side. Meta: "{City}, {Show|Open mic}" (as built; wraps instead of cutting "Open mic"), plus the **Played** `.ed-tag` for past rows.
 - **Releases**: meta "{Type}, {Mon d, yyyy}" + `.ed-tag` **Coming**; Type first so the cut can never hide it.
 - **Products / Videos**: same wrap; status or type first, then price / tags.
 - The same for the Today values (31c). At 320 the container-query rule (`@container (width < 17rem)`) still stacks the head.
@@ -4336,7 +4338,7 @@ Panel `panel-videos`, same skeleton as Releases: help, **Add video** (`.ed-add`)
 - **Photo resize** (replaces "over 5 MB"): on picking a file the client reads it with `createImageBitmap(file, { imageOrientation: 'from-image' })`, draws the long edge at **2000px** and encodes WebP (JPEG where WebP is unsupported), stepping quality down until it is **under 5 MB**, then uploads. No size message, no progress bar (15g), no crop. The one message line: busy "Getting your photo ready..." until the upload ends, then ok "Uploaded. Press Save to keep it." The ready preview is the resized picture. Errors (error state): not an image or not JPG, PNG, WebP "Pick a JPG, PNG or WebP photo."; the browser could not open it, and the original is over 5 MB "That photo is too big and this phone wouldn't shrink it. Try another one."; the original under 5 MB goes up as is. Server errors as built. The server cap stays.
 
 ### 31j. Duplicate show and "Fans will tap" (A3)
-- **Copy this show** (P2-3): the first thing inside an open show form, full-width plain `.ed-btn` 48px (`.ed-copy`). It inserts **a new open row at the top** with everything copied **except Date, which is empty**, focus on Date, message (`.ed-upmsg`) ok "Copied. Pick the new date." Taps: Edit, Copy this show, pick the date, Save = 4 (budget 5, typing excluded). The old row is untouched.
+- **Copy this show** (P2-3): the first thing inside an open show form, quiet left-aligned underlined `.ed-btn` 48px, `width: auto` (`.ed-copy`). It inserts **a new open row at the top** with everything copied **except Date, which is empty**, focus on Date, message (`.ed-upmsg`) ok "Copied. Pick the new date." Taps: Edit, Copy this show, pick the date, Save = 4 (budget 5, typing excluded). The old row is untouched.
 - **Fans will tap** (P1-3): under every link field (Show link, Release link, Pre-save link, Product link, Video link) after the hint: `<p class="ed-fans ed-hint" id="...-fans" aria-live="off" hidden></p>`, 16px `text` (not muted), 700, `overflow-wrap: anywhere`, wraps fully (no cutting a link he must check). Text: **"Fans will tap: https://example.com/tickets"**. Shown only when the field holds a valid https/http link, updated on `input` (no validation on keystroke, only the echo); hidden for empty or invalid (Save says what is wrong). Plain text, not a link; `textContent` only. The field's `aria-describedby` lists hint then this id.
 
 ### Open for coder
