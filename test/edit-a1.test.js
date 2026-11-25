@@ -12,8 +12,7 @@ test('31a: six tab buttons (role tab, one per panel; Videos last), the span rule
   const tabs = [...page.matchAll(/<button id="tab-(\w+)" class="ed-tab" type="button" role="tab" aria-selected="(true|false)" aria-controls="panel-\1"/g)];
   assert.deepEqual(tabs.map((t) => t[1]), ['shows', 'releases', 'identity', 'bio', 'products', 'videos']);
   assert.deepEqual(tabs.map((t) => t[2]), ['true', 'false', 'false', 'false', 'false', 'false']);
-  assert.match(page, /\.ed-tab:nth-child\(5\):last-child \{ grid-column: span 2; \}/);
-  assert.match(page, /grid-auto-flow: column; grid-auto-columns: minmax\(0, 1fr\); grid-template-columns: none;/);
+  assert.ok(!page.includes('nth-child(5):last-child') && !page.includes('grid-auto-flow: column'), 'DESIGN 15e: the old tab rules are gone');
   assert.ok(!page.includes('Change your shows, releases, IDENTITY and bio here'), 'Today replaces the intro line');
 });
 
@@ -49,7 +48,7 @@ test('31d: Undo bar is the first child of each list tab\'s save bar; Delete no l
 test('31e: rows wrap instead of cutting (no nowrap / ellipsis on title and meta); the year sits under the date', () => {
   assert.doesNotMatch(page, /\.ed-row-title, \.ed-row-meta \{ white-space: nowrap/);
   assert.match(page, /\.ed-row-meta \{ display: flex; flex-wrap: wrap;/);
-  assert.match(page, /\.ed-row-title \{ overflow-wrap: anywhere; \}/);
+  assert.match(page, /\.ed-row-title \{[^}]*overflow-wrap: anywhere;/);
   assert.ok(js.includes("class: 'ed-row-year'"));
 });
 

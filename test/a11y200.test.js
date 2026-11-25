@@ -36,5 +36,6 @@ test('skip link hides above the page; gutter in px; editor tabs wrap', () => {
   assert.match(css, /\.skip \{ top: -100vh; \}/);
   assert.match(css, /--gutter: clamp\(20px, 12\.8px \+ 2vw, 40px\)/);
   assert.match(ed, /\.ed-tabs \{ display: grid; grid-template-columns: repeat\(3, minmax\(0, 1fr\)\);/); // 28i: 3 + 2 on phones (OV4b), one per row under 17rem
-  assert.match(ed, /@container \(width < 17rem\) \{ \.ed-tabs \{ grid-template-columns: minmax\(0, 1fr\); \} \.ed-tab:last-child \{ grid-column: auto; \} \}/);
+  assert.match(ed, /@container \(width < 17rem\) \{ \.ed-tabs \{ grid-template-columns: repeat\(2, minmax\(0, 1fr\)\); \} \}/); // DESIGN 15e: two columns under 17rem, one under 12rem
+  assert.match(ed, /@container \(width < 12rem\) \{ \.ed-tabs \{ grid-template-columns: minmax\(0, 1fr\); \} \}/);
 });

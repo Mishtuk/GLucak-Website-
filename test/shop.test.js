@@ -216,7 +216,7 @@ test('/edit/ L2: collapsed rows, radio statuses, Stay plain, no innerHTML / XHR 
   assert.match(page, /<div id="out-ask" class="ed-ask"[^>]*>[\s\S]*?<button id="out-no" class="ed-btn" type="button">Stay<\/button>/);
   assert.ok(page.includes('class="ed-btn ed-add"') && page.includes('color-scheme:dark'));
   assert.ok(!/\.ed-row\.past[^{]*\{[^}]*opacity/.test(page), 'past rows: no opacity');
-  assert.match(page, /\.ed-row\.past\{[^}]*border-style:dashed/);
+  assert.match(page, /\.ed-row\.past \.ed-tag/); // DESIGN 15h: past rows are told by their chip, no dashed border
   const js = await (await get('/js/edit.js')).text();
   for (const t of ["'ed-row'", "'ed-row-head'", "'ed-delete'", "'ed-form'", 'hidden: true', "'aria-expanded'", "'aria-controls'", "type: 'radio'", "'ed-choice'", "'ed-file-input'", "'Uploading…'", "'Move up'", "'Edit'"]) assert.ok(js.includes(t), t);
   assert.ok(!js.includes('innerHTML') && !js.includes('XMLHttpRequest') && !js.includes('onprogress'));

@@ -479,7 +479,7 @@ Text at 200% (1.4.4 / 1.4.10): section 17.
 
 ## 10. Gabe's edit screen
 > **Changed by section 28i (D106, 2026-11-18):** tabs Shows | Releases | IDENTITY | Bio | Products, compact rows, Played folded, Delete inside the form, "See it on the site".
-**The look of `/edit/` (sign-in, tabs, rows, editor form, upload, save bar, every message state) is section 15.** This
+**The look of `/edit/` (sign-in, shell, sidebar, tabs, rows, editor form, upload, save bar, every message state) is section 15 (rewritten 2026-11-24).** This
 section keeps the scope.
 One simple form page per thing, large fields, plain words, phone friendly. Built on Riverside's admin pattern; every field escaped on
 output, http(s) links only, with the `<script>` and `' OR 1=1 --` tests.
@@ -764,136 +764,326 @@ Markup: built, plus `data-status="{status}"` on the `article` and the same tape 
 | Shop on | Shop in the nav and the sheet (`aria-current="page"` here: underlined 3px), the footer line "Listen. Shows. Shop. Join." (`--w-close` 10.46, built), the phone bar's Shop item (`aria-current`: a 3px `text` bar on its top edge, `box-shadow: inset 0 3px 0 var(--text)`) |
 | Motion | None on the page: 0 animations, normal or reduced (the tape is a static rotation) |
 
-## 15. Admin console (`/edit/`, L2 2026-11-05)
-**Prototype:** `prototype/edit.html` (fakes the server). Switches: `?view=signin|editor`, `?tab=shows|products`, `?open=<row>`,
-`?bar=dirty|saving|saved|shopoff|conflict|offline|errors`, `?upload=busy|error|done`, `?list=empty`,
-`?login=signing|wrong|locked|off`, `?ask=1`. Copy: `docs/copy/admin.md`, word for word, plus the button **Edit** (section 13).
+## 15. Admin console (`/edit/`; look rewritten 2026-11-24, Laptop designer)
+**This section is the only description of how `/edit/` looks.** Sections 10, 28i and 31 keep scope, behaviour and words (tabs, rows,
+Today, Undo, History, drafts, error codes, Videos, Copy this show, Fans will tap); where they describe a look (paper boxes, inverted
+tabs, display-face dates, 2px outlines, "no new colour or motion") this section wins. `prototype/edit.html` shows the old 2026-11-05 look:
+do not build from it. **Basis:** Base kit `research/admin-panels.md` "Recommendations for the kit" 1-15; usability from
+`docs/research/admin-panel-research-2026-11-23.md` (all of it already built, kept). **Before** (session scratchpad, not in the repo): `gl-preview/shows-1280.png`
+(one 740px column centred in 1280, ~270px dead navy each side, every control the same 2px outline), `shows-390.png`, `save-390.png`,
+`card-390.png`. **Copy:** `docs/copy/admin.md`, word for word; the only word changes are the two chip words in 15c.
 
-**Principles.** Gabe isn't technical and edits on his phone: one column (max 46rem, `width: min(100% - 2rem, 46rem)`), the site's
-tokens and type, everything a 48px+ target (52px fields, 56px main buttons), every message in words plus a glyph, nothing moves.
-The list stays short and scannable (rows collapsed), and the thing being edited is always outlined in `text`.
+### 15a. Principles
+- **A tool, not the fan site.** Neutral chrome in the system UI font; the brand shows in three places only: the GLUCAK name (display
+  face), the active tab's accent bar, and the accent on the one primary button and the focus ring.
+- **Left-aligned, width by job.** Phone: one column, edge to edge with 16px gutters. Desktop: a fixed left sidebar, content
+  left-aligned beside it (lists up to 60rem, forms up to 40rem), never centred in a bare window.
+- **One primary per screen:** the tab's Save (Sign in on the sign-in card). Everything else is secondary (1px outline) or quiet (no outline).
+- **Dense, calm lists:** rows on one surface with hairlines, one meta line, one status chip, a quiet Edit.
+- **Every state in words plus a glyph,** never colour alone. Targets 48px tall, 24px wide minimum. Text never under 16px.
+- **Same DOM order at every width;** the shell is drawn with CSS only (`position: fixed` sidebar, grid, sticky bar). No framework, no new font, no new image.
 
-### 15a. Shell
-`.ed-body { padding-bottom: 0; color-scheme: dark; }` (**`color-scheme: dark` is new:** without it Chrome draws the date / time
-picker icons black on our dark field). `html:has(.ed-body) { scroll-padding: 1rem 0 10rem; }` so a focused field never sits
-under the sticky save bar. Title "Edit the site": display 900, `--step-3`, uppercase, line-height .9.
-
-### 15b. Sign-in card
-`.ed-card`: `max-width: 28rem`, padding `--space-l`, `bg-2`, 2px `--line` border with a **4px `text` top edge** (the band edge),
-heading display 900 `--step-2` uppercase. Labels 700 1.0625rem, `margin-top: --space-m`. **Sign in** is `.ed-main`, full width,
-`margin-top: --space-l`. The message line under it takes `data-state` (15g): "Signing in…" busy; wrong password, lockout, not
-switched on, no connection: error (the paper box).
-
-### 15c. Fields (both tabs)
-`input` (not file / radio), `select`, `textarea`: block, full width, `min-height: 52px`, `margin-top: .3rem`, padding `.5rem .75rem`,
-`--step-0`, `text` on `bg`, **2px `muted` border** (the built `--line` border is about 2.3:1 against `bg`; `muted` is 7.4:1+ in every
-era, so the field edge passes the 3:1 control rule), radius 2px. Focus: 3px `text` outline, offset 2px, border `text`. Textarea min
-7.5rem. Placeholder `muted`. Hints: block, 16px, `muted`, `margin-top: .3rem`, line-height 1.35 (after the field, as built).
-`.ed-two` (Date | Time, Type | Price) side by side from 480px.
-
-### 15d. Buttons
-- `.ed-btn`: inline-flex, centred, `min-height: 48px; min-width: 48px; padding: .5rem 1rem`, 700 1.0625rem, `text` on `bg`, 2px
-  `text` border. Hover (hover devices only): inverted. No transitions.
-- `.ed-main` (Sign in, Save shows / Save products): **the site's `.btn` look**: display 900 1.5rem uppercase, `accent` fill,
-  `accent-text`, 56px. **One per view** (D41 F3: Stay in the sign-out confirm is a plain `ed-btn`).
-- `.ed-add` (Add show / Add product): full width, 56px, **3px dashed** `text` border: an empty slot to fill.
-- `:disabled` (Move up on the first row, Move down on the last): `muted` text, dashed `--line` border, `cursor: not-allowed`.
-  **New:** the build moves nothing at the ends; a button that does nothing is worse than one that says it can't.
-- `.ed-plain` (Sign out): border `muted`.
-
-### 15e. Signed in, sign-out confirm, tabs, help, empty
-- `.ed-who`: flex, space-between, wrap, 700: "Signed in as {name}" and Sign out.
-- **Sign out with unsaved changes** (`#out-ask`, class **`ed-ask`**, a `div` holding the question `p` and `p.ed-ask-btns`): the paper
-  box (`text` ground, `bg` ink, 700, padding `--space-m`); buttons in a 2-column grid, gap .5rem: **Sign out** and **Stay**, both
-  plain `ed-btn` (`text` on `bg`, they stand out on the paper by themselves; Save keeps the view's one accent button).
-- **Tabs** `.ed-tabs`: two halves of one bar, `grid-template-columns: 1fr 1fr`, 2px `text` border. `.ed-tab`: 56px, 800 `--step-0`,
-  transparent; **`[aria-selected=true]` inverted** (`text` ground, `bg` letters), the crate-tab look. Focus ring offset 3px.
-  Arrow keys as built.
-- `.ed-help`: `muted`, `max-width: 40rem`. **Empty list:** the built empty line gets `class="ed-help ed-empty"`: 2px dashed `muted`
-  border, padding `--space-l --space-m`, `text`, 700: "No shows yet. Press Add show." / "No products yet. Press Add product."
-
-### 15f. Rows (both tabs): collapsed head + actions, Edit opens the form
-**New structure** (replaces each built `fieldset.ed-show`):
-```html
-<li class="ed-row" data-status="sample">                      <!-- products only: data-status -->
-  <div class="ed-row-head">
-    <img class="ed-thumb" alt="" width="64" height="64">        <!-- products; shows: <p class="ed-row-date">Dec 5</p> -->
-    <div class="ed-row-text">
-      <p class="ed-row-num">Product 1</p>
-      <p class="ed-row-title">Sample: GLucak tee</p>            <!-- shows: the venue -->
-      <p class="ed-row-meta"><span class="product-status is-sample">Sample</span></p>
-    </div>
-    <p class="ed-err" role="alert"></p>                         <!-- moved here from the end of the form -->
-  </div>
-  <div class="ed-actions ed-actions-4">                         <!-- shows: Edit, Delete; no ed-actions-4 -->
-    <button class="ed-btn">Move up</button><button class="ed-btn">Move down</button>
-    <button class="ed-btn ed-edit" aria-expanded="false" aria-controls="form-7">Edit</button>
-    <button class="ed-btn ed-del">Delete</button>
-  </div>
-  <fieldset class="ed-form" id="form-7" hidden><legend class="vh">Product 1</legend> …fields… </fieldset>
-</li>
+### 15b. Tokens (scoped to `html[data-admin]`; the era file still gives `--accent` and `--accent-text`)
+```css
+html[data-admin] {                     /* dark: today, because the IDENTITY ground #05024c is dark (15m) */
+  color-scheme: dark;
+  --n1: #0f1117;  /* page */            --n2: #161922;  /* sidebar, list, cards */
+  --n3: #1e2230;  /* hover, open row */ --n4: #272c3d;  /* selected tab, neutral chip */
+  --n5: #2e3345;  /* hairlines (decorative only) */
+  --n6: #6b7186;  /* control borders, 3:1+ on n1-n3 */
+  --n7: #a3a9bb;  /* muted text */      --n8: #eceef4;  /* text */
+  --go: #6fdc9b;   --go-bg: #11291d;     /* Upcoming, Available, On the site now, ok messages */
+  --info: #93bdff; --info-bg: #14253f;   /* Now showing, Coming soon, the look-around line */
+  --cau: #f0c463;  --cau-bg: #2e2410;    /* asks (sign out, draft offer, go back), Sample */
+  --crit: #ff9a9f; --crit-bg: #331418;   /* errors, Delete */
+  --ring: var(--accent);                 /* focus ring and the active-tab bar */
+  --ed-font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --s1: .25rem; --s2: .5rem; --s3: .75rem; --s4: 1rem; --s6: 1.5rem; --s8: 2rem; --s12: 3rem;   /* the only spacing values */
+  --r1: 6px; --r2: 8px; --r3: 12px;      /* thumbs / controls / cards and lists; chips 999px */
+  --side: 15rem;                         /* desktop sidebar */
+  background: var(--n1); scrollbar-color: var(--n6) var(--n1);
+}
+html[data-admin][data-scheme='light'] {
+  color-scheme: light;
+  --n1: #f6f7f9; --n2: #ffffff; --n3: #eff1f5; --n4: #e3e6ee; --n5: #dadde6; --n6: #7f8597; --n7: #555b6c; --n8: #14161d;
+  --go: #17663a; --go-bg: #e2f4e9; --info: #1d4f9e; --info-bg: #e4eeff; --cau: #75500c; --cau-bg: #fbf0d4; --crit: #a8202a; --crit-bg: #fde6e7;
+  --ring: color-mix(in srgb, var(--accent) 70%, #000);   /* raw magenta is 2.81:1 on n4 in light; this is 5.11 */
+}
+.ed-body { background: var(--n1); color: var(--n8); font-family: var(--ed-font); font-size: 1rem; line-height: 1.5; }
+.ed-body ::selection { background: var(--n8); color: var(--n1); }
+.ed-body :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }   /* replaces the site's 3px text ring here */
 ```
-- `.ed-row`: padding `--space-m`, `bg-2`, 2px `--line` border, radius 2px. Open (`.is-open`): border `text`. List gap `--space-m`.
-- Head: grid `64px minmax(0, 1fr)` (shows: `4.25rem`), gap `.25rem .75rem`, centred. Thumb 64px, `object-fit: cover`, hatch on `bg`,
-  2px `--line`. Date: display 900 1.5rem uppercase, "Dec 5" (month short + day, from the date field). Number: 16px 700 `muted`.
-  Title: 800 `--step-0`, `overflow-wrap: anywhere`, hidden while empty (a new row is named by its number; no invented words).
-  Meta: 16px `muted`, flex wrap, gap `.25rem .75rem`. **Products:** the status glyph + short word in `text` (Coming soon, Available,
-  Sold out, Sample: the first words of the built options) and the price ("$25.00", "Free") unless it's a sample (D37). **Shows:**
-  "{City}, Show" / "{City}, Open mic", plus a **Played** tag for past dates (2px `muted` border, `text`, 700).
-- **Past shows** ("grey" in the help line): **no opacity** (the built 0.6 drops muted text under 4.5:1); instead the row border is
-  dashed and the title and date are `muted` (7.4:1+).
-- **Actions:** grid, 2 equal columns, gap .5rem, `margin-top: --space-s`, button padding-inline .5rem: products Move up | Move down /
-  Edit | Delete (each about 122px at 320); from 600px products one row of four, shows two buttons of max 9rem. Same place on every
-  row. **Edit** toggles the form: `aria-expanded`, and when open the button is inverted (`text` ground). Opening focuses the first
-  field. Delete keeps the built `confirm()`.
-- **New rows** (Add show prepends, Add product appends, as built) open at once, focus on the first field.
-- **A row with a save error:** `.bad` = 3px `text` border, a paper "!" square after the number (`.ed-row-num::after`, 1.5rem,
-  `text` ground, `bg` ink, 800), the message in the head as a paper line (`.ed-err`: `text` ground, `bg` ink, 700, padding
-  `.5rem .75rem`), and the row opens. The built `.ed-err::before { content: '! ' }` goes.
+- **Type** (system font; Atkinson is no longer requested on `/edit/`, Big Shoulders only for the name): body, labels, meta, hints,
+  chips **1rem / 1.5**; row titles and buttons **1rem 600**; Today values **1.125rem 600 / 1.4**; card and bar headings **1.25rem
+  600 / 1.3**; the name **GLUCAK** `--font-display` 900, 1.75rem desktop / 1.5rem phone, uppercase, line-height 1. Dates, times,
+  prices and counts `font-variant-numeric: tabular-nums`. Inputs 1rem (iOS never zooms).
+- **Accent only on:** the active tab's 3px bar, the primary button fill (`.ed-main`), the focus ring. Nowhere else (no accent links,
+  chips, borders, headings). Links in the chrome are `--n8` underlined.
+- **Surfaces:** two levels only, page `--n1` and surface `--n2` (sidebar, lists, Today, sign-in card); `--n3` is the hover and the
+  open row. Borders are 1px; hairlines `--n5` between rows and around surfaces; no shadows, no glow (designer rules).
+- **Fields never sit on `--n4`** (`--n6` is 2.86:1 there).
 
-### 15g. The editor form
-`.ed-form`: no fieldset border, `border-top: 2px dashed var(--line)`, `margin-top: --space-m`, padding-top `--space-xs`. Fields
-and their order as built (admin.md labels and hints), except:
-- **Status is four radio rows, not a `<select>`** (new): the option labels are long ("Sample (shows Coming soon, no price)") and a
-  closed select cut them off at 390. `<fieldset class="ed-choices"><legend>Status</legend><label class="ed-choice"><input type="radio"
-  name="status-N" value="coming-soon"><span>Coming soon</span></label>…</fieldset>`: rows 52px, gap .5rem, `bg`, 2px `muted` border,
-  radius 2px; checked row 3px `text` border and 700; radio 1.5rem, `accent-color: var(--text)`; the whole row is the target; focus
-  ring on the row via `:has(input:focus-visible)`.
-- **Photo** (the path field stays, as built), then `.ed-upload`: a 120px preview (`.ed-pic`, hatch until there is a picture) and
-  beside it (stacked under 400px) the upload: `<span class="ed-file-wrap"><label class="ed-btn ed-file" for="fN">Upload a
-  photo</label><input type="file" id="fN" class="ed-file-input" accept="image/jpeg,image/png,image/webp"></span>`: the label is a full-width
-  56px button with a 3px border; **the real file input lies over it** (`position: absolute; inset: 0; opacity: 0`), so the whole
-  button is the target and the native "No file chosen" never shows; focus ring on the label via `:has(.ed-file-input:focus-visible)`.
-  Then the hint "JPG, PNG or WebP, up to 5 MB.", then the message line (`.ed-hint.ed-upmsg`, 16px 700 `text`, states in 15h):
-  **"Uploading…" (busy)** while the built `fetch` upload runs, then "Uploaded. Press Save to keep it." (ok) or the error box.
-  **No progress bar** (D41 F2): uploads are 5 MB at most, the busy line says it's working, and a bar would need XHR and a moving
-  element for little gain.
+### 15c. Markup and script changes (exact; everything else stays as built)
+`src/pages/edit/index.astro`:
+1. Frontmatter: `const lum = (h) => { const c = [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4)); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };`
+   `const scheme = HEX.test(era.colors.bg) && lum(era.colors.bg) > 0.4 ? 'light' : 'dark';` and `<html lang="en" data-admin data-scheme={scheme}>`.
+2. The title: `<h1 class="ed-title"><span class="ed-site">GLucak</span> <span class="ed-title-t">Edit the site</span></h1>`.
+3. In `#editor`, wrap the first three blocks in one new element, **order unchanged except Today moves after the tabs**:
+   `<div class="ed-side">` `.ed-who` (as is), `#out-ask` (as is), `.ed-tabs` (as is) `</div>`, then `section.ed-now`, then the six
+   panels, then `.ed-backup`. (Tests only match the Today markup, the Undo bar as the bar's first child, and History right before
+   the bar: all unchanged.)
+4. The whole `<style is:global>` block is replaced by the rules in this section; class names stay. **`container-type: inline-size`
+   moves from `.ed` to `.ed-panel` and `.ed-side`**: on `.ed` its layout containment would make the fixed sidebar and title scroll
+   with the page.
 
-### 15h. Messages: one look for every message line (`.ed-msg`, `.ed-upmsg`)
-`edit.js`'s `say(el, text, state)` sets `el.dataset.state` (and removes it for none). Flex, gap .6rem, 700, line-height 1.35,
-`text`; `.ed-msg` `--step-0`, `.ed-upmsg` 16px; hidden while empty. A 1rem glyph from `::before`, **never colour alone**:
-| `data-state` | Glyph | Used for (exact copy, admin.md) |
+`public/js/edit.js` (three lines; nothing else changes):
+1. Line 579, the tab key map gains up and down (the desktop tab list is vertical): `{ ArrowLeft: (i + n - 1) % n, ArrowUp: (i + n - 1) % n, ArrowRight: (i + 1) % n, ArrowDown: (i + 1) % n, Home: 0, End: n - 1 }`.
+2. Line 217 (`showRow` mark): the chip shows on every dated show: `...(date.value ? [el('span', { class: 'ed-tag', textContent: past ? 'Played' : 'Upcoming' })] : [])`. A date typed into the past flips the chip to Played before Save.
+3. Line 260 (`releaseRow` mark): the chip word `'Coming'` becomes `'Upcoming'` (one word for one state everywhere). Helper syncs
+   `docs/copy/admin.md` (Upcoming on shows and releases).
+
+### 15d. Shell
+**Phone and tablet (under 900px, or under 35rem tall):** one column, DOM order top to bottom.
+`.ed { padding: var(--s3) var(--s4) 0 }` (no max-width under 600px; `max-width: 46rem` left-aligned, `padding-inline: var(--s8)` from 600px).
+- Title row: `GLUCAK` and "Edit the site" on one line (`.ed-site` 1.5rem display, then `.ed-title-t` 1.125rem 600 `--n7`, gap
+  `--s2`, baseline-aligned, wraps at 320). 28px tall.
+- The look-around line (edit.js:1048 inserts `p.ed-help` right after the title; style `.ed-title + .ed-help`): info box, 15l.
+- `.ed-side` is a plain block (`display: grid; gap: var(--s3); margin-top: var(--s3)`): who row, the sign-out ask when shown, the tabs.
+- Who row `.ed-who`: flex, wrap, space-between, `gap: var(--s2)`; "Signed in as gabe" / "Looking around" `--n7`; **View site** and
+  **Sign out** quiet buttons (15k), 48px, side by side.
+- Tabs: 15e. Then Today (15g), then the active panel (15f, 15h), then backup.
+- **First screen at 390** (preview data): 12 + title 28 + 12 + who 48 + 12 + tabs 110 + 16 + Today about 240 (with the Last saved
+  note) + 16 + Shows help 48 + 16 + Add show 48 = **about 606px** to the bottom of Add show (today's build: about 810px, measured on
+  `shows-390.png`). At 390x660 the help line and the top of Add show sit above the 64px empty bar; at 390x844 everything through Add show does.
+
+**Desktop (`@media (min-width: 900px) and (min-height: 35rem)`, signed in = `.ed:has(> #editor:not([hidden]))`):**
+```css
+.ed { width: auto; max-width: none; margin: 0; padding: 0 var(--s8) var(--s12) calc(var(--side) + var(--s8)); }
+.ed-title { position: fixed; inset: 0 auto auto 0; width: var(--side); z-index: 11; padding: var(--s6) var(--s4) var(--s3);
+  background: var(--n2); display: grid; gap: var(--s1); }               /* GLUCAK 1.75rem over "Edit the site" 1rem --n7 */
+.ed-side { position: fixed; inset: 0 auto 0 0; z-index: 10; width: var(--side); overflow-y: auto; display: flex;
+  flex-direction: column; gap: var(--s4); padding: 6.25rem var(--s3) var(--s6); background: var(--n2); border-right: 1px solid var(--n5); }
+#editor:not([hidden]) { display: grid; grid-template-columns: minmax(0, 60rem); align-items: start; }
+```
+- Sidebar, top to bottom: the name (the fixed title), who block (name `--n7`; View site | Sign out as a 2-column grid of quiet
+  buttons, `gap: var(--s2)`), the sign-out ask in place when shown, a hairline, the six tabs as a vertical list. Everything is 48px;
+  total about 550px with the ask closed, so 35rem (560px) tall screens fit; shorter ones get the phone layout. With the ask open or
+  text zoomed the sidebar scrolls on its own (`overflow-y: auto`).
+- **Main, 900-1199px:** one column (max 60rem): Today, then the panel; the panel's bar docks at the top once Today scrolls away.
+- **Main, from 1200px:** `#editor { grid-template-columns: minmax(0, 60rem) 18rem; column-gap: var(--s8) }`; the panel and backup in
+  column 1, **Today in column 2** (`grid-column: 2; grid-row: 1 / span 2; position: sticky; top: var(--s3); margin-top: var(--s3)`),
+  so the bar is the first thing at the top of the content. At 1280: sidebar 240, content 656, Today 288, all left-aligned.
+- **Sign-in (not signed in), every width:** no sidebar. `.ed { max-width: 28rem; margin-inline: clamp(1rem, 10vw, 10rem) auto;
+  padding-top: clamp(var(--s6), 12vh, 7rem) }`: the name, then the card. Left of centre on desktop, full width on phone.
+- **Signed out mid-session (401):** `#login` shows above `#editor` in the main column, as built (edit.js focuses Name).
+- `html[data-admin]` scroll-padding: phones `1rem 0 16rem` (as built); desktop `6rem 0 2rem` (the bar is on top).
+
+### 15e. Tabs (`.ed-tabs`, `.ed-tab`; the dirty ring kept)
+- **Phone:** a 3 x 2 segmented grid. `.ed-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s1);
+  padding: var(--s1); background: var(--n2); border: 1px solid var(--n5); border-radius: var(--r3) }`. Cell: 48px, `padding: 0
+  var(--s1)`, 1rem 600 `--n7`, centred, transparent, radius `--r2`. At 320 each cell is 90px ("IDENTITY" about 78px: fits). Container
+  `.ed-side`: under 17rem two columns, under 12rem one column (200% text). All six always visible: **no bottom tab bar** (six tabs
+  fail its 3-5 limit, 16px labels do not fit six across at 320, and a second sticky bar beside the save bar would eat 128px of a
+  660px screen) and **no More menu** (it would split the tablist and need new script).
+- **Desktop:** `grid-template-columns: minmax(0, 1fr)`, no container box (`background: none; border: 0; padding: 0`); cells
+  left-aligned, `padding: 0 var(--s3)`, 48px.
+- **Hover** (hover devices): `--n3` ground, `--n8` text. **Active** `[aria-selected='true']`: `--n4` ground, `--n8` text, 600, plus the
+  accent bar `::before` (position absolute; phone: bottom `var(--s1)`, inset-inline `var(--s4)`, 3px tall; desktop: left 0,
+  inset-block `var(--s3)`, 3px wide; radius 2px, `background: var(--ring)`). Three cues: ground, weight, bar.
+- **Unsaved** `[data-dirty]::after`: the hollow ring (0.5rem, 2px `currentColor`), position absolute: phone top-right `var(--s2)`,
+  desktop right `var(--s3)` centred; the hidden " (not saved)" stays. Cells are `position: relative`.
+- Keys: Left / Up previous, Right / Down next, wrapping, Home / End (15c).
+
+### 15f. The bar (`.ed-bar`, per panel): the one primary Save
+The panel is a flex column (`.ed-panel:not([hidden]) { display: flex; flex-direction: column; gap: var(--s4) }`: never set display on
+`.ed-panel` without `:not([hidden])`). DOM order stays (bar last: fill, then save).
+- **Phone:** as built: sticky at the bottom, full-bleed (`margin-inline: calc(-1 * var(--s4)); padding: var(--s2) var(--s4)
+  calc(var(--s2) + env(safe-area-inset-bottom))`), `--n1` ground, 1px `--n5` top border. Undo first, then the message with See it on
+  the site, then **Save** full width, 48px. Empty bar 64px.
+- **Desktop:** the same element docks at the top: `order: -1; position: sticky; top: 0; z-index: 5; min-height: 4rem; padding:
+  var(--s2) 0; border-bottom: 1px solid var(--n5); border-top: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: var(--s4); align-items: center`. Left: `.ed-say` (message, See link, code, fix list, Reload); right: Save, `min-width:
+  10rem`. The Undo snackbar takes a full row above them (as built: `grid-column: 1 / -1`). The fix list caps at `max-height: 12rem;
+  overflow-y: auto` so a long error list cannot cover the page. The draft offer (`.ed-draft`, prepended by edit.js) gets `order: -2`
+  and sits above the bar.
+- Keyboard users reach Save after the list (DOM order) while sighted users see it docked on top: the help line already says "Change
+  anything, then press Save", and every message is `role="status"` or focuses itself.
+- **Failed or unsaved:** no border change; the message carries the state (15l). On error the bar's top (phone) or bottom (desktop)
+  hairline turns `--crit` 2px.
+- **Saving:** Save keeps its label, `aria-disabled="true"` draws it as `--n3` ground, `--n7` text, 1px dashed `--n6`,
+  `cursor: progress`; the message says "Saving…" (busy).
+
+### 15g. Today (`.ed-now`)
+Surface card: `--n2`, 1px `--n5`, radius `--r3`, padding `var(--s4)`, `display: grid; gap: var(--s3)`. No 4px top edge.
+- `.ed-now-h` "Today": 1.25rem 600, not uppercase, not display face.
+- Items: key and value **inline** on one run so a value never needs its own line for the label: `.ed-now-k { display: inline;
+  color: var(--n7); font-weight: 600 } .ed-now-k::after { content: ': ' } .ed-now-v { display: inline; font-size: 1.125rem;
+  font-weight: 600; overflow-wrap: anywhere }`. `.ed-now-grid`: one column, `gap: var(--s2)`; two columns 600-1199px.
+- `.ed-now-note` (Last saved, drafts waiting): 1rem `--n7`.
+- `.ed-now-btns`: grid `repeat(auto-fit, minmax(0, 1fr))`, gap `var(--s2)`, secondary buttons (15k), "Add show" and "Add video" with
+  the "+" glyph; in the 18rem aside one column (three stacked, 48px each).
+
+### 15h. Lists, rows and status chips
+- **List** `.ed-list`: `display: grid; gap: 0; margin: 0; background: var(--n2); border: 1px solid var(--n5); border-radius:
+  var(--r3)`. Rows have no box of their own: `.ed-row { position: relative; padding: var(--s1) var(--s1) var(--s1) var(--s4);
+  background: transparent; border: 0; border-top: 1px solid var(--n5) }`, first row no top border; first and last rows take the
+  list's corner radius so the hover tint fits. Hover (hover devices) and `.is-open`: `--n3`.
+- **Head** grid as built (`lead | text | Edit`), `align-items: center`, `gap: var(--s1) var(--s3)`, **min-height 48px**, so a row is
+  56px with two text lines. Lead: Shows `4.5rem` date cell ("Nov 29" 1rem 600 tabular `--n8` over "2026" 1rem `--n7`; **no display
+  face**); Releases and Products thumb 40 x 40, radius `--r1`, 1px `--n5`, the hatch until a picture; Videos 64 x 36.
+- Text: `.ed-row-title` 1rem 600 `--n8`, wraps; `.ed-row-meta` one line of 1rem `--n7` that may wrap, `gap: var(--s1) var(--s2)`,
+  holding the meta words and **one chip**. The row number stays `.vh`.
+- **Past and hidden rows** (`.past`): title and date `--n7`; no dashed border; the chip says it.
+- **Rows with a save error** (`.bad`): a 3px `--crit` bar on the row's left edge (`::before`, inset-block 0); the `.ed-err` box under
+  the head (15l). The old `.ed-row-num::after` "!" goes (the number is visually hidden, so it never showed).
+- **Chips** (`.ed-tag`, and `.product-status` inside `.ed-row-meta`): `display: inline-flex; align-items: center; gap: .375rem;
+  padding: 0 var(--s2); border-radius: 999px; 1rem 600; line-height: 1.5`, glyph `::before` 0.5rem circle. Tone by context, no new
+  classes (later rules win; keep this order):
+
+  | Chip (word as shown) | Selector | Tone | Glyph |
+  |---|---|---|---|
+  | Upcoming (shows, releases), On the site now (History) | `.ed-row:not(.past) .ed-tag` | `--go` on `--go-bg` | filled dot |
+  | Played (shows), Hidden (videos) | `.ed-row.past .ed-tag` | `--n7` on `--n4` | hollow ring; Hidden also 1px dashed `--n6` edge |
+  | Now showing (videos: the first one fans see, the brief's "Pinned") | `.ed-row-vid:not(.past) .ed-tag` | `--info` on `--info-bg` | filled dot |
+  | Available / Coming soon / Sold out / Sample (products) | `.product-status.is-available / .is-coming-soon / .is-sold-out / .is-sample` | go / info / neutral / `--cau` on `--cau-bg` | filled / filled / hollow / hollow |
+
+  The site's own `.product-status` glyph is replaced inside `.ed`. "Pinned" stays the screen's existing words ("Put first" /
+  "Now showing"): Gabe never sees the word Pinned.
+- **Edit** (`.ed-edit`): quiet (15k), `min-width: 4.5rem`, `--n7` text, a chevron `::after` (0.45rem, 2px `currentColor` right and
+  bottom borders, `rotate: 45deg`, pointing down); open: label "Close" (as built), `--n8` text, `--n4` ground, chevron `rotate:
+  -135deg` (up).
+- **Played and History folds** (`details.ed-played > summary`): quiet full-width rows, 48px, left-aligned, 600 `--n8`, the chevron
+  as built; History items (`.ed-hist-item`) sit in the same list surface as rows.
+- **Empty** (`.ed-empty`, under the Add button): `--n2`, 1px dashed `--n6`, radius `--r3`, padding `var(--s6) var(--s4)`, 1rem 600
+  `--n8` (words as built: "No shows yet. Press Add show."). Lists render only after load, so it never shows while loading; Today and
+  History say "Loading..." meanwhile (as built).
+- **Add** (`.ed-add`): secondary, `align-self: flex-start` (left, natural width, not a dashed full-width slot), "+" glyph before the label.
+
+### 15i. Editing a row: inline expand, kept (decision)
+Edit opens the form **under its row, in place**, at every width. Not a side sheet, because the built script relies on the form living
+in flow under its row: save errors open **every** bad row at once (`send()`), Copy this show opens a second row beside the first,
+Undo re-inserts rows (Played fold included), drafts lock the panel with `inert`, Save makes the lists `inert`, and the error-summary
+links jump to `#form-N`. A fixed sheet would stack several open forms on one another, would need new focus, Escape and one-open-at-a-time
+script, and on phones a full-height sheet would cover the sticky bar that holds Save, Undo and the error list. The research also
+found no evidence that a sheet beats inline expand on phones (admin-panels.md, gaps). Inline costs no script and no risk.
+- Open row: `--n3` ground (the whole row, head and form); `.ed-form { margin: var(--s2) 0 var(--s2); padding: var(--s4) var(--s3)
+  var(--s2) 0; border-top: 1px solid var(--n5); max-width: 40rem; display: grid; gap: var(--s4) }`.
+- Opening still calls `scrollIntoView({ block: 'nearest' })` (instant); the scroll-padding keeps the form clear of the bar on both widths.
+- Delete sits at the form's end after a 1px `--n5` hairline (as built), **quiet destructive** (15k).
+
+### 15j. Fields, choices, upload (labels above fields, one column)
+- `.ed-field { display: grid; gap: var(--s1) }`; label 1rem 600 `--n8`; hint 1rem `--n7` under the field; IDENTITY and Bio fields
+  `max-width: 40rem`; `.ed-two` two columns from 480px (as built).
+- Inputs, selects, textareas: `min-height: 48px; padding: var(--s2) var(--s3); background: var(--n1); color: var(--n8); border:
+  1px solid var(--n6); border-radius: var(--r2)`; placeholder `--n7`; focus: the ring plus `border-color: var(--n8)`. Textarea
+  min 7.5rem, Bio 20rem (as built). Native date and time icons follow `color-scheme`.
+- `.ed-choice` rows (status, video type, the flash box): 48px, `--n1` ground, 1px `--n6`, radius `--r2`; checked: 2px `--n8` border
+  and 600; radio and checkbox 1.25rem, `accent-color: var(--n8)` (not the accent); focus ring on the row via `:has(input:focus-visible)`.
+- Upload: preview `.ed-pic` 96 x 96, radius `--r2`, 1px `--n5`, hatch; `.ed-file` a full-width secondary button with the real input
+  over it (as built); hint and `.ed-upmsg` under it.
+- `.ed-today` ("On the site today: ...") and `.ed-fans` ("Fans will tap: ...") 1rem 600 `--n8`, wrap anywhere; `.ed-linked` same.
+
+### 15k. Buttons (all 48px tall, `min-width: 48px`, radius `--r2`, 1rem 600, `padding: 0 var(--s4)`, the system font, no uppercase)
+| Kind | Class | Look | Hover / pressed |
+|---|---|---|---|
+| Primary (Save x6, Sign in) | `.ed-main` | `--accent` fill, `--accent-text` label, 1px `--accent` border | `color-mix(in srgb, var(--accent) 88%, #fff)` / `76%` |
+| Secondary (Add, Today buttons, Keep / Throw away, Go back / Stay, Sign out / Stay in the ask, Reload, upload, Move up / down, Hide, Put first, Copy this show) | `.ed-btn` | transparent, 1px `--n6`, `--n8` label | `--n3` / `--n4` |
+| Quiet (Edit, View site, Sign out, Download a backup, fold summaries) | `.ed-plain`, `.ed-edit`, `summary` | no border, `--n7` label (`--n8` for summaries) | `--n3` ground, `--n8` label / `--n4` |
+| Quiet destructive (Delete this show / release / product) | `.ed-del` | no border, `--crit` label | `--crit-bg` ground |
+| Disabled (Move up on the first row, Put first) | `:disabled` | `--n7` label, 1px dashed `--n5`, `cursor: not-allowed` | none |
+
+The site's inverted hover (`text` ground) is gone from `/edit/`. Hover only under `@media (hover: hover)`; pressed (`:active`) everywhere.
+
+### 15l. Messages, asks, Undo, errors, the look-around line (every word as built)
+One glyph per state, drawn by `::before` (as built), never colour alone:
+| State | Look | Glyph |
 |---|---|---|
-| `dirty` | hollow ring (2px, round) | "Not saved yet." |
-| `busy` | ring, left half filled (static) | "Signing in…", "Saving…", "Uploading…" |
-| `ok` | a tick (0.5 x 0.95rem, 3px right and bottom borders, rotated 45deg) | "Saved. It's on the site now.", "Saved. The shop isn't open to fans yet, so they won't see it until it's switched on.", "Uploaded. Press Save to keep it.", "Signed in again. Press Save." |
-| `error` | **the paper box** (`text` ground, `bg` ink, padding `.6rem .75rem`) with a 1.4rem "!" square in `bg` / `text` | every error: wrong name / password, lockout, not switched on, no connection, the upload errors, "Not saved. Fix the … marked with !, then press Save.", the 409 line, "You were signed out. …", "Couldn't load the products. Reload the page." |
+| `dirty` ("Not saved yet.", "Signed in again. Press Save.") | 1rem 600 `--n8` | hollow ring 0.75rem, 2px `--cau` |
+| `busy` ("Saving…", "Uploading…", "Getting your photo ready...", "Loading...", "Going back...") | 1rem `--n7` | ring, left half filled, static (no spinner) |
+| `ok` ("Saved at 4:12 PM. …", "Uploaded. …", "Done. …", "Copied. …") | 1rem 600 `--go` | tick |
+| `error` (every error line, the 409 line, "Look-around mode: nothing is saved right now.") | box: `--crit-bg` ground, 1px `color-mix(in srgb, var(--crit) 40%, transparent)` border, radius `--r2`, padding `var(--s2) var(--s3)`, `--n8` text 600 | "!" in a 1.25rem `--crit` square, `--crit-bg` ink |
+- `.ed-code` ("Send this code to the person who runs the site: K7P4Q2") and `.ed-fix` (the error summary links) continue the error
+  box; the code in `ui-monospace, SFMono-Regular, Menlo, Consolas, monospace` 1.125rem 700, `letter-spacing: .08em`, `user-select:
+  all`; fix links `--crit` underlined, 48px tall, focus ring `--crit`.
+- **Row errors** `.ed-err` (role=alert, in the head): the same error box, full width under the head.
+- **Asks** (`.ed-ask`: sign-out ask `#out-ask`, draft offer `.ed-draft`, History "Go back to …?"): `--cau-bg` ground, 1px `--n5`
+  border plus a 3px `--cau` left edge, radius `--r2`, padding `var(--s3)`, text 1rem 600 `--n8`; the two buttons secondary on an
+  `--n1` ground, 2-column grid, gap `var(--s2)`. In the desktop sidebar the sign-out ask is the sidebar's width (two 100px buttons fit).
+- **Undo** (`.ed-undo`, role=status, in the bar): an inverted snackbar, `--n8` ground, `--n1` text 600, radius `--r2`, padding
+  `var(--s2) var(--s2) var(--s2) var(--s3)`, flex wrap; **Undo** button `--n1` ground, `--n8` label, focus ring `--n1`. Behaviour as
+  built (no timer, stack, focus).
+- **Look-around line** (`.ed-title + .ed-help`, preview only): info box `--info-bg`, 1px `--n5`, 3px `--info` left edge, `--n8`
+  text, radius `--r2`, padding `var(--s2) var(--s3)`, `max-width: 40rem`; on desktop it is the first thing in the main column. The
+  who line says "Looking around" (as built); every write still answers with the error line "Look-around mode: nothing is saved right now."
+- `.ed-help` lines: 1rem `--n7`, `max-width: 40rem`. Backup block: hairline top, quiet **Download a backup**, hint and message under it.
 
-### 15i. The save bar (`.ed-bar`, per tab)
-Sticky at the bottom of its tab (`position: sticky; bottom: 0; z-index: 5`), `bg`, 2px `--line` top border, padding `--space-s` (+ safe
-area at the bottom). Grid, gap .5rem: **the message above the button on phones** (`.ed-msg { order: -1 }`: read, then press; DOM
-order as built, button first), Save full width. **From 700px** the message left, Save right: `grid-template-columns: minmax(0, 1fr)
-16rem`. The bar's top edge goes to **4px `text`** while the message is `dirty` or `error` (`.ed-bar:has(.ed-msg[data-state=dirty])`).
-- **Saving:** Save gets `aria-disabled="true"` (**new:** `save()` returns early while one is on its way; the built page can send
-  two), drawn as an outline with a dashed border, `cursor: progress`; the label doesn't change; the message "Saving…" (busy).
-- **Saved:** ok, with the server's message (the shop-off line comes from `server.js`, D37).
-- **409:** error box with "Someone else saved the {shows/products} just now, so yours didn't save. Reloading shows their changes but
-  clears yours, so write down what you changed first." Rows untouched. At 320 it's 5 lines, the bar ~230px; acceptable for a rare
-  message that must be read.
+### 15m. Light and dark: follow the site
+The public site has no light / dark switch: its ground comes from the era file, and IDENTITY's is dark navy. `/edit/` follows that:
+`data-scheme` is computed at build from the era's `bg` (15c), so today it is **dark** (the 15b ramp); an era with a light ground
+(luminance over 0.4) gets the light ramp, with `--ring` darkened 30% toward black. No `prefers-color-scheme` rule (the site has none,
+so Gabe sees the same ground on both). The owner's `?palettes` preview lives only in public pages' localStorage and does not reach `/edit/`.
 
-### 15j. Measured (prototype, `check.mjs --shop`, section 12)
-No sideways scroll at 320 / 390 / 1280 in every state; all targets 48px+ (radio rows measured by their label); smallest text 16px;
-lowest contrast 5.33:1 (the accent buttons in the IDENTITY guess era), field borders 7.41:1+; 0 animations.
+### 15n. Motion (subtle; nothing moves on its own; nothing flashes)
+- `transition: background-color 120ms ease-out, color 120ms ease-out, border-color 120ms ease-out` on `.ed-btn`, `.ed-tab`, `.ed-row`,
+  `.ed-choice`, summaries. Never `transition: all`.
+- `.ed-undo`, `.ed-ask` and `[data-state]` messages fade in: `opacity` 0 -> 1 over 150ms via `@starting-style` (browsers without it
+  show them at once).
+- Rows open, folds open, tabs switch and `scrollIntoView` are instant (as built). No spinner, no slide, no transform.
+- `@media (prefers-reduced-motion: reduce) { html[data-admin] *, html[data-admin] *::before, html[data-admin] *::after { transition: none !important } }`
+  and the `@starting-style` block sits inside `@media (prefers-reduced-motion: no-preference)`.
+
+### 15o. Contrast, computed (WCAG 2.x relative luminance, designer script 2026-11-24; text 4.5:1, controls and indicators 3:1)
+| Pair | Dark | Light |
+|---|---|---|
+| Text `--n8` on n1 / n2 / n3 / n4 | 16.27 / 15.13 / 13.64 / 11.96 | 16.86 / 18.07 / 15.98 / 14.47 |
+| Muted `--n7` on n1 / n2 / n3 / n4 | 8.04 / 7.48 / 6.75 / 5.91 | 6.32 / 6.78 / 5.99 / 5.43 |
+| Control border `--n6` on n1 / n2 / n3 | 3.89 / 3.62 / 3.26 | 3.43 / 3.68 / 3.26 |
+| Chips: go / info / caution / critical on their tint | 9.12 / 8.03 / 9.29 / 8.27 | 6.12 / 6.75 / 6.36 / 6.08 |
+| Neutral chip `--n7` on n4 | 5.91 | 5.43 |
+| `--go` (ok line) / `--crit` (Delete) on n1 | 11.13 / 9.32 | 6.53 / 6.74 |
+| `--n8` on the error, ask and info tints | 14.44 / 13.16 / 13.25 | 15.19 / 15.93 / 15.46 |
+| Undo: `--n1` on `--n8` | 16.27 | 16.86 |
+| IDENTITY Save: `#05024c` on `#d93cfb` / hover / pressed | 5.35 / 6.02 / 6.92 | same |
+| IDENTITY ring and active bar: accent on n1 / n2 / n4 | 5.38 / 5.01 / 3.96 | `--ring` #982ab0: 5.95 on n1, 5.11 on n4 |
+| Placeholder era Save: `#111111` on `#ff4d2e` / hover / pressed | 5.71 / 6.38 / 7.29 | same |
+| Placeholder ring and bar: accent on n1 / n4 | 5.71 / 4.20 | `--ring` #b33620: 5.65 on n1, 4.85 on n4 |
+
+Known fails, avoided by rule: `--n6` on `--n4` 2.86 (fields never on n4); raw accent on light n4 2.81 (light uses the darkened
+`--ring`); a darkening hover on the IDENTITY accent 4.26 (hover lightens instead). **The era test gains two checks** for each era:
+`accent-text` on `accent` >= 4.5 and `--ring` on `--n1` and `--n4` of its scheme >= 3.
+
+### 15p. Deleted with this rewrite
+The paper boxes (`text` ground) for errors, asks and Undo; the inverted selected tab and the 2px `text` tab frame; the 4px `text`
+top edges on the sign-in card, Today and the bar; display-face 900 on Today, dates, Save and Sign in; 52 / 56px controls (now 48);
+2px `--muted` field borders; the 46rem centred column; `.ed-actions` / `.ed-actions-4` and the duplicate `.ed-thumb` / `.ed-row-*`
+blocks (index.astro 276-295, left from 28i); `@container` tab rules on `.ed`. Kept: every element, id, message, glyph meaning,
+the Played fold, History, drafts, error codes, Undo, look-around mode, the 16rem phone scroll-padding, 0 animations under reduced motion.
+
+### 15q. Acceptance (reviewers check these on the built page, 390x844, 390x660, 320 and 1280x800, motion on and reduced)
+1. **Shell 1280:** signed in, a fixed 240px sidebar holds GLUCAK, the who block and six tabs; content starts at x = 272, left-aligned;
+   Today sits right of the list from 1200px; nothing is centred in the window; no horizontal scroll at 320, 390, 768, 1280, 1600.
+2. **Top bar:** at 1280, scrolled 2000px down Shows, the bar (message left, Save right) is still at the top; Tab through an open show
+   form and no focused field is hidden under the bar.
+3. **Phone first screen:** at 390x844 the title row, who row, 3 x 2 tabs, Today, the Shows help and the whole Add show button are above
+   the bottom bar (at 390x660 at least the help line and the top of Add show); the bar is full-bleed with a 48px full-width Save.
+4. **One primary:** Save (or Sign in) is the only accent-filled control on every screen; accent pixels appear only on that button,
+   the active tab's bar and the focus ring.
+5. **Rows:** one list surface with hairlines, no per-row box; each row is lead, title, one meta line with exactly one chip, and a quiet
+   Edit that becomes Close with the chevron up; rows are 56px with short names.
+6. **Chips:** Upcoming, Played, Hidden, Now showing and the four product statuses each show a word and a glyph, in the 15h tones, the
+   same tone for the same word on every tab; a date typed into the past flips Upcoming to Played before Save.
+7. **Targets and type:** every interactive element is 48px tall and 24px+ wide at 320, 390 and 1280; no text under 16px; inputs 16px.
+8. **Contrast:** spot-check 15o in the build (DevTools picker); field borders 3:1+ on their ground; `npm test` green including the two
+   new era checks and the unchanged bar and History order tests.
+9. **Every state still renders and reads the same words:** dirty, busy, ok with See it on the site, error with code and fix links,
+   409 with Reload, Undo snackbar, draft offer (panel locked), sign-out ask in the sidebar (desktop), History loading / empty / error
+   / Go back ask, upload busy / ok / error, empty lists, Today Loading / No shows booked, look-around line plus "Looking around".
+10. **Keyboard:** order is who, tabs, Today, panel, Save; Left / Right / Up / Down / Home / End move between tabs; a 2px ring with 2px
+    offset is visible on every control, including inside the Undo snackbar and the error box.
+11. **Motion:** only 120ms colour changes and 150ms fades; with reduced motion `document.getAnimations()` is empty and every computed
+    `transition-duration` is 0s; nothing flashes.
+12. **Zoom:** at 200% text the tabs fall to two, then one column, row heads stack, the sidebar becomes the phone layout below 900px
+    or 35rem tall, and nothing is cut off.
 
 ## 16. Round 2: Music cover grid, link grid, Add to calendar, 404, pressed feedback (Laptop designer, 2026-11-06)
 Sources: `docs/review/round2-verdict.md` task 5, D47, D51, D53, `docs/research/design-round-2.md` items 5-8 and 10,
@@ -3378,6 +3568,7 @@ in built `/` the `player-box` comes before `class="v2-rel"`. Replace `build.test
 ever `opacity: 0`" and delete `test/v2port.test.js` 16. Shots: 0 running animations at 390 / 1280, both motion states.
 
 ### 28i. Gabe's edit screen: five tabs, compact rows, the save bar (/edit/; OV4a, OV4b)
+> **Look superseded 2026-11-24:** how tabs, rows, buttons and the bar look is section 15; the scope and behaviour below still hold.
 **Source:** design-ux E1-E3 (lines 150-159), KEEP line 149; content.md lines 81-82; plan C11 / A1 (lines 40, 58), OV4a / OV4b
 (113-125); **D106**; DESIGN 10 (scope) and 15 (the look, kept: fields, buttons, message glyphs, sign-in, backup, sign-out ask).
 
@@ -4050,6 +4241,7 @@ hero A name zone must be measured on the built page (estimated 11.2:1 with 15% i
 
 
 ## 31. Edit screen: self-sufficiency (A1-A3; Laptop designer, 2026-11-23)
+> **Look superseded 2026-11-24:** section 15 replaces this section's "Language" line (paper boxes, no new colour or motion) and every look detail; functions, words and the rulings below still hold.
 **Source:** `docs/review/admin/plan.md` (rounds, done-whens), `docs/research/admin-panel-research-2026-11-23.md` (gap ids), shots `before/edit-390-*`. Copy: `docs/copy/admin.md`, block "2026-11-23 A1-A3", word for word. **Language:** section 15 and 28i only: no new colour, font, shadow or motion; everything appears and goes instantly; every state has a word and a glyph; targets 48px+ (buttons 56px for the one `.ed-main`); data via `textContent` only. New classes are named `ed-*`; every one reuses an existing look as stated. **Round map:** A1 = 31a, b, c, d, e, i (photo, empty, sign-out, stamp); A2 = 31f, g; A3 = 31h, j.
 
 ### 31a. Tabs: six (A3), 3 + 3 at 390, one row at 1280

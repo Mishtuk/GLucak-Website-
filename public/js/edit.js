@@ -214,7 +214,7 @@
       const past = Boolean(date.value) && date.value < today();
       box.classList.toggle('past', past); // a dashed border in CSS, not opacity
       const kind = type.value === 'open-mic' ? 'Open mic' : 'Show';
-      box.setMeta(el('span', { textContent: city.value.trim() ? `${city.value.trim()}, ${kind}` : kind }), ...(past ? [el('span', { class: 'ed-tag', textContent: 'Played' })] : []));
+      box.setMeta(el('span', { textContent: city.value.trim() ? `${city.value.trim()}, ${kind}` : kind }), ...(date.value ? [el('span', { class: 'ed-tag', textContent: past ? 'Played' : 'Upcoming' })] : []));
     };
     box.form.addEventListener('input', mark);
     box.form.addEventListener('change', mark);
@@ -257,7 +257,7 @@
     const mark = () => {
       box.setTitle(title.value.trim());
       const label = REL_TYPES.find(([v]) => v === type.value)[1], when = dayText(date.value);
-      box.setMeta(el('span', { textContent: [label, when].filter(Boolean).join(', ') }), ...(date.value > today() ? [el('span', { class: 'ed-tag', textContent: 'Coming' })] : [])); // the type first, then Coming; the meta wraps, nothing is cut
+      box.setMeta(el('span', { textContent: [label, when].filter(Boolean).join(', ') }), ...(date.value > today() ? [el('span', { class: 'ed-tag', textContent: 'Upcoming' })] : [])); // the type first, then Upcoming; the meta wraps, nothing is cut
     };
     box.form.addEventListener('input', mark);
     box.form.addEventListener('change', mark);
@@ -576,7 +576,7 @@
     $(`tab-${k}`).addEventListener('click', () => pick(k));
     $(`tab-${k}`).addEventListener('keydown', (e) => {
       const i = tabs.indexOf(k), n = tabs.length;
-      const to = { ArrowLeft: (i + n - 1) % n, ArrowRight: (i + 1) % n, Home: 0, End: n - 1 }[e.key];
+      const to = { ArrowLeft: (i + n - 1) % n, ArrowUp: (i + n - 1) % n, ArrowRight: (i + 1) % n, ArrowDown: (i + 1) % n, Home: 0, End: n - 1 }[e.key];
       if (to === undefined) return;
       e.preventDefault();
       pick(tabs[to], true);
