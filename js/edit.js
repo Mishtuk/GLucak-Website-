@@ -137,7 +137,7 @@
       say(r.num, `${t.label} ${i + 1}`);
       say(r.legend, `${t.label} ${i + 1}`);
       if (r.up) { r.up.disabled = i === 0; r.down.disabled = i === list.length - 1; } // no button that does nothing
-      if (r.putFirst) r.putFirst.disabled = i === 0 || r.state.hidden; // nor Put first on the first row, or on a hidden one
+      if (r.putFirst) { r.putFirst.disabled = i === 0 || r.state.hidden; if (r.putHint) r.putHint.hidden = !(i === 0 && !r.state.hidden); } // nor Put first on the first row, or on a hidden one
     });
     if (kind === 'videos') markVideos();
     if (kind === 'shows') { // the Played fold: shown only when there are past rows
@@ -158,6 +158,7 @@
     const lead = thumb ?? el('div', { class: 'ed-row-lead' }, el('p', { class: 'ed-row-date' }), el('p', { class: 'ed-row-year' }));
     const legend = el('legend', { class: 'vh' });
     const form = el('fieldset', { class: 'ed-form', hidden: true, id: `form-${++uid}` }, legend);
+    form.classList.add('ed-row-body');
     const edit = el('button', { type: 'button', class: 'ed-btn ed-edit', textContent: 'Edit' });
     const delBar = el('div', { class: 'ed-delete' }); // the form ends with it: Delete is never next to Edit
     edit.setAttribute('aria-expanded', 'false');
@@ -202,7 +203,7 @@
       say(row.copyMsg, 'Copied. Pick the new date.', 'ok');
       row.form.querySelector('input').focus(); // the Date
     });
-    box.form.append(el('div', { class: 'ed-two' }, field('Date', date), field('Time (optional)', time)),
+    box.form.append(el('div', { class: 'ed-two ed-dt' }, field('Date', date), field('Time (optional)', time)),
       field('Type', type), field('Venue', venue), field('City (optional)', city), field('Street address (optional)', address, 'Shown on the show as a map link, and goes in the calendar file.'),
       field('With (optional)', withIn, 'Another act on the bill'), field('Link (optional)', link, 'Tickets or details page', true), field('Cost (optional)', cost, 'Shown after the time, like "Free" or "$10"'));
     box.form.append(box.delBar);
@@ -214,7 +215,7 @@
       const past = Boolean(date.value) && date.value < today();
       box.classList.toggle('past', past); // a dashed border in CSS, not opacity
       const kind = type.value === 'open-mic' ? 'Open mic' : 'Show';
-      box.setMeta(el('span', { textContent: city.value.trim() ? `${city.value.trim()}, ${kind}` : kind }), ...(past ? [el('span', { class: 'ed-tag', textContent: 'Played' })] : []));
+      box.setMeta(el('span', { class: 'ed-loc', textContent: city.value.trim() ? `${city.value.trim()}, ${kind}` : kind }), ...(date.value ? [el('span', { class: 'ed-tag', textContent: past ? 'Played' : 'Upcoming' })] : []));
     };
     box.form.addEventListener('input', mark);
     box.form.addEventListener('change', mark);
@@ -257,7 +258,7 @@
     const mark = () => {
       box.setTitle(title.value.trim());
       const label = REL_TYPES.find(([v]) => v === type.value)[1], when = dayText(date.value);
-      box.setMeta(el('span', { textContent: [label, when].filter(Boolean).join(', ') }), ...(date.value > today() ? [el('span', { class: 'ed-tag', textContent: 'Coming' })] : [])); // the type first, then Coming; the meta wraps, nothing is cut
+      box.setMeta(el('span', { textContent: [label, when].filter(Boolean).join(', ') }), ...(date.value > today() ? [el('span', { class: 'ed-tag', textContent: 'Upcoming' })] : [])); // the type first, then Upcoming; the meta wraps, nothing is cut
     };
     box.form.addEventListener('input', mark);
     box.form.addEventListener('change', mark);
@@ -467,14 +468,15 @@
     flash.id = `f${++uid}`;
     const flashHint = el('span', { class: 'ed-hint', id: `${flash.id}-hint`, textContent: 'Watch it first. If anything flashes quickly, leave it off the site.' });
     flash.setAttribute('aria-describedby', flashHint.id);
+    const putHint = el('span', { class: 'ed-hint ed-vis-hint', textContent: 'Already first', hidden: true });
     const hide = el('button', { type: 'button', class: 'ed-btn', textContent: 'Hide from site' }), putFirst = el('button', { type: 'button', class: 'ed-btn', textContent: 'Put first' });
     const linkField = saved
       ? el('div', { class: 'ed-field' }, el('p', { class: 'ed-lab', textContent: 'YouTube link' }), el('p', { class: 'ed-linked', textContent: watchUrl(v.id) }), el('span', { class: 'ed-hint', textContent: 'Change the link by adding a new video.' }))
       : field('YouTube link', link, 'Paste the link from YouTube. Watch, Share and Shorts links all work.', (val) => { const id = ytId(val); return id ? watchUrl(id) : null; });
     box.form.append(linkField, field('Title', title), kindBox,
       el('div', { class: 'ed-flash' }, el('label', { class: 'ed-choice ed-check' }, flash, el('span', { textContent: 'No fast flashing lights in this video' })), flashHint),
-      el('div', { class: 'ed-vis' }, hide, putFirst));
-    Object.assign(box, { putFirst, kindNow: kind });
+      el('div', { class: 'ed-vis' }, hide, putFirst), putHint);
+    Object.assign(box, { putFirst, putHint, kindNow: kind });
     box.read = () => {
       const o = { ...keep };
       if (saved) o.id = v.id; else { delete o.id; o.link = link.value; }
@@ -576,7 +578,7 @@
     $(`tab-${k}`).addEventListener('click', () => pick(k));
     $(`tab-${k}`).addEventListener('keydown', (e) => {
       const i = tabs.indexOf(k), n = tabs.length;
-      const to = { ArrowLeft: (i + n - 1) % n, ArrowRight: (i + 1) % n, Home: 0, End: n - 1 }[e.key];
+      const to = { ArrowLeft: (i + n - 1) % n, ArrowUp: (i + n - 1) % n, ArrowRight: (i + 1) % n, ArrowDown: (i + 1) % n, Home: 0, End: n - 1 }[e.key];
       if (to === undefined) return;
       e.preventDefault();
       pick(tabs[to], true);
